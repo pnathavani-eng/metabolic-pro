@@ -105,7 +105,7 @@
           </div>
           <span class="text-[10px] font-bold px-2.5 py-1 bg-white border border-teal-300 text-teal-800 rounded-xl shadow-xs" id="cpFixedBadge">Fatty Liver (veg)</span>
         </div>
-        <p class="text-xs text-slate-600 leading-snug">30-Day Protocol with Live Calorie, GI & Water Tracking.</p>
+        <p class="text-xs text-slate-600 leading-snug">30-Day Rotating Protocol with Live Calorie, GI & Water Tracking.</p>
       </div>
 
       <!-- DAILY METABOLIC BUDGET DASHBOARD -->
@@ -256,7 +256,6 @@
     let selectedDateKey = getTodayDateKey();
     let currentClient = null;
 
-    // MASTER DATABASE (Includes Farsan & Unhealthy items in background so they trigger Red Zone when typed)
     const MASTER_GROCERY_DB = {
       "Ash Gourd": { cal: 13, gi: 15 },
       "Bottle Gourd": { cal: 21, gi: 15 },
@@ -276,7 +275,6 @@
       "Palak Paneer": { cal: 180, gi: 20 },
       "Sev Usal": { cal: 310, gi: 55 },
       "Poha": { cal: 180, gi: 65 },
-      // FARSAN & DEEP FRIED ITEMS (BACKGROUND RED ZONE)
       "Ganthiya": { cal: 480, gi: 75 },
       "Bhajiya": { cal: 420, gi: 70 },
       "Puri": { cal: 500, gi: 80 },
@@ -284,7 +282,6 @@
       "Sev": { cal: 520, gi: 78 },
       "Kachori": { cal: 450, gi: 75 },
       "Samosa": { cal: 310, gi: 72 },
-      // FRUITS
       "Kiwi": { cal: 61, gi: 52 },
       "Dragon Fruit": { cal: 60, gi: 48 },
       "Pomegranate": { cal: 83, gi: 53 },
@@ -319,13 +316,25 @@
       return { totalCal, gi: maxGi };
     }
 
+    // EXPANDED 15-DAY UNIQUE ROTATING CLINICAL MENU (No repetition for 15 days)
     const MASTER_30_DAY_MENU = [
       { morning: "Ash Gourd + Coriander + Raw Turmeric", breakfast: "Moong Dal Chila + Fresh Paneer", lunch: "Salad Barrier + Multi-Millet Roti + Bottle Gourd + Chaas", snack: "Roasted Makhana", dinner: "Pumpkin Puree + Sauteed Veggies" },
-      { morning: "Bottle Gourd + Ginger", breakfast: "Steamed Moong + Lemon", lunch: "Salad Barrier + Multi-Millet Roti + Palak Paneer + Chaas", snack: "Roasted Makhana", dinner: "Pumpkin Puree + Paneer" },
-      { morning: "Amla Juice + Cumin Water", breakfast: "Sprouted Chana Salad", lunch: "Salad Barrier + Multi-Millet Roti + Moong Dal + Chaas", snack: "Roasted Makhana", dinner: "Pumpkin Puree + Sprouts" }
+      { morning: "Bottle Gourd + Ginger", breakfast: "Steamed Moong + Lemon", lunch: "Salad Barrier + Multi-Millet Roti + Palak Paneer + Chaas", snack: "Pomegranate", dinner: "Pumpkin Puree + Paneer" },
+      { morning: "Amla Juice + Cumin Water", breakfast: "Sprouted Chana Salad", lunch: "Salad Barrier + Multi-Millet Roti + Moong Dal + Chaas", snack: "Kiwi", dinner: "Pumpkin Puree + Sprouts" },
+      { morning: "Cucumber + Mint Infusion", breakfast: "Ragi Cheela + Mint Chutney", lunch: "Salad Barrier + Multi-Millet Roti + Ridge Gourd Sabzi + Chaas", snack: "Roasted Chana", dinner: "Clear Veg Soup + Tofu" },
+      { morning: "Warm Lemon Water", breakfast: "Poha with Peanuts & Curry Leaves", lunch: "Salad Barrier + Jowar Roti + Stuffed Capsicum + Chaas", snack: "Guava", dinner: "Mixed Veg Soup + Paneer Tikka" },
+      { morning: "Bottle Gourd Juice", breakfast: "Sprouts & Pomegranate Salad", lunch: "Salad Barrier + Multi-Millet Roti + Bhindi Masala + Chaas", snack: "Roasted Makhana", dinner: "Tomato Basil Soup + Sauteed Mushrooms" },
+      { morning: "Raw Turmeric + Warm Water", breakfast: "Moong Dal Chila + Green Chutney", lunch: "Salad Barrier + Bajra Roti + Cabbage Matar + Chaas", snack: "Papaya Slices", dinner: "Spinach Soup + Boiled Chana" },
+      { morning: "Ash Gourd Detox Juice", breakfast: "Steamed Moong with Coconut", lunch: "Salad Barrier + Multi-Millet Roti + French Beans Sabzi + Chaas", snack: "Sweet Lime", dinner: "Broccoli Soup + Paneer" },
+      { morning: "Cumin Water + Ginger", breakfast: "Ragi Cheela + Curd", lunch: "Salad Barrier + Multi-Millet Roti + Cauliflower Sabzi + Chaas", snack: "Pumpkin Seeds", dinner: "Clear Soup + Steamed Sprouts" },
+      { morning: "Amla & Aloe Juice", breakfast: "Sprouted Chana + Lemon", lunch: "Salad Barrier + Jowar Roti + Bitter Gourd Sabzi + Chaas", snack: "Apple Slices", dinner: "Zucchini Soup + Grilled Paneer" },
+      { morning: "Mint & Lemon Infusion", breakfast: "Moong Dal Chila + Paneer Cubes", lunch: "Salad Barrier + Multi-Millet Roti + Tomato Curry + Chaas", snack: "Roasted Makhana", dinner: "Mixed Veg Soup + Tofu" },
+      { morning: "Bottle Gourd + Coriander", breakfast: "Steamed Moong + Pepper", lunch: "Salad Barrier + Multi-Millet Roti + Palak Paneer + Chaas", snack: "Dragon Fruit", dinner: "Pumpkin Puree + Sprouts" },
+      { morning: "Warm Ginger Water", breakfast: "Ragi Cheela + Tomato Chutney", lunch: "Salad Barrier + Multi-Millet Roti + Bottle Gourd + Chaas", snack: "Guava", dinner: "Tomato Soup + Sauteed Veggies" },
+      { morning: "Ash Gourd Juice", breakfast: "Sprouted Chana Salad", lunch: "Salad Barrier + Multi-Millet Roti + Moong Dal + Chaas", snack: "Pomegranate", dinner: "Clear Soup + Paneer Tikka" },
+      { morning: "Amla Juice", breakfast: "Moong Dal Chila + Curd", lunch: "Salad Barrier + Multi-Millet Roti + Ridge Gourd + Chaas", snack: "Kiwi", dinner: "Spinach Soup + Sprouts" }
     ];
 
-    // ONLY HEALTHY OPTIONS IN QUICK SUGGESTIONS (Farsan/Junk removed from direct buttons)
     const SUBSTITUTES_POOL = [
       "Bottle Gourd", "Ash Gourd", "Cucumber", "Moong Dal Chila", "Fresh Paneer", 
       "Salad Barrier", "Multi-Millet Roti", "Chaas", "Roasted Makhana", "Steamed Moong",
@@ -522,7 +531,7 @@
       ];
 
       let totalDayCalories = 0;
-      let totalDayGi = 0;
+      let totalDayGiSum = 0;
 
       const container = document.getElementById('cpTodayMealCards');
       container.innerHTML = '';
@@ -530,7 +539,7 @@
       slots.forEach(s => {
         const nut = calculateDishNutrition(s.text);
         totalDayCalories += nut.totalCal;
-        totalDayGi += nut.gi;
+        totalDayGiSum += nut.gi;
 
         const isRedZone = (nut.gi >= 70);
         const currentCheck = comp[s.key] || 'idle';
@@ -561,7 +570,7 @@
 
       const dailyTarget = 1200;
       const remaining = dailyTarget - totalDayCalories;
-      const avgGi = Math.round(totalDayGi / slots.length);
+      const avgGi = Math.round(totalDayGiSum / slots.length);
       const progressPercent = Math.min(Math.round((totalDayCalories / dailyTarget) * 100), 100);
 
       document.getElementById('cpTargetCal').innerText = dailyTarget;
