@@ -1,120 +1,161 @@
 <!DOCTYPE html>
-<html lang="gu">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Metabolic Pro Hub - Clinical & Fitness Portal</title>
+  <title>Metabolic Pro Hub - Global Health CRM & Client Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { background-color: #0c0d12; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: #0b0c10; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
     .gold-gradient { background: linear-gradient(135deg, #f59e0b, #d97706); }
-    .card-dark { background-color: #14161f; border: 1px solid #242738; }
+    .card-dark { background-color: #13151f; border: 1px solid #232738; }
     .tab-active { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000 !important; font-weight: 700; }
-    .check-btn-active { background-color: #065f46; border-color: #10b981; color: #34d399; }
-    .check-btn-inactive { background-color: #1a1d29; border-color: #374151; color: #9ca3af; }
+    .btn-done-active { background-color: #065f46; border-color: #10b981; color: #34d399; font-weight: 700; }
+    .btn-half-active { background-color: #78350f; border-color: #f59e0b; color: #fbbf24; font-weight: 700; }
+    .btn-miss-active { background-color: #7f1d1d; border-color: #ef4444; color: #f87171; font-weight: 700; }
+    .btn-state-idle { background-color: #1a1d28; border-color: #374151; color: #9ca3af; }
   </style>
 </head>
 <body class="pb-24">
 
   <!-- ==================== VIEW 1: ADMIN CRM DASHBOARD ==================== -->
   <div id="adminView" class="space-y-3">
-    <!-- Admin Header -->
-    <header class="p-3 bg-[#10121a] border-b border-[#202436] sticky top-0 z-50 flex justify-between items-center">
+    <!-- Header -->
+    <header class="p-3 bg-[#0f1118] border-b border-[#212538] sticky top-0 z-40 flex justify-between items-center shadow-md">
       <div class="flex items-center gap-2">
         <span class="text-xl">🩺</span>
         <div>
           <h1 class="font-extrabold text-amber-500 text-sm tracking-wide">Metabolic Pro Hub</h1>
-          <p class="text-[9px] text-gray-400">Clinical, Wellness & Gym Fitness Portal</p>
+          <p class="text-[9px] text-gray-400">Clinical, Sports, Pregnancy & Menopause Hub</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="previewClientPortal(activeClientId)" class="px-2.5 py-1 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 text-[10px] font-bold flex items-center gap-1">
-          <i class="fa-solid fa-eye"></i> ક્લાયન્ટ લિંક પ્રિવ્યૂ
+        <button onclick="previewClientPortal(activeClientId)" class="px-2.5 py-1 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 text-[10px] font-bold flex items-center gap-1 shadow">
+          <i class="fa-solid fa-eye"></i> Client Portal Preview
         </button>
       </div>
     </header>
 
-    <!-- Admin Tabs -->
-    <div class="flex p-2 gap-1.5 bg-[#0a0b10] border-b border-[#1c202f] text-xs overflow-x-auto no-scrollbar">
-      <button onclick="setAdminTab('clients')" id="atab-clients" class="tab-active px-3 py-1.5 rounded-lg flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-users"></i> ક્લાયન્ટ્સ લિસ્ટ</button>
-      <button onclick="setAdminTab('planner')" id="atab-planner" class="px-3 py-1.5 rounded-lg text-gray-400 bg-[#161822] flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-calendar-week"></i> ૭-દિવસ મેનૂ સેટઅપ</button>
-      <button onclick="setAdminTab('lab')" id="atab-lab" class="px-3 py-1.5 rounded-lg text-gray-400 bg-[#161822] flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-vial"></i> લેબ એનાલાઇઝર</button>
+    <!-- Navigation Tabs -->
+    <div class="flex p-2 gap-1.5 bg-[#090a0f] border-b border-[#1b1e2c] text-xs overflow-x-auto no-scrollbar">
+      <button onclick="setAdminTab('clients')" id="atab-clients" class="tab-active px-3 py-1.5 rounded-lg flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-users"></i> Client Directory</button>
+      <button onclick="setAdminTab('planner')" id="atab-planner" class="px-3 py-1.5 rounded-lg text-gray-400 bg-[#151722] flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-calendar-week"></i> 7-Day Protocol Builder</button>
+      <button onclick="setAdminTab('lab')" id="atab-lab" class="px-3 py-1.5 rounded-lg text-gray-400 bg-[#151722] flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-vial"></i> Lab Biomarkers</button>
     </div>
 
     <main class="p-3 max-w-lg mx-auto space-y-3">
       <!-- KPI Metrics -->
       <div class="grid grid-cols-4 gap-2 text-center text-xs">
-        <div class="card-dark p-2 rounded-xl"><div id="admTotal" class="text-base font-black text-amber-500">2</div><div class="text-[9px] text-gray-400">કુલ ક્લાયન્ટ</div></div>
-        <div class="card-dark p-2 rounded-xl"><div id="admSugar" class="text-base font-black text-emerald-400">1</div><div class="text-[9px] text-gray-400">ક્લિનિકલ</div></div>
-        <div class="card-dark p-2 rounded-xl"><div id="admFitness" class="text-base font-black text-cyan-400">1</div><div class="text-[9px] text-gray-400">જીમ & ફિટનેસ</div></div>
-        <div class="card-dark p-2 rounded-xl"><div class="text-base font-black text-yellow-400">VIP</div><div class="text-[9px] text-gray-400">લાઈવ પોર્ટલ</div></div>
+        <div class="card-dark p-2 rounded-xl"><div id="admTotal" class="text-base font-black text-amber-500">2</div><div class="text-[9px] text-gray-400">Total Clients</div></div>
+        <div class="card-dark p-2 rounded-xl"><div id="admClinical" class="text-base font-black text-emerald-400">1</div><div class="text-[9px] text-gray-400">Metabolic</div></div>
+        <div class="card-dark p-2 rounded-xl"><div id="admFitness" class="text-base font-black text-cyan-400">1</div><div class="text-[9px] text-gray-400">Gym / Sports</div></div>
+        <div class="card-dark p-2 rounded-xl"><div id="admWomen" class="text-base font-black text-pink-400">0</div><div class="text-[9px] text-gray-400">Women Care</div></div>
       </div>
 
-      <!-- TAB 1: CLIENTS -->
+      <!-- TAB 1: CLIENTS DIRECTORY -->
       <section id="aview-clients" class="space-y-3">
         <div class="flex gap-2">
-          <button onclick="openModal()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow"><i class="fa-solid fa-user-plus"></i> નવો ક્લાયન્ટ ઉમેરો</button>
+          <button onclick="openModal()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-950/40">
+            <i class="fa-solid fa-user-plus"></i> Add New Client
+          </button>
         </div>
-        <input type="text" id="admSearch" oninput="filterAdminClients()" placeholder="નામ, નંબર કે ગોલથી સર્ચ કરો..." class="w-full bg-[#12141c] border border-[#232738] rounded-xl px-3 py-2 text-xs text-white">
+        <input type="text" id="admSearch" oninput="filterAdminClients()" placeholder="Search by name, phone or category..." class="w-full bg-[#11131c] border border-[#232738] rounded-xl px-3 py-2 text-xs text-white placeholder-gray-500">
         <div id="admClientsList" class="space-y-3"></div>
       </section>
 
-      <!-- TAB 2: 7-DAY MENU BUILDER -->
+      <!-- TAB 2: 7-DAY PROTOCOL BUILDER -->
       <section id="aview-planner" class="hidden space-y-3 text-xs">
         <div class="card-dark p-3.5 rounded-2xl space-y-3">
           <div class="flex justify-between items-center border-b border-gray-800 pb-2">
-            <h2 class="font-bold text-amber-500 flex items-center gap-1.5"><i class="fa-solid fa-calendar-check"></i> સાપ્તાહિક મેનૂ નિર્માણ</h2>
+            <h2 class="font-bold text-amber-500 flex items-center gap-1.5"><i class="fa-solid fa-clipboard-list"></i> Weekly Protocol Builder</h2>
             <span class="text-[10px] text-emerald-400 font-bold" id="admCurrentClientBadge"></span>
           </div>
 
           <div>
-            <label class="text-[10px] text-gray-400">કોના માટે મેનૂ બનાવી રહ્યા છો:</label>
-            <select id="admPlannerSelect" onchange="switchPlannerClient(this.value)" class="w-full bg-[#0d0e14] border border-[#272a3b] p-2 rounded-xl text-white mt-1"></select>
+            <label class="text-[10px] text-gray-400">Select Active Client:</label>
+            <select id="admPlannerSelect" onchange="switchPlannerClient(this.value)" class="w-full bg-[#0c0d13] border border-[#25293d] p-2 rounded-xl text-white mt-1"></select>
           </div>
 
-          <!-- Preset Templates 3 Buttons -->
-          <div class="grid grid-cols-3 gap-1.5">
-            <button onclick="applyPreset('diabetes')" class="bg-[#1a1d28] border border-emerald-800 text-emerald-400 py-1.5 rounded-xl text-[10px] font-bold">🥗 ડાયાબિટીસ</button>
-            <button onclick="applyPreset('liver')" class="bg-[#1a1d28] border border-amber-800 text-amber-400 py-1.5 rounded-xl text-[10px] font-bold">🥒 લિવર ડિટોક્સ</button>
-            <button onclick="applyPreset('fitness')" class="bg-[#1a1d28] border border-cyan-800 text-cyan-400 py-1.5 rounded-xl text-[10px] font-bold">🏋️‍♂️ જીમ & પ્રોટીન</button>
+          <!-- Quick Template Selector -->
+          <div class="space-y-1">
+            <span class="text-[10px] text-gray-400">Apply Complete 7-Day Template:</span>
+            <div class="grid grid-cols-4 gap-1">
+              <button onclick="applyPreset('diabetes')" class="bg-[#171a25] border border-emerald-800/80 hover:border-emerald-500 text-emerald-400 py-1.5 rounded-lg text-[9px] font-bold">🩺 Diabetes</button>
+              <button onclick="applyPreset('fitness')" class="bg-[#171a25] border border-cyan-800/80 hover:border-cyan-500 text-cyan-400 py-1.5 rounded-lg text-[9px] font-bold">🏋️ Gym Pro</button>
+              <button onclick="applyPreset('pregnancy')" class="bg-[#171a25] border border-pink-800/80 hover:border-pink-500 text-pink-400 py-1.5 rounded-lg text-[9px] font-bold">🤰 Pregnancy</button>
+              <button onclick="applyPreset('menopause')" class="bg-[#171a25] border border-purple-800/80 hover:border-purple-500 text-purple-400 py-1.5 rounded-lg text-[9px] font-bold">🌸 Menopause</button>
+            </div>
           </div>
 
-          <!-- Day Tabs -->
+          <!-- Day Tabs (Mon - Sun) -->
           <div class="flex gap-1 overflow-x-auto py-1 no-scrollbar text-[11px]" id="admDayTabs"></div>
 
-          <!-- Inputs -->
-          <div class="bg-[#0e1017] p-3 rounded-xl border border-gray-800 space-y-2.5">
-            <div class="text-amber-400 font-bold" id="admDayFormTitle">સોમવાર (Day 1) નું મેનૂ</div>
+          <!-- Form Inputs with "+ Pick from Library" -->
+          <div class="bg-[#0b0c12] p-3 rounded-xl border border-gray-800 space-y-2.5">
+            <div class="flex justify-between items-center">
+              <span class="text-amber-400 font-bold" id="admDayFormTitle">Monday (Day 1) Protocol</span>
+              <span class="text-[10px] text-gray-500">Tap '+ Pick' to choose foods</span>
+            </div>
+
+            <!-- Slot 1: Morning -->
             <div>
-              <label class="text-[10px] text-gray-400">૧. સવારે (ખાલી પેટે / પ્રી-વર્કઆઉટ):</label>
+              <div class="flex justify-between items-center">
+                <label class="text-[10px] text-gray-400">1. Morning Detox / Pre-Workout:</label>
+                <button onclick="openFoodPicker('morning')" class="text-[10px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1"><i class="fa-solid fa-list-check"></i> + Pick from Library</button>
+              </div>
               <input type="text" id="admMorning" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
             </div>
+
+            <!-- Slot 2: Breakfast -->
             <div>
-              <label class="text-[10px] text-gray-400">૨. સવારનો નાસ્તો / પોસ્ટ-વર્કઆઉટ (Breakfast):</label>
+              <div class="flex justify-between items-center">
+                <label class="text-[10px] text-gray-400">2. Breakfast / Post-Workout Fuel:</label>
+                <button onclick="openFoodPicker('breakfast')" class="text-[10px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1"><i class="fa-solid fa-list-check"></i> + Pick from Library</button>
+              </div>
               <input type="text" id="admBreakfast" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
             </div>
+
+            <!-- Slot 3: Lunch -->
             <div>
-              <label class="text-[10px] text-gray-400">૩. બપોરનું ભોજન (Lunch - હાઈ પ્રોટીન + સુપર લોટ):</label>
+              <div class="flex justify-between items-center">
+                <label class="text-[10px] text-gray-400">3. Lunch (Salad + Super Flour + Veg + Buttermilk):</label>
+                <button onclick="openFoodPicker('lunch')" class="text-[10px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1"><i class="fa-solid fa-list-check"></i> + Pick from Library</button>
+              </div>
               <input type="text" id="admLunch" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
             </div>
+
+            <!-- Slot 4: Snack -->
             <div>
-              <label class="text-[10px] text-gray-400">૪. સાંજે (Snack / ઈવનિંગ ફ્યુઅલ):</label>
+              <div class="flex justify-between items-center">
+                <label class="text-[10px] text-gray-400">4. Afternoon Snack (4-5 PM):</label>
+                <button onclick="openFoodPicker('snack')" class="text-[10px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1"><i class="fa-solid fa-list-check"></i> + Pick from Library</button>
+              </div>
               <input type="text" id="admSnack" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
             </div>
+
+            <!-- Slot 5: Dinner -->
             <div>
-              <label class="text-[10px] text-gray-400">૫. રાત્રિ ભોજન (Dinner - મસલ રીકવરી):</label>
+              <div class="flex justify-between items-center">
+                <label class="text-[10px] text-gray-400">5. Dinner (Restoration & Recovery - Before 8:30 PM):</label>
+                <button onclick="openFoodPicker('dinner')" class="text-[10px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1"><i class="fa-solid fa-list-check"></i> + Pick from Library</button>
+              </div>
               <input type="text" id="admDinner" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
             </div>
+
+            <!-- Slot 6: Protocol -->
             <div>
-              <label class="text-[10px] text-gray-400">૬. ખાસ નિયમ (Daily Protocol - હાઇડ્રેશન/વર્કઆઉટ/ઊંઘ):</label>
+              <div class="flex justify-between items-center">
+                <label class="text-[10px] text-gray-400">6. Daily Protocol (Hydration / Routine / Sleep):</label>
+                <button onclick="openFoodPicker('rule')" class="text-[10px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1"><i class="fa-solid fa-list-check"></i> + Pick from Library</button>
+              </div>
               <input type="text" id="admRule" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
             </div>
           </div>
 
           <div class="flex gap-2">
-            <button onclick="saveActiveDay()" class="flex-1 gold-gradient text-black font-bold py-2.5 rounded-xl shadow">આ દિવસ સેવ કરો</button>
-            <button onclick="sendPortalLinkToClient(activeClientId)" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl shadow flex items-center justify-center gap-1.5"><i class="fa-brands fa-whatsapp"></i> ક્લાયન્ટ લિંક મોકલો 📲</button>
+            <button onclick="saveActiveDay()" class="flex-1 gold-gradient text-black font-bold py-2.5 rounded-xl shadow">Save This Day</button>
+            <button onclick="sendPortalLinkToClient(activeClientId)" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl shadow flex items-center justify-center gap-1.5"><i class="fa-brands fa-whatsapp"></i> Send Portal Link 📲</button>
           </div>
         </div>
       </section>
@@ -122,18 +163,18 @@
       <!-- TAB 3: LAB REPORT -->
       <section id="aview-lab" class="hidden space-y-3 text-xs">
         <div class="card-dark p-3.5 rounded-2xl space-y-2.5">
-          <h2 class="font-bold text-amber-500 flex items-center gap-1.5"><i class="fa-solid fa-microscope"></i> બ્લડ રિપોર્ટ & ફિટનેસ લેબ</h2>
+          <h2 class="font-bold text-amber-500 flex items-center gap-1.5"><i class="fa-solid fa-microscope"></i> Lab Biomarkers Analyzer</h2>
           <div class="grid grid-cols-2 gap-2">
             <div class="col-span-2">
-              <label class="text-[10px] text-gray-400">ક્લાયન્ટ</label>
+              <label class="text-[10px] text-gray-400">Select Client</label>
               <select id="admLabSelect" class="w-full bg-[#0d0e14] border border-[#272a3b] p-2 rounded-xl text-white mt-0.5"></select>
             </div>
             <div><label class="text-[10px] text-gray-400">HbA1c (%)</label><input type="number" step="0.1" id="inHba1c" placeholder="7.2" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
-            <div><label class="text-[10px] text-gray-400">Fasting (mg/dL)</label><input type="number" id="inFast" placeholder="135" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
-            <div><label class="text-[10px] text-gray-400">SGPT (ALT) - Liver</label><input type="number" id="inSgpt" placeholder="48" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
-            <div><label class="text-[10px] text-gray-400">Triglycerides</label><input type="number" id="inTg" placeholder="185" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
+            <div><label class="text-[10px] text-gray-400">Fasting Sugar (mg/dL)</label><input type="number" id="inFast" placeholder="135" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
+            <div><label class="text-[10px] text-gray-400">SGPT / ALT (Liver)</label><input type="number" id="inSgpt" placeholder="48" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
+            <div><label class="text-[10px] text-gray-400">Triglycerides (mg/dL)</label><input type="number" id="inTg" placeholder="185" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
           </div>
-          <button onclick="runLabAnalysis()" class="w-full gold-gradient text-black font-bold py-2 rounded-xl text-xs">રિપોર્ટ એનાલાઇઝ કરો</button>
+          <button onclick="runLabAnalysis()" class="w-full gold-gradient text-black font-bold py-2 rounded-xl text-xs">Analyze Biomarkers</button>
           <div id="labResult" class="hidden space-y-2 pt-2 border-t border-gray-800">
             <div id="riskBadges" class="flex gap-1.5 flex-wrap"></div>
             <div id="dietAdvice" class="bg-[#0e1017] p-2.5 rounded-xl border border-gray-800 text-[11px] space-y-1"></div>
@@ -143,17 +184,17 @@
     </main>
   </div>
 
-  <!-- ==================== VIEW 2: CLIENT INTERACTIVE VIP PORTAL ==================== -->
+  <!-- ==================== VIEW 2: CLIENT READ-ONLY INTERACTIVE PORTAL ==================== -->
   <div id="clientPortalView" class="hidden min-h-screen">
     <!-- VIP Client Header -->
-    <header class="p-3.5 bg-[#10121a] border-b border-[#24283b] sticky top-0 z-50 flex justify-between items-center shadow-lg">
+    <header class="p-3.5 bg-[#0f1118] border-b border-[#212538] sticky top-0 z-50 flex justify-between items-center shadow-lg">
       <div class="flex items-center gap-2.5">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-black font-black text-sm shadow" id="cpAvatar">
           MP
         </div>
         <div>
           <h1 class="font-extrabold text-white text-sm" id="cpClientTitle">Welcome</h1>
-          <p class="text-[10px] text-amber-400" id="cpClientGoal">વ્યક્તિગત મેટાબોલિક ડાયેટ પ્લાન</p>
+          <p class="text-[10px] text-amber-400" id="cpClientGoal">Personalized Protocol</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
@@ -161,38 +202,28 @@
       </div>
     </header>
 
-    <main class="p-3.5 max-w-lg mx-auto space-y-4">
-      <!-- Welcome Message & Weekly Score -->
-      <div class="card-dark p-3.5 rounded-2xl bg-gradient-to-br from-[#151824] to-[#0e1017] border border-amber-500/20 space-y-2">
-        <div class="flex justify-between items-center">
-          <div>
-            <span class="text-[10px] text-gray-400">દૈનિક હેલ્થ & ફિટનેસ ટ્રેકર</span>
-            <h2 class="text-xs font-bold text-white">લીધેલા આહાર/પ્રોટોકોલ સામે ✅ ટીક કરો:</h2>
-          </div>
-          <div class="text-right">
-            <span class="text-xs font-black text-emerald-400 bg-emerald-950/80 px-2.5 py-1 rounded-full border border-emerald-800" id="cpComplianceScore">100% પાલન</span>
-          </div>
-        </div>
-      </div>
+    <main class="p-3.5 max-w-lg mx-auto space-y-3.5">
+      <!-- Dynamic Motivation Banner -->
+      <div id="cpMotivationBanner" class="p-3 rounded-2xl border text-xs space-y-1 transition-all"></div>
 
       <!-- 7-Day Day Selector (Client) -->
       <div class="flex gap-1.5 overflow-x-auto py-1 no-scrollbar text-xs" id="cpDayTabs"></div>
 
-      <!-- Active Day Interactive Checklist -->
+      <!-- Active Day Interactive Checklist (STRICT READ-ONLY FOR MEAL TEXT) -->
       <div class="card-dark p-3.5 rounded-2xl space-y-3">
         <div class="flex justify-between items-center border-b border-gray-800 pb-2">
-          <h3 class="font-bold text-amber-400 text-xs" id="cpDayHeading">સોમવારનું આહાર સમયપત્રક</h3>
-          <span class="text-[10px] text-gray-400">ટેપ કરીને ✅ / ❌ કરો</span>
+          <h3 class="font-bold text-amber-400 text-xs" id="cpDayHeading">Daily Meal Protocol</h3>
+          <span class="text-[10px] text-gray-400">Select: Done, Partial, or Missed</span>
         </div>
 
         <div class="space-y-2.5" id="cpMealSlotsContainer"></div>
 
-        <!-- Dynamic Metrics (Sugar OR Fitness Inputs) -->
+        <!-- Dynamic Metrics Logger -->
         <div id="cpDynamicInputs" class="bg-[#0b0c10] p-3 rounded-xl border border-gray-800 space-y-2 pt-2.5 text-xs"></div>
 
         <!-- Submit to Coach Button -->
-        <button onclick="submitClientDailyReport()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/30">
-          <i class="fa-brands fa-whatsapp text-base"></i> આજનું પાલન & રિપોર્ટ કોચને મોકલો 📲
+        <button onclick="submitClientDailyReport()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50">
+          <i class="fa-brands fa-whatsapp text-base"></i> Send Daily Progress Update to Coach 📲
         </button>
       </div>
     </main>
@@ -202,87 +233,191 @@
   <div id="admModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="card-dark w-full max-w-sm p-4 rounded-2xl space-y-2.5 text-xs">
       <div class="flex justify-between items-center border-b border-gray-800 pb-2">
-        <h3 class="font-bold text-amber-500">નવો ક્લાયન્ટ ઉમેરો</h3>
-        <button onclick="closeModal()"><i class="fa-solid fa-xmark text-gray-400"></i></button>
+        <h3 class="font-bold text-amber-500">Add New Client</h3>
+        <button onclick="closeModal()"><i class="fa-solid fa-xmark text-gray-400 text-sm"></i></button>
       </div>
-      <div><label class="text-[10px] text-gray-400">પૂરું નામ</label><input type="text" id="mName" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white mt-0.5"></div>
-      <div><label class="text-[10px] text-gray-400">વોટ્સએપ નંબર (Country code સાથે, દા.ત. 919081421028)</label><input type="text" id="mPhone" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white mt-0.5"></div>
+      <div><label class="text-[10px] text-gray-400">Full Name</label><input type="text" id="mName" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white mt-0.5"></div>
+      <div><label class="text-[10px] text-gray-400">WhatsApp Phone (with Country Code e.g. 919081421028)</label><input type="text" id="mPhone" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white mt-0.5"></div>
       <div>
-        <label class="text-[10px] text-gray-400">કેટેગરી & ગોલ</label>
+        <label class="text-[10px] text-gray-400">Health Category & Goal</label>
         <select id="mGoal" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white mt-0.5">
-          <option value="ડાયાબિટીસ રિવર્સલ">ડાયાબિટીસ રિવર્સલ (Low GI & Insulin)</option>
-          <option value="ફેટી લિવર હીલિંગ">ફેટી લિવર ડિટોક્સ (Alkaline Care)</option>
-          <option value="વજન અને પેટ ઘટાડવું">વેઇટ લોસ & વિસરલ ફેટ</option>
-          <option value="જીમ & મસલ બિલ્ડિંગ">🏋️‍♂️ જીમ, મસલ ગેઇન & હાઈ-પ્રોટીન</option>
-          <option value="જનરલ હેલ્ધી લાઈફસ્ટાઈલ">🌿 સ્વસ્થ જીવનશૈલી & પીક એનર્જી</option>
+          <option value="Type 2 Diabetes Reversal">🩺 Type 2 Diabetes Reversal (Low GI & Insulin Reset)</option>
+          <option value="Fatty Liver Detox">🥒 Fatty Liver Detox (Alkaline Care & Bile Flow)</option>
+          <option value="Gym & High Protein Performance">🏋️ Gym & High Protein Performance (Muscle Synthesis)</option>
+          <option value="Pregnancy Nutrition (Pre-Natal)">🤰 Pregnancy Nutrition (Pre-Natal Health & Stable Blood Sugar)</option>
+          <option value="Postpartum & Lactation Recovery">👶 Postpartum & Lactation Recovery (Tissue Healing & Milk Supply)</option>
+          <option value="Menopause & Hormonal Balance">🌸 Menopause & Hormonal Balance (Bone Density & Phytoestrogens)</option>
+          <option value="Longevity & Gut Health">🌿 Longevity, Gut Health & Peak Energy</option>
         </select>
       </div>
-      <div><label class="text-[10px] text-gray-400">નોંધ / ફિટનેસ ગોલ / તકલીફ</label><textarea id="mQuery" rows="2" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white mt-0.5" placeholder="દા.ત. રોજ ૧ કલાક જીમ, પ્રોટીન કઈ રીતે પૂરો કરવો..."></textarea></div>
+      <div><label class="text-[10px] text-gray-400">Clinical Query / Special Considerations</label><textarea id="mQuery" rows="2" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white mt-0.5" placeholder="e.g. Mild knee stiffness, sweet cravings after dinner..."></textarea></div>
       <div class="flex gap-2 pt-1">
-        <button onclick="closeModal()" class="flex-1 bg-gray-800 text-gray-300 py-1.5 rounded-xl">રદ કરો</button>
-        <button onclick="addNewClient()" class="flex-1 gold-gradient text-black font-bold py-1.5 rounded-xl">સેવ કરો</button>
+        <button onclick="closeModal()" class="flex-1 bg-gray-800 text-gray-300 py-1.5 rounded-xl">Cancel</button>
+        <button onclick="addNewClient()" class="flex-1 gold-gradient text-black font-bold py-1.5 rounded-xl">Save Client</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Click-to-Add Food Library Picker -->
+  <div id="foodPickerModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="card-dark w-full max-w-md p-4 rounded-2xl space-y-3 text-xs max-h-[85vh] flex flex-col">
+      <div class="flex justify-between items-center border-b border-gray-800 pb-2">
+        <div>
+          <h3 class="font-bold text-amber-500 text-sm">Select Food from Clinical Library</h3>
+          <p class="text-[10px] text-gray-400" id="pickerTargetSlotText">Selecting for Morning Detox</p>
+        </div>
+        <button onclick="closeFoodPicker()"><i class="fa-solid fa-xmark text-gray-400 text-sm"></i></button>
+      </div>
+
+      <!-- Category Filter Tabs inside picker -->
+      <div class="flex gap-1 overflow-x-auto py-1 no-scrollbar text-[10px]" id="pickerFilterTabs"></div>
+
+      <!-- Food Items List -->
+      <div class="overflow-y-auto space-y-1.5 pr-1 flex-1" id="pickerItemsContainer"></div>
+
+      <div class="pt-2 border-t border-gray-800 text-right">
+        <button onclick="closeFoodPicker()" class="px-4 py-1.5 bg-gray-800 text-gray-300 rounded-xl text-xs">Close</button>
       </div>
     </div>
   </div>
 
   <script>
     const DAYS = [
-      { id: 'mon', name: 'સોમવાર (Day 1)', short: 'સોમ' },
-      { id: 'tue', name: 'મંગળવાર (Day 2)', short: 'મંગળ' },
-      { id: 'wed', name: 'બુધવાર (Day 3)', short: 'બુધ' },
-      { id: 'thu', name: 'ગુરુવાર (Day 4)', short: 'ગુરુ' },
-      { id: 'fri', name: 'શુક્રવાર (Day 5)', short: 'શુક્ર' },
-      { id: 'sat', name: 'શનિવાર (Day 6)', short: 'શનિ' },
-      { id: 'sun', name: 'રવિવાર (Day 7)', short: 'રવિ' }
+      { id: 'mon', name: 'Monday (Day 1)', short: 'Mon' },
+      { id: 'tue', name: 'Tuesday (Day 2)', short: 'Tue' },
+      { id: 'wed', name: 'Wednesday (Day 3)', short: 'Wed' },
+      { id: 'thu', name: 'Thursday (Day 4)', short: 'Thu' },
+      { id: 'fri', name: 'Friday (Day 5)', short: 'Fri' },
+      { id: 'sat', name: 'Saturday (Day 6)', short: 'Sat' },
+      { id: 'sun', name: 'Sunday (Day 7)', short: 'Sun' }
     ];
 
-    const DIABETES_PRESET = {
-      mon: { morning: "મેથી પાણી + તાજો દૂધી-આમળા-હળદર જ્યુસ", breakfast: "બાફેલા મગની ચાટ + કાચું સલાડ + તાજું મોળું દહીં", lunch: "૧ વાટકી સલાડ + સુપર લોટની ૧ રોટલી + પાલક પનીર + છાશ", snack: "૧ વાટકી મસાલા જામફળ + શેકેલા કોળાના બી", dinner: "ક્રન્ચી સોતે શાકભાજી + ૨૦ ગ્રામ પનીર / મગ સૂપ", rule: "જમ્યા બાદ ૧૫ મિ. વૉક + રાત્રે ૧૫-૨૦ મિ. પગ ઊંચા રાખવા" },
-      tue: { morning: "જીરા પાણી + તાજો દૂધી-કોથમીર-આંબળા જ્યુસ", breakfast: "મગદાળના ૨ ઓછા તેલવાળા પુડલા + લીલી ચટણી", lunch: "૧ વાટકી કાકડી-ટમેટા + સુપર લોટની ૧ રોટલી + દૂધી શાક + છાશ", snack: "૧ સફરજન / પપૈયું + શેકેલા કોળાના બી", dinner: "કોળા-દૂધીનું ગરમ પ્યુરી સૂપ + કાચું પનીર", rule: "જમ્યા બાદ ૧૫ મિ. વૉક + રાત્રે ૧૫-૨૦ મિ. પગ ઊંચા રાખવા" },
-      wed: { morning: "મેથી દાણા પાણી + આલ્કલાઇન જ્યુસ", breakfast: "ઓટ્સ/મગ સ્પ્રાઉટ્સ સલાડ બાઉલ + દહીં", lunch: "૧ વાટકી સલાડ + સુપર લોટની ૧ રોટલી + મેથીનું શાક + છાશ", snack: "શેકેલા મખાના + કોળાના બી", dinner: "મિક્સ વેજીટેબલ ખીચડી / સોતે વેજ", rule: "જમ્યા બાદ ૧૫ મિ. વૉક + રાત્રે ૧૫-૨૦ મિ. પગ ઊંચા રાખવા" },
-      thu: { morning: "તજ/મેથી પાણી + તાજો આલ્કલાઇન જ્યુસ", breakfast: "વેજીટેબલ મગ પુડલા + મોળું દહીં", lunch: "૧ વાટકી સલાડ + સુપર લોટની ૧ રોટલી + ભીંડા/પરવળ શાક + છાશ", snack: "મસાલા જામફળ + કોળાના બી", dinner: "દૂધી-ટામેટા સૂપ + શેકેલું પનીર", rule: "જમ્યા બાદ ૧૫ મિ. વૉક + રાત્રે ૧૫-૨૦ મિ. પગ ઊંચા રાખવા" },
-      fri: { morning: "મેથી પાણી + દૂધી-હળદર જ્યુસ", breakfast: "બાફેલા કાળા ચણા / મગ ચાટ", lunch: "૧ વાટકી કાચું સલાડ + સુપર લોટ રોટલી + લીલી તુવેર શાક + છાશ", snack: "કાકડી + ટામેટા ચાટ + કોળાના બી", dinner: "સોતે બ્રોકોલી-કેપ્સીકમ + સૂપ", rule: "જમ્યા બાદ ૧૫ મિ. વૉક + રાત્રે ૧૫-૨૦ મિ. પગ ઊંચા રાખવા" },
-      sat: { morning: "આંબળા જ્યુસ + જીરા પાણી", breakfast: "મગ પુડલા અથવા થાલીપીઠ (સુપર લોટ)", lunch: "૧ વાટકી સલાડ + સુપર લોટની ૧ રોટલી + કારેલાનું શાક + છાશ", snack: "શેકેલા કોળાના બી + ૧ મોસંબી/નારંગી", dinner: "સ્પેશિયલ કોળાનું પ્યુરી સૂપ + સલાડ", rule: "જમ્યા બાદ ૧૫ મિ. વૉક + રાત્રે ૧૫-૨૦ મિ. પગ ઊંચા રાખવા" },
-      sun: { morning: "ડીટોક્સ લીંબુ-આદુ-હળદર પાણી", breakfast: "વેજ પોહા (ઓછા પૌંઆ + વધુ શાકભાજી/મગ) + દહીં", lunch: "૧ વાટકી સલાડ + સુપર લોટ રોટલી + પસંદગીનું લીલું શાક + છાશ", snack: "મસાલા જામફળ + પલાળેલી બદામ/બી", dinner: "હળવો વેજીટેબલ દલિયા સૂપ", rule: "જમ્યા બાદ ૧૫ મિ. વૉક + રાત્રે ૧૫-૨૦ મિ. પગ ઊંચા રાખવા" }
+    const FOOD_LIBRARY = {
+      morning: [
+        { cat: 'Clinical', text: "Warm Fenugreek (Methi) & Cumin Water + Fresh Ash Gourd, Coriander & Raw Turmeric Juice (Alkaline Detox)" },
+        { cat: 'Clinical', text: "Warm Cinnamon & Ginger Water + Fresh Amla-Bottle Gourd Juice" },
+        { cat: 'Gym', text: "Warm Lemon Salt Electrolyte Water + 5 Soaked Almonds & 2 Walnuts (Pre-workout: 1 Banana / Black Coffee)" },
+        { cat: 'Gym', text: "Chia Seed Infusion + Soaked Figs & Almonds (Sustained Energy)" },
+        { cat: 'Pregnancy', text: "Mild Ginger-Lemon Water (Anti-Nausea) + 4 Soaked Almonds & 1 Date + Coconut Water" },
+        { cat: 'Postpartum', text: "Warm Fennel (Variyali) & Dill Seed (Suva) Water + 5 Soaked Almonds & Soaked Raisins (Lactation Primer)" },
+        { cat: 'Menopause', text: "Coriander & Cumin Seed Cooling Water (Pitta Reducer) + 1 Tbsp Roasted Ground Flaxseeds (Phytoestrogen Boost)" },
+        { cat: 'Menopause', text: "Fresh Pumpkin & Bottle Gourd Puree Juice + Pumpkin Seeds (Magnesium & Hot Flash Calm)" }
+      ],
+      breakfast: [
+        { cat: 'Clinical', text: "Steamed Moong Chaat with Cucumber, Tomato & Fresh Curd (Low GI / High Fiber)" },
+        { cat: 'Clinical', text: "2 Moong Dal Chilas (Less Oil) with Green Mint Chutney & Cucumber Slices" },
+        { cat: 'Gym', text: "Post-Workout Whey Protein Smoothie / Sprouted Moong Chaat + 30g Fresh Paneer (25g+ Protein)" },
+        { cat: 'Gym', text: "Paneer-Stuffed Moong Dal Chilas + Fresh Thick Curd + Handful of Roasted Chana" },
+        { cat: 'Pregnancy', text: "Ragi (Finger Millet) Dosa / Porridge with Fresh Curd + Steamed Moong Sprouts (Calcium & Iron Rich)" },
+        { cat: 'Postpartum', text: "Warm Oats & Gond/Dry Fruit Porridge with Cow Milk + Soft Moong Dal Cheela" },
+        { cat: 'Menopause', text: "Calcium-Boost Ragi Porridge with Crushed Sesame Seeds & Fresh Curd / Moong Chila" },
+        { cat: 'Menopause', text: "Sprouted Moong & Black Chickpea Salad with Pomegranate & Fresh Curd" }
+      ],
+      lunch: [
+        { cat: 'Clinical', text: "1 Big Bowl Raw Salad Barrier + 1 Super Flour (Multi-Millet) Roti + Green Leafy Veg + 1 Glass Chaas" },
+        { cat: 'Clinical', text: "Cucumber-Tomato Salad + 1 Super Flour Roti + Tindora/Bottle Gourd Sabzi + Thin Buttermilk" },
+        { cat: 'Gym', text: "Large Salad + 2 Super Flour Rotis + Thick Dal / Chickpeas (Chole) / Rajma + Bowl of Curd" },
+        { cat: 'Gym', text: "Fresh Beet Salad + 2 Super Flour Rotis + Soya Chunks Curry / Paneer Bhurji + Chaas" },
+        { cat: 'Pregnancy', text: "Spinach (Palak) Dal + 2 Super Flour Rotis with Ghee + Carrot-Beet Salad + Fresh Chaas (Folate & Fiber)" },
+        { cat: 'Postpartum', text: "Digestive Yellow Moong Khichdi with Pure Cow Ghee + Soft Super Flour Roti + Methi/Palak Sabzi" },
+        { cat: 'Menopause', text: "Calcium & Iron Plate: 1 Big Salad + 1-2 Ragi Super Rotis + Methi/Palak Sabzi + Sesame Chaas" },
+        { cat: 'Menopause', text: "Cucumber-Beet Salad + 1 Super Flour Roti + Tofu/Paneer Curry + Homemade Curd" }
+      ],
+      snack: [
+        { cat: 'Clinical', text: "1 Bowl Spiced Guava with Himalayan Pink Salt + 1 Tbsp Roasted Pumpkin Seeds" },
+        { cat: 'Clinical', text: "Roasted Makhana (Foxnuts) with Turmeric & Black Pepper + Pumpkin Seeds" },
+        { cat: 'Gym', text: "Roasted Makhana + Pumpkin & Sunflower Seeds + 1 Apple with 1 Tsp Peanut Butter" },
+        { cat: 'Gym', text: "Roasted Chana Sattu Drink (Lemon & Roasted Cumin) + Handful of Almonds" },
+        { cat: 'Pregnancy', text: "Apple Slices with Crushed Walnuts + Roasted Pumpkin & Sunflower Seeds (Omega-3 & Zinc)" },
+        { cat: 'Postpartum', text: "Dry Fruit & Sesame Laddu (Gond/Methi) + Warm Herbal Fennel Milk" },
+        { cat: 'Menopause', text: "1 Bowl Masala Guava / Papaya + 1 Tbsp Roasted Pumpkin & Flaxseeds (Estrogen Support)" },
+        { cat: 'Menopause', text: "Roasted Black Sesame (Til) & Cumin Mukhwas + 1 Sweet Lime (Mosambi)" }
+      ],
+      dinner: [
+        { cat: 'Clinical', text: "Crunchy Sauteed Vegetables (Broccoli, Zucchini, Bell Peppers) + 20g Paneer / Moong Soup (Before 8:30 PM)" },
+        { cat: 'Clinical', text: "Creamy Pumpkin & Bottle Gourd Puree Soup + Steamed Paneer Cubes & Mixed Salad" },
+        { cat: 'Gym', text: "Grilled Tofu/Paneer with Sauteed Bell Peppers & Broccoli + Thick High-Protein Dal Soup" },
+        { cat: 'Gym', text: "Mixed Veggie High-Protein Dal Khichdi (80% Veggie/Dal, 20% Rice) + Roasted Paneer" },
+        { cat: 'Pregnancy', text: "Nourishing Bottle Gourd & Tomato Soup + Soft Moong Dal Khichdi with Ghee (Light & Soothing)" },
+        { cat: 'Postpartum', text: "Warm Moong Dal Soup with Jeera & Ghee + Soft Phulka with Bottle Gourd Sabzi" },
+        { cat: 'Menopause', text: "Creamy Pumpkin Puree Soup (Tryptophan for Sleep) + Sauteed Tofu/Paneer & Steamed Veggies" },
+        { cat: 'Menopause', text: "Light Vegetable Clear Soup + Warm Turmeric Spiced Paneer Plate" }
+      ],
+      rule: [
+        { cat: 'Clinical', text: "Post-Meal 15-min walk + Elevate legs on pillows for 15-20 min before sleeping + 3L Water" },
+        { cat: 'Gym', text: "45-min Strength Training + 3.5 Liters Water + 7.5 Hours Deep Sleep Protocol" },
+        { cat: 'Pregnancy', text: "Hydration Target: 3 Liters Water + 20-min Gentle Walking + Proper Sleep Posture" },
+        { cat: 'Postpartum', text: "Adequate Rest & Deep Breathing + Hydration (3L Warm Water) + Posture Care" },
+        { cat: 'Menopause', text: "15-min Evening Walk + Digital Detox 1 hr before bed + Nutmeg-Turmeric Warm Milk for sleep" }
+      ]
     };
 
-    const FITNESS_PRESET = {
-      mon: { morning: "હૂંફાળું લીંબુ પાણી + ૫ પલાળેલી બદામ-અખરોટ (પ્રી-વર્કઆઉટ: ૧ કેળું/બ્લેક કોફી)", breakfast: "પોસ્ટ-વર્કઆઉટ: વે પ્રોટીન સ્મૂધી / બાફેલા સ્પ્રાઉટ્સ ચાટ + ૨૫ ગ્રામ પનીર", lunch: "મોટી વાટકી સલાડ + સુપર લોટની ૨ રોટલી + ઘટ્ટ દાળ/છોલે + દહીં", snack: "શેકેલા મખાના + કોળા-સૂર્યમુખીના બી + ફ્રુટ બાઉલ", dinner: "ટોફુ/પનીર સોતે શાકભાજી + મગદાળ સૂપ (હાઈ-પ્રોટીન રિકવરી)", rule: "૪૫ મિ. સ્ટ્રેન્થ વર્કઆઉટ + ૩.૫ લિટર પાણી + ૭.૫ કલાક ઊંઘ" },
-      tue: { morning: "ઇલેક્ટ્રોલાઇટ લીંબુ-મીઠું પાણી + પલાળેલા અંજીર-બદામ", breakfast: "મગદાળ પુડલા (પનીર સ્ટફ્ડ) + લીલી ચટણી + ૧ ગ્લાસ છાશ", lunch: "કાકડી-ગાજર સલાડ + સુપર લોટ રોટલી + રાજમા/સોયા ચંક્સ શાક", snack: "શેકેલા ચણા + ૧ સફરજન + પીનટ બટર ૧ ચમચી", dinner: "મિક્સ વેજ પનીર ટિક્કા + કોળાનું હાઈ-પ્રોટીન પ્યુરી સૂપ", rule: "લેગ ડે / કાર્ડિયો વર્કઆઉટ + ૩.૫ લિટર પાણી + સ્ટ્રેચિંગ" },
-      wed: { morning: "આંબળા જ્યુસ + પલાળેલી બદામ (પ્રી-વર્કઆઉટ: ઓટ્સ)", breakfast: "ઓટ્સ મસલ બાઉલ (દૂધ/દહીં + ચિયા સીડ્સ + બેરીઝ) / પ્રોટીન શેક", lunch: "૧ વાટકી સલાડ + સુપર લોટની ૨ રોટલી + લીલા શાકભાજી + પનીર ભુરજી", snack: "મસાલા જામફળ + શેકેલા કોળાના બી", dinner: "ક્રન્ચી સોતે બ્રોકોલી, મશરૂમ, પનીર + વેજ ક્લિયર સૂપ", rule: "અપર બોડી વર્કઆઉટ + ૩.૫ લિટર પાણી + રાત્રે ડિજિટલ ડિટોક્સ" },
-      thu: { morning: "ચિયા સીડ્સ વોટર + અખરોટ", breakfast: "વેજીટેબલ બેસન/મગ ચીલા + તાજું દહીં + બાફેલા કઠોળ", lunch: "કાચું સલાડ + સુપર લોટ રોટલી + પાલક પનીર/ટોફુ + છાશ", snack: "સત્તુ ડ્રિન્ક (૨ ચમચી શેકેલો ચણા સત્તુ + લીંબુ-જીરું) / ફ્રુટ", dinner: "હાઇ પ્રોટીન દાળ-પાલક સૂપ + શેકેલું પનીર સલાડ", rule: "કોર & એબ્સ વર્કઆઉટ + ૩.૫ લિટર પાણી + ૧૫ મિ. વૉક" },
-      fri: { morning: "લીંબુ-હળદર પાણી + ૬ બદામ (પ્રી-વર્કઆઉટ ફ્યુઅલ)", breakfast: "પ્રોટીન ઉપમા (ઓટ્સ/શાકભાજી) + તાજું પનીર / સ્પ્રાઉટ્સ બાઉલ", lunch: "કાકડી-બીટ સલાડ + સુપર લોટ રોટલી + મગની દાળ + દહીં", snack: "શેકેલા મખાના + કોળાના બી + ૧ મોસંબી", dinner: "સોતે વેજીટેબલ્સ + મગદાળ સૂપ + ૨૫ ગ્રામ કાચું પનીર", rule: "ફુલ બોડી હિટ/સ્ટ્રેન્થ વર્કઆઉટ + ૩.૫ લિટર પાણી" },
-      sat: { morning: "નારિયેળ પાણી / ઇલેક્ટ્રોલાઇટ ડ્રિંક", breakfast: "સુપર લોટ થાલીપીઠ / પુડલા + મોળું દહીં + બદામ-કાજુ", lunch: "રિચ સલાડ બાઉલ + સુપર લોટ રોટલી + કાળી ચણા મસાલા + છાશ", snack: "મિક્સ ફ્રુટ ચાટ + શેકેલા સીડ્સ", dinner: "પનીર-વેજ ગ્રીલ પ્લેટર + કોળાનું ક્રીમી સૂપ", rule: "આઉટડોર રનિંગ/સાયકલિંગ + સ્નાયુ રિલેક્સેશન" },
-      sun: { morning: "હૂંફાળું જીરા પાણી + ડ્રાયફ્રુટ્સ", breakfast: "હાઈ પ્રોટીન પેનકેક (ઓટ્સ-કેળું) / મગ પુડલા + દહીં", lunch: "સંપૂર્ણ બેલેન્સ્ડ પ્લેટ: સલાડ + સુપર લોટ રોટલી + પસંદગીનું શાક + છાશ", snack: "મસાલા જામફળ + ડાર્ક ચોકલેટ ૧ પીસ", dinner: "હળવો હાઇડ્રેટિંગ વેજીટેબલ સૂપ + સોતે સલાડ", rule: "એક્ટિવ રીકવરી ડે: ૨૦ મિ. યોગા + ૮ કલાક ઊંઘ" }
+    const TEMPLATES = {
+      diabetes: {
+        mon: { morning: FOOD_LIBRARY.morning[0].text, breakfast: FOOD_LIBRARY.breakfast[0].text, lunch: FOOD_LIBRARY.lunch[0].text, snack: FOOD_LIBRARY.snack[0].text, dinner: FOOD_LIBRARY.dinner[0].text, rule: FOOD_LIBRARY.rule[0].text },
+        tue: { morning: FOOD_LIBRARY.morning[1].text, breakfast: FOOD_LIBRARY.breakfast[1].text, lunch: FOOD_LIBRARY.lunch[1].text, snack: FOOD_LIBRARY.snack[1].text, dinner: FOOD_LIBRARY.dinner[1].text, rule: FOOD_LIBRARY.rule[0].text },
+        wed: { morning: FOOD_LIBRARY.morning[0].text, breakfast: FOOD_LIBRARY.breakfast[0].text, lunch: FOOD_LIBRARY.lunch[0].text, snack: FOOD_LIBRARY.snack[0].text, dinner: FOOD_LIBRARY.dinner[0].text, rule: FOOD_LIBRARY.rule[0].text },
+        thu: { morning: FOOD_LIBRARY.morning[1].text, breakfast: FOOD_LIBRARY.breakfast[1].text, lunch: FOOD_LIBRARY.lunch[1].text, snack: FOOD_LIBRARY.snack[1].text, dinner: FOOD_LIBRARY.dinner[1].text, rule: FOOD_LIBRARY.rule[0].text },
+        fri: { morning: FOOD_LIBRARY.morning[0].text, breakfast: FOOD_LIBRARY.breakfast[0].text, lunch: FOOD_LIBRARY.lunch[0].text, snack: FOOD_LIBRARY.snack[0].text, dinner: FOOD_LIBRARY.dinner[0].text, rule: FOOD_LIBRARY.rule[0].text },
+        sat: { morning: FOOD_LIBRARY.morning[1].text, breakfast: FOOD_LIBRARY.breakfast[1].text, lunch: FOOD_LIBRARY.lunch[1].text, snack: FOOD_LIBRARY.snack[1].text, dinner: FOOD_LIBRARY.dinner[1].text, rule: FOOD_LIBRARY.rule[0].text },
+        sun: { morning: FOOD_LIBRARY.morning[0].text, breakfast: FOOD_LIBRARY.breakfast[1].text, lunch: FOOD_LIBRARY.lunch[0].text, snack: FOOD_LIBRARY.snack[0].text, dinner: FOOD_LIBRARY.dinner[0].text, rule: FOOD_LIBRARY.rule[0].text }
+      },
+      fitness: {
+        mon: { morning: FOOD_LIBRARY.morning[2].text, breakfast: FOOD_LIBRARY.breakfast[2].text, lunch: FOOD_LIBRARY.lunch[2].text, snack: FOOD_LIBRARY.snack[2].text, dinner: FOOD_LIBRARY.dinner[2].text, rule: FOOD_LIBRARY.rule[1].text },
+        tue: { morning: FOOD_LIBRARY.morning[3].text, breakfast: FOOD_LIBRARY.breakfast[3].text, lunch: FOOD_LIBRARY.lunch[3].text, snack: FOOD_LIBRARY.snack[3].text, dinner: FOOD_LIBRARY.dinner[3].text, rule: FOOD_LIBRARY.rule[1].text },
+        wed: { morning: FOOD_LIBRARY.morning[2].text, breakfast: FOOD_LIBRARY.breakfast[2].text, lunch: FOOD_LIBRARY.lunch[2].text, snack: FOOD_LIBRARY.snack[2].text, dinner: FOOD_LIBRARY.dinner[2].text, rule: FOOD_LIBRARY.rule[1].text },
+        thu: { morning: FOOD_LIBRARY.morning[3].text, breakfast: FOOD_LIBRARY.breakfast[3].text, lunch: FOOD_LIBRARY.lunch[3].text, snack: FOOD_LIBRARY.snack[3].text, dinner: FOOD_LIBRARY.dinner[3].text, rule: FOOD_LIBRARY.rule[1].text },
+        fri: { morning: FOOD_LIBRARY.morning[2].text, breakfast: FOOD_LIBRARY.breakfast[2].text, lunch: FOOD_LIBRARY.lunch[2].text, snack: FOOD_LIBRARY.snack[2].text, dinner: FOOD_LIBRARY.dinner[2].text, rule: FOOD_LIBRARY.rule[1].text },
+        sat: { morning: FOOD_LIBRARY.morning[3].text, breakfast: FOOD_LIBRARY.breakfast[3].text, lunch: FOOD_LIBRARY.lunch[2].text, snack: FOOD_LIBRARY.snack[2].text, dinner: FOOD_LIBRARY.dinner[2].text, rule: FOOD_LIBRARY.rule[1].text },
+        sun: { morning: FOOD_LIBRARY.morning[2].text, breakfast: FOOD_LIBRARY.breakfast[2].text, lunch: FOOD_LIBRARY.lunch[3].text, snack: FOOD_LIBRARY.snack[3].text, dinner: FOOD_LIBRARY.dinner[3].text, rule: FOOD_LIBRARY.rule[1].text }
+      },
+      pregnancy: {
+        mon: { morning: FOOD_LIBRARY.morning[4].text, breakfast: FOOD_LIBRARY.breakfast[4].text, lunch: FOOD_LIBRARY.lunch[4].text, snack: FOOD_LIBRARY.snack[4].text, dinner: FOOD_LIBRARY.dinner[4].text, rule: FOOD_LIBRARY.rule[2].text },
+        tue: { morning: FOOD_LIBRARY.morning[4].text, breakfast: FOOD_LIBRARY.breakfast[4].text, lunch: FOOD_LIBRARY.lunch[4].text, snack: FOOD_LIBRARY.snack[4].text, dinner: FOOD_LIBRARY.dinner[4].text, rule: FOOD_LIBRARY.rule[2].text },
+        wed: { morning: FOOD_LIBRARY.morning[4].text, breakfast: FOOD_LIBRARY.breakfast[4].text, lunch: FOOD_LIBRARY.lunch[4].text, snack: FOOD_LIBRARY.snack[4].text, dinner: FOOD_LIBRARY.dinner[4].text, rule: FOOD_LIBRARY.rule[2].text },
+        thu: { morning: FOOD_LIBRARY.morning[4].text, breakfast: FOOD_LIBRARY.breakfast[4].text, lunch: FOOD_LIBRARY.lunch[4].text, snack: FOOD_LIBRARY.snack[4].text, dinner: FOOD_LIBRARY.dinner[4].text, rule: FOOD_LIBRARY.rule[2].text },
+        fri: { morning: FOOD_LIBRARY.morning[4].text, breakfast: FOOD_LIBRARY.breakfast[4].text, lunch: FOOD_LIBRARY.lunch[4].text, snack: FOOD_LIBRARY.snack[4].text, dinner: FOOD_LIBRARY.dinner[4].text, rule: FOOD_LIBRARY.rule[2].text },
+        sat: { morning: FOOD_LIBRARY.morning[4].text, breakfast: FOOD_LIBRARY.breakfast[4].text, lunch: FOOD_LIBRARY.lunch[4].text, snack: FOOD_LIBRARY.snack[4].text, dinner: FOOD_LIBRARY.dinner[4].text, rule: FOOD_LIBRARY.rule[2].text },
+        sun: { morning: FOOD_LIBRARY.morning[4].text, breakfast: FOOD_LIBRARY.breakfast[4].text, lunch: FOOD_LIBRARY.lunch[4].text, snack: FOOD_LIBRARY.snack[4].text, dinner: FOOD_LIBRARY.dinner[4].text, rule: FOOD_LIBRARY.rule[2].text }
+      },
+      menopause: {
+        mon: { morning: FOOD_LIBRARY.morning[6].text, breakfast: FOOD_LIBRARY.breakfast[6].text, lunch: FOOD_LIBRARY.lunch[6].text, snack: FOOD_LIBRARY.snack[6].text, dinner: FOOD_LIBRARY.dinner[6].text, rule: FOOD_LIBRARY.rule[4].text },
+        tue: { morning: FOOD_LIBRARY.morning[7].text, breakfast: FOOD_LIBRARY.breakfast[7].text, lunch: FOOD_LIBRARY.lunch[7].text, snack: FOOD_LIBRARY.snack[7].text, dinner: FOOD_LIBRARY.dinner[7].text, rule: FOOD_LIBRARY.rule[4].text },
+        wed: { morning: FOOD_LIBRARY.morning[6].text, breakfast: FOOD_LIBRARY.breakfast[6].text, lunch: FOOD_LIBRARY.lunch[6].text, snack: FOOD_LIBRARY.snack[6].text, dinner: FOOD_LIBRARY.dinner[6].text, rule: FOOD_LIBRARY.rule[4].text },
+        thu: { morning: FOOD_LIBRARY.morning[7].text, breakfast: FOOD_LIBRARY.breakfast[7].text, lunch: FOOD_LIBRARY.lunch[7].text, snack: FOOD_LIBRARY.snack[7].text, dinner: FOOD_LIBRARY.dinner[7].text, rule: FOOD_LIBRARY.rule[4].text },
+        fri: { morning: FOOD_LIBRARY.morning[6].text, breakfast: FOOD_LIBRARY.breakfast[6].text, lunch: FOOD_LIBRARY.lunch[6].text, snack: FOOD_LIBRARY.snack[6].text, dinner: FOOD_LIBRARY.dinner[6].text, rule: FOOD_LIBRARY.rule[4].text },
+        sat: { morning: FOOD_LIBRARY.morning[7].text, breakfast: FOOD_LIBRARY.breakfast[7].text, lunch: FOOD_LIBRARY.lunch[6].text, snack: FOOD_LIBRARY.snack[6].text, dinner: FOOD_LIBRARY.dinner[6].text, rule: FOOD_LIBRARY.rule[4].text },
+        sun: { morning: FOOD_LIBRARY.morning[6].text, breakfast: FOOD_LIBRARY.breakfast[6].text, lunch: FOOD_LIBRARY.lunch[7].text, snack: FOOD_LIBRARY.snack[7].text, dinner: FOOD_LIBRARY.dinner[7].text, rule: FOOD_LIBRARY.rule[4].text }
+      }
     };
 
-    let clients = JSON.parse(localStorage.getItem('met_pro_clients_v5')) || [
+    let clients = JSON.parse(localStorage.getItem('met_pro_clients_v6')) || [
       {
         id: "CL-101",
         name: "Piyush Nathvani",
         phone: "919081421028",
-        goal: "ડાયાબિટીસ રિવર્સલ",
-        type: "clinical",
+        goal: "Type 2 Diabetes Reversal",
         status: "ACTIVE",
-        query: "બપોરે સુપર લોટ રોટલી; રાત્રે ૧૫-૨૦ મિ. પગ ઊંચા રાખવાનો નિયમ.",
-        weeklyPlan: JSON.parse(JSON.stringify(DIABETES_PRESET)),
+        query: "Super Flour lunch; 15-20 min leg elevation routine at bedtime.",
+        weeklyPlan: JSON.parse(JSON.stringify(TEMPLATES.diabetes)),
         compliance: {}
       },
       {
         id: "CL-102",
-        name: "Vikram Shah (Gym Athlete)",
+        name: "Vikram Shah (Athlete)",
         phone: "919876543210",
-        goal: "જીમ & મસલ બિલ્ડિંગ",
-        type: "fitness",
+        goal: "Gym & High Protein Performance",
         status: "ACTIVE",
-        query: "રોજ સાંજે ૬:૩૦ વાગ્યે જીમ. ૧૨૦ ગ્રામ વેજ પ્રોટીન ટાર્ગેટ અને ક્લીન ગેઇનિંગ.",
-        weeklyPlan: JSON.parse(JSON.stringify(FITNESS_PRESET)),
+        query: "Evening gym session. 120g clean vegetarian protein target.",
+        weeklyPlan: JSON.parse(JSON.stringify(TEMPLATES.fitness)),
         compliance: {}
       }
     ];
 
     let activeClientId = clients[0]?.id || "CL-101";
     let activeDay = "mon";
+    let pickerTargetSlot = "morning";
+    let pickerActiveCat = "All";
 
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -315,24 +450,27 @@
     function setAdminTab(tab) {
       ['clients', 'planner', 'lab'].forEach(t => {
         document.getElementById('aview-' + t).classList.add('hidden');
-        document.getElementById('atab-' + t).className = "px-3 py-1.5 rounded-lg text-gray-400 bg-[#161822] flex items-center gap-1.5 whitespace-nowrap";
+        document.getElementById('atab-' + t).className = "px-3 py-1.5 rounded-lg text-gray-400 bg-[#151722] flex items-center gap-1.5 whitespace-nowrap";
       });
       document.getElementById('aview-' + tab).classList.remove('hidden');
       document.getElementById('atab-' + tab).className = "tab-active px-3 py-1.5 rounded-lg flex items-center gap-1.5 whitespace-nowrap shadow";
     }
 
     function renderAdminClients() {
-      localStorage.setItem('met_pro_clients_v5', JSON.stringify(clients));
+      localStorage.setItem('met_pro_clients_v6', JSON.stringify(clients));
       document.getElementById('admTotal').innerText = clients.length;
-      document.getElementById('admSugar').innerText = clients.filter(c => !c.goal.includes('જીમ') && !c.goal.includes('લાઈફસ્ટાઈલ')).length;
-      document.getElementById('admFitness').innerText = clients.filter(c => c.goal.includes('જીમ') || c.goal.includes('લાઈફસ્ટાઈલ')).length;
+      document.getElementById('admClinical').innerText = clients.filter(c => c.goal.includes('Diabetes') || c.goal.includes('Liver')).length;
+      document.getElementById('admFitness').innerText = clients.filter(c => c.goal.includes('Gym') || c.goal.includes('Longevity')).length;
+      document.getElementById('admWomen').innerText = clients.filter(c => c.goal.includes('Pregnancy') || c.goal.includes('Postpartum') || c.goal.includes('Menopause')).length;
 
       const container = document.getElementById('admClientsList');
       container.innerHTML = '';
       clients.forEach(c => {
-        const isFitness = c.goal.includes('જીમ') || c.goal.includes('લાઈફસ્ટાઈલ');
-        const badgeColor = isFitness ? "bg-cyan-950 text-cyan-400 border-cyan-800" : "bg-amber-950 text-amber-400 border-amber-800";
-        const icon = isFitness ? "🏋️‍♂️" : "🩺";
+        let badgeColor = "bg-amber-950 text-amber-400 border-amber-800";
+        let icon = "🩺";
+        if(c.goal.includes('Gym')) { badgeColor = "bg-cyan-950 text-cyan-400 border-cyan-800"; icon = "🏋️"; }
+        else if(c.goal.includes('Pregnancy')) { badgeColor = "bg-pink-950 text-pink-400 border-pink-800"; icon = "🤰"; }
+        else if(c.goal.includes('Menopause')) { badgeColor = "bg-purple-950 text-purple-400 border-purple-800"; icon = "🌸"; }
 
         const card = document.createElement('div');
         card.className = "card-dark p-3.5 rounded-2xl space-y-2.5";
@@ -343,7 +481,7 @@
               <span class="text-[9px] font-bold px-2 py-0.5 rounded border ${badgeColor}">${icon} ${c.goal}</span>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="openPlannerFor('${c.id}')" class="text-xs text-amber-400 font-bold hover:underline"><i class="fa-solid fa-pen-to-square"></i> મેનૂ</button>
+              <button onclick="openPlannerFor('${c.id}')" class="text-xs text-amber-400 font-bold hover:underline"><i class="fa-solid fa-pen-to-square"></i> Protocol</button>
               <button onclick="deleteClient('${c.id}')" class="text-gray-500 hover:text-red-400 text-xs"><i class="fa-solid fa-trash-can"></i></button>
             </div>
           </div>
@@ -354,10 +492,10 @@
             </div>
             <div class="flex flex-col gap-1.5">
               <button onclick="previewClientPortal('${c.id}')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-2.5 py-1 rounded-xl text-[10px] flex items-center justify-center gap-1 shadow">
-                <i class="fa-solid fa-arrow-up-right-from-square"></i> પોર્ટલ ઓપન
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Portal
               </button>
               <button onclick="sendPortalLinkToClient('${c.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-2.5 py-1 rounded-xl text-[10px] flex items-center justify-center gap-1 shadow">
-                <i class="fa-brands fa-whatsapp"></i> WhatsApp લિંક 📲
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp Link 📲
               </button>
             </div>
           </div>
@@ -383,7 +521,7 @@
         btn.id = 'admtab-' + d.id;
         btn.className = (d.id === activeDay) 
           ? "px-2.5 py-1.5 rounded-lg bg-amber-500 text-black font-bold whitespace-nowrap shadow" 
-          : "px-2.5 py-1.5 rounded-lg bg-[#141620] text-gray-400 hover:text-white whitespace-nowrap border border-gray-800";
+          : "px-2.5 py-1.5 rounded-lg bg-[#151722] text-gray-400 hover:text-white whitespace-nowrap border border-gray-800";
         btn.innerText = d.short;
         btn.onclick = () => selectAdminDay(d.id);
         container.appendChild(btn);
@@ -412,7 +550,10 @@
       const c = clients.find(x => x.id === cId);
       if(!c) return;
       if(!c.weeklyPlan) {
-        c.weeklyPlan = c.goal.includes('જીમ') ? JSON.parse(JSON.stringify(FITNESS_PRESET)) : JSON.parse(JSON.stringify(DIABETES_PRESET));
+        if(c.goal.includes('Gym')) c.weeklyPlan = JSON.parse(JSON.stringify(TEMPLATES.fitness));
+        else if(c.goal.includes('Pregnancy')) c.weeklyPlan = JSON.parse(JSON.stringify(TEMPLATES.pregnancy));
+        else if(c.goal.includes('Menopause')) c.weeklyPlan = JSON.parse(JSON.stringify(TEMPLATES.menopause));
+        else c.weeklyPlan = JSON.parse(JSON.stringify(TEMPLATES.diabetes));
       }
       document.getElementById('admCurrentClientBadge').innerText = `${c.name} (${c.goal})`;
       loadActiveDayForm();
@@ -421,11 +562,10 @@
     function loadActiveDayForm() {
       const c = clients.find(x => x.id === activeClientId);
       if(!c) return;
-      const fallback = c.goal.includes('જીમ') ? FITNESS_PRESET[activeDay] : DIABETES_PRESET[activeDay];
-      const d = c.weeklyPlan[activeDay] || fallback;
+      const d = c.weeklyPlan[activeDay] || TEMPLATES.diabetes[activeDay];
       const dObj = DAYS.find(x => x.id === activeDay);
 
-      document.getElementById('admDayFormTitle').innerText = `${dObj.name} નું મેનૂ (${c.name})`;
+      document.getElementById('admDayFormTitle').innerText = `${dObj.name} Protocol (${c.name})`;
       document.getElementById('admMorning').value = d.morning || '';
       document.getElementById('admBreakfast').value = d.breakfast || '';
       document.getElementById('admLunch').value = d.lunch || '';
@@ -445,26 +585,101 @@
         dinner: document.getElementById('admDinner').value.trim(),
         rule: document.getElementById('admRule').value.trim()
       };
-      localStorage.setItem('met_pro_clients_v5', JSON.stringify(clients));
-      alert(`✅ ${DAYS.find(x=>x.id===activeDay).name} નું મેનૂ સેવ થઈ ગયું!`);
+      localStorage.setItem('met_pro_clients_v6', JSON.stringify(clients));
+      alert(`✅ ${DAYS.find(x=>x.id===activeDay).name} protocol saved successfully!`);
     }
 
     function applyPreset(type) {
       const c = clients.find(x => x.id === activeClientId);
       if(!c) return;
-      if(confirm(`શું તમે ${c.name} માટે ${type} નું ૭-દિવસનું ટેમ્પલેટ લોડ કરવા માંગો છો?`)) {
-        if(type === 'fitness') {
-          c.weeklyPlan = JSON.parse(JSON.stringify(FITNESS_PRESET));
-          c.goal = "જીમ & મસલ બિલ્ડિંગ";
-        } else {
-          c.weeklyPlan = JSON.parse(JSON.stringify(DIABETES_PRESET));
-        }
-        localStorage.setItem('met_pro_clients_v5', JSON.stringify(clients));
+      if(confirm(`Load complete 7-day ${type.toUpperCase()} template for ${c.name}?`)) {
+        c.weeklyPlan = JSON.parse(JSON.stringify(TEMPLATES[type]));
+        localStorage.setItem('met_pro_clients_v6', JSON.stringify(clients));
         loadActiveDayForm();
         renderAdminClients();
-        alert('૭-દિવસનો સંપૂર્ણ પ્લાન લાગુ થઈ ગયો!');
+        alert(`7-Day ${type.toUpperCase()} template loaded!`);
       }
     }
+
+    function openFoodPicker(slotKey) {
+      pickerTargetSlot = slotKey;
+      const slotNames = {
+        morning: 'Morning Detox / Pre-Workout',
+        breakfast: 'Breakfast / Post-Workout Fuel',
+        lunch: 'Lunch Plate',
+        snack: 'Afternoon Snack',
+        dinner: 'Dinner & Recovery',
+        rule: 'Daily Protocol'
+      };
+      document.getElementById('pickerTargetSlotText').innerText = `Selecting for: ${slotNames[slotKey]}`;
+
+      const categories = ['All', 'Clinical', 'Gym', 'Pregnancy', 'Postpartum', 'Menopause'];
+      const catContainer = document.getElementById('pickerFilterTabs');
+      catContainer.innerHTML = '';
+      categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = (cat === pickerActiveCat)
+          ? "px-2.5 py-1 rounded-lg bg-amber-500 text-black font-bold whitespace-nowrap"
+          : "px-2.5 py-1 rounded-lg bg-[#181a26] text-gray-400 whitespace-nowrap border border-gray-800";
+        btn.innerText = cat;
+        btn.onclick = () => { pickerActiveCat = cat; renderPickerItems(); };
+        catContainer.appendChild(btn);
+      });
+
+      renderPickerItems();
+      document.getElementById('foodPickerModal').classList.remove('hidden');
+    }
+
+    function closeFoodPicker() {
+      document.getElementById('foodPickerModal').classList.add('hidden');
+    }
+
+    function renderPickerItems() {
+      const list = FOOD_LIBRARY[pickerTargetSlot] || [];
+      const container = document.getElementById('pickerItemsContainer');
+      container.innerHTML = '';
+
+      const filtered = pickerActiveCat === 'All' ? list : list.filter(x => x.cat === pickerActiveCat);
+
+      if(filtered.length === 0) {
+        container.innerHTML = `<div class="p-4 text-center text-gray-500">No items found for this category.</div>`;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const div = document.createElement('div');
+        div.className = "p-2.5 rounded-xl bg-[#141622] hover:bg-[#1a1d2d] border border-gray-800 cursor-pointer flex justify-between items-center gap-2 transition";
+        div.innerHTML = `
+          <div class="flex-1">
+            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-gray-800 text-amber-400">${item.cat}</span>
+            <p class="text-xs text-white mt-1">${item.text}</p>
+          </div>
+          <button class="bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded-lg font-bold text-[10px] hover:bg-amber-500 hover:text-black">
+            + Choose
+          </button>
+        `;
+        div.onclick = () => chooseFoodItem(item.text);
+        container.appendChild(div);
+      });
+    }
+
+    function chooseFoodItem(text) {
+      const targetMap = {
+        morning: 'admMorning',
+        breakfast: 'admBreakfast',
+        lunch: 'admLunch',
+        snack: 'admSnack',
+        dinner: 'admDinner',
+        rule: 'admRule'
+      };
+      const inputId = targetMap[pickerTargetSlot];
+      if(inputId) {
+        document.getElementById(inputId).value = text;
+      }
+      closeFoodPicker();
+    }
+
+    let cpActiveDay = "mon";
 
     function generatePortalUrl(c) {
       const origin = window.location.origin + window.location.pathname;
@@ -476,19 +691,20 @@
       const c = clients.find(x => x.id === cId);
       if(!c) return;
       const portalUrl = generatePortalUrl(c);
-      const isFitness = c.goal.includes('જીમ') || c.goal.includes('લાઈફસ્ટાઈલ');
 
-      const msg = `નમસ્તે ${c.name} જી,
-તમારા ગોલ (${c.goal}) માટે તમારું વ્યક્તિગત "Metabolic Pro" હેલ્થ & ફિટનેસ પોર્ટલ તૈયાર છે!
+      const msg = `Hello ${c.name},
+Your personalized "Metabolic Pro" Health & Protocol Portal is now live!
 
-👉 તમારી VIP એપ લિંક ખોલો:
+👉 Open Your VIP Portal Link:
 ${portalUrl}
 
-${isFitness 
-  ? '🏋️‍♂️ આ લિંકમાં પ્રી/પોસ્ટ વર્કઆઉટ, પ્રોટીન આહાર, હાઇડ્રેશન અને ડેઇલી વર્કઆઉટ ટ્રેકર સામેલ છે.' 
-  : '🥗 આ લિંકમાં તમારું સાપ્તાહિક આહાર સમયપત્રક અને બ્લડ શુગર ટ્રેકર ઉપલબ્ધ છે.'}
+✨ Features:
+• 100% Read-Only Daily Meal Protocol & Guidelines.
+• 1-Touch Compliance Tracker: Done (100%), Partial (50%), or Missed.
+• Integrated Biomarker & Habit Logging.
+• 1-Click WhatsApp Progress Sync directly to your coach.
 
-દરરોજ લીધેલા ભોજન સામે ✅ ટીક કરી નીચેથી સીધો રિપોર્ટ મને મોકલી શકશો.`;
+Stay focused and empowered!`;
 
       window.open(`https://wa.me/${c.phone}?text=${encodeURIComponent(msg)}`, '_blank');
     }
@@ -498,8 +714,6 @@ ${isFitness
       openClientPortalById(cId);
     }
 
-    let cpActiveDay = "mon";
-
     function openClientPortalById(cId) {
       const c = clients.find(x => x.id === cId) || clients[0];
       if(!c) return;
@@ -508,10 +722,14 @@ ${isFitness
       document.getElementById('adminView').classList.add('hidden');
       document.getElementById('clientPortalView').classList.remove('hidden');
 
-      const isFitness = c.goal.includes('જીમ') || c.goal.includes('લાઈફસ્ટાઈલ');
-      document.getElementById('cpAvatar').innerText = isFitness ? "🏋️" : "🩺";
-      document.getElementById('cpClientTitle').innerText = `${c.name} જી`;
-      document.getElementById('cpClientGoal').innerText = `🎯 ગોલ: ${c.goal}`;
+      let icon = "🩺";
+      if(c.goal.includes('Gym')) icon = "🏋️";
+      else if(c.goal.includes('Pregnancy')) icon = "🤰";
+      else if(c.goal.includes('Menopause')) icon = "🌸";
+
+      document.getElementById('cpAvatar').innerText = icon;
+      document.getElementById('cpClientTitle').innerText = `${c.name}`;
+      document.getElementById('cpClientGoal').innerText = `🎯 Target: ${c.goal}`;
 
       renderClientPortalDayTabs();
       loadClientPortalDayData();
@@ -547,116 +765,152 @@ ${isFitness
       if(!c.compliance) c.compliance = {};
       if(!c.compliance[cpActiveDay]) {
         c.compliance[cpActiveDay] = {
-          morning: true, breakfast: true, lunch: true, snack: true, dinner: true, rule: true,
-          fasting: '', pp: '', protein: '', water: '', workout: 'હા', note: ''
+          morning: 'done', breakfast: 'done', lunch: 'done', snack: 'done', dinner: 'done', rule: 'done',
+          fasting: '', pp: '', protein: '', water: '', energy: 'High', note: ''
         };
       }
 
-      const isFitness = c.goal.includes('જીમ') || c.goal.includes('લાઈફસ્ટાઈલ');
-      const fallback = isFitness ? FITNESS_PRESET[cpActiveDay] : DIABETES_PRESET[cpActiveDay];
-      const plan = c.weeklyPlan[cpActiveDay] || fallback;
+      const plan = c.weeklyPlan[cpActiveDay] || TEMPLATES.diabetes[cpActiveDay];
       const comp = c.compliance[cpActiveDay];
       const dObj = DAYS.find(x => x.id === cpActiveDay);
 
-      document.getElementById('cpDayHeading').innerText = `${dObj.name} નું મેનૂ & ચેકલિસ્ટ`;
+      document.getElementById('cpDayHeading').innerText = `${dObj.name} Protocol & Compliance`;
 
       const container = document.getElementById('cpMealSlotsContainer');
       container.innerHTML = '';
 
-      const slots = isFitness ? [
-        { key: 'morning', label: '૧. સવારે (ખાલી પેટે / પ્રી-વર્કઆઉટ)', icon: '⚡', desc: plan.morning },
-        { key: 'breakfast', label: '૨. નાસ્તો / પોસ્ટ-વર્કઆઉટ (પ્રોટીન ફ્યુઅલ)', icon: '🍳', desc: plan.breakfast },
-        { key: 'lunch', label: '૩. બપોરનું લંચ (હાઇ-પ્રોટીન + સુપર લોટ)', icon: '🫓', desc: plan.lunch },
-        { key: 'snack', label: '૪. સાંજનું સ્નેક (ઈવનિંગ બૂસ્ટર)', icon: '🥜', desc: plan.snack },
-        { key: 'dinner', label: '૫. રાત્રિ ભોજન (મસલ રીકવરી)', icon: '🍲', desc: plan.dinner },
-        { key: 'rule', label: '૬. દૈનિક પ્રોટોકોલ (પાણી / ઊંઘ / વર્કઆઉટ)', icon: '🏋️‍♂️', desc: plan.rule }
-      ] : [
-        { key: 'morning', label: '૧. સવારે (ખાલી પેટે આલ્કલાઇન)', icon: '🥒', desc: plan.morning },
-        { key: 'breakfast', label: '૨. સવારનો નાસ્તો (Breakfast)', icon: '🥗', desc: plan.breakfast },
-        { key: 'lunch', label: '૩. બપોરનું લંચ (સલાડ + સુપર લોટ રોટલી)', icon: '🫓', desc: plan.lunch },
-        { key: 'snack', label: '૪. સાંજનો સ્નેક (૪-૫ વાગ્યે)', icon: '🍈', desc: plan.snack },
-        { key: 'dinner', label: '૫. રાત્રિ ભોજન (૮:૩૦ પહેલાં)', icon: '🍲', desc: plan.dinner },
-        { key: 'rule', label: '૬. ખાસ નિયમ (પગ ઊંચા / વૉક)', icon: '🌙', desc: plan.rule }
+      const slots = [
+        { key: 'morning', label: '1. Morning Detox / Pre-Workout', icon: '🥒', desc: plan.morning },
+        { key: 'breakfast', label: '2. Breakfast / Post-Workout Fuel', icon: '🥗', desc: plan.breakfast },
+        { key: 'lunch', label: '3. Lunch (Salad + Super Flour Plate)', icon: '🫓', desc: plan.lunch },
+        { key: 'snack', label: '4. Afternoon Snack (4-5 PM)', icon: '🍈', desc: plan.snack },
+        { key: 'dinner', label: '5. Dinner & Restoration (Before 8:30 PM)', icon: '🍲', desc: plan.dinner },
+        { key: 'rule', label: '6. Daily Protocol (Hydration / Sleep / Routine)', icon: '🌙', desc: plan.rule }
       ];
 
       slots.forEach(s => {
-        const isDone = comp[s.key] !== false;
+        const currentVal = comp[s.key] || 'done';
         const row = document.createElement('div');
-        row.className = "p-3 rounded-xl bg-[#0e1017] border border-gray-800 flex justify-between items-center gap-2";
+        row.className = "p-3 rounded-xl bg-[#0f111a] border border-gray-800 space-y-2";
         row.innerHTML = `
-          <div class="flex-1">
+          <div>
             <div class="text-[10px] text-amber-400 font-bold flex items-center gap-1">${s.icon} ${s.label}</div>
-            <p class="text-xs text-white font-medium mt-0.5">${s.desc}</p>
+            <p class="text-xs text-white font-medium mt-0.5 select-none">${s.desc}</p>
           </div>
-          <button onclick="toggleSlotCheck('${s.key}')" class="px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition ${isDone ? 'check-btn-active' : 'check-btn-inactive'}">
-            ${isDone ? '<i class="fa-solid fa-check"></i> પાળ્યું' : '<i class="fa-solid fa-xmark"></i> ચૂક્યા'}
-          </button>
+          <div class="grid grid-cols-3 gap-1.5 pt-1">
+            <button onclick="setSlotState('${s.key}', 'done')" class="py-1.5 px-2 rounded-lg text-[10px] flex items-center justify-center gap-1 border transition ${currentVal === 'done' ? 'btn-done-active' : 'btn-state-idle'}">
+              <i class="fa-solid fa-check"></i> 100% Done
+            </button>
+            <button onclick="setSlotState('${s.key}', 'half')" class="py-1.5 px-2 rounded-lg text-[10px] flex items-center justify-center gap-1 border transition ${currentVal === 'half' ? 'btn-half-active' : 'btn-state-idle'}">
+              <i class="fa-solid fa-triangle-exclamation"></i> 50% Partial
+            </button>
+            <button onclick="setSlotState('${s.key}', 'miss')" class="py-1.5 px-2 rounded-lg text-[10px] flex items-center justify-center gap-1 border transition ${currentVal === 'miss' ? 'btn-miss-active' : 'btn-state-idle'}">
+              <i class="fa-solid fa-xmark"></i> Missed
+            </button>
+          </div>
         `;
         container.appendChild(row);
       });
 
+      renderDynamicClientInputs(c, comp);
+      updateClientScoreAndMotivation();
+    }
+
+    function setSlotState(slotKey, state) {
+      const c = clients.find(x => x.id === activeClientId);
+      if(!c) return;
+      if(!c.compliance[cpActiveDay]) c.compliance[cpActiveDay] = {};
+      c.compliance[cpActiveDay][slotKey] = state;
+      localStorage.setItem('met_pro_clients_v6', JSON.stringify(clients));
+      loadClientPortalDayData();
+    }
+
+    function renderDynamicClientInputs(c, comp) {
       const dynInputs = document.getElementById('cpDynamicInputs');
-      if (isFitness) {
+      const isGym = c.goal.includes('Gym');
+      const isWomen = c.goal.includes('Pregnancy') || c.goal.includes('Menopause');
+
+      if (isGym) {
         dynInputs.innerHTML = `
           <div class="font-bold text-cyan-400 text-[11px] flex items-center gap-1.5">
-            <i class="fa-solid fa-dumbbell"></i> આજનું ફિટનેસ & હાઇડ્રેશન ટ્રેકિંગ:
+            <i class="fa-solid fa-dumbbell"></i> Athletic Metrics Tracker:
           </div>
           <div class="grid grid-cols-3 gap-2">
             <div>
-              <label class="text-[9px] text-gray-400">પ્રોટીન લીધું? (ગ્રામ)</label>
-              <input type="number" id="cpInProtein" onchange="saveClientDayInputs()" value="${comp.protein||''}" placeholder="e.g. 110g" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
+              <label class="text-[9px] text-gray-400">Protein Intake (g)</label>
+              <input type="number" id="cpInMetric1" onchange="saveClientDayInputs()" value="${comp.metric1||''}" placeholder="e.g. 115" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
             </div>
             <div>
-              <label class="text-[9px] text-gray-400">પાણી (Liters)</label>
-              <input type="number" step="0.5" id="cpInWater" onchange="saveClientDayInputs()" value="${comp.water||''}" placeholder="e.g. 3.5L" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
+              <label class="text-[9px] text-gray-400">Water (Litres)</label>
+              <input type="number" step="0.5" id="cpInMetric2" onchange="saveClientDayInputs()" value="${comp.metric2||''}" placeholder="e.g. 3.5" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
             </div>
             <div>
-              <label class="text-[9px] text-gray-400">વર્કઆઉટ કર્યું?</label>
+              <label class="text-[9px] text-gray-400">Workout Status</label>
               <select id="cpInWorkout" onchange="saveClientDayInputs()" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
-                <option value="હા (Gym Done)" ${comp.workout==='હા (Gym Done)'?'selected':''}>હા (Done)</option>
-                <option value="રેસ્ટ ડે (Rest Day)" ${comp.workout==='રેસ્ટ ડે (Rest Day)'?'selected':''}>રેસ્ટ ડે</option>
-                <option value="ચૂકી ગયા (Missed)" ${comp.workout==='ચૂકી ગયા (Missed)'?'selected':''}>ચૂકી ગયા</option>
+                <option value="Done (Gym/Weights)" ${comp.workout==='Done (Gym/Weights)'?'selected':''}>Done (Gym)</option>
+                <option value="Rest / Recovery Day" ${comp.workout==='Rest / Recovery Day'?'selected':''}>Rest Day</option>
+                <option value="Missed Session" ${comp.workout==='Missed Session'?'selected':''}>Missed</option>
               </select>
             </div>
           </div>
           <div>
-            <label class="text-[10px] text-gray-400">વર્કઆઉટ કેવું રહ્યું / એનર્જી લેવલ / નોંધ?</label>
-            <input type="text" id="cpInNote" onchange="saveClientDayInputs()" value="${comp.note||''}" placeholder="દા.ત. સારો પમ્પ મળ્યો, એનર્જી હાઈ હતી..." class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
+            <label class="text-[10px] text-gray-400">Notes / Muscle Sensation / Recovery:</label>
+            <input type="text" id="cpInNote" onchange="saveClientDayInputs()" value="${comp.note||''}" placeholder="Great pump, sustained energy throughout..." class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
+          </div>
+        `;
+      } else if (isWomen) {
+        dynInputs.innerHTML = `
+          <div class="font-bold text-pink-400 text-[11px] flex items-center gap-1.5">
+            <i class="fa-solid fa-heart-pulse"></i> Vitality & Wellness Tracker:
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="text-[9px] text-gray-400">Water (Litres)</label>
+              <input type="number" step="0.5" id="cpInMetric1" onchange="saveClientDayInputs()" value="${comp.metric1||''}" placeholder="e.g. 3.0" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
+            </div>
+            <div>
+              <label class="text-[9px] text-gray-400">Hot Flashes / Comfort</label>
+              <select id="cpInMetric2" onchange="saveClientDayInputs()" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
+                <option value="Very Calm & Comfortable" ${comp.metric2==='Very Calm & Comfortable'?'selected':''}>Calm & Good</option>
+                <option value="Mild Warmth / Manageable" ${comp.metric2==='Mild Warmth / Manageable'?'selected':''}>Mild</option>
+                <option value="Felt Heated / Fatigue" ${comp.metric2==='Felt Heated / Fatigue'?'selected':''}>Fatigue</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[9px] text-gray-400">Sleep Quality</label>
+              <select id="cpInWorkout" onchange="saveClientDayInputs()" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
+                <option value="Deep & Restful (7+ hrs)" ${comp.workout==='Deep & Restful (7+ hrs)'?'selected':''}>Deep Sleep</option>
+                <option value="Moderate Sleep" ${comp.workout==='Moderate Sleep'?'selected':''}>Moderate</option>
+                <option value="Disturbed Sleep" ${comp.workout==='Disturbed Sleep'?'selected':''}>Disturbed</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="text-[10px] text-gray-400">Notes / Body Sensation:</label>
+            <input type="text" id="cpInNote" onchange="saveClientDayInputs()" value="${comp.note||''}" placeholder="Felt peaceful today, digestion was light..." class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
           </div>
         `;
       } else {
         dynInputs.innerHTML = `
           <div class="font-bold text-gray-300 text-[11px] flex items-center gap-1.5">
-            <i class="fa-solid fa-droplet text-red-500"></i> આજનું બ્લડ શુગર (જો ચેક કર્યું હોય):
+            <i class="fa-solid fa-droplet text-red-500"></i> Blood Glucose Check:
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="text-[10px] text-gray-400">સવારે Fasting (mg/dL)</label>
-              <input type="number" id="cpInFast" onchange="saveClientDayInputs()" value="${comp.fasting||''}" placeholder="દા.ત. 125" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
+              <label class="text-[10px] text-gray-400">Fasting Sugar (mg/dL)</label>
+              <input type="number" id="cpInMetric1" onchange="saveClientDayInputs()" value="${comp.metric1||''}" placeholder="e.g. 125" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
             </div>
             <div>
-              <label class="text-[10px] text-gray-400">જમ્યા પછી PP2BS (mg/dL)</label>
-              <input type="number" id="cpInPP" onchange="saveClientDayInputs()" value="${comp.pp||''}" placeholder="દા.ત. 160" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
+              <label class="text-[10px] text-gray-400">Post-Meal PP2BS (mg/dL)</label>
+              <input type="number" id="cpInMetric2" onchange="saveClientDayInputs()" value="${comp.metric2||''}" placeholder="e.g. 155" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
             </div>
           </div>
           <div>
-            <label class="text-[10px] text-gray-400">તમારી નોંધ / શું ફેરફાર અનુભવાયો?</label>
-            <input type="text" id="cpInNote" onchange="saveClientDayInputs()" value="${comp.note||''}" placeholder="દા.ત. આજે પગમાં ખાલી નથી ચડી, ઊંઘ સરસ આવી..." class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
+            <label class="text-[10px] text-gray-400">Daily Observations / Energy:</label>
+            <input type="text" id="cpInNote" onchange="saveClientDayInputs()" value="${comp.note||''}" placeholder="Leg numbness felt much less today, digestion light..." class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
           </div>
         `;
       }
-
-      updateClientScore();
-    }
-
-    function toggleSlotCheck(slotKey) {
-      const c = clients.find(x => x.id === activeClientId);
-      if(!c) return;
-      if(!c.compliance[cpActiveDay]) c.compliance[cpActiveDay] = {};
-      const current = c.compliance[cpActiveDay][slotKey] !== false;
-      c.compliance[cpActiveDay][slotKey] = !current;
-      localStorage.setItem('met_pro_clients_v5', JSON.stringify(clients));
-      loadClientPortalDayData();
     }
 
     function saveClientDayInputs() {
@@ -665,35 +919,62 @@ ${isFitness
       if(!c.compliance[cpActiveDay]) c.compliance[cpActiveDay] = {};
       const comp = c.compliance[cpActiveDay];
 
-      const isFitness = c.goal.includes('જીમ') || c.goal.includes('લાઈફસ્ટાઈલ');
-      if(isFitness) {
-        comp.protein = document.getElementById('cpInProtein')?.value || '';
-        comp.water = document.getElementById('cpInWater')?.value || '';
-        comp.workout = document.getElementById('cpInWorkout')?.value || 'હા (Done)';
-        comp.note = document.getElementById('cpInNote')?.value || '';
-      } else {
-        comp.fasting = document.getElementById('cpInFast')?.value || '';
-        comp.pp = document.getElementById('cpInPP')?.value || '';
-        comp.note = document.getElementById('cpInNote')?.value || '';
-      }
+      comp.metric1 = document.getElementById('cpInMetric1')?.value || '';
+      comp.metric2 = document.getElementById('cpInMetric2')?.value || '';
+      comp.workout = document.getElementById('cpInWorkout')?.value || '';
+      comp.note = document.getElementById('cpInNote')?.value || '';
 
-      localStorage.setItem('met_pro_clients_v5', JSON.stringify(clients));
-      updateClientScore();
+      localStorage.setItem('met_pro_clients_v6', JSON.stringify(clients));
+      updateClientScoreAndMotivation();
     }
 
-    function updateClientScore() {
+    function updateClientScoreAndMotivation() {
       const c = clients.find(x => x.id === activeClientId);
       if(!c || !c.compliance) return;
-      let total = 0;
-      let done = 0;
-      Object.keys(c.compliance).forEach(d => {
-        ['morning','breakfast','lunch','snack','dinner','rule'].forEach(k => {
-          total++;
-          if(c.compliance[d][k] !== false) done++;
-        });
+
+      let totalPoints = 0;
+      let earnedPoints = 0;
+      const daySlots = ['morning', 'breakfast', 'lunch', 'snack', 'dinner', 'rule'];
+
+      const comp = c.compliance[cpActiveDay] || {};
+      daySlots.forEach(slot => {
+        totalPoints += 100;
+        const state = comp[slot] || 'done';
+        if (state === 'done') earnedPoints += 100;
+        else if (state === 'half') earnedPoints += 50;
       });
-      const pct = total > 0 ? Math.round((done / total) * 100) : 100;
-      document.getElementById('cpComplianceScore').innerText = `${pct}% નિયમ પાલન`;
+
+      const dayPct = Math.round((earnedPoints / totalPoints) * 100);
+
+      const banner = document.getElementById('cpMotivationBanner');
+      if (dayPct >= 85) {
+        banner.className = "p-3 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 text-xs space-y-1";
+        banner.innerHTML = `
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-emerald-400"><i class="fa-solid fa-award"></i> Exceptional Discipline (${dayPct}%)</span>
+            <span class="px-2 py-0.5 bg-emerald-900 text-emerald-300 text-[10px] rounded-full font-bold">On Fire 🔥</span>
+          </div>
+          <p class="text-[11px] text-gray-200">You are actively healing your metabolism, protecting your organs, and building deep resilience. Keep this momentum roaring!</p>
+        `;
+      } else if (dayPct >= 50) {
+        banner.className = "p-3 rounded-2xl border border-amber-500/40 bg-amber-950/40 text-xs space-y-1";
+        banner.innerHTML = `
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-amber-400"><i class="fa-solid fa-heart"></i> Progress Over Perfection (${dayPct}%)</span>
+            <span class="px-2 py-0.5 bg-amber-900 text-amber-300 text-[10px] rounded-full font-bold">Keep Going 💛</span>
+          </div>
+          <p class="text-[11px] text-gray-200">50% consistency is infinitely better than 0%! Life happens, and minor deviations are completely natural. Zero guilt—stay hydrated tonight and bounce right back tomorrow morning!</p>
+        `;
+      } else {
+        banner.className = "p-3 rounded-2xl border border-rose-500/40 bg-rose-950/40 text-xs space-y-1";
+        banner.innerHTML = `
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-rose-400"><i class="fa-solid fa-shield-halved"></i> Reset & Reclaim (${dayPct}%)</span>
+            <span class="px-2 py-0.5 bg-rose-900 text-rose-300 text-[10px] rounded-full font-bold">Safe Haven 🤍</span>
+          </div>
+          <p class="text-[11px] text-gray-200">Don't stress for a second! One off-track day does not undo your hard work. Drink a warm glass of water, sleep soundly, and tomorrow is a fresh clean reset with your coach!</p>
+        `;
+      }
     }
 
     function submitClientDailyReport() {
@@ -701,51 +982,49 @@ ${isFitness
       if(!c) return;
       saveClientDayInputs();
 
-      const comp = c.compliance[cpActiveDay];
+      const comp = c.compliance[cpActiveDay] || {};
       const dObj = DAYS.find(x => x.id === cpActiveDay);
-      const isFitness = c.goal.includes('જીમ') || c.goal.includes('લાઈફસ્ટાઈલ');
 
-      let msg = "";
-      if (isFitness) {
-        msg = `🏋️‍♂️ *Metabolic Pro - ફિટનેસ & પ્રોટીન રિપોર્ટ*
-ક્લાયન્ટ: *${c.name}*
-દિવસ: *${dObj.name}*
+      const symbolMap = { done: '✅ 100% Done', half: '⚠️ 50% Partial', miss: '❌ Missed' };
 
-📊 *ન્યુટ્રિશન & મીલ પાલન:*
-• પ્રી-વર્કઆઉટ ફ્યુઅલ: ${comp.morning!==false?'✅ હા':'❌ ના'}
-• પોસ્ટ-વર્કઆઉટ પ્રોટીન નાસ્તો: ${comp.breakfast!==false?'✅ હા':'❌ ના'}
-• બપોરનું લંચ (હાઇ-પ્રોટીન સુપર લોટ): ${comp.lunch!==false?'✅ હા':'❌ ના'}
-• સાંજનું બૂસ્ટર સ્નેક: ${comp.snack!==false?'✅ હા':'❌ ના'}
-• ડિનર (મસલ રીકવરી): ${comp.dinner!==false?'✅ હા':'❌ ના'}
-• હાઇડ્રેશન/રેસ્ટ પ્રોટોકોલ: ${comp.rule!==false?'✅ હા':'❌ ના'}
+      let totalPoints = 0, earnedPoints = 0;
+      ['morning', 'breakfast', 'lunch', 'snack', 'dinner', 'rule'].forEach(k => {
+        totalPoints += 100;
+        const st = comp[k] || 'done';
+        if(st === 'done') earnedPoints += 100;
+        else if(st === 'half') earnedPoints += 50;
+      });
+      const score = Math.round((earnedPoints / totalPoints) * 100);
 
-🔥 *ફિટનેસ મેટ્રિક્સ:*
-- વર્કઆઉટ: *${comp.workout || 'હા'}*
-- પ્રોટીન ઇન્ટેક: *${comp.protein ? comp.protein + ' g' : 'ટ્રેક કર્યું'}*
-- પાણી ઇન્ટેક: *${comp.water ? comp.water + ' Litres' : '૩+ લિટર'}*
+      let motivationalNote = "";
+      if (score >= 85) motivationalNote = "Coach Note: Exceptional discipline! Keep charging ahead.";
+      else if (score >= 50) motivationalNote = "Coach Note: Proud of your honest effort! Progress over perfection always.";
+      else motivationalNote = "Coach Note: Zero guilt! We reset together tomorrow morning.";
 
-📝 *અનુભવ / નોટ્સ:*
-"${comp.note || 'સારો પમ્પ રહ્યો અને વર્કઆઉટ સરસ થયું!'}"`;
-      } else {
-        msg = `🩺 *Metabolic Pro - દૈનિક હેલ્થ રિપોર્ટ*
-ક્લાયન્ટ: *${c.name}*
-દિવસ: *${dObj.name}*
+      let msg = `🩺 *Metabolic Pro - Daily Protocol Sync*
+Client: *${c.name}*
+Goal: *${c.goal}*
+Day: *${dObj.name}*
+Score: *${score}% Compliance*
 
-📊 *આહાર અને નિયમ પાલન:*
-• સવાર ડિટોક્સ: ${comp.morning!==false?'✅ હા':'❌ ના'}
-• નાસ્તો: ${comp.breakfast!==false?'✅ હા':'❌ ના'}
-• બપોરનું લંચ (સુપર લોટ): ${comp.lunch!==false?'✅ હા':'❌ ના'}
-• સાંજ સ્નેક: ${comp.snack!==false?'✅ હા':'❌ ના'}
-• ડિનર (સોતે શાક): ${comp.dinner!==false?'✅ હા':'❌ ના'}
-• રાત્રિ નિયમ (પગ ઊંચા): ${comp.rule!==false?'✅ હા':'❌ ના'}
+📊 *Meal & Routine Status:*
+• 1. Morning Detox: ${symbolMap[comp.morning || 'done']}
+• 2. Breakfast Fuel: ${symbolMap[comp.breakfast || 'done']}
+• 3. Lunch Plate: ${symbolMap[comp.lunch || 'done']}
+• 4. Afternoon Snack: ${symbolMap[comp.snack || 'done']}
+• 5. Dinner Recovery: ${symbolMap[comp.dinner || 'done']}
+• 6. Daily Protocol: ${symbolMap[comp.rule || 'done']}
 
-🩸 *બ્લડ શુગર રીડિંગ્સ:*
-- ફાસ્ટિંગ: ${comp.fasting ? comp.fasting + ' mg/dL' : 'નોંધ નથી કરી'}
-- PP2BS: ${comp.pp ? comp.pp + ' mg/dL' : 'નોંધ નથી કરી'}
+📈 *Tracked Metrics:*
+- Metric 1: ${comp.metric1 || 'Logged'}
+- Metric 2 / Status: ${comp.metric2 || 'Logged'}
+- Workout / Activity: ${comp.workout || 'Tracked'}
 
-📝 *નોંધ:*
-"${comp.note || 'બધું બરાબર રહ્યું.'}"`;
-      }
+📝 *Client Notes:*
+"${comp.note || 'All feels well.'}"
+
+💬 *Mindset Reminder:*
+"${motivationalNote}"`;
 
       window.open(`https://wa.me/919081421028?text=${encodeURIComponent(msg)}`, '_blank');
     }
@@ -757,22 +1036,26 @@ ${isFitness
       const p = document.getElementById('mPhone').value.trim();
       const g = document.getElementById('mGoal').value;
       const q = document.getElementById('mQuery').value.trim();
-      if(!n || !p) return alert('નામ અને નંબર દાખલ કરો.');
+      if(!n || !p) return alert('Please enter client name and phone number.');
 
-      const isFitness = g.includes('જીમ') || g.includes('લાઈફસ્ટાઈલ');
+      let templateKey = 'diabetes';
+      if(g.includes('Gym')) templateKey = 'fitness';
+      else if(g.includes('Pregnancy')) templateKey = 'pregnancy';
+      else if(g.includes('Menopause')) templateKey = 'menopause';
+
       const newId = "CL-" + (100 + clients.length + 1);
       clients.unshift({
         id: newId, name: n, phone: p, goal: g, status: 'ACTIVE', query: q,
-        weeklyPlan: isFitness ? JSON.parse(JSON.stringify(FITNESS_PRESET)) : JSON.parse(JSON.stringify(DIABETES_PRESET)),
+        weeklyPlan: JSON.parse(JSON.stringify(TEMPLATES[templateKey])),
         compliance: {}
       });
       closeModal();
       renderAdminClients();
-      alert(`નવો ક્લાયન્ટ (${isFitness?'જીમ & ફિટનેસ':'ક્લિનિકલ'}) ઉમેરાઈ ગયો!`);
+      alert(`Client ${n} created with specialized ${g} protocol!`);
     }
 
     function deleteClient(id) {
-      if(confirm('શું તમે આ ક્લાયન્ટને કાઢી નાખવા માંગો છો?')) {
+      if(confirm('Are you sure you want to remove this client?')) {
         clients = clients.filter(x => x.id !== id);
         renderAdminClients();
       }
@@ -790,13 +1073,13 @@ ${isFitness
       let lRisk = s > 45 ? 'HIGH (FATTY LIVER)' : 'NORMAL';
 
       document.getElementById('riskBadges').innerHTML = `
-        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${sRisk==='NORMAL'?'bg-emerald-950 text-emerald-400':'bg-red-950 text-red-400'} border border-gray-700">શુગર: ${sRisk}</span>
-        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${lRisk==='NORMAL'?'bg-emerald-950 text-emerald-400':'bg-yellow-950 text-yellow-400'} border border-gray-700">લિવર: ${lRisk}</span>
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${sRisk==='NORMAL'?'bg-emerald-950 text-emerald-400':'bg-red-950 text-red-400'} border border-gray-700">Sugar Risk: ${sRisk}</span>
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${lRisk==='NORMAL'?'bg-emerald-950 text-emerald-400':'bg-yellow-950 text-yellow-400'} border border-gray-700">Liver Risk: ${lRisk}</span>
       `;
       document.getElementById('dietAdvice').innerHTML = `
-        <div>• <strong>લિવર:</strong> સવારે લીલી + આંબા હળદરવાળો આલ્કલાઇન જ્યુસ.</div>
-        <div>• <strong>શુગર:</strong> બપોરે સલાડ પછી ૧૦૦% સુપર લોટની ૧ જ રોટલી.</div>
-        <div>• <strong>ટ્રાઇગ્લિસરાઇડ્સ:</strong> તેલ/ઘી વગરના સોતે શાકભાજી અને ૧૫ મિ. વૉક.</div>
+        <div>• <strong>Bile & Liver Activation:</strong> Fresh bottle gourd + amla + raw turmeric juice every morning on an empty stomach.</div>
+        <div>• <strong>Glycemic Barrier:</strong> 1 full bowl raw salad before taking 1 Super Flour (Multi-Millet) roti.</div>
+        <div>• <strong>Visceral Fat Melt:</strong> Sautéed vegetables with light paneer for dinner; avoid grain after 8:30 PM.</div>
       `;
       document.getElementById('labResult').classList.remove('hidden');
     }
