@@ -65,6 +65,7 @@
       <section id="aview-grocery" class="hidden space-y-3 text-xs">
         <div class="card-clean p-4 rounded-2xl space-y-3">
           <h2 class="font-bold text-slate-800 text-sm">Master Grocery, Calories & GI Database</h2>
+          <p class="text-[11px] text-slate-500">Complete list of vegetables, fruits, dairy, grains and farsan available in the system.</p>
           <div id="groceryItemsList" class="space-y-2"></div>
         </div>
       </section>
@@ -99,19 +100,43 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // FULL MASTER DATABASE IN ADMIN
     const MASTER_GROCERY_DB = {
       "Ash Gourd": { cal: 13, gi: 15 },
       "Bottle Gourd": { cal: 21, gi: 15 },
       "Coriander": { cal: 23, gi: 15 },
       "Raw Turmeric": { cal: 35, gi: 20 },
+      "Fresh Ginger": { cal: 80, gi: 15 },
       "Moong Dal Chila": { cal: 220, gi: 38 },
       "Fresh Paneer": { cal: 265, gi: 15 },
       "Salad Barrier": { cal: 25, gi: 15 },
       "Multi-Millet Roti": { cal: 110, gi: 35 },
       "Chaas": { cal: 40, gi: 15 },
       "Roasted Makhana": { cal: 347, gi: 45 },
-      "Desi Ghee": { cal: 900, gi: 0 },
-      "Groundnut Oil": { cal: 884, gi: 0 }
+      "Pumpkin Puree": { cal: 40, gi: 30 },
+      "Steamed Moong": { cal: 105, gi: 25 },
+      "Sprouted Chana": { cal: 120, gi: 28 },
+      "Ragi Cheela": { cal: 240, gi: 50 },
+      "Palak Paneer": { cal: 180, gi: 20 },
+      "Sev Usal": { cal: 310, gi: 55 },
+      "Poha": { cal: 180, gi: 65 },
+      "Ganthiya": { cal: 480, gi: 75 },
+      "Bhajiya": { cal: 420, gi: 70 },
+      "Puri": { cal: 500, gi: 80 },
+      "Fafda": { cal: 430, gi: 72 },
+      "Sev": { cal: 520, gi: 78 },
+      "Kachori": { cal: 450, gi: 75 },
+      "Samosa": { cal: 310, gi: 72 },
+      "Kiwi": { cal: 61, gi: 52 },
+      "Dragon Fruit": { cal: 60, gi: 48 },
+      "Pomegranate": { cal: 83, gi: 53 },
+      "Apple": { cal: 52, gi: 36 },
+      "Guava": { cal: 68, gi: 24 },
+      "Papaya": { cal: 43, gi: 60 },
+      "Sweet Lime": { cal: 47, gi: 43 },
+      "Watermelon": { cal: 30, gi: 72 },
+      "Mango": { cal: 60, gi: 51 },
+      "Banana": { cal: 89, gi: 51 }
     };
 
     let liveClients = [];
@@ -174,7 +199,16 @@
       const c = document.getElementById('groceryItemsList');
       c.innerHTML = '';
       for(let item in MASTER_GROCERY_DB) {
-        c.innerHTML += `<div class="flex justify-between p-2 bg-slate-50 rounded-lg border text-xs"><span><strong>${item}</strong></span><span>🔥 ${MASTER_GROCERY_DB[item].cal} kcal | GI: ${MASTER_GROCERY_DB[item].gi}</span></div>`;
+        const isHighGi = MASTER_GROCERY_DB[item].gi >= 70;
+        c.innerHTML += `
+          <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl border text-xs">
+            <span class="font-bold text-slate-800">${item}</span>
+            <div class="flex items-center gap-2">
+              ${isHighGi ? '<span class="px-1.5 py-0.5 bg-rose-100 text-rose-800 text-[9px] font-black rounded">Red Zone</span>' : ''}
+              <span class="text-teal-800 font-semibold">🔥 ${MASTER_GROCERY_DB[item].cal} kcal</span>
+              <span class="text-sky-800 font-semibold">GI: ${MASTER_GROCERY_DB[item].gi}</span>
+            </div>
+          </div>`;
       }
     }
 
