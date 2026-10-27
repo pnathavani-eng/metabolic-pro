@@ -211,12 +211,12 @@
       <div class="space-y-1 pt-1 border-t">
         <span class="text-[10px] text-slate-600 font-bold">અન્ય કંઈ ખાધું હોય તો અહીં ઉમેરો (Type local food):</span>
         <div class="flex gap-1.5">
-          <input type="text" id="cstCustomInput" placeholder="e.g. સેવ ઉસળ, પૌંઆ..." class="flex-1 bg-slate-50 border p-2 rounded-xl text-xs">
+          <input type="text" id="cstCustomInput" placeholder="e.g. ગાંઠિયા, ભજીયા, પૂરી..." class="flex-1 bg-slate-50 border p-2 rounded-xl text-xs">
           <button onclick="addCustomTypedFood()" class="px-3.5 py-2 bg-slate-900 text-white rounded-xl font-bold text-xs">+ Add</button>
         </div>
       </div>
       <div class="space-y-1.5 flex-1 overflow-y-auto pr-1">
-        <span class="text-[10px] text-slate-600 font-bold">Substitutes:</span>
+        <span class="text-[10px] text-slate-600 font-bold">Substitutes & Farsan (Red Zone):</span>
         <div class="flex flex-wrap gap-1.5" id="cstSubstitutesContainer"></div>
       </div>
       <div class="pt-2 border-t flex gap-2">
@@ -256,6 +256,7 @@
     let selectedDateKey = getTodayDateKey();
     let currentClient = null;
 
+    // MASTER GROCERY & NUTRITION DATABASE INCLUDING FARSAN / RED ZONE ITEMS
     const MASTER_GROCERY_DB = {
       "Ash Gourd": { cal: 13, gi: 15 },
       "Bottle Gourd": { cal: 21, gi: 15 },
@@ -274,7 +275,26 @@
       "Ragi Cheela": { cal: 240, gi: 50 },
       "Palak Paneer": { cal: 180, gi: 20 },
       "Sev Usal": { cal: 310, gi: 55 },
-      "Poha": { cal: 180, gi: 65 }
+      "Poha": { cal: 180, gi: 65 },
+      // FARSAN & DEEP FRIED ITEMS (RED ZONE)
+      "Ganthiya": { cal: 480, gi: 75 },
+      "Bhajiya": { cal: 420, gi: 70 },
+      "Puri": { cal: 500, gi: 80 },
+      "Fafda": { cal: 430, gi: 72 },
+      "Sev": { cal: 520, gi: 78 },
+      "Kachori": { cal: 450, gi: 75 },
+      "Samosa": { cal: 310, gi: 72 },
+      // FRUITS
+      "Kiwi": { cal: 61, gi: 52 },
+      "Dragon Fruit": { cal: 60, gi: 48 },
+      "Pomegranate": { cal: 83, gi: 53 },
+      "Apple": { cal: 52, gi: 36 },
+      "Guava": { cal: 68, gi: 24 },
+      "Papaya": { cal: 43, gi: 60 },
+      "Sweet Lime": { cal: 47, gi: 43 },
+      "Watermelon": { cal: 30, gi: 72 },
+      "Mango": { cal: 60, gi: 51 },
+      "Banana": { cal: 89, gi: 51 }
     };
 
     function calculateItemNutrition(itemName) {
@@ -305,7 +325,11 @@
       { morning: "Amla Juice + Cumin Water", breakfast: "Sprouted Chana Salad", lunch: "Salad Barrier + Multi-Millet Roti + Moong Dal + Chaas", snack: "Roasted Makhana", dinner: "Pumpkin Puree + Sprouts" }
     ];
 
-    const SUBSTITUTES_POOL = ["Bottle Gourd", "Ash Gourd", "Cucumber", "Moong Dal Chila", "Fresh Paneer", "Salad Barrier", "Multi-Millet Roti", "Chaas", "Roasted Makhana", "Steamed Moong"];
+    const SUBSTITUTES_POOL = [
+      "Bottle Gourd", "Ash Gourd", "Cucumber", "Moong Dal Chila", "Fresh Paneer", 
+      "Salad Barrier", "Multi-Millet Roti", "Chaas", "Roasted Makhana", "Steamed Moong",
+      "Ganthiya", "Bhajiya", "Puri", "Fafda", "Sev", "Kiwi", "Dragon Fruit", "Pomegranate", "Apple", "Guava"
+    ];
 
     function getTodayDateKey() {
       const now = new Date();
@@ -449,9 +473,6 @@
         const isSelected = (dateKey === selectedDateKey);
         const isToday = (dateKey === todayKey);
         const isBeforeJoining = (dateKey < joiningKey);
-        
-        // FIX: Regular clients can view the entire current week (weekOffset === 0). 
-        // Future weeks (weekOffset > 0) are locked for trial users unless Lifetime VIP.
         const isFutureWeek = (weekOffset > 0);
 
         const btn = document.createElement('button');
@@ -510,6 +531,7 @@
         totalDayCalories += nut.totalCal;
         totalDayGi += nut.gi;
 
+        const isRedZone = (nut.gi >= 70);
         const currentCheck = comp[s.key] || 'idle';
         const card = document.createElement('div');
         card.className = "card-clean p-3.5 rounded-2xl space-y-2 border border-slate-200";
@@ -519,7 +541,8 @@
               <span class="text-[9px] font-bold text-slate-400 uppercase">${s.time}</span>
               <h3 class="text-xs font-bold text-slate-900">${s.label}</h3>
             </div>
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-1.5 flex-wrap justify-end">
+              ${isRedZone ? '<span class="px-2 py-0.5 rounded-md bg-rose-100 text-rose-800 text-[10px] font-black border border-rose-300">🔴 Red Zone</span>' : ''}
               <span class="px-2 py-0.5 rounded-md bg-teal-50 text-teal-800 text-[10px] font-extrabold border border-teal-200">🔥 ${nut.totalCal} kcal</span>
               <span class="px-2 py-0.5 rounded-md bg-sky-50 text-sky-800 text-[10px] font-extrabold border border-sky-200">📊 GI: ${nut.gi}</span>
               <button onclick="openCustomizer('${s.key}', '${s.text.replace(/'/g, "\\\'")}')" class="text-[10px] text-teal-700 font-bold bg-teal-50 px-2 py-1 rounded-xl">Customize</button>
@@ -558,7 +581,7 @@
           <div><label class="text-[9px] text-slate-500 font-semibold">Fasting Sugar</label><input type="number" id="cpInM1" onchange="saveVitals()" value="${comp.metric1||''}" class="w-full bg-slate-50 border p-2 rounded-lg text-xs"></div>
           <div><label class="text-[9px] text-slate-500 font-semibold">PP2BS Sugar</label><input type="number" id="cpInM2" onchange="saveVitals()" value="${comp.metric2||''}" class="w-full bg-slate-50 border p-2 rounded-lg text-xs"></div>
         </div>
-        <input type="text" id="cpInNote" onchange="saveVitals()" value="${comp.note||''}" placeholder="Notes, local food eaten (e.g. Sev Usal)..." class="w-full bg-slate-50 border p-2 rounded-lg text-xs mt-1">
+        <input type="text" id="cpInNote" onchange="saveVitals()" value="${comp.note||''}" placeholder="Notes, local food eaten (e.g. Ganthiya, Fafda)..." class="w-full bg-slate-50 border p-2 rounded-lg text-xs mt-1">
       `;
     }
 
@@ -659,7 +682,7 @@ Client: *${currentClient.name}*
 Date: *${selectedDateKey}*
 💧 Water Intake: *${waterVal.toFixed(2)} Liters*
 🩸 Fasting Sugar: *${comp.metric1 || 'N/A'}* | PP2BS: *${comp.metric2 || 'N/A'}*
-Notes: "${comp.note || 'All good'}"`;
+Notes / Farsan Log: "${comp.note || 'All good'}"`;
       window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
     }
   </script>
