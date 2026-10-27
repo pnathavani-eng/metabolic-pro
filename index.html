@@ -133,6 +133,15 @@
         </div>
       </div>
 
+      <!-- DAILY COMPLIANCE SCORECARD & MOTIVATION BANNER (NEW FEATURE) -->
+      <div id="cpMotivationCard" class="card-clean p-4 rounded-3xl space-y-2 border border-teal-200 bg-teal-50/50">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-black text-teal-900 flex items-center gap-1.5"><i class="fa-solid fa-award text-teal-600"></i> Daily Protocol Scorecard</span>
+          <span class="text-xs font-black px-2.5 py-0.5 rounded-full bg-teal-600 text-white" id="cpScoreBadge">0% Compliance</span>
+        </div>
+        <p class="text-xs font-semibold text-slate-700 leading-snug" id="cpMotivationText">મહેરબાની કરીને તમારા આજના મીલ્સ માર્ક કરો જેથી તમારો સ્કોર અને પ્રેરણાદાયી સંદેશ અહીં દેખાય.</p>
+      </div>
+
       <!-- DAILY WATER HYDRATION TRACKER -->
       <div class="card-clean p-3.5 rounded-2xl space-y-2 border">
         <div class="flex justify-between items-center text-xs">
@@ -149,8 +158,6 @@
           <button onclick="resetWater()" class="py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-[11px] font-bold">Reset 🔄</button>
         </div>
       </div>
-
-      <div id="cpMotivationBanner" class="p-3.5 rounded-2xl border text-xs space-y-1 transition-all"></div>
 
       <!-- CALENDAR STRIP -->
       <div class="card-clean p-3 rounded-2xl space-y-2">
@@ -209,9 +216,9 @@
         <div id="cstActiveTags" class="flex flex-wrap gap-1.5 min-h-[36px] items-center"></div>
       </div>
       <div class="space-y-1 pt-1 border-t">
-        <span class="text-[10px] text-slate-600 font-bold">અન્ય કંઈ ખાધું હોય તો અહીં ઉમેરો (Type local food e.g. Ganthiya, Puri):</span>
+        <span class="text-[10px] text-slate-600 font-bold">અન્ય કંઈ ખાધું હોય તો અહીં ઉમેરો (Type local food e.g. Sweet, Ganthiya):</span>
         <div class="flex gap-1.5">
-          <input type="text" id="cstCustomInput" placeholder="e.g. સેવ ઉસળ, ગાંઠિયા..." class="flex-1 bg-slate-50 border p-2 rounded-xl text-xs">
+          <input type="text" id="cstCustomInput" placeholder="e.g. Sweet, Jalebi..." class="flex-1 bg-slate-50 border p-2 rounded-xl text-xs">
           <button onclick="addCustomTypedFood()" class="px-3.5 py-2 bg-slate-900 text-white rounded-xl font-bold text-xs">+ Add</button>
         </div>
       </div>
@@ -282,6 +289,13 @@
       "Sev": { cal: 520, gi: 78 },
       "Kachori": { cal: 450, gi: 75 },
       "Samosa": { cal: 310, gi: 72 },
+      "Sweet": { cal: 400, gi: 75 },
+      "Mithai": { cal: 400, gi: 75 },
+      "Gulab Jamun": { cal: 330, gi: 75 },
+      "Jalebi": { cal: 450, gi: 78 },
+      "Kaju Katli": { cal: 539, gi: 70 },
+      "Besan Ladoo": { cal: 450, gi: 68 },
+      "Peda": { cal: 385, gi: 70 },
       "Kiwi": { cal: 61, gi: 52 },
       "Dragon Fruit": { cal: 60, gi: 48 },
       "Pomegranate": { cal: 83, gi: 53 },
@@ -316,7 +330,6 @@
       return { totalCal, gi: maxGi };
     }
 
-    // EXPANDED 15-DAY UNIQUE ROTATING CLINICAL MENU (No repetition for 15 days)
     const MASTER_30_DAY_MENU = [
       { morning: "Ash Gourd + Coriander + Raw Turmeric", breakfast: "Moong Dal Chila + Fresh Paneer", lunch: "Salad Barrier + Multi-Millet Roti + Bottle Gourd + Chaas", snack: "Roasted Makhana", dinner: "Pumpkin Puree + Sauteed Veggies" },
       { morning: "Bottle Gourd + Ginger", breakfast: "Steamed Moong + Lemon", lunch: "Salad Barrier + Multi-Millet Roti + Palak Paneer + Chaas", snack: "Pomegranate", dinner: "Pumpkin Puree + Paneer" },
@@ -532,6 +545,8 @@
 
       let totalDayCalories = 0;
       let totalDayGiSum = 0;
+      let scorePoints = 0;
+      let markedCount = 0;
 
       const container = document.getElementById('cpTodayMealCards');
       container.innerHTML = '';
@@ -541,8 +556,12 @@
         totalDayCalories += nut.totalCal;
         totalDayGiSum += nut.gi;
 
-        const isRedZone = (nut.gi >= 70);
         const currentCheck = comp[s.key] || 'idle';
+        if(currentCheck === 'done') { scorePoints += 100; markedCount++; }
+        else if(currentCheck === 'half') { scorePoints += 50; markedCount++; }
+        else if(currentCheck === 'miss') { scorePoints += 0; markedCount++; }
+
+        const isRedZone = (nut.gi >= 70);
         const card = document.createElement('div');
         card.className = "card-clean p-3.5 rounded-2xl space-y-2 border border-slate-200";
         card.innerHTML = `
@@ -568,6 +587,28 @@
         container.appendChild(card);
       });
 
+      // CALCULATE COMPLIANCE SCORE & MOTIVATION MESSAGE
+      const finalScore = markedCount > 0 ? Math.round(scorePoints / slots.length) : 0;
+      document.getElementById('cpScoreBadge').innerText = finalScore + '% Score';
+
+      let motivationMsg = "મહેરબાની કરીને તમારા આજના મીલ્સ માર્ક કરો જેથી તમારો સ્કોર અને પ્રેરણાદાયી સંદેશ અહીં દેખાય.";
+      let cardBgClass = "card-clean p-4 rounded-3xl space-y-2 border border-teal-200 bg-teal-50/50";
+
+      if (markedCount > 0) {
+        if (finalScore >= 80) {
+          motivationMsg = "🌟 અદભૂત! આજનું પાલન ખૂબ જ શાનદાર રહ્યું છે. આ જ રીતે ડાયેટ કંટ્રોલ જાળવો અને હેલ્થ રિવર્સલ તરફ આગળ વધો!";
+          cardBgClass = "card-clean p-4 rounded-3xl space-y-2 border border-emerald-300 bg-emerald-50/60";
+        } else if (finalScore >= 50) {
+          motivationMsg = "👍 સારો પ્રયાસ! કાલે હજી થોડી વધુ સાવધાની રાખજો, તમે તમારા સ્વાસ્થ્ય લક્ષ્યની બરાબર નજીક છો.";
+          cardBgClass = "card-clean p-4 rounded-3xl space-y-2 border border-amber-300 bg-amber-50/60";
+        } else {
+          motivationMsg = "💪 કોઈ વાંધો નહીં! સૂર્ય ક્યારેક વાદળો પાછળ છુપાય છે. આવતીકાલે નવી ઉર્જા સાથે ફરી પ્રોટોકોલ ફોલો કરીએ!";
+          cardBgClass = "card-clean p-4 rounded-3xl space-y-2 border border-rose-300 bg-rose-50/60";
+        }
+      }
+      document.getElementById('cpMotivationCard').className = cardBgClass;
+      document.getElementById('cpMotivationText').innerText = motivationMsg;
+
       const dailyTarget = 1200;
       const remaining = dailyTarget - totalDayCalories;
       const avgGi = Math.round(totalDayGiSum / slots.length);
@@ -591,7 +632,7 @@
           <div><label class="text-[9px] text-slate-500 font-semibold">Fasting Sugar</label><input type="number" id="cpInM1" onchange="saveVitals()" value="${comp.metric1||''}" class="w-full bg-slate-50 border p-2 rounded-lg text-xs"></div>
           <div><label class="text-[9px] text-slate-500 font-semibold">PP2BS Sugar</label><input type="number" id="cpInM2" onchange="saveVitals()" value="${comp.metric2||''}" class="w-full bg-slate-50 border p-2 rounded-lg text-xs"></div>
         </div>
-        <input type="text" id="cpInNote" onchange="saveVitals()" value="${comp.note||''}" placeholder="Notes, local food eaten (e.g. Ganthiya)..." class="w-full bg-slate-50 border p-2 rounded-lg text-xs mt-1">
+        <input type="text" id="cpInNote" onchange="saveVitals()" value="${comp.note||''}" placeholder="Notes, local food eaten..." class="w-full bg-slate-50 border p-2 rounded-lg text-xs mt-1">
       `;
     }
 
@@ -654,7 +695,7 @@
 
     function addCustomTypedFood() {
       const val = document.getElementById('cstCustomInput').value.trim();
-      if(val && !cstActiveTags.includes(val)) { cstActiveTags.push(val); renderCstTags(); document.getElementById('cstCustomInput').value=''; }
+      if(val && !cstActiveTags.includes(val)) { cstActiveTags.push(val); renderCstTags(); document.getElementById('cstCustomInput'].value=''; }
     }
 
     function renderCstSubs() {
