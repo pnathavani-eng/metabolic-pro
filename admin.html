@@ -7,7 +7,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- Firebase Compat SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
@@ -15,206 +14,76 @@
     body {
       background-color: #f8fafc;
       color: #0f172a;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
     .brand-gradient { background: linear-gradient(135deg, #0d9488, #0284c7); }
-    .card-clean {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-    }
+    .card-clean { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
     .tab-active { background: #0f766e; color: #ffffff !important; font-weight: 700; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="pb-24 antialiased">
 
-  <!-- ==========================================
-       VIEW 1: ADMIN LOGIN SCREEN
-       ========================================== -->
   <div id="adminAuthView" class="min-h-screen flex flex-col justify-center p-4 max-w-sm mx-auto space-y-4">
-    <div class="card-clean rounded-3xl p-6 shadow-xl border border-slate-200 text-center space-y-4">
-      <div class="w-14 h-14 rounded-2xl bg-slate-900 text-teal-400 flex items-center justify-center text-2xl font-black shadow-lg mx-auto">
+    <div class="card-clean rounded-3xl p-6 shadow-xl border text-center space-y-4">
+      <div class="w-14 h-14 rounded-2xl bg-slate-900 text-teal-400 flex items-center justify-center text-2xl font-black mx-auto">
         <i class="fa-solid fa-shield-halved"></i>
       </div>
       <div>
         <h2 class="text-xl font-black text-slate-900">Coach Master Admin</h2>
         <p class="text-xs text-slate-500 mt-0.5">Metabolic Pro Cloud CRM</p>
       </div>
-
       <div class="space-y-3 text-left">
-        <div>
-          <label class="text-xs font-bold text-slate-700">Admin Security PIN</label>
-          <input type="password" maxlength="8" id="inAdminPin" placeholder="••••" class="w-full mt-1 p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 tracking-widest text-center text-xl font-black focus:bg-white focus:border-teal-600 focus:outline-none">
-        </div>
-
-        <button onclick="verifyAdminPin()" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-extrabold text-xs shadow hover:bg-slate-800 transition">
-          Access Master CRM 🔐
-        </button>
+        <input type="password" maxlength="8" id="inAdminPin" placeholder="Admin PIN (1234)" class="w-full p-3 bg-slate-50 border rounded-xl text-center text-xl font-black">
+        <button onclick="verifyAdminPin()" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-extrabold text-xs shadow">Access Master CRM 🔐</button>
       </div>
     </div>
   </div>
 
-  <!-- ==========================================
-       VIEW 2: LIVE CLOUD CRM DASHBOARD
-       ========================================== -->
   <div id="adminMainView" class="hidden min-h-screen">
-    <header class="p-3.5 bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-40 flex justify-between items-center shadow-md">
-      <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-xl bg-teal-500 text-slate-900 font-black flex items-center justify-center text-sm">
-          MP
-        </div>
-        <div>
-          <h1 class="font-extrabold text-white text-sm">Admin Control Center</h1>
-          <p class="text-[9px] text-teal-400 flex items-center gap-1">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
-            Live Cloud Connected (Firebase Firestore)
-          </p>
-        </div>
-      </div>
+    <header class="p-3.5 bg-slate-900 text-white sticky top-0 z-40 flex justify-between items-center shadow-md">
       <div class="flex items-center gap-2">
-        <button onclick="openCoachSettingsModal()" class="px-2.5 py-1 bg-slate-800 border border-slate-700 text-teal-300 rounded-lg text-xs font-bold hover:bg-slate-700 flex items-center gap-1">
-          <i class="fa-brands fa-whatsapp text-[10px]"></i> WhatsApp
-        </button>
-        <button onclick="logoutAdmin()" class="px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs hover:text-white">
-          Logout
-        </button>
+        <div class="w-8 h-8 rounded-xl bg-teal-500 text-slate-900 font-black flex items-center justify-center text-sm">MP</div>
+        <h1 class="font-extrabold text-white text-sm">Admin CRM & Master Grocery</h1>
       </div>
+      <button onclick="logoutAdmin()" class="px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs">Logout</button>
     </header>
 
-    <div class="flex p-2 gap-1.5 bg-white border-b border-slate-200 text-xs overflow-x-auto no-scrollbar">
-      <button onclick="setAdminTab('clients')" id="atab-clients" class="tab-active px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-users"></i> Client Directory (<span id="tabCount">0</span>)</button>
-      <button onclick="setAdminTab('planner')" id="atab-planner" class="px-3.5 py-2 rounded-xl text-slate-600 bg-slate-100 flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-calendar-check"></i> Master Protocols</button>
-      <button onclick="setAdminTab('lab')" id="atab-lab" class="px-3.5 py-2 rounded-xl text-slate-600 bg-slate-100 flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-vial"></i> Lab Biomarkers</button>
+    <div class="flex p-2 gap-1.5 bg-white border-b text-xs overflow-x-auto">
+      <button onclick="setAdminTab('clients')" id="atab-clients" class="tab-active px-3 py-2 rounded-xl whitespace-nowrap"><i class="fa-solid fa-users"></i> Clients</button>
+      <button onclick="setAdminTab('grocery')" id="atab-grocery" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-solid fa-carrot"></i> Master Grocery & GI</button>
     </div>
 
     <main class="p-3.5 max-w-lg mx-auto space-y-3.5">
-      <!-- KPI Metrics -->
-      <div class="grid grid-cols-4 gap-2 text-center text-xs">
-        <div class="card-clean p-2.5 rounded-2xl"><div id="admTotal" class="text-base font-black text-slate-900">0</div><div class="text-[9px] text-slate-500">Clients</div></div>
-        <div class="card-clean p-2.5 rounded-2xl"><div id="admClinical" class="text-base font-black text-teal-700">0</div><div class="text-[9px] text-slate-500">Clinical</div></div>
-        <div class="card-clean p-2.5 rounded-2xl"><div id="admFitness" class="text-base font-black text-sky-700">0</div><div class="text-[9px] text-slate-500">Gym Pro</div></div>
-        <div class="card-clean p-2.5 rounded-2xl"><div id="admTrialActive" class="text-base font-black text-rose-600">0</div><div class="text-[9px] text-slate-500">Trials</div></div>
-      </div>
-
-      <!-- TAB 1: CLIENTS DIRECTORY WITH TRIAL / LIFETIME ACCESS CONTROL -->
+      <!-- Clients Tab -->
       <section id="aview-clients" class="space-y-3">
-        <button onclick="openModal()" class="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm">
-          <i class="fa-solid fa-user-plus"></i> Add New Client Direct to Cloud
-        </button>
-        <input type="text" id="admSearch" oninput="filterAdminClients()" placeholder="Search clients by name, phone or category..." class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-600">
-        <div id="admClientsList" class="space-y-3">
-          <div class="text-center py-8 text-slate-400 text-xs">Loading live clients from Google Cloud...</div>
-        </div>
+        <button onclick="openModal()" class="w-full bg-teal-600 text-white font-bold py-3 rounded-xl text-xs shadow-sm">+ Add New Client to Cloud</button>
+        <div id="admClientsList" class="space-y-3"></div>
       </section>
 
-      <!-- TAB 2: MASTER PROTOCOL SETUP & OVERRIDE -->
-      <section id="aview-planner" class="hidden space-y-3 text-xs">
+      <!-- Master Grocery Tab -->
+      <section id="aview-grocery" class="hidden space-y-3 text-xs">
         <div class="card-clean p-4 rounded-2xl space-y-3">
-          <div class="flex justify-between items-center border-b border-slate-200 pb-2">
-            <h2 class="font-bold text-slate-800 text-sm">Protocol Customization & Override</h2>
-            <span class="text-[10px] text-teal-700 font-extrabold" id="admCurrentClientBadge"></span>
-          </div>
-
-          <div>
-            <label class="text-[10px] text-slate-500 font-semibold">Select Client:</label>
-            <select id="admPlannerSelect" onchange="switchPlannerClient(this.value)" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-xl text-slate-800 mt-0.5"></select>
-          </div>
-
-          <div class="flex gap-1 overflow-x-auto py-1 no-scrollbar text-[11px]" id="admDayTabs"></div>
-
-          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
-            <div class="text-slate-800 font-bold" id="admDayFormTitle">Monday Protocol</div>
-            <div><label class="text-[10px] text-slate-500 font-semibold">1. Morning Detox:</label><input type="text" id="admMorning" class="w-full bg-white border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
-            <div><label class="text-[10px] text-slate-500 font-semibold">2. Breakfast Fuel:</label><input type="text" id="admBreakfast" class="w-full bg-white border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
-            <div><label class="text-[10px] text-slate-500 font-semibold">3. Lunch Plate:</label><input type="text" id="admLunch" class="w-full bg-white border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
-            <div><label class="text-[10px] text-slate-500 font-semibold">4. Afternoon Snack:</label><input type="text" id="admSnack" class="w-full bg-white border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
-            <div><label class="text-[10px] text-slate-500 font-semibold">5. Dinner & Recovery:</label><input type="text" id="admDinner" class="w-full bg-white border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
-          </div>
-
-          <div class="flex gap-2">
-            <button onclick="saveActiveDayToCloud()" class="flex-1 bg-slate-900 text-white font-bold py-2.5 rounded-xl shadow">Save to Cloud ☁️</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB 3: LAB REPORT -->
-      <section id="aview-lab" class="hidden space-y-3 text-xs">
-        <div class="card-clean p-4 rounded-2xl space-y-3">
-          <h2 class="font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-microscope text-teal-600"></i> Biomarker Analyzer</h2>
-          <div class="grid grid-cols-2 gap-2">
-            <div class="col-span-2">
-              <label class="text-[10px] text-slate-500">Client</label>
-              <select id="admLabSelect" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-xl text-slate-800 mt-0.5"></select>
-            </div>
-            <div><label class="text-[10px] text-slate-500">HbA1c (%)</label><input type="number" step="0.1" id="inHba1c" placeholder="7.2" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800"></div>
-            <div><label class="text-[10px] text-slate-500">Fasting Sugar (mg/dL)</label><input type="number" id="inFast" placeholder="135" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800"></div>
-            <div><label class="text-[10px] text-slate-500">SGPT / ALT (Liver)</label><input type="number" id="inSgpt" placeholder="48" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800"></div>
-          </div>
-          <button onclick="runLabAnalysis()" class="w-full bg-teal-600 text-white font-bold py-2.5 rounded-xl text-xs shadow-sm">Analyze Biomarkers</button>
-          <div id="labResult" class="hidden space-y-2 pt-2 border-t border-slate-200">
-            <div id="riskBadges" class="flex gap-1.5 flex-wrap"></div>
-            <div id="dietAdvice" class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-[11px] space-y-1"></div>
-          </div>
+          <h2 class="font-bold text-slate-800 text-sm">Master Grocery, Calories & GI Database</h2>
+          <p class="text-[11px] text-slate-500">All food items, oils, ghee, paneer and spices used in client calculations.</p>
+          <div id="groceryItemsList" class="space-y-2"></div>
         </div>
       </section>
     </main>
   </div>
 
-  <!-- Modal: Add New Client -->
-  <div id="admModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm p-4 rounded-3xl space-y-2.5 text-xs shadow-xl border border-slate-200">
-      <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-        <h3 class="font-bold text-slate-800">Add New Client to Cloud</h3>
-        <button onclick="closeModal()"><i class="fa-solid fa-xmark text-slate-400 text-sm"></i></button>
-      </div>
-      <div><label class="text-[10px] text-slate-500">Full Name</label><input type="text" id="mName" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
-      <div><label class="text-[10px] text-slate-500">WhatsApp Phone (10 digits)</label><input type="text" id="mPhone" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
-      <div>
-        <label class="text-[10px] text-slate-500">Primary Health Goal</label>
-        <select id="mGoal" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5">
-          <option value="Fatty Liver Detox">🥒 Fatty Liver Detox</option>
-          <option value="Type 2 Diabetes Reversal">🩺 Type 2 Diabetes Reversal</option>
-          <option value="High Blood Pressure (BP)">🫀 High BP Control</option>
-          <option value="Gym & High Protein">🏋️ Gym & High Protein</option>
-          <option value="Menopause Care">🌸 Menopause Care</option>
-        </select>
-      </div>
-      <div>
-        <label class="text-[10px] text-slate-500">Dietary Preference</label>
-        <select id="mDiet" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5">
-          <option value="veg">🌱 Vegetarian</option>
-          <option value="nonveg">🍗 Non-Vegetarian</option>
-        </select>
-      </div>
-      <div>
-        <label class="text-[10px] text-slate-500">Trial / Access Days (e.g. 30 or 999 for Lifetime)</label>
-        <input type="number" id="mDays" value="30" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5">
-      </div>
-      <div class="flex gap-2 pt-2">
-        <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl">Cancel</button>
-        <button onclick="addNewClientToCloud()" class="flex-1 bg-teal-600 text-white font-bold py-2 rounded-xl">Save to Cloud</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal: Coach WhatsApp Settings -->
-  <div id="modalCoachSettings" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-xs p-5 rounded-3xl space-y-3 text-xs shadow-xl border border-slate-200">
-      <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-        <h3 class="font-bold text-slate-900">Coach WhatsApp Number</h3>
-        <button onclick="closeCoachSettingsModal()"><i class="fa-solid fa-xmark text-slate-400"></i></button>
-      </div>
-      <div>
-        <label class="text-[10px] font-bold text-slate-600">WhatsApp Phone (with Country Code)</label>
-        <input type="tel" id="inCoachPhoneSetting" placeholder="919081421028" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-bold mt-1">
-      </div>
-      <div class="flex gap-2 pt-1">
-        <button onclick="closeCoachSettingsModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl font-bold">Cancel</button>
-        <button onclick="saveCoachWhatsAppSetting()" class="flex-1 bg-teal-600 text-white py-2 rounded-xl font-bold">Save 💾</button>
-      </div>
+  <div id="admModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm p-4 rounded-3xl space-y-2.5 text-xs shadow-xl">
+      <div class="flex justify-between items-center"><h3 class="font-bold">Add Client</h3><button onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button></div>
+      <input type="text" id="mName" placeholder="Full Name" class="w-full p-2 border rounded-lg">
+      <input type="text" id="mPhone" placeholder="WhatsApp Number" class="w-full p-2 border rounded-lg">
+      <select id="mGoal" class="w-full p-2 border rounded-lg">
+        <option value="Fatty Liver Detox">🥒 Fatty Liver Detox</option>
+        <option value="Type 2 Diabetes Reversal">🩺 Type 2 Diabetes Reversal</option>
+      </select>
+      <select id="mDiet" class="w-full p-2 border rounded-lg"><option value="veg">Vegetarian</option><option value="nonveg">Non-Vegetarian</option></select>
+      <input type="number" id="mDays" value="30" placeholder="Trial Days (999 for Lifetime VIP)" class="w-full p-2 border rounded-lg">
+      <button onclick="addNewClientToCloud()" class="w-full bg-teal-600 text-white font-bold py-2 rounded-xl">Save to Cloud</button>
     </div>
   </div>
 
@@ -231,199 +100,83 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    const DAYS = [
-      { id: 'mon', name: 'Monday', short: 'Mon' },
-      { id: 'tue', name: 'Tuesday', short: 'Tue' },
-      { id: 'wed', name: 'Wednesday', short: 'Wed' },
-      { id: 'thu', name: 'Thursday', short: 'Thu' },
-      { id: 'fri', name: 'Friday', short: 'Fri' },
-      { id: 'sat', name: 'Saturday', short: 'Sat' },
-      { id: 'sun', name: 'Sunday', short: 'Sun' }
-    ];
+    const MASTER_GROCERY_DB = {
+      "Ash Gourd": { cal: 13, gi: 15 },
+      "Bottle Gourd": { cal: 21, gi: 15 },
+      "Coriander": { cal: 23, gi: 15 },
+      "Raw Turmeric": { cal: 35, gi: 20 },
+      "Moong Dal Chila": { cal: 220, gi: 38 },
+      "Fresh Paneer": { cal: 265, gi: 15 },
+      "Salad Barrier": { cal: 25, gi: 15 },
+      "Multi-Millet Roti": { cal: 110, gi: 35 },
+      "Chaas": { cal: 40, gi: 15 },
+      "Roasted Makhana": { cal: 347, gi: 45 },
+      "Desi Ghee": { cal: 900, gi: 0 },
+      "Groundnut Oil": { cal: 884, gi: 0 }
+    };
 
     let liveClients = [];
-    let selectedClientId = null;
-    let activeDay = 'mon';
-    let adminMasterPin = localStorage.getItem('met_pro_admin_master_pin') || '1234';
 
     function verifyAdminPin() {
-      const pin = document.getElementById('inAdminPin').value.trim();
-      adminMasterPin = localStorage.getItem('met_pro_admin_master_pin') || '1234';
-      if (pin === adminMasterPin) {
+      if(document.getElementById('inAdminPin').value.trim() === '1234') {
         document.getElementById('adminAuthView').classList.add('hidden');
         document.getElementById('adminMainView').classList.remove('hidden');
-        setupAdminDayTabs();
-        listenToLiveClients();
-      } else {
-        alert('Invalid Security PIN.');
-      }
+        listenToClients();
+        renderMasterGrocery();
+      } else alert('Invalid PIN');
     }
 
-    function logoutAdmin() {
-      document.getElementById('adminMainView').classList.add('hidden');
-      document.getElementById('adminAuthView').classList.remove('hidden');
-      document.getElementById('inAdminPin').value = '';
+    function logoutAdmin() { location.reload(); }
+
+    function setAdminTab(tab) {
+      ['clients', 'grocery'].forEach(t => {
+        document.getElementById('aview-' + t).classList.add('hidden');
+        document.getElementById('atab-' + t).className = "px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap";
+      });
+      document.getElementById('aview-' + tab).classList.remove('hidden');
+      document.getElementById('atab-' + tab).className = "tab-active px-3 py-2 rounded-xl whitespace-nowrap";
     }
 
-    function listenToLiveClients() {
-      db.collection('clients').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+    function listenToClients() {
+      db.collection('clients').orderBy('createdAt', 'desc').onSnapshot(snap => {
         liveClients = [];
-        snapshot.forEach(doc => {
-          liveClients.push({ id: doc.id, ...doc.data() });
-        });
-        renderLiveClients();
-      }, err => { console.error("Firestore listener error:", err); });
+        snap.forEach(d => liveClients.push({ id: d.id, ...d.data() }));
+        renderClients();
+      });
     }
 
-    function renderLiveClients() {
-      document.getElementById('admTotal').innerText = liveClients.length;
-      document.getElementById('tabCount').innerText = liveClients.length;
-      document.getElementById('admClinical').innerText = liveClients.filter(c => c.goal && (c.goal.includes('Diabetes') || c.goal.includes('Liver'))).length;
-      document.getElementById('admFitness').innerText = liveClients.filter(c => c.goal && c.goal.includes('Gym')).length;
-      document.getElementById('admTrialActive').innerText = liveClients.filter(c => c.tier === 'trial').length;
-
-      const container = document.getElementById('admClientsList');
-      container.innerHTML = '';
-
-      if (liveClients.length === 0) {
-        container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">No clients registered yet.</div>`;
-        return;
-      }
-
-      liveClients.forEach(c => {
-        const card = document.createElement('div');
-        card.className = "card-clean p-3.5 rounded-2xl space-y-2 border border-slate-200";
-        card.innerHTML = `
-          <div class="flex justify-between items-center">
-            <div class="flex items-center gap-1.5">
-              <span class="text-[10px] font-black px-2 py-0.5 rounded bg-slate-900 text-white">#${c.refCode || c.id.slice(-4)}</span>
-              <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">${c.goal || 'General Health'}</span>
+    function renderClients() {
+      const c = document.getElementById('admClientsList');
+      c.innerHTML = '';
+      if(liveClients.length === 0) { c.innerHTML = '<div class="text-center py-6 text-slate-400">No clients yet.</div>'; return; }
+      liveClients.forEach(cl => {
+        c.innerHTML += `
+          <div class="card-clean p-3.5 rounded-2xl space-y-2 border">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold">${cl.name} (${cl.phone})</span>
+              <span class="text-[10px] font-extrabold px-2 py-0.5 bg-teal-50 text-teal-800 rounded">${cl.trialDays>=900 ? 'Lifetime VIP' : cl.trialDays+' Days Trial'}</span>
             </div>
-            <div class="flex items-center gap-2">
-              <button onclick="openPlannerFor('${c.id}')" class="text-xs text-teal-700 font-bold hover:underline"><i class="fa-solid fa-pen-to-square"></i> Protocol</button>
-              <button onclick="deleteClientFromCloud('${c.id}')" class="text-slate-400 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash-can"></i></button>
-            </div>
-          </div>
-          <div class="flex justify-between items-center">
-            <div>
-              <h3 class="font-bold text-slate-900 text-sm">${c.name}</h3>
-              <p class="text-[11px] text-slate-500">${c.phone} | <span class="text-teal-700 font-bold">${c.trialDays || 30}d Access (PIN: ${c.pin||'1234'})</span></p>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <button onclick="extendClientTrial('${c.id}', 30)" class="px-2 py-1 bg-teal-50 border border-teal-200 text-teal-800 rounded-lg text-[10px] font-bold">+30d</button>
-              <button onclick="extendClientTrial('${c.id}', 999)" class="px-2 py-1 bg-slate-900 text-white rounded-lg text-[10px] font-bold">Lifetime VIP</button>
+            <div class="flex gap-1.5 pt-1">
+              <button onclick="updateTrial('${cl.id}', 30)" class="px-2 py-1 bg-slate-100 text-[10px] rounded">30 Days</button>
+              <button onclick="updateTrial('${cl.id}', 999)" class="px-2 py-1 bg-slate-900 text-white text-[10px] rounded font-bold">Make Lifetime VIP</button>
+              <button onclick="db.collection('clients').doc('${cl.id}').delete()" class="text-rose-600 text-[10px] ml-auto">Delete</button>
             </div>
           </div>
         `;
-        container.appendChild(card);
       });
-
-      const pSel = document.getElementById('admPlannerSelect');
-      const lSel = document.getElementById('admLabSelect');
-      pSel.innerHTML = '';
-      lSel.innerHTML = '';
-      liveClients.forEach(c => {
-        pSel.innerHTML += `<option value="${c.id}" ${c.id===selectedClientId?'selected':''}>${c.name} (${c.phone})</option>`;
-        lSel.innerHTML += `<option value="${c.id}">${c.name} (${c.phone})</option>`;
-      });
-
-      if(!selectedClientId && liveClients.length > 0) {
-        selectedClientId = liveClients[0].id;
-        loadPlannerData();
-      }
     }
 
-    async function extendClientTrial(id, days) {
+    async function updateTrial(id, days) {
       await db.collection('clients').doc(id).update({ trialDays: days });
-      alert(`✅ Access updated to ${days === 999 ? 'Lifetime VIP' : days + ' Days'}!`);
+      alert('Updated access successfully!');
     }
 
-    async function deleteClientFromCloud(id) {
-      if(confirm('Permanently delete this client from Cloud?')) {
-        await db.collection('clients').doc(id).delete();
+    function renderMasterGrocery() {
+      const c = document.getElementById('groceryItemsList');
+      c.innerHTML = '';
+      for(let item in MASTER_GROCERY_DB) {
+        c.innerHTML += `<div class="flex justify-between p-2 bg-slate-50 rounded-lg border text-xs"><span><strong>${item}</strong></span><span>🔥 ${MASTER_GROCERY_DB[item].cal} kcal | GI: ${MASTER_GROCERY_DB[item].gi}</span></div>`;
       }
-    }
-
-    function setAdminTab(tab) {
-      ['clients', 'planner', 'lab'].forEach(t => {
-        document.getElementById('aview-' + t).classList.add('hidden');
-        document.getElementById('atab-' + t).className = "px-3.5 py-2 rounded-xl text-slate-600 bg-slate-100 flex items-center gap-1.5 whitespace-nowrap";
-      });
-      document.getElementById('aview-' + tab).classList.remove('hidden');
-      document.getElementById('atab-' + tab).className = "tab-active px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap shadow";
-    }
-
-    function setupAdminDayTabs() {
-      const container = document.getElementById('admDayTabs');
-      container.innerHTML = '';
-      DAYS.forEach(d => {
-        const btn = document.createElement('button');
-        btn.id = 'admtab-' + d.id;
-        btn.className = (d.id === activeDay) 
-          ? "px-2.5 py-1.5 rounded-lg bg-teal-600 text-white font-bold whitespace-nowrap shadow" 
-          : "px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap border border-slate-200";
-        btn.innerText = d.short;
-        btn.onclick = () => selectAdminDay(d.id);
-        container.appendChild(btn);
-      });
-    }
-
-    function selectAdminDay(dayId) {
-      activeDay = dayId;
-      setupAdminDayTabs();
-      loadActiveDayForm();
-    }
-
-    function openPlannerFor(cId) {
-      selectedClientId = cId;
-      document.getElementById('admPlannerSelect').value = cId;
-      setAdminTab('planner');
-      loadPlannerData();
-    }
-
-    function switchPlannerClient(cId) {
-      selectedClientId = cId;
-      loadPlannerData();
-    }
-
-    function loadPlannerData() {
-      const c = liveClients.find(x => x.id === selectedClientId);
-      if(!c) return;
-      document.getElementById('admCurrentClientBadge').innerText = `${c.name} (${c.goal})`;
-      loadActiveDayForm();
-    }
-
-    function loadActiveDayForm() {
-      const c = liveClients.find(x => x.id === selectedClientId);
-      if(!c) return;
-      if(!c.weeklyPlan) c.weeklyPlan = {};
-      const d = c.weeklyPlan[activeDay] || {};
-      const dObj = DAYS.find(x => x.id === activeDay);
-
-      document.getElementById('admDayFormTitle').innerText = `${dObj.name} Override (${c.name})`;
-      document.getElementById('admMorning').value = d.morning || '';
-      document.getElementById('admBreakfast').value = d.breakfast || '';
-      document.getElementById('admLunch').value = d.lunch || '';
-      document.getElementById('admSnack').value = d.snack || '';
-      document.getElementById('admDinner').value = d.dinner || '';
-    }
-
-    async function saveActiveDayToCloud() {
-      const c = liveClients.find(x => x.id === selectedClientId);
-      if(!c) return;
-
-      const updatedDay = {
-        morning: document.getElementById('admMorning').value.trim(),
-        breakfast: document.getElementById('admBreakfast').value.trim(),
-        lunch: document.getElementById('admLunch').value.trim(),
-        snack: document.getElementById('admSnack').value.trim(),
-        dinner: document.getElementById('admDinner').value.trim()
-      };
-
-      await db.collection('clients').doc(c.id).update({
-        [`weeklyPlan.${activeDay}`]: updatedDay
-      });
-      alert(`✅ ${DAYS.find(x=>x.id===activeDay).name} protocol override saved in Cloud!`);
     }
 
     function openModal() { document.getElementById('admModal').classList.remove('hidden'); }
@@ -431,50 +184,20 @@
 
     async function addNewClientToCloud() {
       const n = document.getElementById('mName').value.trim();
-      const p = document.getElementById('mPhone').value.trim().replace(/\D/g, '');
+      const p = document.getElementById('mPhone').value.trim().replace(/\D/g,'');
       const g = document.getElementById('mGoal').value;
       const d = document.getElementById('mDiet').value;
       const days = parseInt(document.getElementById('mDays').value) || 30;
-      if(!n || p.length < 10) return alert('Enter full name and 10-digit number.');
-
-      const pin = p.slice(-4) || '1234';
-      const todayKey = new Date().toISOString().split('T')[0];
+      if(!n || p.length < 10) return alert('Enter valid name and number');
 
       await db.collection('clients').doc(p).set({
-        name: n, phone: p, pin: pin, goal: g, diet: d, tier: 'trial', trialDays: days,
-        joiningDate: todayKey,
-        refCode: 'CL-' + p.slice(-4),
+        name: n, phone: p, pin: p.slice(-4), goal: g, diet: d, trialDays: days,
+        joiningDate: new Date().toISOString().split('T')[0],
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        weeklyPlan: {},
-        compliance: {}
+        compliance: {}, weeklyPlan: {}
       });
       closeModal();
-      alert(`Client ${n} saved to Cloud! (PIN: ${pin})`);
-    }
-
-    function openCoachSettingsModal() { document.getElementById('modalCoachSettings').classList.remove('hidden'); }
-    function closeCoachSettingsModal() { document.getElementById('modalCoachSettings').classList.add('hidden'); }
-    
-    async function saveCoachWhatsAppSetting() {
-      const phone = document.getElementById('inCoachPhoneSetting').value.trim().replace(/\D/g, '');
-      if(!phone) return alert('Enter valid phone number');
-      await db.collection('settings').doc('config').set({ coachPhone: phone }, { merge: true });
-      alert('✅ Coach WhatsApp number updated globally!');
-      closeCoachSettingsModal();
-    }
-
-    function runLabAnalysis() {
-      const h = parseFloat(document.getElementById('inHba1c').value)||0;
-      const f = parseFloat(document.getElementById('inFast').value)||0;
-      let sRisk = (h > 6.5 || f > 125) ? 'DIABETIC' : (h > 5.7 ? 'PRE-DIABETIC' : 'NORMAL');
-
-      document.getElementById('riskBadges').innerHTML = `
-        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${sRisk==='NORMAL'?'bg-emerald-100 text-emerald-800':'bg-rose-100 text-rose-800'} border border-slate-200">Sugar Risk: ${sRisk}</span>
-      `;
-      document.getElementById('dietAdvice').innerHTML = `
-        <div>• <strong>Glycemic Barrier:</strong> Raw salad bowl before Super Flour roti.</div>
-      `;
-      document.getElementById('labResult').classList.remove('hidden');
+      alert('Client added successfully!');
     }
   </script>
 </body>
