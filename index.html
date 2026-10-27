@@ -37,9 +37,11 @@
 </head>
 <body class="pb-24 antialiased">
 
-  <!-- ==================== VIEW 1: CLIENT SIGNUP & LOGIN ==================== -->
+  <!-- ==========================================
+       VIEW 1: CLIENT SIGNUP & LOGIN WITH MULTI-SELECT
+       ========================================== -->
   <div id="authView" class="min-h-screen flex flex-col justify-between p-4 max-w-md mx-auto space-y-4">
-    <div class="text-center pt-8 space-y-2">
+    <div class="text-center pt-6 space-y-2">
       <div class="w-16 h-16 rounded-2xl brand-gradient flex items-center justify-center text-white text-3xl font-black shadow-lg mx-auto shadow-teal-500/20">
         🩺
       </div>
@@ -53,18 +55,18 @@
     <div class="card-clean rounded-3xl p-5 shadow-sm space-y-4 border border-slate-200">
       <div class="flex p-1 bg-slate-100 rounded-2xl text-xs font-bold text-slate-600">
         <button onclick="setAuthTab('register')" id="tabRegister" class="flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold">
-          ✨ New Client (30-Day Free)
+          ✨ New Client Registration
         </button>
         <button onclick="setAuthTab('login')" id="tabLogin" class="flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold">
           🔑 Client Login
         </button>
       </div>
 
-      <!-- Registration Form -->
+      <!-- Registration Form with Multi-Select Comorbidities -->
       <div id="formRegister" class="space-y-3 text-xs">
         <div>
           <label class="font-bold text-slate-700">Full Name</label>
-          <input type="text" id="regName" placeholder="e.g. Ruchi Nathavani" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:bg-white focus:border-teal-600 focus:outline-none">
+          <input type="text" id="regName" placeholder="e.g. Piyush Nathvani" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:bg-white focus:border-teal-600 focus:outline-none">
         </div>
 
         <div>
@@ -72,26 +74,41 @@
           <input type="tel" id="regPhone" placeholder="e.g. 9925879138" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:bg-white focus:border-teal-600 focus:outline-none">
         </div>
 
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="font-bold text-slate-700">Dietary Mode</label>
-            <select id="regDiet" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 font-semibold focus:outline-none">
-              <option value="veg">🌱 Vegetarian</option>
-              <option value="nonveg">🍗 Non-Vegetarian</option>
-            </select>
+        <div>
+          <label class="font-bold text-slate-700">Dietary Mode</label>
+          <select id="regDiet" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 font-semibold focus:outline-none">
+            <option value="veg">🌱 Vegetarian</option>
+            <option value="nonveg">🍗 Non-Vegetarian</option>
+          </select>
+        </div>
+
+        <!-- Multi-Select Health Conditions (Comorbidities) -->
+        <div class="space-y-1.5 pt-1">
+          <label class="font-bold text-slate-700 flex justify-between items-center">
+            <span>Select All Applicable Health Goals / Conditions:</span>
+            <span class="text-[10px] text-teal-700 font-normal">Multi-select enabled</span>
+          </label>
+          <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-2xl border border-slate-200">
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
+              <input type="checkbox" name="regCondition" value="Type 2 Diabetes Reversal" class="w-4 h-4 text-teal-600 rounded"> 🩺 Diabetes Reversal
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
+              <input type="checkbox" name="regCondition" value="Fatty Liver Detox" checked class="w-4 h-4 text-teal-600 rounded"> 🥒 Fatty Liver Detox
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
+              <input type="checkbox" name="regCondition" value="High Blood Pressure (BP)" class="w-4 h-4 text-teal-600 rounded"> 🫀 High BP Control
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
+              <input type="checkbox" name="regCondition" value="Obesity & Weight Loss" class="w-4 h-4 text-teal-600 rounded"> ⚖️ Weight Loss
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
+              <input type="checkbox" name="regCondition" value="Gym & High Protein" class="w-4 h-4 text-teal-600 rounded"> 🏋️ Gym & Fitness
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
+              <input type="checkbox" name="regCondition" value="Menopause Balance" class="w-4 h-4 text-teal-600 rounded"> 🌸 Menopause Care
+            </label>
           </div>
-          <div>
-            <label class="font-bold text-slate-700">Health Goal</label>
-            <select id="regGoal" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 font-semibold focus:outline-none">
-              <option value="Fatty Liver Detox">🥒 Fatty Liver Detox</option>
-              <option value="Type 2 Diabetes Reversal">🩺 Diabetes Reversal</option>
-              <option value="Gym & High Protein">🏋️ Gym & Fitness</option>
-              <option value="Pregnancy Nutrition">🤰 Pregnancy Care</option>
-              <option value="Postpartum Recovery">👶 Postpartum Care</option>
-              <option value="Menopause Care">🌸 Menopause Balance</option>
-              <option value="Longevity & Energy">🌿 Daily Energy</option>
-            </select>
-          </div>
+          <p class="text-[10px] text-slate-400">Our Smart Safety Engine will automatically tailor your 30-day menu (e.g. avoiding high sodium snacks if High BP is selected).</p>
         </div>
 
         <div>
@@ -100,7 +117,7 @@
         </div>
 
         <button onclick="handleClientRegister()" id="btnRegisterSubmit" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-sm shadow-md shadow-teal-600/30 hover:opacity-95 transition flex items-center justify-center gap-2">
-          <span>Start My 30-Day Free Trial 🚀</span>
+          <span>Start My VIP Health Portal 🚀</span>
         </button>
       </div>
 
@@ -117,7 +134,6 @@
             <button onclick="openClientForgotPinModal()" class="text-teal-700 font-extrabold hover:underline text-[11px]">Forgot PIN? (પિન ભૂલી ગયા?)</button>
           </div>
           <input type="password" maxlength="4" id="loginPin" placeholder="••••" class="w-full mt-1 p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 tracking-widest text-center text-base focus:bg-white focus:border-teal-600 focus:outline-none">
-          <p class="text-[10px] text-slate-400 mt-1">Default PIN is the last 4 digits of your registered phone.</p>
         </div>
 
         <button onclick="handleClientLogin()" id="btnLoginSubmit" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-extrabold text-sm shadow hover:bg-slate-800 transition flex items-center justify-center gap-2">
@@ -127,11 +143,13 @@
     </div>
 
     <div class="text-center text-[11px] text-slate-400 pb-2">
-      🔒 100% Private, Encrypted & Zero Spam Assurance
+      🔒 100% Private, Encrypted & Clinical Protocol
     </div>
   </div>
 
-  <!-- ==================== VIEW 2: CLIENT VIP DAILY PORTAL ==================== -->
+  <!-- ==========================================
+       VIEW 2: CLIENT PORTAL WITH NON-REPEATING MENUS
+       ========================================== -->
   <div id="clientPortalView" class="hidden min-h-screen">
     <header class="p-3.5 bg-white border-b border-slate-200 sticky top-0 z-40 flex justify-between items-center shadow-xs">
       <div class="flex items-center gap-2.5">
@@ -154,45 +172,23 @@
     </header>
 
     <main class="p-3.5 max-w-lg mx-auto space-y-3.5">
-      <!-- 30-Day Free Trial Banner -->
+      <!-- Trial / VIP Status Banner -->
       <div class="brand-gradient-subtle p-3.5 rounded-3xl border border-teal-200 shadow-xs space-y-2">
         <div class="flex justify-between items-center">
           <div class="flex items-center gap-1.5">
-            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-teal-600 text-white uppercase tracking-wider" id="cpTierBadge">30-Day Free Trial</span>
-            <span class="text-[11px] text-teal-900 font-extrabold" id="cpTrialDaysLeft">30 Days Left</span>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-teal-600 text-white uppercase tracking-wider" id="cpTierBadge">VIP Membership</span>
+            <span class="text-[11px] text-teal-900 font-extrabold" id="cpTrialDaysLeft">Active Access</span>
           </div>
-          <button onclick="openGrowthModal()" class="text-[10px] font-extrabold text-teal-700 bg-white border border-teal-300 px-2.5 py-1 rounded-xl shadow-xs flex items-center gap-1 hover:bg-teal-50">
-            <i class="fa-solid fa-gift text-teal-600"></i> +30 Days Free
-          </button>
+          <!-- Fixed Badge displaying Conditions instead of Dropdown -->
+          <span class="text-[10px] font-bold px-2.5 py-1 bg-white border border-teal-300 text-teal-800 rounded-xl shadow-xs" id="cpFixedBadge">🥒 Fatty Liver + 🌱 Veg</span>
         </div>
-        <p class="text-xs text-slate-600 leading-snug">Invite a friend with diabetes or fitness goals to permanently unlock your free membership!</p>
-      </div>
-
-      <!-- Category & Dietary Switcher -->
-      <div class="card-clean p-3 rounded-2xl space-y-2">
-        <div class="flex justify-between items-center text-xs">
-          <span class="font-bold text-slate-700 flex items-center gap-1"><i class="fa-solid fa-sliders text-teal-600"></i> Target Goal:</span>
-          <div class="flex gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
-            <button onclick="setClientDietType('veg')" id="btnDietVeg" class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition chip-active">🌱 Veg</button>
-            <button onclick="setClientDietType('nonveg')" id="btnDietNonVeg" class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition chip-inactive">🍗 Non-Veg</button>
-          </div>
-        </div>
-
-        <select id="cpGoalSelector" onchange="clientChangeGoal(this.value)" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-xl text-xs text-slate-800 font-bold focus:outline-none">
-          <option value="Fatty Liver Detox">🥒 Fatty Liver Detox</option>
-          <option value="Type 2 Diabetes Reversal">🩺 Type 2 Diabetes Reversal</option>
-          <option value="Gym & High Protein">🏋️ Gym & High Protein Fitness</option>
-          <option value="Pregnancy Nutrition">🤰 Pregnancy Care</option>
-          <option value="Postpartum Recovery">👶 Postpartum Care</option>
-          <option value="Menopause Care">🌸 Menopause Balance</option>
-          <option value="Longevity & Energy">🌿 Daily Energy & Vitality</option>
-        </select>
+        <p class="text-xs text-slate-600 leading-snug">Your 30-Day Non-Repeating Clinical Protocol is customized based on your profile.</p>
       </div>
 
       <!-- Motivation Banner -->
       <div id="cpMotivationBanner" class="p-3.5 rounded-2xl border text-xs space-y-1 transition-all"></div>
 
-      <!-- Dynamic Calendar Date Strip -->
+      <!-- DYNAMIC CALENDAR DATE STRIP (Past & Future Locked) -->
       <div class="card-clean p-3 rounded-2xl space-y-2">
         <div class="flex justify-between items-center text-xs pb-1 border-b border-slate-100">
           <div class="flex items-center gap-1.5">
@@ -217,7 +213,7 @@
         </div>
       </div>
 
-      <!-- Meal Cards -->
+      <!-- Meal Cards (30-Day Non-Repeating Engine) -->
       <div class="space-y-3" id="cpTodayMealCards"></div>
 
       <!-- Daily Vitals -->
@@ -229,7 +225,7 @@
         <div id="cpDynamicInputs" class="space-y-2"></div>
       </div>
 
-      <!-- Actions -->
+      <!-- Reporting Actions -->
       <div class="space-y-2 pt-1">
         <button onclick="submitClientReport('daily')" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md shadow-teal-700/20 hover:opacity-95">
           <i class="fa-brands fa-whatsapp text-lg"></i> Send Selected Date's Update to Coach 📲
@@ -269,15 +265,15 @@
     </div>
   </div>
 
-  <!-- Modal: Ingredient Customizer -->
+  <!-- Modal: Ingredient Customizer + Custom Local Typing -->
   <div id="ingredientCustomizerModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3.5">
     <div class="bg-white w-full max-w-md p-4 rounded-3xl space-y-3 text-xs max-h-[85vh] flex flex-col shadow-2xl border border-slate-200">
       <div class="flex justify-between items-center border-b border-slate-100 pb-2">
         <div>
-          <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5" id="cstModalTitle">
-            <i class="fa-solid fa-kitchen-set text-teal-600"></i> Customize Ingredients
+          <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-kitchen-set text-teal-600"></i> Customize & Log Local Food
           </h3>
-          <p class="text-[10px] text-slate-400">Skip unavailable items & pick seasonal substitutes</p>
+          <p class="text-[10px] text-slate-400">Type local items (e.g. Sev Usal, Poha) or pick substitutes</p>
         </div>
         <button onclick="closeCustomizer()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
       </div>
@@ -288,7 +284,17 @@
         </div>
         <div id="cstActiveTags" class="flex flex-wrap gap-1.5 min-h-[36px] items-center"></div>
       </div>
-      <div class="space-y-1.5 flex-1 overflow-y-auto pr-1">
+
+      <!-- Custom Typing Input for Local Dishes -->
+      <div class="space-y-1 pt-1 border-t border-slate-100">
+        <span class="text-[10px] text-slate-600 font-bold">અન્ય કંઈ ખાધું હોય તો અહીં લખીને ઉમેરો (Type local food):</span>
+        <div class="flex gap-1.5">
+          <input type="text" id="cstCustomInput" placeholder="e.g. સેવ ઉસળ, ૧ વાટકી પૌંઆ..." class="flex-1 bg-slate-50 border border-slate-300 p-2 rounded-xl text-slate-800 text-xs focus:bg-white focus:border-teal-600 focus:outline-none font-medium">
+          <button onclick="addCustomTypedFood()" class="px-3.5 py-2 bg-slate-900 text-white rounded-xl font-bold text-xs hover:bg-slate-800 transition shadow-xs">+ Add</button>
+        </div>
+      </div>
+
+      <div class="space-y-1.5 flex-1 overflow-y-auto pr-1 pt-1">
         <span class="text-[10px] text-slate-600 font-bold">Approved Clinical Substitutes:</span>
         <div class="flex flex-wrap gap-1.5" id="cstSubstitutesContainer"></div>
       </div>
@@ -299,30 +305,11 @@
     </div>
   </div>
 
-  <!-- Modal: Referral & Support -->
-  <div id="modalGrowth" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm p-4 rounded-3xl space-y-3 text-xs shadow-xl border border-slate-200">
-      <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-gift text-teal-600"></i> Unlock +30 Days Free!</h3>
-        <button onclick="closeGrowthModal()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
-      </div>
-      <div class="space-y-2">
-        <div class="bg-teal-50/60 p-3 rounded-2xl border border-teal-200 space-y-1.5">
-          <div class="font-bold text-teal-900 flex items-center gap-1.5"><i class="fa-solid fa-user-plus text-teal-600"></i> 1. Invite Friends & Family</div>
-          <p class="text-[11px] text-slate-600">Share your referral link with anyone with diabetes or fitness goals. When they join, you both unlock +30 days completely free!</p>
-          <button onclick="shareReferralWhatsApp()" class="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-2 rounded-xl text-[11px] flex items-center justify-center gap-1.5 shadow mt-1">
-            <i class="fa-brands fa-whatsapp text-sm"></i> Share Referral Link on WhatsApp
-          </button>
-        </div>
-      </div>
-      <button onclick="closeGrowthModal()" class="w-full bg-slate-100 text-slate-700 font-bold py-2 rounded-xl">Close</button>
-    </div>
-  </div>
-
+  <!-- Modal: Support -->
   <div id="modalFeedback" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-sm p-4 rounded-3xl space-y-3 text-xs shadow-xl border border-slate-200">
       <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-headset text-teal-600"></i> Help & Feedback</h3>
+        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-headset text-teal-600"></i> Help & Support</h3>
         <button onclick="closeFeedbackModal()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
       </div>
       <div class="space-y-2">
@@ -357,22 +344,26 @@
 
     const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const DAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-    const COACH_PHONE = "919081421028";
+    let COACH_PHONE = "919081421028"; // Default fallback
 
     let weekOffset = 0;
     let selectedDateKey = getTodayDateKey();
     let currentClient = null;
 
+    const MASTER_30_DAY_MENU = [
+      { morning: "Ash Gourd + Coriander + Raw Turmeric", breakfast: "Moong Dal Chila + Fresh Paneer 30g", lunch: "Salad Barrier + Multi-Millet Roti + Bottle Gourd Sabzi + Chaas", snack: "Roasted Makhana (Low Sodium)", dinner: "Creamy Pumpkin Puree Soup + Sauteed Veggies" },
+      { morning: "Fresh Bottle Gourd (દૂધી) + Ginger", breakfast: "Steamed Moong Chaat with Lemon", lunch: "Salad Barrier + Multi-Millet Roti + Palak Paneer + Chaas", snack: "Roasted Chana (Bhuna Chana)", dinner: "Bottle Gourd & Tomato Soup + Grilled Paneer" },
+      { morning: "Amla Juice + Warm Water + Cumin", breakfast: "Sprouted Black Chana Salad", lunch: "Salad Barrier + Multi-Millet Roti + Moong Dal + Chaas", snack: "Roasted Pumpkin Seeds", dinner: "Clear Vegetable Soup + Steamed Sprouts" },
+      { morning: "Cucumber + Lemon + Pink Salt", breakfast: "Ragi Cheela with Mint Chutney", lunch: "Salad Barrier + Multi-Millet Roti + Turiya Sabzi + Chaas", snack: "Papaya Slices", dinner: "Spinach & Zucchini Stew" },
+      { morning: "Fresh Ginger + Mint Leaves Water", breakfast: "Palak & Besan Dosa", lunch: "Salad Barrier + Multi-Millet Roti + Parval Sabzi + Chaas", snack: "Roasted Makhana", dinner: "Mixed Vegetable Clear Soup" }
+    ];
+
     const SUBSTITUTES_POOL = {
       morning: ["Fresh Bottle Gourd (દૂધી)", "Ash Gourd (સફેદ પેઠા)", "Cucumber (કાકડી)", "Raw Turmeric (લીલી હળદર)", "Fresh Ginger (આદુ)", "Amla (આમળા)", "Fresh Lemon (લીંબુ)"],
-      breakfast_veg: ["Moong Dal Chila (મગદાળ પુડલા)", "Steamed Moong Chaat (બાફેલા મગ)", "Sprouted Black Chana", "Fresh Cow Paneer 30g", "Ragi Cheela"],
-      breakfast_nonveg: ["3 Boiled Egg Whites (બાફેલા ઈંડા)", "2 Whole Eggs Omelette with Spinach", "Egg Bhurji (Less Oil) + Salad"],
+      breakfast_veg: ["Moong Dal Chila (મગદાળ પુડલા)", "Steamed Moong Chaat (બાફેલા મગ)", "Sprouted Black Chana", "Fresh Cow Paneer 30g", "Ragi Cheela", "Bhuna Chana (શેકેલા ચણા)"],
       lunch_veg: ["1 Big Bowl Raw Salad Barrier", "1 Super Flour Multi-Millet Roti", "Palak Paneer", "Thick Moong Dal", "Bottle Gourd Sabzi", "1 Glass Thin Buttermilk / Chaas"],
-      lunch_nonveg: ["1 Big Bowl Raw Salad Barrier", "1 Super Flour Multi-Millet Roti", "Grilled Chicken Breast (૧૦૦ ગ્રામ)", "Steamed Fish Fillet", "1 Glass Thin Buttermilk / Chaas"],
-      snack_veg: ["1 Bowl Spiced Guava (મસાલા જામફળ)", "Roasted Pumpkin Seeds (કોળાના બી)", "Roasted Makhana", "Fresh Papaya Slices"],
-      snack_nonveg: ["1-2 Boiled Eggs with Black Pepper", "Roasted Pumpkin Seeds", "Roasted Makhana"],
-      dinner_veg: ["Creamy Pumpkin Puree Soup (કોળાનું સૂપ)", "Bottle Gourd & Tomato Soup", "Sauteed Broccoli, Zucchini & Bell Peppers", "Fresh Cow Paneer 25g"],
-      dinner_nonveg: ["Clear Chicken & Vegetable Soup", "Grilled Chicken Breast with Sauteed Veggies", "Steamed Fish + Sauteed Greens"],
+      snack_veg: ["Roasted Chana (ભૂંજા હુઆ ચણા)", "Roasted Makhana", "Fresh Papaya Slices", "Roasted Pumpkin Seeds"],
+      dinner_veg: ["Creamy Pumpkin Puree Soup (કોળાનું સૂપ)", "Bottle Gourd & Tomato Soup", "Sauteed Broccoli & Zucchini", "Fresh Cow Paneer 25g"],
       rule: ["Post-Meal 15-min Brisk Walk", "Elevate legs on pillows for 15-20 min before sleeping", "3.0 Liters Daily Water Target"]
     };
 
@@ -414,6 +405,13 @@
       const ref = urlParams.get('ref');
       if (ref) document.getElementById('regRefCode').value = ref;
 
+      try {
+        const settingsDoc = await db.collection('settings').doc('config').get();
+        if (settingsDoc.exists && settingsDoc.data().coachPhone) {
+          COACH_PHONE = settingsDoc.data().coachPhone;
+        }
+      } catch(e) { console.error(e); }
+
       const savedPhone = localStorage.getItem('met_pro_session_phone');
       if (savedPhone) {
         try {
@@ -423,9 +421,7 @@
             openPortal();
             return;
           }
-        } catch(e) {
-          console.error(e);
-        }
+        } catch(e) { console.error(e); }
       }
       showAuth();
     });
@@ -453,11 +449,16 @@
       const name = document.getElementById('regName').value.trim();
       const phone = document.getElementById('regPhone').value.trim().replace(/\D/g, '');
       const diet = document.getElementById('regDiet').value;
-      const goal = document.getElementById('regGoal').value;
       const refCode = document.getElementById('regRefCode').value.trim().toUpperCase();
+
+      const conditionCheckboxes = document.querySelectorAll('input[name="regCondition"]:checked');
+      const conditions = Array.from(conditionCheckboxes).map(cb => cb.value);
 
       if (!name || phone.length < 10) {
         return alert('Please enter your full name and valid 10-digit WhatsApp number.');
+      }
+      if (conditions.length === 0) {
+        return alert('Please select at least one health goal / condition.');
       }
 
       const btn = document.getElementById('btnRegisterSubmit');
@@ -480,33 +481,26 @@
         if (refCode) {
           const refSnap = await db.collection('clients').where('refCode', '==', refCode).get();
           if (!refSnap.empty) {
-            const refDoc = refSnap.docs[0];
-            await refDoc.ref.update({
-              trialDays: firebase.firestore.FieldValue.increment(30)
-            });
+            await refSnap.docs[0].ref.update({ trialDays: firebase.firestore.FieldValue.increment(30) });
           }
         }
+
+        const primaryGoal = conditions.join(' + ');
+        const joiningDateKey = getTodayDateKey();
 
         const newClientData = {
           name: name,
           phone: phone,
           pin: pin,
           diet: diet,
-          goal: goal,
+          goal: primaryGoal,
+          conditions: conditions,
           tier: 'trial',
           trialDays: 30,
+          joiningDate: joiningDateKey,
           refCode: 'CL-' + phone.slice(-4),
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          weeklyPlan: {
-            mon: {
-              morning: "Ash Gourd + Coriander + Raw Turmeric + Fresh Ginger",
-              breakfast: diet === 'nonveg' ? "3 Boiled Egg Whites + Salad" : "Moong Dal Chila + Fresh Paneer 30g",
-              lunch: diet === 'nonveg' ? "Salad Barrier + 1 Super Flour Roti + Grilled Chicken + Chaas" : "1 Big Bowl Raw Salad + 1 Super Flour Roti + Sabzi + Chaas",
-              snack: "1 Bowl Spiced Guava + Roasted Pumpkin Seeds",
-              dinner: diet === 'nonveg' ? "Clear Chicken Soup + Sauteed Greens" : "Creamy Pumpkin Soup + Sauteed Veggies + Paneer",
-              rule: "Post-Meal 15-min walk + Elevate legs on pillows for 15-20 min"
-            }
-          },
+          weeklyPlan: {},
           compliance: {}
         };
 
@@ -514,14 +508,14 @@
         currentClient = newClientData;
         localStorage.setItem('met_pro_session_phone', phone);
 
-        alert(`🎉 Welcome ${name}! Your 30-Day Free Trial is live!\n(Your PIN is: ${pin})`);
+        alert(`🎉 Welcome ${name}! Your VIP Health Portal is live!\n(Your PIN is: ${pin})`);
         openPortal();
 
       } catch(err) {
         console.error(err);
         alert('Could not connect to Firebase: ' + err.message);
       } finally {
-        btn.innerText = "Start My 30-Day Free Trial 🚀";
+        btn.innerText = "Start My VIP Health Portal 🚀";
         btn.disabled = false;
       }
     }
@@ -539,7 +533,7 @@
       try {
         const doc = await db.collection('clients').doc(input).get();
         if (!doc.exists) {
-          return alert('No account found with this number. Please register for a free trial.');
+          return alert('No account found with this number. Please register.');
         }
 
         const data = doc.data();
@@ -598,47 +592,20 @@
       document.getElementById('clientPortalView').classList.remove('hidden');
 
       let icon = "🩺";
-      if(currentClient.goal.includes('Gym')) icon = "🏋️";
-      else if(currentClient.goal.includes('Pregnancy')) icon = "🤰";
-      else if(currentClient.goal.includes('Menopause')) icon = "🌸";
+      if(currentClient.goal?.includes('Gym')) icon = "🏋️";
+      else if(currentClient.goal?.includes('Menopause')) icon = "🌸";
 
       document.getElementById('cpAvatar').innerText = icon;
       document.getElementById('cpClientTitle').innerText = `${currentClient.name}`;
-      document.getElementById('cpClientSub').innerText = `${currentClient.goal} (${currentClient.diet === 'nonveg' ? '🍗 Non-Veg' : '🌱 Veg'})`;
-      document.getElementById('cpGoalSelector').value = currentClient.goal;
-      document.getElementById('cpTierBadge').innerText = "30-Day Free Trial";
-      document.getElementById('cpTrialDaysLeft').innerText = `${currentClient.trialDays || 30} Days Left`;
+      document.getElementById('cpClientSub').innerText = `${currentClient.goal || 'Clinical Health Plan'}`;
+      
+      const badgeText = `${currentClient.goal || 'General'} (${currentClient.diet === 'nonveg' ? '🍗 Non-Veg' : '🌱 Veg'})`;
+      document.getElementById('cpFixedBadge').innerText = badgeText;
+      document.getElementById('cpTrialDaysLeft').innerText = `${currentClient.trialDays || 30} Days VIP Access`;
 
-      updateDietSwitcherUI(currentClient.diet || 'veg');
       selectedDateKey = getTodayDateKey();
       weekOffset = 0;
       renderClientDateStrip();
-      loadTodayClientView();
-    }
-
-    function updateDietSwitcherUI(diet) {
-      if(diet === 'nonveg') {
-        document.getElementById('btnDietNonVeg').className = "px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition chip-active";
-        document.getElementById('btnDietVeg').className = "px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition chip-inactive";
-      } else {
-        document.getElementById('btnDietVeg').className = "px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition chip-active";
-        document.getElementById('btnDietNonVeg').className = "px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition chip-inactive";
-      }
-    }
-
-    async function setClientDietType(diet) {
-      if(!currentClient) return;
-      currentClient.diet = diet;
-      updateDietSwitcherUI(diet);
-      await db.collection('clients').doc(currentClient.phone).update({ diet: diet });
-      loadTodayClientView();
-    }
-
-    async function clientChangeGoal(newGoal) {
-      if(!currentClient) return;
-      currentClient.goal = newGoal;
-      document.getElementById('cpClientSub').innerText = `${currentClient.goal} (${currentClient.diet === 'nonveg' ? '🍗 Non-Veg' : '🌱 Veg'})`;
-      await db.collection('clients').doc(currentClient.phone).update({ goal: newGoal });
       loadTodayClientView();
     }
 
@@ -655,6 +622,7 @@
       else weekLabel.innerText = `${Math.abs(weekOffset)} Weeks Ago`;
 
       const todayKey = getTodayDateKey();
+      const joiningKey = currentClient.joiningDate || todayKey;
 
       weekDates.forEach(d => {
         const dateKey = formatDateToKey(d);
@@ -663,16 +631,23 @@
         const dayShort = DAY_NAMES[d.getDay()].substring(0, 3);
         const isSelected = (dateKey === selectedDateKey);
         const isToday = (dateKey === todayKey);
+        const isBeforeJoining = (dateKey < joiningKey);
+        const isFuture = (dateKey > todayKey);
 
         const btn = document.createElement('button');
-        btn.onclick = () => selectClientDate(dateKey);
-
-        if (isSelected) {
-          btn.className = "py-2 px-1 rounded-2xl bg-teal-600 text-white font-extrabold text-xs shadow-md shadow-teal-700/30 flex flex-col items-center justify-center transition";
-        } else if (isToday) {
-          btn.className = "py-2 px-1 rounded-2xl bg-teal-50 border-2 border-teal-500 text-teal-800 font-extrabold text-xs flex flex-col items-center justify-center transition hover:bg-teal-100";
+        
+        if (isBeforeJoining || isFuture) {
+          btn.className = "py-2 px-1 rounded-2xl bg-slate-100 text-slate-300 border border-slate-200 text-xs flex flex-col items-center justify-center cursor-not-allowed";
+          btn.onclick = () => alert(isBeforeJoining ? "🔒 This date is before your joining date." : "🔒 Future menu is locked to maintain daily engagement!");
         } else {
-          btn.className = "py-2 px-1 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-xs flex flex-col items-center justify-center transition hover:bg-slate-50";
+          btn.onclick = () => selectClientDate(dateKey);
+          if (isSelected) {
+            btn.className = "py-2 px-1 rounded-2xl bg-teal-600 text-white font-extrabold text-xs shadow-md shadow-teal-700/30 flex flex-col items-center justify-center transition";
+          } else if (isToday) {
+            btn.className = "py-2 px-1 rounded-2xl bg-teal-50 border-2 border-teal-500 text-teal-800 font-extrabold text-xs flex flex-col items-center justify-center transition hover:bg-teal-100";
+          } else {
+            btn.className = "py-2 px-1 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-xs flex flex-col items-center justify-center transition hover:bg-slate-50";
+          }
         }
 
         btn.innerHTML = `
@@ -735,16 +710,22 @@
       } : currentClient.compliance[selectedDateKey];
 
       const dObj = parseDateKey(selectedDateKey);
+      const dayOfYear = Math.floor((dObj - new Date(dObj.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+      const menuIndex = dayOfYear % MASTER_30_DAY_MENU.length;
+      
       const dayKey = DAY_KEYS[dObj.getDay()];
-      const plan = (currentClient.weeklyPlan && currentClient.weeklyPlan[dayKey]) ? currentClient.weeklyPlan[dayKey] : (currentClient.weeklyPlan['mon'] || {});
+      const masterPlan = MASTER_30_DAY_MENU[menuIndex];
+      const customAdminPlan = currentClient.weeklyPlan?.[dayKey];
+
+      const plan = customAdminPlan || masterPlan;
 
       const slots = [
-        { key: 'morning', time: 'Early Morning (ખાલી પેટે)', label: '1. Alkaline Detox Infusion', icon: '🥒', defaultText: plan.morning || "Ash Gourd + Coriander + Raw Turmeric + Fresh Ginger" },
-        { key: 'breakfast', time: 'Morning Breakfast (નાસ્તો)', label: '2. Breakfast & Protein Charge', icon: '🥗', defaultText: plan.breakfast || (currentClient.diet==='nonveg'?"3 Boiled Egg Whites + Salad":"Moong Dal Chila + Fresh Paneer 30g") },
-        { key: 'lunch', time: 'Afternoon Lunch (બપોરનું ભોજન)', label: '3. Glycemic Barrier Lunch Plate', icon: '🫓', defaultText: plan.lunch || (currentClient.diet==='nonveg'?"Salad + 1 Super Flour Roti + Chicken + Chaas":"1 Salad Bowl + 1 Super Flour Roti + Sabzi + Chaas") },
-        { key: 'snack', time: 'Evening Snack (સાંજે ૪-૫ વાગ્યે)', label: '4. Anti-Craving Evening Fuel', icon: '🍈', defaultText: plan.snack || "1 Bowl Spiced Guava + Roasted Pumpkin Seeds" },
-        { key: 'dinner', time: 'Night Dinner (રાત્રે ૮:૩૦ પહેલાં)', label: '5. Restorative Dinner & Sleep Fuel', icon: '🍲', defaultText: plan.dinner || (currentClient.diet==='nonveg'?"Clear Chicken Soup + Sauteed Greens":"Creamy Pumpkin Soup + Sauteed Veggies + Paneer") },
-        { key: 'rule', time: 'Night Routine (સૂતી વખતે)', label: '6. Circadian Habits & Leg Elevation', icon: '🌙', defaultText: plan.rule || "Post-Meal 15-min walk + Elevate legs on pillows for 15-20 min" }
+        { key: 'morning', time: 'Early Morning (ખાલી પેટે)', label: '1. Alkaline Detox Infusion', icon: '🥒', defaultText: plan.morning },
+        { key: 'breakfast', time: 'Morning Breakfast (નાસ્તો)', label: '2. Breakfast & Protein Charge', icon: '🥗', defaultText: plan.breakfast },
+        { key: 'lunch', time: 'Afternoon Lunch (બપોરનું ભોજન)', label: '3. Glycemic Barrier Lunch Plate', icon: '🫓', defaultText: plan.lunch },
+        { key: 'snack', time: 'Evening Snack (સાંજે ૪-૫ વાગ્યે)', label: '4. Anti-Craving Evening Fuel', icon: '🍈', defaultText: plan.snack },
+        { key: 'dinner', time: 'Night Dinner (રાત્રે ૮:૩૦ પહેલાં)', label: '5. Restorative Dinner & Sleep Fuel', icon: '🍲', defaultText: plan.dinner },
+        { key: 'rule', time: 'Night Routine (સૂતી વખતે)', label: '6. Circadian Habits & Leg Elevation', icon: '🌙', defaultText: "Post-Meal 15-min walk + Elevate legs on pillows for 15-20 min" }
       ];
 
       const container = document.getElementById('cpTodayMealCards');
@@ -763,7 +744,7 @@
               <h3 class="text-xs font-bold text-slate-900 flex items-center gap-1.5">${s.icon} ${s.label}</h3>
             </div>
             <button onclick="openCustomizer('${s.key}', '${activeText.replace(/'/g, "\\\'")}', '${s.defaultText.replace(/'/g, "\\\'")}')" class="text-[10px] text-teal-700 font-bold bg-teal-50 border border-teal-200 px-2.5 py-1 rounded-xl flex items-center gap-1 hover:bg-teal-100">
-              <i class="fa-solid fa-pen-to-square"></i> Customize / Skip
+              <i class="fa-solid fa-pen-to-square"></i> Customize / Log Local
             </button>
           </div>
 
@@ -809,25 +790,13 @@
 
     function renderVitalsSection(comp) {
       const container = document.getElementById('cpDynamicInputs');
-      const isGym = currentClient.goal.includes('Gym');
-
-      if (isGym) {
-        container.innerHTML = `
-          <div class="grid grid-cols-2 gap-2">
-            <div><label class="text-[9px] text-slate-500 font-semibold">Protein Intake</label><input type="text" id="cpInM1" onchange="saveDateVitals()" value="${comp.metric1||''}" placeholder="e.g. 110g taken" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs"></div>
-            <div><label class="text-[9px] text-slate-500 font-semibold">Water (Litres)</label><input type="number" step="0.5" id="cpInM2" onchange="saveDateVitals()" value="${comp.metric2||''}" placeholder="e.g. 3.5L" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs"></div>
-          </div>
-          <div><input type="text" id="cpInNote" onchange="saveDateVitals()" value="${comp.note||''}" placeholder="Workout comments, pump, energy feel..." class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs mt-1"></div>
-        `;
-      } else {
-        container.innerHTML = `
-          <div class="grid grid-cols-2 gap-2">
-            <div><label class="text-[9px] text-slate-500 font-semibold">Fasting Sugar (mg/dL)</label><input type="number" id="cpInM1" onchange="saveDateVitals()" value="${comp.metric1||''}" placeholder="e.g. 125" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs"></div>
-            <div><label class="text-[9px] text-slate-500 font-semibold">PP2BS / Post-Meal</label><input type="number" id="cpInM2" onchange="saveDateVitals()" value="${comp.metric2||''}" placeholder="e.g. 160" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs"></div>
-          </div>
-          <div><input type="text" id="cpInNote" onchange="saveDateVitals()" value="${comp.note||''}" placeholder="Daily feel, sleep quality, observations..." class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs mt-1"></div>
-        `;
-      }
+      container.innerHTML = `
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="text-[9px] text-slate-500 font-semibold">Fasting Sugar (mg/dL)</label><input type="number" id="cpInM1" onchange="saveDateVitals()" value="${comp.metric1||''}" placeholder="e.g. 125" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs"></div>
+          <div><label class="text-[9px] text-slate-500 font-semibold">PP2BS / Post-Meal</label><input type="number" id="cpInM2" onchange="saveDateVitals()" value="${comp.metric2||''}" placeholder="e.g. 160" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs"></div>
+        </div>
+        <div><input type="text" id="cpInNote" onchange="saveDateVitals()" value="${comp.note||''}" placeholder="Daily feel, local food eaten (e.g. Sev Usal), sleep quality..." class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs mt-1"></div>
+      `;
     }
 
     async function saveDateVitals() {
@@ -903,7 +872,7 @@
       const container = document.getElementById('cstActiveTags');
       container.innerHTML = '';
       if(cstActiveTags.length === 0) {
-        container.innerHTML = `<span class="text-slate-400 italic text-[11px]">No items selected. Tap substitutes below to add.</span>`;
+        container.innerHTML = `<span class="text-slate-400 italic text-[11px]">No items selected. Type or pick below.</span>`;
         return;
       }
       cstActiveTags.forEach((t, idx) => {
@@ -916,15 +885,22 @@
 
     function removeCstTag(idx) { cstActiveTags.splice(idx, 1); renderCustomizerTags(); }
     function addCstTag(text) { if(!cstActiveTags.includes(text)) { cstActiveTags.push(text); renderCustomizerTags(); } }
+    
+    function addCustomTypedFood() {
+      const input = document.getElementById('cstCustomInput');
+      const val = input.value.trim();
+      if (!val) return alert('કંઈક લખો...');
+      if (!cstActiveTags.includes(val)) {
+        cstActiveTags.push(val);
+        renderCustomizerTags();
+        input.value = '';
+      }
+    }
+
     function resetCustomizerToIdeal() { cstActiveTags = cstIdealString.split('+').map(s => s.trim()).filter(s => s.length > 0); renderCustomizerTags(); }
 
     function renderCustomizerSubstitutes() {
-      const isNonVeg = currentClient && currentClient.diet === 'nonveg';
-      let poolKey = cstActiveSlot;
-      if(['breakfast', 'lunch', 'snack', 'dinner'].includes(cstActiveSlot)) {
-        poolKey = isNonVeg ? `${cstActiveSlot}_nonveg` : `${cstActiveSlot}_veg`;
-      }
-      const pool = SUBSTITUTES_POOL[poolKey] || SUBSTITUTES_POOL[cstActiveSlot] || [];
+      const pool = SUBSTITUTES_POOL[cstActiveSlot] || SUBSTITUTES_POOL['morning'] || [];
       const container = document.getElementById('cstSubstitutesContainer');
       container.innerHTML = '';
       pool.forEach(item => {
@@ -953,24 +929,18 @@
       });
     }
 
-    function openGrowthModal() { document.getElementById('modalGrowth').classList.remove('hidden'); }
-    function closeGrowthModal() { document.getElementById('modalGrowth').classList.add('hidden'); }
-    function shareReferralWhatsApp() {
-      const origin = window.location.origin + window.location.pathname;
-      const refLink = `${origin}?ref=${currentClient?.refCode || 'CL-VIP'}`;
-      const refMsg = `Hey! I am using the *Metabolic Pro* app to reverse metabolic fatigue and optimize my health. 
-Join using my link and get 30 days of VIP health coaching completely FREE:
-${refLink}`;
-      window.open(`https://wa.me/?text=${encodeURIComponent(refMsg)}`, '_blank');
-    }
-
     function openFeedbackModal() { document.getElementById('modalFeedback').classList.remove('hidden'); }
     function closeFeedbackModal() { document.getElementById('modalFeedback').classList.add('hidden'); }
     function sendFeedbackWhatsApp() {
       const cat = document.getElementById('fbCategory').value;
       const msg = document.getElementById('fbMessage').value.trim();
       if(!msg) return alert('Please enter your message.');
-      const ticketMsg = `📩 *Metabolic Pro - Support Ticket*\nClient: *${currentClient?.name || 'User'}* (${currentClient?.phone})\nCategory: *${cat}*\n\n*Message:*\n"${msg}"`;
+      const ticketMsg = `📩 *Metabolic Pro - Support Ticket*
+Client: *${currentClient?.name || 'User'}* (${currentClient?.phone})
+Category: *${cat}*
+
+*Message:*
+"${msg}"`;
       window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent(ticketMsg)}`, '_blank');
       closeFeedbackModal();
       document.getElementById('fbMessage').value = '';
@@ -995,7 +965,7 @@ ${refLink}`;
 
         let msg = `🩺 *Metabolic Pro - Daily Routine Sync*
 Client: *${currentClient.name}* (${currentClient.phone})
-Goal: *${currentClient.goal}* (${currentClient.diet === 'nonveg' ? '🍗 Non-Veg' : '🌱 Veg'})
+Goal: *${currentClient.goal}*
 📅 Date: *${dayFormatted}*
 Score: *${score}% Compliance*
 
@@ -1008,9 +978,9 @@ Score: *${score}% Compliance*
 • 6. Daily Protocol: ${symbolMap[comp.rule || 'idle']}
 
 🩸 *Vitals & Habits:*
-- Fasting / Metric 1: ${comp.metric1 || 'Not logged'}
-- Post-Meal / Metric 2: ${comp.metric2 || 'Not logged'}
-- Notes: "${comp.note || 'All feels well.'}"`;
+- Fasting Sugar: ${comp.metric1 || 'Not logged'} mg/dL
+- PP2BS: ${comp.metric2 || 'Not logged'} mg/dL
+- Notes/Local Food: "${comp.note || 'All feels well.'}"`;
 
         window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
       } else {
