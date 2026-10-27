@@ -7,7 +7,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- Firebase Compat SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
@@ -15,7 +14,7 @@
     body {
       background-color: #f8fafc;
       color: #0f172a;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
     .brand-gradient { background: linear-gradient(135deg, #0d9488, #0284c7); }
@@ -25,12 +24,11 @@
       border: 1px solid #e2e8f0;
       box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
     }
-    .btn-done-active { background-color: #059669; color: #ffffff; border-color: #059669; font-weight: 700; }
-    .btn-half-active { background-color: #d97706; color: #ffffff; border-color: #d97706; font-weight: 700; }
-    .btn-miss-active { background-color: #e11d48; color: #ffffff; border-color: #e11d48; font-weight: 700; }
-    .btn-idle { background-color: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+    .btn-done-active { background-color: #059669; color: #ffffff; font-weight: 700; }
+    .btn-half-active { background-color: #d97706; color: #ffffff; font-weight: 700; }
+    .btn-miss-active { background-color: #e11d48; color: #ffffff; font-weight: 700; }
+    .btn-idle { background-color: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="pb-24 antialiased">
@@ -38,9 +36,7 @@
   <!-- AUTH VIEW -->
   <div id="authView" class="min-h-screen flex flex-col justify-between p-4 max-w-md mx-auto space-y-4">
     <div class="text-center pt-6 space-y-2">
-      <div class="w-16 h-16 rounded-2xl brand-gradient flex items-center justify-center text-white text-3xl font-black shadow-lg mx-auto shadow-teal-500/20">
-        🩺
-      </div>
+      <div class="w-16 h-16 rounded-2xl brand-gradient flex items-center justify-center text-white text-3xl font-black shadow-lg mx-auto">🩺</div>
       <div>
         <h1 class="text-2xl font-black text-slate-900 tracking-tight">Metabolic Pro</h1>
         <p class="text-xs font-semibold text-teal-700 uppercase tracking-widest mt-0.5">Clinical Lifestyle Medicine</p>
@@ -48,116 +44,55 @@
       <p class="text-xs text-slate-500 max-w-xs mx-auto">Reversing Diabetes, Fatty Liver & Peak Vitality with Evidence-Based Nutrition.</p>
     </div>
 
-    <div class="card-clean rounded-3xl p-5 shadow-sm space-y-4 border border-slate-200">
+    <div class="card-clean rounded-3xl p-5 shadow-sm space-y-4 border">
       <div class="flex p-1 bg-slate-100 rounded-2xl text-xs font-bold text-slate-600">
-        <button onclick="setAuthTab('register')" id="tabRegister" class="flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold">
-          ✨ New Client Registration
-        </button>
-        <button onclick="setAuthTab('login')" id="tabLogin" class="flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold">
-          🔑 Client Login
-        </button>
+        <button onclick="setAuthTab('register')" id="tabRegister" class="flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold">✨ New Client</button>
+        <button onclick="setAuthTab('login')" id="tabLogin" class="flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold">🔑 Login</button>
       </div>
 
-      <!-- Registration Form -->
       <div id="formRegister" class="space-y-3 text-xs">
-        <div>
-          <label class="font-bold text-slate-700">Full Name</label>
-          <input type="text" id="regName" placeholder="e.g. Piyush Nathvani" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:bg-white focus:border-teal-600 focus:outline-none">
-        </div>
-
-        <div>
-          <label class="font-bold text-slate-700">WhatsApp Mobile Number</label>
-          <input type="tel" id="regPhone" placeholder="e.g. 9925879138" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:bg-white focus:border-teal-600 focus:outline-none">
-        </div>
-
+        <div><label class="font-bold text-slate-700">Full Name</label><input type="text" id="regName" placeholder="e.g. Ruchi" class="w-full mt-1 p-2.5 bg-slate-50 border rounded-xl text-slate-800"></div>
+        <div><label class="font-bold text-slate-700">WhatsApp Mobile Number</label><input type="tel" id="regPhone" placeholder="e.g. 9925879138" class="w-full mt-1 p-2.5 bg-slate-50 border rounded-xl text-slate-800"></div>
         <div>
           <label class="font-bold text-slate-700">Dietary Mode</label>
-          <select id="regDiet" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 font-semibold focus:outline-none">
-            <option value="veg">🌱 Vegetarian</option>
-            <option value="nonveg">🍗 Non-Vegetarian</option>
-          </select>
+          <select id="regDiet" class="w-full mt-1 p-2.5 bg-slate-50 border rounded-xl text-slate-800 font-semibold"><option value="veg">🌱 Vegetarian</option><option value="nonveg">🍗 Non-Vegetarian</option></select>
         </div>
-
         <div class="space-y-1.5 pt-1">
-          <label class="font-bold text-slate-700 flex justify-between items-center">
-            <span>Select All Applicable Health Goals / Conditions:</span>
-            <span class="text-[10px] text-teal-700 font-normal">Multi-select enabled</span>
-          </label>
-          <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-2xl border border-slate-200">
-            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
-              <input type="checkbox" name="regCondition" value="Type 2 Diabetes Reversal" class="w-4 h-4 text-teal-600 rounded"> 🩺 Diabetes Reversal
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
-              <input type="checkbox" name="regCondition" value="Fatty Liver Detox" checked class="w-4 h-4 text-teal-600 rounded"> 🥒 Fatty Liver Detox
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
-              <input type="checkbox" name="regCondition" value="High Blood Pressure (BP)" class="w-4 h-4 text-teal-600 rounded"> 🫀 High BP Control
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
-              <input type="checkbox" name="regCondition" value="Obesity & Weight Loss" class="w-4 h-4 text-teal-600 rounded"> ⚖️ Weight Loss
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
-              <input type="checkbox" name="regCondition" value="Gym & High Protein" class="w-4 h-4 text-teal-600 rounded"> 🏋️ Gym & Fitness
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
-              <input type="checkbox" name="regCondition" value="Menopause Balance" class="w-4 h-4 text-teal-600 rounded"> 🌸 Menopause Care
-            </label>
+          <label class="font-bold text-slate-700">Select Health Goals:</label>
+          <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-2xl border">
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium"><input type="checkbox" name="regCondition" value="Type 2 Diabetes Reversal" class="w-4 h-4 text-teal-600 rounded"> 🩺 Diabetes</label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium"><input type="checkbox" name="regCondition" value="Fatty Liver Detox" checked class="w-4 h-4 text-teal-600 rounded"> 🥒 Fatty Liver</label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium"><input type="checkbox" name="regCondition" value="High Blood Pressure (BP)" class="w-4 h-4 text-teal-600 rounded"> 🫀 High BP</label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium"><input type="checkbox" name="regCondition" value="Weight Loss" class="w-4 h-4 text-teal-600 rounded"> ⚖️ Weight Loss</label>
           </div>
         </div>
-
-        <div>
-          <label class="font-bold text-slate-700">Referral Code (Optional)</label>
-          <input type="text" id="regRefCode" placeholder="e.g. CL-101" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 uppercase focus:outline-none">
-        </div>
-
-        <button onclick="handleClientRegister()" id="btnRegisterSubmit" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-sm shadow-md shadow-teal-600/30 hover:opacity-95 transition flex items-center justify-center gap-2">
-          <span>Start My VIP Health Portal 🚀</span>
-        </button>
+        <button onclick="handleClientRegister()" id="btnRegisterSubmit" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-sm shadow-md">Start My VIP Portal 🚀</button>
       </div>
 
-      <!-- Login Form -->
       <div id="formLogin" class="hidden space-y-3.5 text-xs">
+        <div><label class="font-bold text-slate-700">WhatsApp Mobile Number</label><input type="text" id="loginId" placeholder="e.g. 9925879138" class="w-full mt-1 p-3 bg-slate-50 border rounded-xl text-slate-800"></div>
         <div>
-          <label class="font-bold text-slate-700">WhatsApp Mobile Number</label>
-          <input type="text" id="loginId" placeholder="e.g. 9925879138" class="w-full mt-1 p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:bg-white focus:border-teal-600 focus:outline-none">
+          <div class="flex justify-between items-center"><label class="font-bold text-slate-700">4-Digit PIN</label><button onclick="openClientForgotPinModal()" class="text-teal-700 font-extrabold text-[11px]">Forgot PIN?</button></div>
+          <input type="password" maxlength="4" id="loginPin" placeholder="••••" class="w-full mt-1 p-3 bg-slate-50 border rounded-xl text-center text-base tracking-widest">
         </div>
-
-        <div>
-          <div class="flex justify-between items-center">
-            <label class="font-bold text-slate-700">4-Digit Access PIN</label>
-            <button onclick="openClientForgotPinModal()" class="text-teal-700 font-extrabold hover:underline text-[11px]">Forgot PIN? (પિન ભૂલી ગયા?)</button>
-          </div>
-          <input type="password" maxlength="4" id="loginPin" placeholder="••••" class="w-full mt-1 p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 tracking-widest text-center text-base focus:bg-white focus:border-teal-600 focus:outline-none">
-        </div>
-
-        <button onclick="handleClientLogin()" id="btnLoginSubmit" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-extrabold text-sm shadow hover:bg-slate-800 transition flex items-center justify-center gap-2">
-          <span>Open My Health Portal 📲</span>
-        </button>
+        <button onclick="handleClientLogin()" id="btnLoginSubmit" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-extrabold text-sm shadow">Open Portal 📲</button>
       </div>
-    </div>
-
-    <div class="text-center text-[11px] text-slate-400 pb-2">
-      🔒 100% Private, Encrypted & Clinical Protocol
     </div>
   </div>
 
   <!-- CLIENT PORTAL VIEW -->
   <div id="clientPortalView" class="hidden min-h-screen">
-    <header class="p-3.5 bg-white border-b border-slate-200 sticky top-0 z-40 flex justify-between items-center shadow-xs">
+    <header class="p-3.5 bg-white border-b sticky top-0 z-40 flex justify-between items-center shadow-xs">
       <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-xl brand-gradient flex items-center justify-center text-white font-bold text-sm shadow-sm" id="cpAvatar">🩺</div>
+        <div class="w-9 h-9 rounded-xl brand-gradient flex items-center justify-center text-white font-bold text-sm">🩺</div>
         <div>
           <h1 class="font-extrabold text-slate-900 text-sm leading-tight" id="cpClientTitle">Welcome</h1>
           <p class="text-[10px] font-bold text-teal-700" id="cpClientSub">Metabolic Health Plan</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="openFeedbackModal()" class="px-2.5 py-1 rounded-xl bg-teal-50 border border-teal-200 text-teal-800 text-[10px] font-bold flex items-center gap-1 shadow-xs hover:bg-teal-100">
-          <i class="fa-solid fa-headset text-teal-600"></i> Support
-        </button>
-        <button onclick="logoutClient()" class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 text-[10px] font-bold hover:bg-slate-200">
-          Logout
-        </button>
+        <button onclick="openFeedbackModal()" class="px-2.5 py-1 rounded-xl bg-teal-50 border border-teal-200 text-teal-800 text-[10px] font-bold"><i class="fa-solid fa-headset"></i> Support</button>
+        <button onclick="logoutClient()" class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 text-[10px] font-bold">Logout</button>
       </div>
     </header>
 
@@ -165,12 +100,37 @@
       <div class="brand-gradient-subtle p-3.5 rounded-3xl border border-teal-200 shadow-xs space-y-2">
         <div class="flex justify-between items-center">
           <div class="flex items-center gap-1.5">
-            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-teal-600 text-white uppercase tracking-wider" id="cpTierBadge">VIP Membership</span>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-teal-600 text-white uppercase" id="cpTierBadge">VIP Membership</span>
             <span class="text-[11px] text-teal-900 font-extrabold" id="cpTrialDaysLeft">Active Access</span>
           </div>
-          <span class="text-[10px] font-bold px-2.5 py-1 bg-white border border-teal-300 text-teal-800 rounded-xl shadow-xs" id="cpFixedBadge">🥒 Fatty Liver + 🌱 Veg</span>
+          <span class="text-[10px] font-bold px-2.5 py-1 bg-white border border-teal-300 text-teal-800 rounded-xl shadow-xs" id="cpFixedBadge">Fatty Liver (veg)</span>
         </div>
-        <p class="text-xs text-slate-600 leading-snug">Your 30-Day Non-Repeating Clinical Protocol with Live Calorie & GI Tracking.</p>
+        <p class="text-xs text-slate-600 leading-snug">30-Day Non-Repeating Clinical Protocol with Live Calorie & GI Tracking.</p>
+      </div>
+
+      <!-- DAILY METABOLIC BUDGET DASHBOARD (NEW REQUESTED FEATURE) -->
+      <div class="card-clean p-4 rounded-3xl space-y-3 bg-gradient-to-br from-slate-900 to-teal-950 text-white shadow-md border border-teal-800">
+        <div class="flex justify-between items-center">
+          <h3 class="font-extrabold text-xs flex items-center gap-1.5 text-teal-300"><i class="fa-solid fa-fire text-amber-400"></i> Daily Calorie & GI Budget</h3>
+          <span class="text-[10px] bg-teal-900/80 text-teal-200 px-2.5 py-0.5 rounded-full font-bold border border-teal-700">Daily Target: <span id="cpTargetCal">1200</span> kcal</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-center pt-1">
+          <div class="bg-white/10 p-2.5 rounded-2xl border border-white/5">
+            <div class="text-[9px] text-teal-200 uppercase tracking-wider">Consumed</div>
+            <div class="text-sm font-black text-amber-300 mt-0.5" id="cpConsumedCal">0 kcal</div>
+          </div>
+          <div class="bg-white/10 p-2.5 rounded-2xl border border-white/5">
+            <div class="text-[9px] text-teal-200 uppercase tracking-wider">Remaining</div>
+            <div class="text-sm font-black text-emerald-300 mt-0.5" id="cpRemainingCal">1200 kcal</div>
+          </div>
+          <div class="bg-white/10 p-2.5 rounded-2xl border border-white/5">
+            <div class="text-[9px] text-teal-200 uppercase tracking-wider">Day GI Avg</div>
+            <div class="text-sm font-black text-sky-300 mt-0.5" id="cpDailyGi">GI: 0</div>
+          </div>
+        </div>
+        <div class="w-full bg-white/20 h-2 rounded-full overflow-hidden">
+          <div id="cpCalProgress" class="bg-gradient-to-r from-teal-400 to-amber-400 h-full w-0 transition-all duration-500"></div>
+        </div>
       </div>
 
       <div id="cpMotivationBanner" class="p-3.5 rounded-2xl border text-xs space-y-1 transition-all"></div>
@@ -179,119 +139,83 @@
       <div class="card-clean p-3 rounded-2xl space-y-2">
         <div class="flex justify-between items-center text-xs pb-1 border-b border-slate-100">
           <div class="flex items-center gap-1.5">
-            <button onclick="changeWeek(-1)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold">
-              <i class="fa-solid fa-chevron-left text-[10px]"></i>
-            </button>
+            <button onclick="changeWeek(-1)" class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold"><i class="fa-solid fa-chevron-left text-[10px]"></i></button>
             <span class="font-extrabold text-slate-800 text-[11px]" id="cpCurrentWeekLabel">This Week</span>
-            <button onclick="changeWeek(1)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold">
-              <i class="fa-solid fa-chevron-right text-[10px]"></i>
-            </button>
+            <button onclick="changeWeek(1)" class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>
           </div>
-          <button onclick="jumpToToday()" class="text-[10px] font-extrabold bg-teal-50 text-teal-800 border border-teal-200 px-2 py-1 rounded-lg hover:bg-teal-100">
-            Today (આજે) 📍
-          </button>
+          <button onclick="jumpToToday()" class="text-[10px] font-extrabold bg-teal-50 text-teal-800 border border-teal-200 px-2 py-1 rounded-lg">Today (આજે) 📍</button>
         </div>
-
         <div class="grid grid-cols-7 gap-1 text-center" id="cpDateGridButtons"></div>
-
         <div class="pt-1 flex justify-between items-center text-[11px]">
           <span class="font-black text-slate-900" id="cpActiveDateFullHeading">Tuesday, 27 October 2026</span>
-          <span class="font-bold px-2 py-0.5 rounded-full text-[10px]" id="cpDateStatusBadge">New Blank Log</span>
+          <span class="font-bold px-2 py-0.5 rounded-full text-[10px]" id="cpDateStatusBadge">Routine Logged</span>
         </div>
       </div>
 
-      <!-- MEAL CARDS WITH CALORIE & GI STATS -->
+      <!-- MEAL CARDS -->
       <div class="space-y-3" id="cpTodayMealCards"></div>
 
-      <!-- DAILY VITALS -->
+      <!-- VITALS -->
       <div class="card-clean p-3.5 rounded-2xl space-y-2 text-xs">
         <div class="font-bold text-slate-700 text-xs flex items-center justify-between">
           <span class="flex items-center gap-1.5"><i class="fa-solid fa-notes-medical text-teal-600"></i> Daily Vitals & Blood Sugar</span>
-          <span class="text-[10px] text-slate-400 font-normal">Optional</span>
         </div>
         <div id="cpDynamicInputs" class="space-y-2"></div>
       </div>
 
       <div class="space-y-2 pt-1">
-        <button onclick="submitClientReport('daily')" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md shadow-teal-700/20 hover:opacity-95">
+        <button onclick="submitClientReport('daily')" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md">
           <i class="fa-brands fa-whatsapp text-lg"></i> Send Selected Date's Update to Coach 📲
-        </button>
-
-        <button onclick="submitClientReport('weekly')" class="w-full py-3 rounded-2xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center justify-center gap-2 shadow-xs">
-          <i class="fa-solid fa-chart-line text-teal-600"></i> Send 7-Day Weekly Summary to Coach 📊
         </button>
       </div>
     </main>
   </div>
 
   <!-- MODALS -->
-  <div id="modalClientForgotPin" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm p-5 rounded-3xl space-y-3.5 text-xs shadow-xl border border-slate-200">
-      <div class="text-center space-y-1">
-        <div class="w-10 h-10 rounded-full bg-teal-50 text-teal-700 flex items-center justify-center mx-auto text-base">
-          <i class="fa-solid fa-key"></i>
-        </div>
-        <h3 class="font-extrabold text-slate-900 text-sm">Reset Client PIN</h3>
-      </div>
-      <div class="space-y-2">
-        <input type="tel" id="inClientForgotPhone" placeholder="e.g. 9925879138" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600">
-      </div>
-      <div class="space-y-2 pt-1">
-        <button onclick="handleClientSelfResetPin()" class="w-full bg-teal-600 hover:bg-teal-500 text-white font-extrabold py-2.5 rounded-xl shadow-xs">Auto-Reset PIN 🔄</button>
-        <button onclick="closeClientForgotPinModal()" class="w-full text-slate-400 text-center py-1">Cancel</button>
-      </div>
+  <div id="modalClientForgotPin" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm p-5 rounded-3xl space-y-3.5 text-xs shadow-xl border">
+      <h3 class="font-extrabold text-slate-900 text-sm text-center">Reset Client PIN</h3>
+      <input type="tel" id="inClientForgotPhone" placeholder="Enter mobile number" class="w-full p-2.5 bg-slate-50 border rounded-xl">
+      <button onclick="handleClientSelfResetPin()" class="w-full bg-teal-600 text-white font-extrabold py-2.5 rounded-xl">Auto-Reset PIN 🔄</button>
+      <button onclick="closeClientForgotPinModal()" class="w-full text-slate-400 text-center py-1">Cancel</button>
     </div>
   </div>
 
-  <div id="ingredientCustomizerModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3.5">
-    <div class="bg-white w-full max-w-md p-4 rounded-3xl space-y-3 text-xs max-h-[85vh] flex flex-col shadow-2xl border border-slate-200">
-      <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-        <div>
-          <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">
-            <i class="fa-solid fa-kitchen-set text-teal-600"></i> Customize & Log Local Food
-          </h3>
-        </div>
+  <div id="ingredientCustomizerModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-3.5">
+    <div class="bg-white w-full max-w-md p-4 rounded-3xl space-y-3 text-xs max-h-[85vh] flex flex-col shadow-2xl border">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-slate-800 text-sm">Customize & Log Local Food</h3>
         <button onclick="closeCustomizer()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
       </div>
-      <div class="bg-slate-50 p-3 rounded-2xl border border-teal-200 space-y-1.5">
-        <div class="flex justify-between items-center">
-          <span class="text-[10px] text-teal-800 font-extrabold uppercase tracking-wider">Your Plate Today:</span>
-          <button onclick="resetCustomizerToIdeal()" class="text-[10px] text-teal-600 hover:underline">Reset</button>
-        </div>
+      <div class="bg-slate-50 p-3 rounded-2xl border space-y-1.5">
+        <span class="text-[10px] text-teal-800 font-extrabold uppercase">Your Plate Today:</span>
         <div id="cstActiveTags" class="flex flex-wrap gap-1.5 min-h-[36px] items-center"></div>
       </div>
-
-      <div class="space-y-1 pt-1 border-t border-slate-100">
-        <span class="text-[10px] text-slate-600 font-bold">અન્ય કંઈ ખાધું હોય તો અહીં લખીને ઉમેરો (Type local food):</span>
+      <div class="space-y-1 pt-1 border-t">
+        <span class="text-[10px] text-slate-600 font-bold">અન્ય કંઈ ખાધું હોય તો અહીં ઉમેરો (Type local food):</span>
         <div class="flex gap-1.5">
-          <input type="text" id="cstCustomInput" placeholder="e.g. સેવ ઉસળ, પૌંઆ..." class="flex-1 bg-slate-50 border border-slate-300 p-2 rounded-xl text-slate-800 text-xs focus:bg-white focus:border-teal-600 focus:outline-none font-medium">
-          <button onclick="addCustomTypedFood()" class="px-3.5 py-2 bg-slate-900 text-white rounded-xl font-bold text-xs hover:bg-slate-800">+ Add</button>
+          <input type="text" id="cstCustomInput" placeholder="e.g. સેવ ઉસળ, પૌંઆ..." class="flex-1 bg-slate-50 border p-2 rounded-xl text-xs">
+          <button onclick="addCustomTypedFood()" class="px-3.5 py-2 bg-slate-900 text-white rounded-xl font-bold text-xs">+ Add</button>
         </div>
       </div>
-
-      <div class="space-y-1.5 flex-1 overflow-y-auto pr-1 pt-1">
-        <span class="text-[10px] text-slate-600 font-bold">Master Grocery & Substitutes:</span>
+      <div class="space-y-1.5 flex-1 overflow-y-auto pr-1">
+        <span class="text-[10px] text-slate-600 font-bold">Substitutes:</span>
         <div class="flex flex-wrap gap-1.5" id="cstSubstitutesContainer"></div>
       </div>
-      <div class="pt-2 border-t border-slate-100 flex gap-2">
+      <div class="pt-2 border-t flex gap-2">
         <button onclick="closeCustomizer()" class="flex-1 bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl">Cancel</button>
-        <button onclick="applyCustomizerTags()" class="flex-1 brand-gradient text-white font-bold py-2.5 rounded-xl shadow">Apply Changes ✅</button>
+        <button onclick="applyCustomizerTags()" class="flex-1 brand-gradient text-white font-bold py-2.5 rounded-xl">Apply Changes ✅</button>
       </div>
     </div>
   </div>
 
-  <div id="modalFeedback" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm p-4 rounded-3xl space-y-3 text-xs shadow-xl border border-slate-200">
-      <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-        <h3 class="font-bold text-slate-900 text-sm">Help & Support</h3>
-        <button onclick="closeFeedbackModal()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
-      </div>
-      <div class="space-y-2">
-        <textarea id="fbMessage" rows="3" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-xl text-slate-800 placeholder-slate-400" placeholder="Type your suggestion or issue here..."></textarea>
-      </div>
+  <div id="modalFeedback" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm p-4 rounded-3xl space-y-3 text-xs shadow-xl border">
+      <h3 class="font-bold text-slate-900 text-sm">Help & Support</h3>
+      <textarea id="fbMessage" rows="3" class="w-full bg-slate-50 border p-2 rounded-xl" placeholder="Type message..."></textarea>
       <div class="flex gap-2 pt-1">
-        <button onclick="closeFeedbackModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl font-bold">Cancel</button>
-        <button onclick="sendFeedbackWhatsApp()" class="flex-1 bg-teal-600 text-white font-bold py-2 rounded-xl flex items-center justify-center gap-1 shadow">Submit 📲</button>
+        <button onclick="closeFeedbackModal()" class="flex-1 bg-slate-100 py-2 rounded-xl font-bold">Cancel</button>
+        <button onclick="sendFeedbackWhatsApp()" class="flex-1 bg-teal-600 text-white py-2 rounded-xl font-bold">Submit 📲</button>
       </div>
     </div>
   </div>
@@ -310,14 +234,11 @@
     const db = firebase.firestore();
 
     const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const DAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
     let COACH_PHONE = "919081421028";
-
     let weekOffset = 0;
     let selectedDateKey = getTodayDateKey();
     let currentClient = null;
 
-    // MASTER GROCERY & NUTRITION DATABASE (Calories per 100g & GI Index)
     const MASTER_GROCERY_DB = {
       "Ash Gourd": { cal: 13, gi: 15 },
       "Bottle Gourd": { cal: 21, gi: 15 },
@@ -335,8 +256,6 @@
       "Sprouted Chana": { cal: 120, gi: 28 },
       "Ragi Cheela": { cal: 240, gi: 50 },
       "Palak Paneer": { cal: 180, gi: 20 },
-      "Desi Ghee": { cal: 900, gi: 0 },
-      "Groundnut Oil": { cal: 884, gi: 0 },
       "Sev Usal": { cal: 310, gi: 55 },
       "Poha": { cal: 180, gi: 65 }
     };
@@ -348,7 +267,7 @@
           return MASTER_GROCERY_DB[key];
         }
       }
-      return { cal: 85, gi: 30 }; // Default average fallback
+      return { cal: 120, gi: 30 };
     }
 
     function calculateDishNutrition(dishString) {
@@ -365,14 +284,11 @@
 
     const MASTER_30_DAY_MENU = [
       { morning: "Ash Gourd + Coriander + Raw Turmeric", breakfast: "Moong Dal Chila + Fresh Paneer", lunch: "Salad Barrier + Multi-Millet Roti + Bottle Gourd + Chaas", snack: "Roasted Makhana", dinner: "Pumpkin Puree + Sauteed Veggies" },
-      { morning: "Bottle Gourd + Ginger", breakfast: "Steamed Moong + Lemon", lunch: "Salad Barrier + Multi-Millet Roti + Palak Paneer + Chaas", snack: "Roasted Chana", dinner: "Tomato Soup + Paneer" },
-      { morning: "Amla Juice + Cumin Water", breakfast: "Sprouted Chana Salad", lunch: "Salad Barrier + Multi-Millet Roti + Moong Dal + Chaas", snack: "Pumpkin Seeds", dinner: "Clear Veg Soup + Sprouts" }
+      { morning: "Bottle Gourd + Ginger", breakfast: "Steamed Moong + Lemon", lunch: "Salad Barrier + Multi-Millet Roti + Palak Paneer + Chaas", snack: "Roasted Makhana", dinner: "Pumpkin Puree + Paneer" },
+      { morning: "Amla Juice + Cumin Water", breakfast: "Sprouted Chana Salad", lunch: "Salad Barrier + Multi-Millet Roti + Moong Dal + Chaas", snack: "Roasted Makhana", dinner: "Pumpkin Puree + Sprouts" }
     ];
 
-    const SUBSTITUTES_POOL = [
-      "Bottle Gourd", "Ash Gourd", "Cucumber", "Raw Turmeric", "Fresh Ginger", "Moong Dal Chila", 
-      "Fresh Paneer", "Salad Barrier", "Multi-Millet Roti", "Chaas", "Roasted Makhana", "Steamed Moong"
-    ];
+    const SUBSTITUTES_POOL = ["Bottle Gourd", "Ash Gourd", "Cucumber", "Moong Dal Chila", "Fresh Paneer", "Salad Barrier", "Multi-Millet Roti", "Chaas", "Roasted Makhana", "Steamed Moong"];
 
     function getTodayDateKey() {
       const now = new Date();
@@ -390,7 +306,6 @@
       const distanceToMon = (currentDay === 0 ? -6 : 1) - currentDay;
       const monday = new Date(now);
       monday.setDate(now.getDate() + distanceToMon + (weekOffset * 7));
-
       const weekDates = [];
       for (let i = 0; i < 7; i++) {
         const d = new Date(monday);
@@ -401,22 +316,11 @@
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
-      try {
-        const settingsDoc = await db.collection('settings').doc('config').get();
-        if (settingsDoc.exists && settingsDoc.data().coachPhone) {
-          COACH_PHONE = settingsDoc.data().coachPhone;
-        }
-      } catch(e) { console.error(e); }
-
       const savedPhone = localStorage.getItem('met_pro_session_phone');
       if (savedPhone) {
         try {
           const doc = await db.collection('clients').doc(savedPhone).get();
-          if (doc.exists) {
-            currentClient = doc.data();
-            openPortal();
-            return;
-          }
+          if (doc.exists) { currentClient = doc.data(); openPortal(); return; }
         } catch(e) { console.error(e); }
       }
       showAuth();
@@ -445,11 +349,10 @@
       const name = document.getElementById('regName').value.trim();
       const phone = document.getElementById('regPhone').value.trim().replace(/\D/g, '');
       const diet = document.getElementById('regDiet').value;
-      const conditionCheckboxes = document.querySelectorAll('input[name="regCondition"]:checked');
-      const conditions = Array.from(conditionCheckboxes).map(cb => cb.value);
+      const conditions = Array.from(document.querySelectorAll('input[name="regCondition"]:checked')).map(cb => cb.value);
 
-      if (!name || phone.length < 10) return alert('Enter full name and valid 10-digit number.');
-      if (conditions.length === 0) return alert('Select at least one health goal.');
+      if (!name || phone.length < 10) return alert('Enter full name and 10-digit number.');
+      if (conditions.length === 0) return alert('Select at least one goal.');
 
       const pin = phone.slice(-4) || '1234';
       const clientRef = db.collection('clients').doc(phone);
@@ -469,7 +372,7 @@
       await clientRef.set(newClientData);
       currentClient = newClientData;
       localStorage.setItem('met_pro_session_phone', phone);
-      alert(`🎉 Welcome ${name}! Your Portal is live. (PIN: ${pin})`);
+      alert(`🎉 Welcome ${name}! Portal is live. (PIN: ${pin})`);
       openPortal();
     }
 
@@ -488,18 +391,9 @@
       openPortal();
     }
 
-    function logoutClient() {
-      localStorage.removeItem('met_pro_session_phone');
-      currentClient = null;
-      showAuth();
-    }
-
-    function openClientForgotPinModal() {
-      document.getElementById('inClientForgotPhone').value = document.getElementById('loginId').value.trim();
-      document.getElementById('modalClientForgotPin').classList.remove('hidden');
-    }
+    function logoutClient() { localStorage.removeItem('met_pro_session_phone'); currentClient = null; showAuth(); }
+    function openClientForgotPinModal() { document.getElementById('inClientForgotPhone').value = document.getElementById('loginId').value.trim(); document.getElementById('modalClientForgotPin').classList.remove('hidden'); }
     function closeClientForgotPinModal() { document.getElementById('modalClientForgotPin').classList.add('hidden'); }
-
     async function handleClientSelfResetPin() {
       const phone = document.getElementById('inClientForgotPhone').value.trim().replace(/\D/g, '');
       const defaultPin = phone.slice(-4) || '1234';
@@ -527,7 +421,6 @@
       const weekDates = getCurrentWeekDates();
       const container = document.getElementById('cpDateGridButtons');
       container.innerHTML = '';
-
       const todayKey = getTodayDateKey();
       const joiningKey = currentClient.joiningDate || todayKey;
       const isLifetimeVIP = (currentClient.trialDays >= 900);
@@ -542,26 +435,16 @@
         const isFuture = (dateKey > todayKey);
 
         const btn = document.createElement('button');
-        
-        // If Lifetime VIP, allow future navigation. Regular trial clients can only view up to current week.
         if (isBeforeJoining || (!isLifetimeVIP && isFuture)) {
           btn.className = "py-2 px-1 rounded-2xl bg-slate-100 text-slate-300 border border-slate-200 text-xs flex flex-col items-center justify-center cursor-not-allowed";
-          btn.onclick = () => alert(isBeforeJoining ? "🔒 Before joining date." : "🔒 Future menu locked for regular trial. VIP members have full access!");
+          btn.onclick = () => alert(isBeforeJoining ? "🔒 Before joining date." : "🔒 Future menu locked for regular trial.");
         } else {
           btn.onclick = () => selectClientDate(dateKey);
-          if (isSelected) {
-            btn.className = "py-2 px-1 rounded-2xl bg-teal-600 text-white font-extrabold text-xs shadow-md shadow-teal-700/30 flex flex-col items-center justify-center";
-          } else if (isToday) {
-            btn.className = "py-2 px-1 rounded-2xl bg-teal-50 border-2 border-teal-500 text-teal-800 font-extrabold text-xs flex flex-col items-center justify-center";
-          } else {
-            btn.className = "py-2 px-1 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-xs flex flex-col items-center justify-center";
-          }
+          if (isSelected) btn.className = "py-2 px-1 rounded-2xl bg-teal-600 text-white font-extrabold text-xs shadow-md shadow-teal-700/30 flex flex-col items-center justify-center";
+          else if (isToday) btn.className = "py-2 px-1 rounded-2xl bg-teal-50 border-2 border-teal-500 text-teal-800 font-extrabold text-xs flex flex-col items-center justify-center";
+          else btn.className = "py-2 px-1 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-xs flex flex-col items-center justify-center";
         }
-
-        btn.innerHTML = `
-          <span class="text-[9px] uppercase tracking-wider ${isSelected ? 'text-teal-100' : 'text-slate-400'}">${dayShort}</span>
-          <span class="text-sm font-black leading-tight mt-0.5">${dayNumber}</span>
-        `;
+        btn.innerHTML = `<span class="text-[9px] uppercase tracking-wider ${isSelected ? 'text-teal-100' : 'text-slate-400'}">${dayShort}</span><span class="text-sm font-black leading-tight mt-0.5">${dayNumber}</span>`;
         container.appendChild(btn);
       });
       updateDateHeader();
@@ -570,10 +453,9 @@
     function selectClientDate(dateKey) { selectedDateKey = dateKey; renderClientDateStrip(); loadTodayClientView(); }
     function changeWeek(direction) { weekOffset += direction; renderClientDateStrip(); }
     function jumpToToday() { weekOffset = 0; selectedDateKey = getTodayDateKey(); renderClientDateStrip(); loadTodayClientView(); }
-
     function updateDateHeader() {
       const dObj = parseDateKey(selectedDateKey);
-      document.getElementById('cpActiveDateFullHeading').innerText = `${DAY_NAMES[dObj.getDay()]}, ${dObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`
+      document.getElementById('cpActiveDateFullHeading').innerText = `${DAY_NAMES[dObj.getDay()]}, ${dObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`;
     }
 
     function loadTodayClientView() {
@@ -593,13 +475,18 @@
         { key: 'dinner', time: 'Night Dinner (રાત્રે ૮:૩૦ પહેલાં)', label: '5. Restorative Dinner', text: comp.customMeals?.dinner || plan.dinner }
       ];
 
+      let totalDayCalories = 0;
+      let totalDayGi = 0;
+
       const container = document.getElementById('cpTodayMealCards');
       container.innerHTML = '';
 
       slots.forEach(s => {
         const nut = calculateDishNutrition(s.text);
-        const currentCheck = comp[s.key] || 'idle';
+        totalDayCalories += nut.totalCal;
+        totalDayGi += nut.gi;
 
+        const currentCheck = comp[s.key] || 'idle';
         const card = document.createElement('div');
         card.className = "card-clean p-3.5 rounded-2xl space-y-2 border border-slate-200";
         card.innerHTML = `
@@ -616,13 +503,32 @@
           </div>
           <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 font-medium">${s.text}</div>
           <div class="grid grid-cols-3 gap-1.5">
-            <button onclick="setCheck('${s.key}', 'done')" class="py-2 rounded-xl text-xs border ${currentCheck==='done'?'btn-done-active':'btn-idle'}">Done</button>
-            <button onclick="setCheck('${s.key}', 'half')" class="py-2 rounded-xl text-xs border ${currentCheck==='half'?'btn-half-active':'btn-idle'}">50%</button>
-            <button onclick="setCheck('${s.key}', 'miss')" class="py-2 rounded-xl text-xs border ${currentCheck==='miss'?'btn-miss-active':'btn-idle'}">Missed</button>
+            <button onclick="setCheck('${s.key}', 'done')" class="py-2 rounded-xl text-xs ${currentCheck==='done'?'btn-done-active':'btn-idle'}">Done</button>
+            <button onclick="setCheck('${s.key}', 'half')" class="py-2 rounded-xl text-xs ${currentCheck==='half'?'btn-half-active':'btn-idle'}">50%</button>
+            <button onclick="setCheck('${s.key}', 'miss')" class="py-2 rounded-xl text-xs ${currentCheck==='miss'?'btn-miss-active':'btn-idle'}">Missed</button>
           </div>
         `;
         container.appendChild(card);
       });
+
+      // UPDATE DAILY BUDGET DASHBOARD VALUES
+      const dailyTarget = 1200;
+      const remaining = dailyTarget - totalDayCalories;
+      const avgGi = Math.round(totalDayGi / slots.length);
+      const progressPercent = Math.min(Math.round((totalDayCalories / dailyTarget) * 100), 100);
+
+      document.getElementById('cpTargetCal').innerText = dailyTarget;
+      document.getElementById('cpConsumedCal').innerText = totalDayCalories + ' kcal';
+      document.getElementById('cpRemainingCal').innerText = (remaining >= 0 ? remaining : 0) + ' kcal';
+      document.getElementById('cpDailyGi').innerText = 'GI: ' + avgGi;
+      document.getElementById('cpCalProgress').style.width = progressPercent + '%';
+
+      if (remaining < 0) {
+        document.getElementById('cpRemainingCal').className = "text-sm font-black text-rose-300 mt-0.5";
+        document.getElementById('cpRemainingCal').innerText = `Exceeded by ${Math.abs(remaining)} kcal!`;
+      } else {
+        document.getElementById('cpRemainingCal').className = "text-sm font-black text-emerald-300 mt-0.5";
+      }
 
       document.getElementById('cpDynamicInputs').innerHTML = `
         <div class="grid grid-cols-2 gap-2">
