@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Metabolic Pro Hub - Global Health CRM & Client Portal</title>
+  <title>Metabolic Pro Hub - Health & Protocol Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -14,37 +14,37 @@
     .btn-done-active { background-color: #065f46; border-color: #10b981; color: #34d399; font-weight: 700; }
     .btn-half-active { background-color: #78350f; border-color: #f59e0b; color: #fbbf24; font-weight: 700; }
     .btn-miss-active { background-color: #7f1d1d; border-color: #ef4444; color: #f87171; font-weight: 700; }
-    .btn-state-idle { background-color: #1a1d28; border-color: #374151; color: #9ca3af; }
+    .btn-state-idle { background-color: #181a26; border-color: #374151; color: #9ca3af; }
+    .chip-active { background-color: #065f46; border-color: #10b981; color: #a7f3d0; }
+    .chip-inactive { background-color: #1e2130; border-color: #374151; color: #9ca3af; }
   </style>
 </head>
-<body class="pb-24">
+<body class="pb-28">
 
   <!-- ==================== VIEW 1: ADMIN CRM DASHBOARD ==================== -->
   <div id="adminView" class="space-y-3">
     <!-- Header -->
-    <header class="p-3 bg-[#0f1118] border-b border-[#212538] sticky top-0 z-40 flex justify-between items-center shadow-md">
+    <header class="p-3.5 bg-[#0f1118] border-b border-[#212538] sticky top-0 z-40 flex justify-between items-center shadow-md">
       <div class="flex items-center gap-2">
         <span class="text-xl">🩺</span>
         <div>
           <h1 class="font-extrabold text-amber-500 text-sm tracking-wide">Metabolic Pro Hub</h1>
-          <p class="text-[9px] text-gray-400">Clinical, Sports, Pregnancy & Menopause Hub</p>
+          <p class="text-[9px] text-gray-400">Admin Control Center</p>
         </div>
       </div>
-      <div class="flex items-center gap-2">
-        <button onclick="previewClientPortal(activeClientId)" class="px-2.5 py-1 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 text-[10px] font-bold flex items-center gap-1 shadow">
-          <i class="fa-solid fa-eye"></i> Client Portal Preview
-        </button>
-      </div>
+      <button onclick="previewClientPortal(activeClientId)" class="px-2.5 py-1 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 text-[10px] font-bold flex items-center gap-1 shadow">
+        <i class="fa-solid fa-mobile-screen"></i> Client View
+      </button>
     </header>
 
     <!-- Navigation Tabs -->
     <div class="flex p-2 gap-1.5 bg-[#090a0f] border-b border-[#1b1e2c] text-xs overflow-x-auto no-scrollbar">
-      <button onclick="setAdminTab('clients')" id="atab-clients" class="tab-active px-3 py-1.5 rounded-lg flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-users"></i> Client Directory</button>
-      <button onclick="setAdminTab('planner')" id="atab-planner" class="px-3 py-1.5 rounded-lg text-gray-400 bg-[#151722] flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-calendar-week"></i> 7-Day Protocol Builder</button>
-      <button onclick="setAdminTab('lab')" id="atab-lab" class="px-3 py-1.5 rounded-lg text-gray-400 bg-[#151722] flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-vial"></i> Lab Biomarkers</button>
+      <button onclick="setAdminTab('clients')" id="atab-clients" class="tab-active px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-users"></i> Client Directory</button>
+      <button onclick="setAdminTab('planner')" id="atab-planner" class="px-3.5 py-2 rounded-xl text-gray-400 bg-[#151722] flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-calendar-check"></i> Master Protocols</button>
+      <button onclick="setAdminTab('lab')" id="atab-lab" class="px-3.5 py-2 rounded-xl text-gray-400 bg-[#151722] flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-vial"></i> Lab Hub</button>
     </div>
 
-    <main class="p-3 max-w-lg mx-auto space-y-3">
+    <main class="p-3.5 max-w-lg mx-auto space-y-3">
       <!-- KPI Metrics -->
       <div class="grid grid-cols-4 gap-2 text-center text-xs">
         <div class="card-dark p-2 rounded-xl"><div id="admTotal" class="text-base font-black text-amber-500">2</div><div class="text-[9px] text-gray-400">Total Clients</div></div>
@@ -55,102 +55,48 @@
 
       <!-- TAB 1: CLIENTS DIRECTORY -->
       <section id="aview-clients" class="space-y-3">
-        <div class="flex gap-2">
-          <button onclick="openModal()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-950/40">
-            <i class="fa-solid fa-user-plus"></i> Add New Client
-          </button>
-        </div>
-        <input type="text" id="admSearch" oninput="filterAdminClients()" placeholder="Search by name, phone or category..." class="w-full bg-[#11131c] border border-[#232738] rounded-xl px-3 py-2 text-xs text-white placeholder-gray-500">
+        <button onclick="openModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-950/40">
+          <i class="fa-solid fa-user-plus"></i> Add New Client
+        </button>
+        <input type="text" id="admSearch" oninput="filterAdminClients()" placeholder="Search client by name or phone..." class="w-full bg-[#11131c] border border-[#232738] rounded-xl px-3 py-2.5 text-xs text-white placeholder-gray-500">
         <div id="admClientsList" class="space-y-3"></div>
       </section>
 
-      <!-- TAB 2: 7-DAY PROTOCOL BUILDER -->
+      <!-- TAB 2: MASTER PROTOCOLS -->
       <section id="aview-planner" class="hidden space-y-3 text-xs">
-        <div class="card-dark p-3.5 rounded-2xl space-y-3">
+        <div class="card-dark p-4 rounded-2xl space-y-3">
           <div class="flex justify-between items-center border-b border-gray-800 pb-2">
-            <h2 class="font-bold text-amber-500 flex items-center gap-1.5"><i class="fa-solid fa-clipboard-list"></i> Weekly Protocol Builder</h2>
+            <h2 class="font-bold text-amber-500 text-sm flex items-center gap-1.5"><i class="fa-solid fa-sliders"></i> Client Protocol Setup</h2>
             <span class="text-[10px] text-emerald-400 font-bold" id="admCurrentClientBadge"></span>
           </div>
 
           <div>
-            <label class="text-[10px] text-gray-400">Select Active Client:</label>
-            <select id="admPlannerSelect" onchange="switchPlannerClient(this.value)" class="w-full bg-[#0c0d13] border border-[#25293d] p-2 rounded-xl text-white mt-1"></select>
+            <label class="text-[10px] text-gray-400">Select Client to Configure:</label>
+            <select id="admPlannerSelect" onchange="switchPlannerClient(this.value)" class="w-full bg-[#0c0d13] border border-[#25293d] p-2.5 rounded-xl text-white mt-1"></select>
           </div>
 
           <!-- Quick Template Selector -->
           <div class="space-y-1">
-            <span class="text-[10px] text-gray-400">Apply Complete 7-Day Template:</span>
-            <div class="grid grid-cols-4 gap-1">
-              <button onclick="applyPreset('diabetes')" class="bg-[#171a25] border border-emerald-800/80 hover:border-emerald-500 text-emerald-400 py-1.5 rounded-lg text-[9px] font-bold">🩺 Diabetes</button>
-              <button onclick="applyPreset('fitness')" class="bg-[#171a25] border border-cyan-800/80 hover:border-cyan-500 text-cyan-400 py-1.5 rounded-lg text-[9px] font-bold">🏋️ Gym Pro</button>
-              <button onclick="applyPreset('pregnancy')" class="bg-[#171a25] border border-pink-800/80 hover:border-pink-500 text-pink-400 py-1.5 rounded-lg text-[9px] font-bold">🤰 Pregnancy</button>
-              <button onclick="applyPreset('menopause')" class="bg-[#171a25] border border-purple-800/80 hover:border-purple-500 text-purple-400 py-1.5 rounded-lg text-[9px] font-bold">🌸 Menopause</button>
+            <span class="text-[10px] text-gray-400">Apply Instant 7-Day Template:</span>
+            <div class="grid grid-cols-4 gap-1.5">
+              <button onclick="applyPreset('diabetes')" class="bg-[#171a25] border border-emerald-800 hover:border-emerald-500 text-emerald-400 py-2 rounded-xl text-[10px] font-bold">🩺 Diabetes</button>
+              <button onclick="applyPreset('fitness')" class="bg-[#171a25] border border-cyan-800 hover:border-cyan-500 text-cyan-400 py-2 rounded-xl text-[10px] font-bold">🏋️ Gym</button>
+              <button onclick="applyPreset('pregnancy')" class="bg-[#171a25] border border-pink-800 hover:border-pink-500 text-pink-400 py-2 rounded-xl text-[10px] font-bold">🤰 Pregnancy</button>
+              <button onclick="applyPreset('menopause')" class="bg-[#171a25] border border-purple-800 hover:border-purple-500 text-purple-400 py-2 rounded-xl text-[10px] font-bold">🌸 Menopause</button>
             </div>
           </div>
 
-          <!-- Day Tabs (Mon - Sun) -->
+          <!-- Day Tabs -->
           <div class="flex gap-1 overflow-x-auto py-1 no-scrollbar text-[11px]" id="admDayTabs"></div>
 
-          <!-- Form Inputs with "+ Pick from Library" -->
           <div class="bg-[#0b0c12] p-3 rounded-xl border border-gray-800 space-y-2.5">
-            <div class="flex justify-between items-center">
-              <span class="text-amber-400 font-bold" id="admDayFormTitle">Monday (Day 1) Protocol</span>
-              <span class="text-[10px] text-gray-500">Tap '+ Pick' to choose foods</span>
-            </div>
-
-            <!-- Slot 1: Morning -->
-            <div>
-              <div class="flex justify-between items-center">
-                <label class="text-[10px] text-gray-400">1. Morning Detox / Pre-Workout:</label>
-                <button onclick="openFoodPicker('morning')" class="text-[10px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1"><i class="fa-solid fa-list-check"></i> + Pick from Library</button>
-              </div>
-              <input type="text" id="admMorning" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
-            </div>
-
-            <!-- Slot 2: Breakfast -->
-            <div>
-              <div class="flex justify-between items-center">
-                <label class="text-[10px] text-gray-400">2. Breakfast / Post-Workout Fuel:</label>
-                <button onclick="openFoodPicker('breakfast')" class="text-[10px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1"><i class="fa-solid fa-list-check"></i> + Pick from Library</button>
-              </div>
-              <input type="text" id="admBreakfast" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
-            </div>
-
-            <!-- Slot 3: Lunch -->
-            <div>
-              <div class="flex justify-between items-center">
-                <label class="text-[10px] text-gray-400">3. Lunch (Salad + Super Flour + Veg + Buttermilk):</label>
-                <button onclick="openFoodPicker('lunch')" class="text-[10px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1"><i class="fa-solid fa-list-check"></i> + Pick from Library</button>
-              </div>
-              <input type="text" id="admLunch" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
-            </div>
-
-            <!-- Slot 4: Snack -->
-            <div>
-              <div class="flex justify-between items-center">
-                <label class="text-[10px] text-gray-400">4. Afternoon Snack (4-5 PM):</label>
-                <button onclick="openFoodPicker('snack')" class="text-[10px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1"><i class="fa-solid fa-list-check"></i> + Pick from Library</button>
-              </div>
-              <input type="text" id="admSnack" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
-            </div>
-
-            <!-- Slot 5: Dinner -->
-            <div>
-              <div class="flex justify-between items-center">
-                <label class="text-[10px] text-gray-400">5. Dinner (Restoration & Recovery - Before 8:30 PM):</label>
-                <button onclick="openFoodPicker('dinner')" class="text-[10px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1"><i class="fa-solid fa-list-check"></i> + Pick from Library</button>
-              </div>
-              <input type="text" id="admDinner" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
-            </div>
-
-            <!-- Slot 6: Protocol -->
-            <div>
-              <div class="flex justify-between items-center">
-                <label class="text-[10px] text-gray-400">6. Daily Protocol (Hydration / Routine / Sleep):</label>
-                <button onclick="openFoodPicker('rule')" class="text-[10px] text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1"><i class="fa-solid fa-list-check"></i> + Pick from Library</button>
-              </div>
-              <input type="text" id="admRule" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
-            </div>
+            <div class="text-amber-400 font-bold" id="admDayFormTitle">Monday Protocol</div>
+            <div><label class="text-[10px] text-gray-400">1. Morning Detox / Fuel:</label><input type="text" id="admMorning" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5"></div>
+            <div><label class="text-[10px] text-gray-400">2. Breakfast Fuel:</label><input type="text" id="admBreakfast" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5"></div>
+            <div><label class="text-[10px] text-gray-400">3. Lunch Plate:</label><input type="text" id="admLunch" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5"></div>
+            <div><label class="text-[10px] text-gray-400">4. Afternoon Snack:</label><input type="text" id="admSnack" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5"></div>
+            <div><label class="text-[10px] text-gray-400">5. Dinner & Recovery:</label><input type="text" id="admDinner" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5"></div>
+            <div><label class="text-[10px] text-gray-400">6. Daily Protocol (Habits/Sleep):</label><input type="text" id="admRule" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5"></div>
           </div>
 
           <div class="flex gap-2">
@@ -160,21 +106,21 @@
         </div>
       </section>
 
-      <!-- TAB 3: LAB REPORT -->
+      <!-- TAB 3: LAB HUB -->
       <section id="aview-lab" class="hidden space-y-3 text-xs">
-        <div class="card-dark p-3.5 rounded-2xl space-y-2.5">
-          <h2 class="font-bold text-amber-500 flex items-center gap-1.5"><i class="fa-solid fa-microscope"></i> Lab Biomarkers Analyzer</h2>
+        <div class="card-dark p-4 rounded-2xl space-y-3">
+          <h2 class="font-bold text-amber-500 flex items-center gap-1.5"><i class="fa-solid fa-microscope"></i> Biomarkers & Risk Evaluation</h2>
           <div class="grid grid-cols-2 gap-2">
             <div class="col-span-2">
-              <label class="text-[10px] text-gray-400">Select Client</label>
+              <label class="text-[10px] text-gray-400">Client</label>
               <select id="admLabSelect" class="w-full bg-[#0d0e14] border border-[#272a3b] p-2 rounded-xl text-white mt-0.5"></select>
             </div>
             <div><label class="text-[10px] text-gray-400">HbA1c (%)</label><input type="number" step="0.1" id="inHba1c" placeholder="7.2" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
             <div><label class="text-[10px] text-gray-400">Fasting Sugar (mg/dL)</label><input type="number" id="inFast" placeholder="135" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
             <div><label class="text-[10px] text-gray-400">SGPT / ALT (Liver)</label><input type="number" id="inSgpt" placeholder="48" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
-            <div><label class="text-[10px] text-gray-400">Triglycerides (mg/dL)</label><input type="number" id="inTg" placeholder="185" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
+            <div><label class="text-[10px] text-gray-400">Triglycerides</label><input type="number" id="inTg" placeholder="185" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
           </div>
-          <button onclick="runLabAnalysis()" class="w-full gold-gradient text-black font-bold py-2 rounded-xl text-xs">Analyze Biomarkers</button>
+          <button onclick="runLabAnalysis()" class="w-full gold-gradient text-black font-bold py-2.5 rounded-xl text-xs">Analyze Biomarkers</button>
           <div id="labResult" class="hidden space-y-2 pt-2 border-t border-gray-800">
             <div id="riskBadges" class="flex gap-1.5 flex-wrap"></div>
             <div id="dietAdvice" class="bg-[#0e1017] p-2.5 rounded-xl border border-gray-800 text-[11px] space-y-1"></div>
@@ -184,9 +130,9 @@
     </main>
   </div>
 
-  <!-- ==================== VIEW 2: CLIENT READ-ONLY INTERACTIVE PORTAL ==================== -->
+  <!-- ==================== VIEW 2: CLIENT READABLE "TODAY-FOCUSED" VIP PORTAL ==================== -->
   <div id="clientPortalView" class="hidden min-h-screen">
-    <!-- VIP Client Header -->
+    <!-- VIP Header -->
     <header class="p-3.5 bg-[#0f1118] border-b border-[#212538] sticky top-0 z-50 flex justify-between items-center shadow-lg">
       <div class="flex items-center gap-2.5">
         <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-black font-black text-sm shadow" id="cpAvatar">
@@ -194,38 +140,75 @@
         </div>
         <div>
           <h1 class="font-extrabold text-white text-sm" id="cpClientTitle">Welcome</h1>
-          <p class="text-[10px] text-amber-400" id="cpClientGoal">Personalized Protocol</p>
+          <p class="text-[10px] text-amber-400" id="cpClientSub">Your Daily Metabolic Protocol</p>
         </div>
       </div>
-      <div class="flex items-center gap-2">
-        <button onclick="exitToAdmin()" class="px-2.5 py-1 bg-gray-800 text-gray-400 rounded-lg text-[10px] hover:text-white">Admin View</button>
-      </div>
+      <button onclick="exitToAdmin()" class="px-2.5 py-1 bg-gray-800 text-gray-400 rounded-lg text-[10px] hover:text-white">Admin View</button>
     </header>
 
-    <main class="p-3.5 max-w-lg mx-auto space-y-3.5">
-      <!-- Dynamic Motivation Banner -->
-      <div id="cpMotivationBanner" class="p-3 rounded-2xl border text-xs space-y-1 transition-all"></div>
+    <main class="p-3.5 max-w-lg mx-auto space-y-4">
 
-      <!-- 7-Day Day Selector (Client) -->
-      <div class="flex gap-1.5 overflow-x-auto py-1 no-scrollbar text-xs" id="cpDayTabs"></div>
-
-      <!-- Active Day Interactive Checklist (STRICT READ-ONLY FOR MEAL TEXT) -->
-      <div class="card-dark p-3.5 rounded-2xl space-y-3">
-        <div class="flex justify-between items-center border-b border-gray-800 pb-2">
-          <h3 class="font-bold text-amber-400 text-xs" id="cpDayHeading">Daily Meal Protocol</h3>
-          <span class="text-[10px] text-gray-400">Select: Done, Partial, or Missed</span>
+      <!-- CLIENT SELF-SELECTORS (CATEGORY & VEG/NON-VEG) -->
+      <div class="card-dark p-3 rounded-2xl bg-gradient-to-br from-[#161824] to-[#0e1017] border border-amber-500/20 space-y-2.5">
+        <div class="flex justify-between items-center text-xs">
+          <span class="text-gray-400 text-[11px] font-semibold"><i class="fa-solid fa-user-gear text-amber-400"></i> My Target Category:</span>
+          <!-- Dietary Switcher -->
+          <div class="flex gap-1 bg-[#0b0c10] p-1 rounded-xl border border-gray-800">
+            <button onclick="setClientDietType('veg')" id="btnDietVeg" class="px-2.5 py-1 rounded-lg text-[10px] font-bold transition chip-active">🌱 Veg</button>
+            <button onclick="setClientDietType('nonveg')" id="btnDietNonVeg" class="px-2.5 py-1 rounded-lg text-[10px] font-bold transition chip-inactive">🍗 Non-Veg</button>
+          </div>
         </div>
 
-        <div class="space-y-2.5" id="cpMealSlotsContainer"></div>
+        <select id="cpGoalSelector" onchange="clientChangeGoal(this.value)" class="w-full bg-[#0d0e14] border border-[#272a3b] p-2 rounded-xl text-xs text-white font-semibold">
+          <option value="Type 2 Diabetes Reversal">🩺 Type 2 Diabetes Reversal (Low GI & Insulin Reset)</option>
+          <option value="Fatty Liver Detox">🥒 Fatty Liver Detox (Alkaline Care & Bile Flow)</option>
+          <option value="Gym & High Protein Performance">🏋️ Gym & High Protein Performance (Muscle Synthesis)</option>
+          <option value="Pregnancy Nutrition (Pre-Natal)">🤰 Pregnancy Nutrition (Pre-Natal Health & Iron)</option>
+          <option value="Postpartum & Lactation Recovery">👶 Postpartum & Lactation Recovery (Tissue Healing)</option>
+          <option value="Menopause & Hormonal Balance">🌸 Menopause & Hormonal Balance (Bone Density)</option>
+          <option value="Longevity & Gut Health">🌿 Longevity & Peak Energy</option>
+        </select>
+      </div>
 
-        <!-- Dynamic Metrics Logger -->
-        <div id="cpDynamicInputs" class="bg-[#0b0c10] p-3 rounded-xl border border-gray-800 space-y-2 pt-2.5 text-xs"></div>
+      <!-- Motivation Banner -->
+      <div id="cpMotivationBanner" class="p-3.5 rounded-2xl border text-xs space-y-1 transition-all"></div>
 
-        <!-- Submit to Coach Button -->
-        <button onclick="submitClientDailyReport()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50">
-          <i class="fa-brands fa-whatsapp text-base"></i> Send Daily Progress Update to Coach 📲
+      <!-- SPACIOUS DAY NAVIGATION (Large & Clear, not cramped) -->
+      <div class="space-y-1.5">
+        <div class="flex justify-between items-center px-1">
+          <span class="text-xs font-bold text-gray-300">Select Day:</span>
+          <span class="text-[10px] text-amber-400 font-bold" id="cpActiveDayLabel">Viewing Today</span>
+        </div>
+        <div class="grid grid-cols-7 gap-1 text-center" id="cpDayGridButtons">
+          <!-- Big Day Buttons Mon-Sun -->
+        </div>
+      </div>
+
+      <!-- TODAY'S PROTOCOL CARDS -->
+      <div class="space-y-3" id="cpTodayMealCards">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- DAILY VITALS / BIOMARKERS LOG -->
+      <div class="card-dark p-3.5 rounded-2xl space-y-2.5 text-xs">
+        <div class="font-bold text-gray-300 text-xs flex items-center justify-between">
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-notes-medical text-amber-400"></i> Today's Observations & Vitals</span>
+          <span class="text-[10px] text-gray-500">Optional</span>
+        </div>
+        <div id="cpDynamicInputs" class="space-y-2"></div>
+      </div>
+
+      <!-- REPORTING ACTIONS (BOTH DAILY AND WEEKLY REPORT OPTIONS) -->
+      <div class="space-y-2 pt-1">
+        <button onclick="submitClientReport('daily')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50">
+          <i class="fa-brands fa-whatsapp text-lg"></i> Send Today's Daily Update to Coach 📲
+        </button>
+
+        <button onclick="submitClientReport('weekly')" class="w-full bg-[#181a28] hover:bg-[#202438] text-amber-400 border border-amber-500/40 font-bold py-3 rounded-2xl text-xs flex items-center justify-center gap-2">
+          <i class="fa-solid fa-chart-line text-sm"></i> Send Complete 7-Day Weekly Summary to Coach 📊
         </button>
       </div>
+
     </main>
   </div>
 
@@ -236,170 +219,141 @@
         <h3 class="font-bold text-amber-500">Add New Client</h3>
         <button onclick="closeModal()"><i class="fa-solid fa-xmark text-gray-400 text-sm"></i></button>
       </div>
-      <div><label class="text-[10px] text-gray-400">Full Name</label><input type="text" id="mName" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white mt-0.5"></div>
-      <div><label class="text-[10px] text-gray-400">WhatsApp Phone (with Country Code e.g. 919081421028)</label><input type="text" id="mPhone" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white mt-0.5"></div>
+      <div><label class="text-[10px] text-gray-400">Full Name</label><input type="text" id="mName" class="w-full bg-[#0d0e14] border border-[#272a3b] p-2 rounded-lg text-white mt-0.5"></div>
+      <div><label class="text-[10px] text-gray-400">WhatsApp Phone (e.g. 919081421028)</label><input type="text" id="mPhone" class="w-full bg-[#0d0e14] border border-[#272a3b] p-2 rounded-lg text-white mt-0.5"></div>
       <div>
         <label class="text-[10px] text-gray-400">Health Category & Goal</label>
-        <select id="mGoal" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white mt-0.5">
-          <option value="Type 2 Diabetes Reversal">🩺 Type 2 Diabetes Reversal (Low GI & Insulin Reset)</option>
-          <option value="Fatty Liver Detox">🥒 Fatty Liver Detox (Alkaline Care & Bile Flow)</option>
-          <option value="Gym & High Protein Performance">🏋️ Gym & High Protein Performance (Muscle Synthesis)</option>
-          <option value="Pregnancy Nutrition (Pre-Natal)">🤰 Pregnancy Nutrition (Pre-Natal Health & Stable Blood Sugar)</option>
-          <option value="Postpartum & Lactation Recovery">👶 Postpartum & Lactation Recovery (Tissue Healing & Milk Supply)</option>
-          <option value="Menopause & Hormonal Balance">🌸 Menopause & Hormonal Balance (Bone Density & Phytoestrogens)</option>
-          <option value="Longevity & Gut Health">🌿 Longevity, Gut Health & Peak Energy</option>
+        <select id="mGoal" class="w-full bg-[#0d0e14] border border-[#272a3b] p-2 rounded-lg text-white mt-0.5">
+          <option value="Type 2 Diabetes Reversal">🩺 Type 2 Diabetes Reversal</option>
+          <option value="Fatty Liver Detox">🥒 Fatty Liver Detox</option>
+          <option value="Gym & High Protein Performance">🏋️ Gym & High Protein Performance</option>
+          <option value="Pregnancy Nutrition (Pre-Natal)">🤰 Pregnancy Nutrition (Pre-Natal)</option>
+          <option value="Postpartum & Lactation Recovery">👶 Postpartum & Lactation Recovery</option>
+          <option value="Menopause & Hormonal Balance">🌸 Menopause & Hormonal Balance</option>
+          <option value="Longevity & Gut Health">🌿 Longevity & Gut Health</option>
         </select>
       </div>
-      <div><label class="text-[10px] text-gray-400">Clinical Query / Special Considerations</label><textarea id="mQuery" rows="2" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white mt-0.5" placeholder="e.g. Mild knee stiffness, sweet cravings after dinner..."></textarea></div>
-      <div class="flex gap-2 pt-1">
-        <button onclick="closeModal()" class="flex-1 bg-gray-800 text-gray-300 py-1.5 rounded-xl">Cancel</button>
-        <button onclick="addNewClient()" class="flex-1 gold-gradient text-black font-bold py-1.5 rounded-xl">Save Client</button>
+      <div>
+        <label class="text-[10px] text-gray-400">Dietary Preference</label>
+        <select id="mDiet" class="w-full bg-[#0d0e14] border border-[#272a3b] p-2 rounded-lg text-white mt-0.5">
+          <option value="veg">🌱 Vegetarian (100% Plant & Dairy)</option>
+          <option value="nonveg">🍗 Non-Vegetarian (Eggs, Chicken, Fish)</option>
+        </select>
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal()" class="flex-1 bg-gray-800 text-gray-300 py-2 rounded-xl">Cancel</button>
+        <button onclick="addNewClient()" class="flex-1 gold-gradient text-black font-bold py-2 rounded-xl">Save Client</button>
       </div>
     </div>
   </div>
 
-  <!-- Modal: Click-to-Add Food Library Picker -->
-  <div id="foodPickerModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  <!-- Modal: Ingredient Customizer & Seasonal Substitutes -->
+  <div id="ingredientCustomizerModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-3.5">
     <div class="card-dark w-full max-w-md p-4 rounded-2xl space-y-3 text-xs max-h-[85vh] flex flex-col">
       <div class="flex justify-between items-center border-b border-gray-800 pb-2">
         <div>
-          <h3 class="font-bold text-amber-500 text-sm">Select Food from Clinical Library</h3>
-          <p class="text-[10px] text-gray-400" id="pickerTargetSlotText">Selecting for Morning Detox</p>
+          <h3 class="font-bold text-amber-400 text-sm flex items-center gap-1.5" id="cstModalTitle">
+            <i class="fa-solid fa-kitchen-set"></i> Customize Ingredients
+          </h3>
+          <p class="text-[10px] text-gray-400">Skip seasonal items & pick approved substitutes</p>
         </div>
-        <button onclick="closeFoodPicker()"><i class="fa-solid fa-xmark text-gray-400 text-sm"></i></button>
+        <button onclick="closeCustomizer()"><i class="fa-solid fa-xmark text-gray-400 text-base"></i></button>
       </div>
 
-      <!-- Category Filter Tabs inside picker -->
-      <div class="flex gap-1 overflow-x-auto py-1 no-scrollbar text-[10px]" id="pickerFilterTabs"></div>
+      <!-- Current Formula Tags -->
+      <div class="bg-[#0b0c10] p-3 rounded-xl border border-amber-500/30 space-y-1.5">
+        <div class="flex justify-between items-center">
+          <span class="text-[10px] text-amber-400 font-bold uppercase tracking-wider">Your Plate Today (તમારી થાળી):</span>
+          <button onclick="resetCustomizerToIdeal()" class="text-[10px] text-emerald-400 hover:underline">Reset to Ideal</button>
+        </div>
+        <div id="cstActiveTags" class="flex flex-wrap gap-1.5 min-h-[36px] items-center"></div>
+      </div>
 
-      <!-- Food Items List -->
-      <div class="overflow-y-auto space-y-1.5 pr-1 flex-1" id="pickerItemsContainer"></div>
+      <!-- Approved Substitutes -->
+      <div class="space-y-1.5 flex-1 overflow-y-auto pr-1">
+        <span class="text-[10px] text-gray-400 font-semibold">Available Clinical & Seasonal Substitutes:</span>
+        <div class="flex flex-wrap gap-1.5" id="cstSubstitutesContainer"></div>
+      </div>
 
-      <div class="pt-2 border-t border-gray-800 text-right">
-        <button onclick="closeFoodPicker()" class="px-4 py-1.5 bg-gray-800 text-gray-300 rounded-xl text-xs">Close</button>
+      <div class="pt-2 border-t border-gray-800 flex gap-2">
+        <button onclick="closeCustomizer()" class="flex-1 bg-gray-800 text-gray-300 font-bold py-2.5 rounded-xl">Cancel</button>
+        <button onclick="applyCustomizerTags()" class="flex-1 gold-gradient text-black font-bold py-2.5 rounded-xl shadow">Apply Changes ✅</button>
       </div>
     </div>
   </div>
 
   <script>
     const DAYS = [
-      { id: 'mon', name: 'Monday (Day 1)', short: 'Mon' },
-      { id: 'tue', name: 'Tuesday (Day 2)', short: 'Tue' },
-      { id: 'wed', name: 'Wednesday (Day 3)', short: 'Wed' },
-      { id: 'thu', name: 'Thursday (Day 4)', short: 'Thu' },
-      { id: 'fri', name: 'Friday (Day 5)', short: 'Fri' },
-      { id: 'sat', name: 'Saturday (Day 6)', short: 'Sat' },
-      { id: 'sun', name: 'Sunday (Day 7)', short: 'Sun' }
+      { id: 'mon', name: 'Monday', short: 'Mon' },
+      { id: 'tue', name: 'Tuesday', short: 'Tue' },
+      { id: 'wed', name: 'Wednesday', short: 'Wed' },
+      { id: 'thu', name: 'Thursday', short: 'Thu' },
+      { id: 'fri', name: 'Friday', short: 'Fri' },
+      { id: 'sat', name: 'Saturday', short: 'Sat' },
+      { id: 'sun', name: 'Sunday', short: 'Sun' }
     ];
 
-    const FOOD_LIBRARY = {
+    const SUBSTITUTES_POOL = {
       morning: [
-        { cat: 'Clinical', text: "Warm Fenugreek (Methi) & Cumin Water + Fresh Ash Gourd, Coriander & Raw Turmeric Juice (Alkaline Detox)" },
-        { cat: 'Clinical', text: "Warm Cinnamon & Ginger Water + Fresh Amla-Bottle Gourd Juice" },
-        { cat: 'Gym', text: "Warm Lemon Salt Electrolyte Water + 5 Soaked Almonds & 2 Walnuts (Pre-workout: 1 Banana / Black Coffee)" },
-        { cat: 'Gym', text: "Chia Seed Infusion + Soaked Figs & Almonds (Sustained Energy)" },
-        { cat: 'Pregnancy', text: "Mild Ginger-Lemon Water (Anti-Nausea) + 4 Soaked Almonds & 1 Date + Coconut Water" },
-        { cat: 'Postpartum', text: "Warm Fennel (Variyali) & Dill Seed (Suva) Water + 5 Soaked Almonds & Soaked Raisins (Lactation Primer)" },
-        { cat: 'Menopause', text: "Coriander & Cumin Seed Cooling Water (Pitta Reducer) + 1 Tbsp Roasted Ground Flaxseeds (Phytoestrogen Boost)" },
-        { cat: 'Menopause', text: "Fresh Pumpkin & Bottle Gourd Puree Juice + Pumpkin Seeds (Magnesium & Hot Flash Calm)" }
+        "Fresh Bottle Gourd (દૂધી)", "Ash Gourd (સફેદ પેઠા)", "Cucumber (કાકડી)",
+        "Raw Turmeric (લીલી હળદર)", "Fresh Ginger (આદુ)", "Amla (આમળા)",
+        "Fresh Lemon (લીંબુ)", "Mint Leaves (ફુદીનો)", "Fenugreek Seeds (મેથી દાણા)", "Cumin Seeds (જીરું)"
       ],
-      breakfast: [
-        { cat: 'Clinical', text: "Steamed Moong Chaat with Cucumber, Tomato & Fresh Curd (Low GI / High Fiber)" },
-        { cat: 'Clinical', text: "2 Moong Dal Chilas (Less Oil) with Green Mint Chutney & Cucumber Slices" },
-        { cat: 'Gym', text: "Post-Workout Whey Protein Smoothie / Sprouted Moong Chaat + 30g Fresh Paneer (25g+ Protein)" },
-        { cat: 'Gym', text: "Paneer-Stuffed Moong Dal Chilas + Fresh Thick Curd + Handful of Roasted Chana" },
-        { cat: 'Pregnancy', text: "Ragi (Finger Millet) Dosa / Porridge with Fresh Curd + Steamed Moong Sprouts (Calcium & Iron Rich)" },
-        { cat: 'Postpartum', text: "Warm Oats & Gond/Dry Fruit Porridge with Cow Milk + Soft Moong Dal Cheela" },
-        { cat: 'Menopause', text: "Calcium-Boost Ragi Porridge with Crushed Sesame Seeds & Fresh Curd / Moong Chila" },
-        { cat: 'Menopause', text: "Sprouted Moong & Black Chickpea Salad with Pomegranate & Fresh Curd" }
+      breakfast_veg: [
+        "Moong Dal Chila (મગદાળ પુડલા)", "Steamed Moong Chaat (બાફેલા મગ)", "Sprouted Black Chana",
+        "Fresh Cow Paneer 30g", "Homemade Thick Curd", "Ragi Cheela", "Rolled Oats Bowl"
       ],
-      lunch: [
-        { cat: 'Clinical', text: "1 Big Bowl Raw Salad Barrier + 1 Super Flour (Multi-Millet) Roti + Green Leafy Veg + 1 Glass Chaas" },
-        { cat: 'Clinical', text: "Cucumber-Tomato Salad + 1 Super Flour Roti + Tindora/Bottle Gourd Sabzi + Thin Buttermilk" },
-        { cat: 'Gym', text: "Large Salad + 2 Super Flour Rotis + Thick Dal / Chickpeas (Chole) / Rajma + Bowl of Curd" },
-        { cat: 'Gym', text: "Fresh Beet Salad + 2 Super Flour Rotis + Soya Chunks Curry / Paneer Bhurji + Chaas" },
-        { cat: 'Pregnancy', text: "Spinach (Palak) Dal + 2 Super Flour Rotis with Ghee + Carrot-Beet Salad + Fresh Chaas (Folate & Fiber)" },
-        { cat: 'Postpartum', text: "Digestive Yellow Moong Khichdi with Pure Cow Ghee + Soft Super Flour Roti + Methi/Palak Sabzi" },
-        { cat: 'Menopause', text: "Calcium & Iron Plate: 1 Big Salad + 1-2 Ragi Super Rotis + Methi/Palak Sabzi + Sesame Chaas" },
-        { cat: 'Menopause', text: "Cucumber-Beet Salad + 1 Super Flour Roti + Tofu/Paneer Curry + Homemade Curd" }
+      breakfast_nonveg: [
+        "3 Boiled Egg Whites (બાફેલા ઈંડા)", "2 Whole Eggs Omelette with Spinach & Mushrooms",
+        "Poached Eggs on Cucumber Salad", "Egg Bhurji (Less Oil) + Salad", "Fresh Cow Paneer 30g"
       ],
-      snack: [
-        { cat: 'Clinical', text: "1 Bowl Spiced Guava with Himalayan Pink Salt + 1 Tbsp Roasted Pumpkin Seeds" },
-        { cat: 'Clinical', text: "Roasted Makhana (Foxnuts) with Turmeric & Black Pepper + Pumpkin Seeds" },
-        { cat: 'Gym', text: "Roasted Makhana + Pumpkin & Sunflower Seeds + 1 Apple with 1 Tsp Peanut Butter" },
-        { cat: 'Gym', text: "Roasted Chana Sattu Drink (Lemon & Roasted Cumin) + Handful of Almonds" },
-        { cat: 'Pregnancy', text: "Apple Slices with Crushed Walnuts + Roasted Pumpkin & Sunflower Seeds (Omega-3 & Zinc)" },
-        { cat: 'Postpartum', text: "Dry Fruit & Sesame Laddu (Gond/Methi) + Warm Herbal Fennel Milk" },
-        { cat: 'Menopause', text: "1 Bowl Masala Guava / Papaya + 1 Tbsp Roasted Pumpkin & Flaxseeds (Estrogen Support)" },
-        { cat: 'Menopause', text: "Roasted Black Sesame (Til) & Cumin Mukhwas + 1 Sweet Lime (Mosambi)" }
+      lunch_veg: [
+        "1 Big Bowl Raw Salad Barrier", "1 Super Flour Multi-Millet Roti", "Palak Paneer",
+        "Thick Moong Dal", "Bottle Gourd Sabzi", "Rajma Curry", "1 Glass Thin Buttermilk / Chaas"
       ],
-      dinner: [
-        { cat: 'Clinical', text: "Crunchy Sauteed Vegetables (Broccoli, Zucchini, Bell Peppers) + 20g Paneer / Moong Soup (Before 8:30 PM)" },
-        { cat: 'Clinical', text: "Creamy Pumpkin & Bottle Gourd Puree Soup + Steamed Paneer Cubes & Mixed Salad" },
-        { cat: 'Gym', text: "Grilled Tofu/Paneer with Sauteed Bell Peppers & Broccoli + Thick High-Protein Dal Soup" },
-        { cat: 'Gym', text: "Mixed Veggie High-Protein Dal Khichdi (80% Veggie/Dal, 20% Rice) + Roasted Paneer" },
-        { cat: 'Pregnancy', text: "Nourishing Bottle Gourd & Tomato Soup + Soft Moong Dal Khichdi with Ghee (Light & Soothing)" },
-        { cat: 'Postpartum', text: "Warm Moong Dal Soup with Jeera & Ghee + Soft Phulka with Bottle Gourd Sabzi" },
-        { cat: 'Menopause', text: "Creamy Pumpkin Puree Soup (Tryptophan for Sleep) + Sauteed Tofu/Paneer & Steamed Veggies" },
-        { cat: 'Menopause', text: "Light Vegetable Clear Soup + Warm Turmeric Spiced Paneer Plate" }
+      lunch_nonveg: [
+        "1 Big Bowl Raw Salad Barrier", "1 Super Flour Multi-Millet Roti", "Grilled Chicken Breast (૧૦૦ ગ્રામ)",
+        "Steamed / Grilled Fish", "Light Egg Curry (૨ ઈંડા)", "1 Glass Thin Buttermilk / Chaas"
+      ],
+      snack_veg: [
+        "1 Bowl Spiced Guava (મસાલા જામફળ)", "Roasted Pumpkin Seeds (કોળાના બી)", "Roasted Makhana",
+        "Fresh Papaya Slices", "Roasted Flaxseeds", "1 Sweet Lime (મોસંબી)"
+      ],
+      snack_nonveg: [
+        "1-2 Boiled Eggs with Black Pepper", "1 Bowl Spiced Guava", "Roasted Pumpkin Seeds", "Roasted Makhana"
+      ],
+      dinner_veg: [
+        "Creamy Pumpkin Puree Soup (કોળાનું સૂપ)", "Bottle Gourd & Tomato Soup",
+        "Sauteed Broccoli, Zucchini & Bell Peppers", "Fresh Cow Paneer 25g", "Grilled Tofu Cubes"
+      ],
+      dinner_nonveg: [
+        "Clear Chicken & Vegetable Soup", "Grilled Chicken Breast with Sauteed Veggies",
+        "Steamed Fish Fillet + Sauteed Greens", "Creamy Pumpkin Puree Soup + 2 Boiled Eggs"
       ],
       rule: [
-        { cat: 'Clinical', text: "Post-Meal 15-min walk + Elevate legs on pillows for 15-20 min before sleeping + 3L Water" },
-        { cat: 'Gym', text: "45-min Strength Training + 3.5 Liters Water + 7.5 Hours Deep Sleep Protocol" },
-        { cat: 'Pregnancy', text: "Hydration Target: 3 Liters Water + 20-min Gentle Walking + Proper Sleep Posture" },
-        { cat: 'Postpartum', text: "Adequate Rest & Deep Breathing + Hydration (3L Warm Water) + Posture Care" },
-        { cat: 'Menopause', text: "15-min Evening Walk + Digital Detox 1 hr before bed + Nutmeg-Turmeric Warm Milk for sleep" }
+        "Post-Meal 15-min Brisk Walk", "Elevate legs on pillows for 15-20 min before sleeping",
+        "Remove pillow before deep sleep", "3.0 Liters Daily Water Target", "Digital Detox 1 hr before bed"
       ]
     };
 
-    const TEMPLATES = {
-      diabetes: {
-        mon: { morning: FOOD_LIBRARY.morning[0].text, breakfast: FOOD_LIBRARY.breakfast[0].text, lunch: FOOD_LIBRARY.lunch[0].text, snack: FOOD_LIBRARY.snack[0].text, dinner: FOOD_LIBRARY.dinner[0].text, rule: FOOD_LIBRARY.rule[0].text },
-        tue: { morning: FOOD_LIBRARY.morning[1].text, breakfast: FOOD_LIBRARY.breakfast[1].text, lunch: FOOD_LIBRARY.lunch[1].text, snack: FOOD_LIBRARY.snack[1].text, dinner: FOOD_LIBRARY.dinner[1].text, rule: FOOD_LIBRARY.rule[0].text },
-        wed: { morning: FOOD_LIBRARY.morning[0].text, breakfast: FOOD_LIBRARY.breakfast[0].text, lunch: FOOD_LIBRARY.lunch[0].text, snack: FOOD_LIBRARY.snack[0].text, dinner: FOOD_LIBRARY.dinner[0].text, rule: FOOD_LIBRARY.rule[0].text },
-        thu: { morning: FOOD_LIBRARY.morning[1].text, breakfast: FOOD_LIBRARY.breakfast[1].text, lunch: FOOD_LIBRARY.lunch[1].text, snack: FOOD_LIBRARY.snack[1].text, dinner: FOOD_LIBRARY.dinner[1].text, rule: FOOD_LIBRARY.rule[0].text },
-        fri: { morning: FOOD_LIBRARY.morning[0].text, breakfast: FOOD_LIBRARY.breakfast[0].text, lunch: FOOD_LIBRARY.lunch[0].text, snack: FOOD_LIBRARY.snack[0].text, dinner: FOOD_LIBRARY.dinner[0].text, rule: FOOD_LIBRARY.rule[0].text },
-        sat: { morning: FOOD_LIBRARY.morning[1].text, breakfast: FOOD_LIBRARY.breakfast[1].text, lunch: FOOD_LIBRARY.lunch[1].text, snack: FOOD_LIBRARY.snack[1].text, dinner: FOOD_LIBRARY.dinner[1].text, rule: FOOD_LIBRARY.rule[0].text },
-        sun: { morning: FOOD_LIBRARY.morning[0].text, breakfast: FOOD_LIBRARY.breakfast[1].text, lunch: FOOD_LIBRARY.lunch[0].text, snack: FOOD_LIBRARY.snack[0].text, dinner: FOOD_LIBRARY.dinner[0].text, rule: FOOD_LIBRARY.rule[0].text }
-      },
-      fitness: {
-        mon: { morning: FOOD_LIBRARY.morning[2].text, breakfast: FOOD_LIBRARY.breakfast[2].text, lunch: FOOD_LIBRARY.lunch[2].text, snack: FOOD_LIBRARY.snack[2].text, dinner: FOOD_LIBRARY.dinner[2].text, rule: FOOD_LIBRARY.rule[1].text },
-        tue: { morning: FOOD_LIBRARY.morning[3].text, breakfast: FOOD_LIBRARY.breakfast[3].text, lunch: FOOD_LIBRARY.lunch[3].text, snack: FOOD_LIBRARY.snack[3].text, dinner: FOOD_LIBRARY.dinner[3].text, rule: FOOD_LIBRARY.rule[1].text },
-        wed: { morning: FOOD_LIBRARY.morning[2].text, breakfast: FOOD_LIBRARY.breakfast[2].text, lunch: FOOD_LIBRARY.lunch[2].text, snack: FOOD_LIBRARY.snack[2].text, dinner: FOOD_LIBRARY.dinner[2].text, rule: FOOD_LIBRARY.rule[1].text },
-        thu: { morning: FOOD_LIBRARY.morning[3].text, breakfast: FOOD_LIBRARY.breakfast[3].text, lunch: FOOD_LIBRARY.lunch[3].text, snack: FOOD_LIBRARY.snack[3].text, dinner: FOOD_LIBRARY.dinner[3].text, rule: FOOD_LIBRARY.rule[1].text },
-        fri: { morning: FOOD_LIBRARY.morning[2].text, breakfast: FOOD_LIBRARY.breakfast[2].text, lunch: FOOD_LIBRARY.lunch[2].text, snack: FOOD_LIBRARY.snack[2].text, dinner: FOOD_LIBRARY.dinner[2].text, rule: FOOD_LIBRARY.rule[1].text },
-        sat: { morning: FOOD_LIBRARY.morning[3].text, breakfast: FOOD_LIBRARY.breakfast[3].text, lunch: FOOD_LIBRARY.lunch[2].text, snack: FOOD_LIBRARY.snack[2].text, dinner: FOOD_LIBRARY.dinner[2].text, rule: FOOD_LIBRARY.rule[1].text },
-        sun: { morning: FOOD_LIBRARY.morning[2].text, breakfast: FOOD_LIBRARY.breakfast[2].text, lunch: FOOD_LIBRARY.lunch[3].text, snack: FOOD_LIBRARY.snack[3].text, dinner: FOOD_LIBRARY.dinner[3].text, rule: FOOD_LIBRARY.rule[1].text }
-      },
-      pregnancy: {
-        mon: { morning: FOOD_LIBRARY.morning[4].text, breakfast: FOOD_LIBRARY.breakfast[4].text, lunch: FOOD_LIBRARY.lunch[4].text, snack: FOOD_LIBRARY.snack[4].text, dinner: FOOD_LIBRARY.dinner[4].text, rule: FOOD_LIBRARY.rule[2].text },
-        tue: { morning: FOOD_LIBRARY.morning[4].text, breakfast: FOOD_LIBRARY.breakfast[4].text, lunch: FOOD_LIBRARY.lunch[4].text, snack: FOOD_LIBRARY.snack[4].text, dinner: FOOD_LIBRARY.dinner[4].text, rule: FOOD_LIBRARY.rule[2].text },
-        wed: { morning: FOOD_LIBRARY.morning[4].text, breakfast: FOOD_LIBRARY.breakfast[4].text, lunch: FOOD_LIBRARY.lunch[4].text, snack: FOOD_LIBRARY.snack[4].text, dinner: FOOD_LIBRARY.dinner[4].text, rule: FOOD_LIBRARY.rule[2].text },
-        thu: { morning: FOOD_LIBRARY.morning[4].text, breakfast: FOOD_LIBRARY.breakfast[4].text, lunch: FOOD_LIBRARY.lunch[4].text, snack: FOOD_LIBRARY.snack[4].text, dinner: FOOD_LIBRARY.dinner[4].text, rule: FOOD_LIBRARY.rule[2].text },
-        fri: { morning: FOOD_LIBRARY.morning[4].text, breakfast: FOOD_LIBRARY.breakfast[4].text, lunch: FOOD_LIBRARY.lunch[4].text, snack: FOOD_LIBRARY.snack[4].text, dinner: FOOD_LIBRARY.dinner[4].text, rule: FOOD_LIBRARY.rule[2].text },
-        sat: { morning: FOOD_LIBRARY.morning[4].text, breakfast: FOOD_LIBRARY.breakfast[4].text, lunch: FOOD_LIBRARY.lunch[4].text, snack: FOOD_LIBRARY.snack[4].text, dinner: FOOD_LIBRARY.dinner[4].text, rule: FOOD_LIBRARY.rule[2].text },
-        sun: { morning: FOOD_LIBRARY.morning[4].text, breakfast: FOOD_LIBRARY.breakfast[4].text, lunch: FOOD_LIBRARY.lunch[4].text, snack: FOOD_LIBRARY.snack[4].text, dinner: FOOD_LIBRARY.dinner[4].text, rule: FOOD_LIBRARY.rule[2].text }
-      },
-      menopause: {
-        mon: { morning: FOOD_LIBRARY.morning[6].text, breakfast: FOOD_LIBRARY.breakfast[6].text, lunch: FOOD_LIBRARY.lunch[6].text, snack: FOOD_LIBRARY.snack[6].text, dinner: FOOD_LIBRARY.dinner[6].text, rule: FOOD_LIBRARY.rule[4].text },
-        tue: { morning: FOOD_LIBRARY.morning[7].text, breakfast: FOOD_LIBRARY.breakfast[7].text, lunch: FOOD_LIBRARY.lunch[7].text, snack: FOOD_LIBRARY.snack[7].text, dinner: FOOD_LIBRARY.dinner[7].text, rule: FOOD_LIBRARY.rule[4].text },
-        wed: { morning: FOOD_LIBRARY.morning[6].text, breakfast: FOOD_LIBRARY.breakfast[6].text, lunch: FOOD_LIBRARY.lunch[6].text, snack: FOOD_LIBRARY.snack[6].text, dinner: FOOD_LIBRARY.dinner[6].text, rule: FOOD_LIBRARY.rule[4].text },
-        thu: { morning: FOOD_LIBRARY.morning[7].text, breakfast: FOOD_LIBRARY.breakfast[7].text, lunch: FOOD_LIBRARY.lunch[7].text, snack: FOOD_LIBRARY.snack[7].text, dinner: FOOD_LIBRARY.dinner[7].text, rule: FOOD_LIBRARY.rule[4].text },
-        fri: { morning: FOOD_LIBRARY.morning[6].text, breakfast: FOOD_LIBRARY.breakfast[6].text, lunch: FOOD_LIBRARY.lunch[6].text, snack: FOOD_LIBRARY.snack[6].text, dinner: FOOD_LIBRARY.dinner[6].text, rule: FOOD_LIBRARY.rule[4].text },
-        sat: { morning: FOOD_LIBRARY.morning[7].text, breakfast: FOOD_LIBRARY.breakfast[7].text, lunch: FOOD_LIBRARY.lunch[6].text, snack: FOOD_LIBRARY.snack[6].text, dinner: FOOD_LIBRARY.dinner[6].text, rule: FOOD_LIBRARY.rule[4].text },
-        sun: { morning: FOOD_LIBRARY.morning[6].text, breakfast: FOOD_LIBRARY.breakfast[6].text, lunch: FOOD_LIBRARY.lunch[7].text, snack: FOOD_LIBRARY.snack[7].text, dinner: FOOD_LIBRARY.dinner[7].text, rule: FOOD_LIBRARY.rule[4].text }
-      }
-    };
-
-    let clients = JSON.parse(localStorage.getItem('met_pro_clients_v6')) || [
+    let clients = JSON.parse(localStorage.getItem('met_pro_clients_v8')) || [
       {
         id: "CL-101",
         name: "Piyush Nathvani",
         phone: "919081421028",
         goal: "Type 2 Diabetes Reversal",
+        diet: "veg",
         status: "ACTIVE",
-        query: "Super Flour lunch; 15-20 min leg elevation routine at bedtime.",
-        weeklyPlan: JSON.parse(JSON.stringify(TEMPLATES.diabetes)),
+        weeklyPlan: {
+          mon: {
+            morning: "Ash Gourd (સફેદ પેઠા) + Coriander Leaves + Raw Turmeric (લીલી હળદર) + Fresh Ginger (આદુ)",
+            breakfast: "Moong Dal Chila (મગદાળ પુડલા) + Fresh Cow Paneer 30g + Raw Cucumber & Tomato Salad",
+            lunch: "1 Big Bowl Raw Salad Barrier + 1 Super Flour Multi-Millet Roti + Palak Paneer + 1 Glass Thin Buttermilk / Chaas",
+            snack: "1 Bowl Spiced Guava (મસાલા જામફળ) + Roasted Pumpkin Seeds (કોળાના બી)",
+            dinner: "Creamy Pumpkin Puree Soup (કોળાનું સૂપ) + Sauteed Broccoli, Zucchini & Bell Peppers + Fresh Cow Paneer 25g",
+            rule: "Post-Meal 15-min Brisk Walk + Elevate legs on pillows for 15-20 min before sleeping + 3.0 Liters Daily Water Target"
+          }
+        },
         compliance: {}
       },
       {
@@ -407,17 +361,32 @@
         name: "Vikram Shah (Athlete)",
         phone: "919876543210",
         goal: "Gym & High Protein Performance",
+        diet: "nonveg",
         status: "ACTIVE",
-        query: "Evening gym session. 120g clean vegetarian protein target.",
-        weeklyPlan: JSON.parse(JSON.stringify(TEMPLATES.fitness)),
+        weeklyPlan: {
+          mon: {
+            morning: "Warm Lemon-Salt Electrolyte Water + Soaked Almonds & Walnuts + 1 Banana",
+            breakfast: "3 Boiled Egg Whites (બાફેલા ઈંડા) + Steamed Moong Chaat + Fresh Thick Curd",
+            lunch: "1 Big Bowl Raw Salad Barrier + 2 Super Flour Multi-Millet Rotis + Grilled Chicken Breast (૧૦૦ ગ્રામ) + 1 Glass Thin Buttermilk / Chaas",
+            snack: "Roasted Makhana + Roasted Pumpkin Seeds + 1 Boiled Egg with Black Pepper",
+            dinner: "Clear Chicken & Vegetable Soup + Grilled Chicken Breast with Sauteed Veggies",
+            rule: "45-min Strength Workout + 3.5 Liters Daily Water Target + Digital Detox 1 hr before bed"
+          }
+        },
         compliance: {}
       }
     ];
 
     let activeClientId = clients[0]?.id || "CL-101";
     let activeDay = "mon";
-    let pickerTargetSlot = "morning";
-    let pickerActiveCat = "All";
+
+    const currentDayIndex = new Date().getDay();
+    const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    let clientViewDay = dayMap[currentDayIndex] || 'mon';
+
+    let cstActiveSlot = 'morning';
+    let cstActiveTags = [];
+    let cstIdealString = '';
 
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -450,14 +419,14 @@
     function setAdminTab(tab) {
       ['clients', 'planner', 'lab'].forEach(t => {
         document.getElementById('aview-' + t).classList.add('hidden');
-        document.getElementById('atab-' + t).className = "px-3 py-1.5 rounded-lg text-gray-400 bg-[#151722] flex items-center gap-1.5 whitespace-nowrap";
+        document.getElementById('atab-' + t).className = "px-3.5 py-2 rounded-xl text-gray-400 bg-[#151722] flex items-center gap-1.5 whitespace-nowrap";
       });
       document.getElementById('aview-' + tab).classList.remove('hidden');
-      document.getElementById('atab-' + tab).className = "tab-active px-3 py-1.5 rounded-lg flex items-center gap-1.5 whitespace-nowrap shadow";
+      document.getElementById('atab-' + tab).className = "tab-active px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap shadow";
     }
 
     function renderAdminClients() {
-      localStorage.setItem('met_pro_clients_v6', JSON.stringify(clients));
+      localStorage.setItem('met_pro_clients_v8', JSON.stringify(clients));
       document.getElementById('admTotal').innerText = clients.length;
       document.getElementById('admClinical').innerText = clients.filter(c => c.goal.includes('Diabetes') || c.goal.includes('Liver')).length;
       document.getElementById('admFitness').innerText = clients.filter(c => c.goal.includes('Gym') || c.goal.includes('Longevity')).length;
@@ -479,6 +448,7 @@
             <div class="flex items-center gap-1.5">
               <span class="text-[10px] font-black px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">#${c.id}</span>
               <span class="text-[9px] font-bold px-2 py-0.5 rounded border ${badgeColor}">${icon} ${c.goal}</span>
+              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-gray-800 text-gray-300 border border-gray-700">${c.diet==='nonveg'?'🍗 Non-Veg':'🌱 Veg'}</span>
             </div>
             <div class="flex items-center gap-2">
               <button onclick="openPlannerFor('${c.id}')" class="text-xs text-amber-400 font-bold hover:underline"><i class="fa-solid fa-pen-to-square"></i> Protocol</button>
@@ -549,12 +519,7 @@
     function loadPlannerClientData(cId) {
       const c = clients.find(x => x.id === cId);
       if(!c) return;
-      if(!c.weeklyPlan) {
-        if(c.goal.includes('Gym')) c.weeklyPlan = JSON.parse(JSON.stringify(TEMPLATES.fitness));
-        else if(c.goal.includes('Pregnancy')) c.weeklyPlan = JSON.parse(JSON.stringify(TEMPLATES.pregnancy));
-        else if(c.goal.includes('Menopause')) c.weeklyPlan = JSON.parse(JSON.stringify(TEMPLATES.menopause));
-        else c.weeklyPlan = JSON.parse(JSON.stringify(TEMPLATES.diabetes));
-      }
+      if(!c.weeklyPlan) c.weeklyPlan = {};
       document.getElementById('admCurrentClientBadge').innerText = `${c.name} (${c.goal})`;
       loadActiveDayForm();
     }
@@ -562,7 +527,10 @@
     function loadActiveDayForm() {
       const c = clients.find(x => x.id === activeClientId);
       if(!c) return;
-      const d = c.weeklyPlan[activeDay] || TEMPLATES.diabetes[activeDay];
+      if(!c.weeklyPlan[activeDay]) {
+        c.weeklyPlan[activeDay] = c.weeklyPlan['mon'] || { morning: '', breakfast: '', lunch: '', snack: '', dinner: '', rule: '' };
+      }
+      const d = c.weeklyPlan[activeDay];
       const dObj = DAYS.find(x => x.id === activeDay);
 
       document.getElementById('admDayFormTitle').innerText = `${dObj.name} Protocol (${c.name})`;
@@ -585,101 +553,9 @@
         dinner: document.getElementById('admDinner').value.trim(),
         rule: document.getElementById('admRule').value.trim()
       };
-      localStorage.setItem('met_pro_clients_v6', JSON.stringify(clients));
-      alert(`✅ ${DAYS.find(x=>x.id===activeDay).name} protocol saved successfully!`);
+      localStorage.setItem('met_pro_clients_v8', JSON.stringify(clients));
+      alert(`✅ ${DAYS.find(x=>x.id===activeDay).name} protocol saved!`);
     }
-
-    function applyPreset(type) {
-      const c = clients.find(x => x.id === activeClientId);
-      if(!c) return;
-      if(confirm(`Load complete 7-day ${type.toUpperCase()} template for ${c.name}?`)) {
-        c.weeklyPlan = JSON.parse(JSON.stringify(TEMPLATES[type]));
-        localStorage.setItem('met_pro_clients_v6', JSON.stringify(clients));
-        loadActiveDayForm();
-        renderAdminClients();
-        alert(`7-Day ${type.toUpperCase()} template loaded!`);
-      }
-    }
-
-    function openFoodPicker(slotKey) {
-      pickerTargetSlot = slotKey;
-      const slotNames = {
-        morning: 'Morning Detox / Pre-Workout',
-        breakfast: 'Breakfast / Post-Workout Fuel',
-        lunch: 'Lunch Plate',
-        snack: 'Afternoon Snack',
-        dinner: 'Dinner & Recovery',
-        rule: 'Daily Protocol'
-      };
-      document.getElementById('pickerTargetSlotText').innerText = `Selecting for: ${slotNames[slotKey]}`;
-
-      const categories = ['All', 'Clinical', 'Gym', 'Pregnancy', 'Postpartum', 'Menopause'];
-      const catContainer = document.getElementById('pickerFilterTabs');
-      catContainer.innerHTML = '';
-      categories.forEach(cat => {
-        const btn = document.createElement('button');
-        btn.className = (cat === pickerActiveCat)
-          ? "px-2.5 py-1 rounded-lg bg-amber-500 text-black font-bold whitespace-nowrap"
-          : "px-2.5 py-1 rounded-lg bg-[#181a26] text-gray-400 whitespace-nowrap border border-gray-800";
-        btn.innerText = cat;
-        btn.onclick = () => { pickerActiveCat = cat; renderPickerItems(); };
-        catContainer.appendChild(btn);
-      });
-
-      renderPickerItems();
-      document.getElementById('foodPickerModal').classList.remove('hidden');
-    }
-
-    function closeFoodPicker() {
-      document.getElementById('foodPickerModal').classList.add('hidden');
-    }
-
-    function renderPickerItems() {
-      const list = FOOD_LIBRARY[pickerTargetSlot] || [];
-      const container = document.getElementById('pickerItemsContainer');
-      container.innerHTML = '';
-
-      const filtered = pickerActiveCat === 'All' ? list : list.filter(x => x.cat === pickerActiveCat);
-
-      if(filtered.length === 0) {
-        container.innerHTML = `<div class="p-4 text-center text-gray-500">No items found for this category.</div>`;
-        return;
-      }
-
-      filtered.forEach(item => {
-        const div = document.createElement('div');
-        div.className = "p-2.5 rounded-xl bg-[#141622] hover:bg-[#1a1d2d] border border-gray-800 cursor-pointer flex justify-between items-center gap-2 transition";
-        div.innerHTML = `
-          <div class="flex-1">
-            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-gray-800 text-amber-400">${item.cat}</span>
-            <p class="text-xs text-white mt-1">${item.text}</p>
-          </div>
-          <button class="bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded-lg font-bold text-[10px] hover:bg-amber-500 hover:text-black">
-            + Choose
-          </button>
-        `;
-        div.onclick = () => chooseFoodItem(item.text);
-        container.appendChild(div);
-      });
-    }
-
-    function chooseFoodItem(text) {
-      const targetMap = {
-        morning: 'admMorning',
-        breakfast: 'admBreakfast',
-        lunch: 'admLunch',
-        snack: 'admSnack',
-        dinner: 'admDinner',
-        rule: 'admRule'
-      };
-      const inputId = targetMap[pickerTargetSlot];
-      if(inputId) {
-        document.getElementById(inputId).value = text;
-      }
-      closeFoodPicker();
-    }
-
-    let cpActiveDay = "mon";
 
     function generatePortalUrl(c) {
       const origin = window.location.origin + window.location.pathname;
@@ -693,18 +569,16 @@
       const portalUrl = generatePortalUrl(c);
 
       const msg = `Hello ${c.name},
-Your personalized "Metabolic Pro" Health & Protocol Portal is now live!
+Your personalized "Metabolic Pro" Interactive Health Portal is live!
 
-👉 Open Your VIP Portal Link:
+👉 Open Your Personal App:
 ${portalUrl}
 
-✨ Features:
-• 100% Read-Only Daily Meal Protocol & Guidelines.
-• 1-Touch Compliance Tracker: Done (100%), Partial (50%), or Missed.
-• Integrated Biomarker & Habit Logging.
-• 1-Click WhatsApp Progress Sync directly to your coach.
-
-Stay focused and empowered!`;
+✨ Key Highlights:
+• Daily Morning-to-Night Step-by-Step Check-in.
+• Interactive Ingredient Customizer (Skip seasonal items easily).
+• Instant Veg / Non-Veg Adaptor.
+• 1-Click WhatsApp Sync for Daily Updates or Full Weekly Summary.`;
 
       window.open(`https://wa.me/${c.phone}?text=${encodeURIComponent(msg)}`, '_blank');
     }
@@ -729,10 +603,12 @@ Stay focused and empowered!`;
 
       document.getElementById('cpAvatar').innerText = icon;
       document.getElementById('cpClientTitle').innerText = `${c.name}`;
-      document.getElementById('cpClientGoal').innerText = `🎯 Target: ${c.goal}`;
+      document.getElementById('cpClientSub').innerText = `${c.goal} (${c.diet === 'nonveg' ? '🍗 Non-Veg' : '🌱 Veg'})`;
+      document.getElementById('cpGoalSelector').value = c.goal;
 
-      renderClientPortalDayTabs();
-      loadClientPortalDayData();
+      updateDietSwitcherUI(c.diet || 'veg');
+      renderClientDayButtons();
+      loadTodayClientView();
     }
 
     function exitToAdmin() {
@@ -740,293 +616,365 @@ Stay focused and empowered!`;
       initAdmin();
     }
 
-    function renderClientPortalDayTabs() {
-      const container = document.getElementById('cpDayTabs');
+    function updateDietSwitcherUI(diet) {
+      if(diet === 'nonveg') {
+        document.getElementById('btnDietNonVeg').className = "px-2.5 py-1 rounded-lg text-[10px] font-bold transition chip-active";
+        document.getElementById('btnDietVeg').className = "px-2.5 py-1 rounded-lg text-[10px] font-bold transition chip-inactive";
+      } else {
+        document.getElementById('btnDietVeg').className = "px-2.5 py-1 rounded-lg text-[10px] font-bold transition chip-active";
+        document.getElementById('btnDietNonVeg').className = "px-2.5 py-1 rounded-lg text-[10px] font-bold transition chip-inactive";
+      }
+    }
+
+    function setClientDietType(diet) {
+      const c = clients.find(x => x.id === activeClientId);
+      if(!c) return;
+      c.diet = diet;
+      updateDietSwitcherUI(diet);
+      localStorage.setItem('met_pro_clients_v8', JSON.stringify(clients));
+      loadTodayClientView();
+    }
+
+    function clientChangeGoal(newGoal) {
+      const c = clients.find(x => x.id === activeClientId);
+      if(!c) return;
+      c.goal = newGoal;
+      document.getElementById('cpClientSub').innerText = `${c.goal} (${c.diet === 'nonveg' ? '🍗 Non-Veg' : '🌱 Veg'})`;
+      localStorage.setItem('met_pro_clients_v8', JSON.stringify(clients));
+      loadTodayClientView();
+    }
+
+    function renderClientDayButtons() {
+      const container = document.getElementById('cpDayGridButtons');
       container.innerHTML = '';
       DAYS.forEach(d => {
+        const isCurrent = d.id === clientViewDay;
         const btn = document.createElement('button');
-        btn.id = 'cp-tab-' + d.id;
-        btn.className = (d.id === cpActiveDay)
-          ? "px-3 py-2 rounded-xl bg-amber-500 text-black font-black whitespace-nowrap shadow"
-          : "px-3 py-2 rounded-xl bg-[#141620] text-gray-400 whitespace-nowrap border border-gray-800";
-        btn.innerText = d.name.split(' ')[0];
+        btn.className = isCurrent 
+          ? "py-2.5 rounded-xl bg-amber-500 text-black font-extrabold text-xs shadow-md shadow-amber-500/20" 
+          : "py-2.5 rounded-xl bg-[#141620] text-gray-400 font-bold text-xs border border-gray-800 hover:text-white";
+        btn.innerText = d.short;
         btn.onclick = () => {
-          cpActiveDay = d.id;
-          renderClientPortalDayTabs();
-          loadClientPortalDayData();
+          clientViewDay = d.id;
+          renderClientDayButtons();
+          loadTodayClientView();
         };
         container.appendChild(btn);
       });
     }
 
-    function loadClientPortalDayData() {
+    function loadTodayClientView() {
       const c = clients.find(x => x.id === activeClientId);
       if(!c) return;
       if(!c.compliance) c.compliance = {};
-      if(!c.compliance[cpActiveDay]) {
-        c.compliance[cpActiveDay] = {
+      if(!c.compliance[clientViewDay]) {
+        c.compliance[clientViewDay] = {
           morning: 'done', breakfast: 'done', lunch: 'done', snack: 'done', dinner: 'done', rule: 'done',
-          fasting: '', pp: '', protein: '', water: '', energy: 'High', note: ''
+          customMeals: {}, metric1: '', metric2: '', note: ''
         };
       }
 
-      const plan = c.weeklyPlan[cpActiveDay] || TEMPLATES.diabetes[cpActiveDay];
-      const comp = c.compliance[cpActiveDay];
-      const dObj = DAYS.find(x => x.id === cpActiveDay);
+      const comp = c.compliance[clientViewDay];
+      const dObj = DAYS.find(x => x.id === clientViewDay);
+      document.getElementById('cpActiveDayLabel').innerText = `${dObj.name}'s Flow`;
 
-      document.getElementById('cpDayHeading').innerText = `${dObj.name} Protocol & Compliance`;
-
-      const container = document.getElementById('cpMealSlotsContainer');
-      container.innerHTML = '';
+      const plan = (c.weeklyPlan && c.weeklyPlan[clientViewDay]) ? c.weeklyPlan[clientViewDay] : (c.weeklyPlan['mon'] || {});
 
       const slots = [
-        { key: 'morning', label: '1. Morning Detox / Pre-Workout', icon: '🥒', desc: plan.morning },
-        { key: 'breakfast', label: '2. Breakfast / Post-Workout Fuel', icon: '🥗', desc: plan.breakfast },
-        { key: 'lunch', label: '3. Lunch (Salad + Super Flour Plate)', icon: '🫓', desc: plan.lunch },
-        { key: 'snack', label: '4. Afternoon Snack (4-5 PM)', icon: '🍈', desc: plan.snack },
-        { key: 'dinner', label: '5. Dinner & Restoration (Before 8:30 PM)', icon: '🍲', desc: plan.dinner },
-        { key: 'rule', label: '6. Daily Protocol (Hydration / Sleep / Routine)', icon: '🌙', desc: plan.rule }
+        { key: 'morning', time: 'Early Morning (ખાલી પેટે)', label: '1. Alkaline Detox Infusion', icon: '🥒', defaultText: plan.morning || "Ash Gourd + Coriander + Raw Turmeric + Fresh Ginger" },
+        { key: 'breakfast', time: 'Morning Breakfast (નાસ્તો)', label: '2. Breakfast & Protein Charge', icon: '🥗', defaultText: plan.breakfast || (c.diet==='nonveg'?"3 Boiled Egg Whites + Moong Chaat":"Moong Dal Chila + Fresh Paneer 30g + Salad") },
+        { key: 'lunch', time: 'Afternoon Lunch (બપોરનું ભોજન)', label: '3. Glycemic Barrier Lunch Plate', icon: '🫓', defaultText: plan.lunch || (c.diet==='nonveg'?"Salad + 1 Super Flour Roti + Grilled Chicken / Fish + Chaas":"1 Big Salad Bowl + 1 Super Flour Roti + Sabzi + Chaas") },
+        { key: 'snack', time: 'Evening Snack (સાંજે ૪-૫ વાગ્યે)', label: '4. Anti-Craving Evening Fuel', icon: '🍈', defaultText: plan.snack || "1 Bowl Spiced Guava + Roasted Pumpkin Seeds" },
+        { key: 'dinner', time: 'Night Dinner (રાત્રે ૮:૩૦ પહેલાં)', label: '5. Restorative Dinner & Sleep Fuel', icon: '🍲', defaultText: plan.dinner || (c.diet==='nonveg'?"Clear Chicken Soup + Sauteed Greens":"Creamy Pumpkin Soup + Sauteed Veggies + Paneer") },
+        { key: 'rule', time: 'Night Routine (સૂતી વખતે)', label: '6. Circadian Habits & Leg Elevation', icon: '🌙', defaultText: plan.rule || "Post-Meal 15-min walk + Elevate legs on pillows for 15-20 min" }
       ];
 
+      const container = document.getElementById('cpTodayMealCards');
+      container.innerHTML = '';
+
       slots.forEach(s => {
-        const currentVal = comp[s.key] || 'done';
-        const row = document.createElement('div');
-        row.className = "p-3 rounded-xl bg-[#0f111a] border border-gray-800 space-y-2";
-        row.innerHTML = `
-          <div>
-            <div class="text-[10px] text-amber-400 font-bold flex items-center gap-1">${s.icon} ${s.label}</div>
-            <p class="text-xs text-white font-medium mt-0.5 select-none">${s.desc}</p>
-          </div>
-          <div class="grid grid-cols-3 gap-1.5 pt-1">
-            <button onclick="setSlotState('${s.key}', 'done')" class="py-1.5 px-2 rounded-lg text-[10px] flex items-center justify-center gap-1 border transition ${currentVal === 'done' ? 'btn-done-active' : 'btn-state-idle'}">
-              <i class="fa-solid fa-check"></i> 100% Done
+        const currentCheck = comp[s.key] || 'done';
+        const activeText = comp.customMeals?.[s.key] || s.defaultText;
+
+        const card = document.createElement('div');
+        card.className = "card-dark p-3.5 rounded-2xl space-y-2.5";
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-[9px] font-bold text-gray-500 uppercase tracking-wider">${s.time}</span>
+              <h3 class="text-xs font-bold text-amber-400 flex items-center gap-1.5">${s.icon} ${s.label}</h3>
+            </div>
+            <button onclick="openCustomizer('${s.key}', '${activeText.replace(/'/g, "\\'")}', '${s.defaultText.replace(/'/g, "\\'")}')" class="text-[10px] text-emerald-400 font-bold bg-emerald-950/70 border border-emerald-800 px-2 py-1 rounded-xl flex items-center gap-1 hover:bg-emerald-900">
+              <i class="fa-solid fa-pen-to-square"></i> Customize / Skip
             </button>
-            <button onclick="setSlotState('${s.key}', 'half')" class="py-1.5 px-2 rounded-lg text-[10px] flex items-center justify-center gap-1 border transition ${currentVal === 'half' ? 'btn-half-active' : 'btn-state-idle'}">
+          </div>
+
+          <div class="bg-[#0b0c10] p-2.5 rounded-xl border border-gray-800 text-xs text-white leading-relaxed">
+            ${activeText}
+          </div>
+
+          <div class="grid grid-cols-3 gap-1.5 pt-0.5">
+            <button onclick="setClientCheck('${s.key}', 'done')" class="py-2 px-2 rounded-xl text-xs flex items-center justify-center gap-1 border transition ${currentCheck === 'done' ? 'btn-done-active' : 'btn-state-idle'}">
+              <i class="fa-solid fa-check"></i> Done
+            </button>
+            <button onclick="setClientCheck('${s.key}', 'half')" class="py-2 px-2 rounded-xl text-xs flex items-center justify-center gap-1 border transition ${currentCheck === 'half' ? 'btn-half-active' : 'btn-state-idle'}">
               <i class="fa-solid fa-triangle-exclamation"></i> 50% Partial
             </button>
-            <button onclick="setSlotState('${s.key}', 'miss')" class="py-1.5 px-2 rounded-lg text-[10px] flex items-center justify-center gap-1 border transition ${currentVal === 'miss' ? 'btn-miss-active' : 'btn-state-idle'}">
+            <button onclick="setClientCheck('${s.key}', 'miss')" class="py-2 px-2 rounded-xl text-xs flex items-center justify-center gap-1 border transition ${currentCheck === 'miss' ? 'btn-miss-active' : 'btn-state-idle'}">
               <i class="fa-solid fa-xmark"></i> Missed
             </button>
           </div>
         `;
-        container.appendChild(row);
+        container.appendChild(card);
       });
 
-      renderDynamicClientInputs(c, comp);
-      updateClientScoreAndMotivation();
+      renderVitalsSection(c, comp);
+      evaluateMotivation(comp);
     }
 
-    function setSlotState(slotKey, state) {
+    function setClientCheck(slotKey, state) {
       const c = clients.find(x => x.id === activeClientId);
       if(!c) return;
-      if(!c.compliance[cpActiveDay]) c.compliance[cpActiveDay] = {};
-      c.compliance[cpActiveDay][slotKey] = state;
-      localStorage.setItem('met_pro_clients_v6', JSON.stringify(clients));
-      loadClientPortalDayData();
+      if(!c.compliance[clientViewDay]) c.compliance[clientViewDay] = {};
+      c.compliance[clientViewDay][slotKey] = state;
+      localStorage.setItem('met_pro_clients_v8', JSON.stringify(clients));
+      loadTodayClientView();
     }
 
-    function renderDynamicClientInputs(c, comp) {
-      const dynInputs = document.getElementById('cpDynamicInputs');
+    function renderVitalsSection(c, comp) {
+      const container = document.getElementById('cpDynamicInputs');
       const isGym = c.goal.includes('Gym');
-      const isWomen = c.goal.includes('Pregnancy') || c.goal.includes('Menopause');
 
       if (isGym) {
-        dynInputs.innerHTML = `
-          <div class="font-bold text-cyan-400 text-[11px] flex items-center gap-1.5">
-            <i class="fa-solid fa-dumbbell"></i> Athletic Metrics Tracker:
+        container.innerHTML = `
+          <div class="grid grid-cols-2 gap-2">
+            <div><label class="text-[9px] text-gray-400">Protein Target</label><input type="text" id="cpInM1" onchange="saveVitals()" value="${comp.metric1||''}" placeholder="e.g. 110g taken" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white text-xs"></div>
+            <div><label class="text-[9px] text-gray-400">Water (Litres)</label><input type="number" step="0.5" id="cpInM2" onchange="saveVitals()" value="${comp.metric2||''}" placeholder="e.g. 3.5L" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white text-xs"></div>
           </div>
-          <div class="grid grid-cols-3 gap-2">
-            <div>
-              <label class="text-[9px] text-gray-400">Protein Intake (g)</label>
-              <input type="number" id="cpInMetric1" onchange="saveClientDayInputs()" value="${comp.metric1||''}" placeholder="e.g. 115" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
-            </div>
-            <div>
-              <label class="text-[9px] text-gray-400">Water (Litres)</label>
-              <input type="number" step="0.5" id="cpInMetric2" onchange="saveClientDayInputs()" value="${comp.metric2||''}" placeholder="e.g. 3.5" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
-            </div>
-            <div>
-              <label class="text-[9px] text-gray-400">Workout Status</label>
-              <select id="cpInWorkout" onchange="saveClientDayInputs()" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
-                <option value="Done (Gym/Weights)" ${comp.workout==='Done (Gym/Weights)'?'selected':''}>Done (Gym)</option>
-                <option value="Rest / Recovery Day" ${comp.workout==='Rest / Recovery Day'?'selected':''}>Rest Day</option>
-                <option value="Missed Session" ${comp.workout==='Missed Session'?'selected':''}>Missed</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label class="text-[10px] text-gray-400">Notes / Muscle Sensation / Recovery:</label>
-            <input type="text" id="cpInNote" onchange="saveClientDayInputs()" value="${comp.note||''}" placeholder="Great pump, sustained energy throughout..." class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
-          </div>
-        `;
-      } else if (isWomen) {
-        dynInputs.innerHTML = `
-          <div class="font-bold text-pink-400 text-[11px] flex items-center gap-1.5">
-            <i class="fa-solid fa-heart-pulse"></i> Vitality & Wellness Tracker:
-          </div>
-          <div class="grid grid-cols-3 gap-2">
-            <div>
-              <label class="text-[9px] text-gray-400">Water (Litres)</label>
-              <input type="number" step="0.5" id="cpInMetric1" onchange="saveClientDayInputs()" value="${comp.metric1||''}" placeholder="e.g. 3.0" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
-            </div>
-            <div>
-              <label class="text-[9px] text-gray-400">Hot Flashes / Comfort</label>
-              <select id="cpInMetric2" onchange="saveClientDayInputs()" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
-                <option value="Very Calm & Comfortable" ${comp.metric2==='Very Calm & Comfortable'?'selected':''}>Calm & Good</option>
-                <option value="Mild Warmth / Manageable" ${comp.metric2==='Mild Warmth / Manageable'?'selected':''}>Mild</option>
-                <option value="Felt Heated / Fatigue" ${comp.metric2==='Felt Heated / Fatigue'?'selected':''}>Fatigue</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-[9px] text-gray-400">Sleep Quality</label>
-              <select id="cpInWorkout" onchange="saveClientDayInputs()" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
-                <option value="Deep & Restful (7+ hrs)" ${comp.workout==='Deep & Restful (7+ hrs)'?'selected':''}>Deep Sleep</option>
-                <option value="Moderate Sleep" ${comp.workout==='Moderate Sleep'?'selected':''}>Moderate</option>
-                <option value="Disturbed Sleep" ${comp.workout==='Disturbed Sleep'?'selected':''}>Disturbed</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label class="text-[10px] text-gray-400">Notes / Body Sensation:</label>
-            <input type="text" id="cpInNote" onchange="saveClientDayInputs()" value="${comp.note||''}" placeholder="Felt peaceful today, digestion was light..." class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
-          </div>
+          <div><input type="text" id="cpInNote" onchange="saveVitals()" value="${comp.note||''}" placeholder="Workout comments / energy feel..." class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white text-xs mt-1"></div>
         `;
       } else {
-        dynInputs.innerHTML = `
-          <div class="font-bold text-gray-300 text-[11px] flex items-center gap-1.5">
-            <i class="fa-solid fa-droplet text-red-500"></i> Blood Glucose Check:
-          </div>
+        container.innerHTML = `
           <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="text-[10px] text-gray-400">Fasting Sugar (mg/dL)</label>
-              <input type="number" id="cpInMetric1" onchange="saveClientDayInputs()" value="${comp.metric1||''}" placeholder="e.g. 125" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
-            </div>
-            <div>
-              <label class="text-[10px] text-gray-400">Post-Meal PP2BS (mg/dL)</label>
-              <input type="number" id="cpInMetric2" onchange="saveClientDayInputs()" value="${comp.metric2||''}" placeholder="e.g. 155" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
-            </div>
+            <div><label class="text-[9px] text-gray-400">Fasting Sugar (mg/dL)</label><input type="number" id="cpInM1" onchange="saveVitals()" value="${comp.metric1||''}" placeholder="e.g. 125" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white text-xs"></div>
+            <div><label class="text-[9px] text-gray-400">PP2BS / Post-Meal</label><input type="number" id="cpInM2" onchange="saveVitals()" value="${comp.metric2||''}" placeholder="e.g. 160" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white text-xs"></div>
           </div>
-          <div>
-            <label class="text-[10px] text-gray-400">Daily Observations / Energy:</label>
-            <input type="text" id="cpInNote" onchange="saveClientDayInputs()" value="${comp.note||''}" placeholder="Leg numbness felt much less today, digestion light..." class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5">
-          </div>
+          <div><input type="text" id="cpInNote" onchange="saveVitals()" value="${comp.note||''}" placeholder="Daily feel, sleep quality, observations..." class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white text-xs mt-1"></div>
         `;
       }
     }
 
-    function saveClientDayInputs() {
+    function saveVitals() {
       const c = clients.find(x => x.id === activeClientId);
-      if(!c) return;
-      if(!c.compliance[cpActiveDay]) c.compliance[cpActiveDay] = {};
-      const comp = c.compliance[cpActiveDay];
-
-      comp.metric1 = document.getElementById('cpInMetric1')?.value || '';
-      comp.metric2 = document.getElementById('cpInMetric2')?.value || '';
-      comp.workout = document.getElementById('cpInWorkout')?.value || '';
-      comp.note = document.getElementById('cpInNote')?.value || '';
-
-      localStorage.setItem('met_pro_clients_v6', JSON.stringify(clients));
-      updateClientScoreAndMotivation();
+      if(!c || !c.compliance[clientViewDay]) return;
+      c.compliance[clientViewDay].metric1 = document.getElementById('cpInM1')?.value || '';
+      c.compliance[clientViewDay].metric2 = document.getElementById('cpInM2')?.value || '';
+      c.compliance[clientViewDay].note = document.getElementById('cpInNote')?.value || '';
+      localStorage.setItem('met_pro_clients_v8', JSON.stringify(clients));
     }
 
-    function updateClientScoreAndMotivation() {
-      const c = clients.find(x => x.id === activeClientId);
-      if(!c || !c.compliance) return;
-
-      let totalPoints = 0;
-      let earnedPoints = 0;
-      const daySlots = ['morning', 'breakfast', 'lunch', 'snack', 'dinner', 'rule'];
-
-      const comp = c.compliance[cpActiveDay] || {};
-      daySlots.forEach(slot => {
-        totalPoints += 100;
-        const state = comp[slot] || 'done';
-        if (state === 'done') earnedPoints += 100;
-        else if (state === 'half') earnedPoints += 50;
+    function evaluateMotivation(comp) {
+      const slots = ['morning', 'breakfast', 'lunch', 'snack', 'dinner', 'rule'];
+      let earned = 0;
+      slots.forEach(s => {
+        const st = comp[s] || 'done';
+        if(st === 'done') earned += 100;
+        else if(st === 'half') earned += 50;
       });
-
-      const dayPct = Math.round((earnedPoints / totalPoints) * 100);
+      const score = Math.round(earned / 6);
 
       const banner = document.getElementById('cpMotivationBanner');
-      if (dayPct >= 85) {
-        banner.className = "p-3 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 text-xs space-y-1";
+      if (score >= 85) {
+        banner.className = "p-3.5 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 text-xs space-y-1";
         banner.innerHTML = `
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-emerald-400"><i class="fa-solid fa-award"></i> Exceptional Discipline (${dayPct}%)</span>
-            <span class="px-2 py-0.5 bg-emerald-900 text-emerald-300 text-[10px] rounded-full font-bold">On Fire 🔥</span>
-          </div>
-          <p class="text-[11px] text-gray-200">You are actively healing your metabolism, protecting your organs, and building deep resilience. Keep this momentum roaring!</p>
+          <div class="flex justify-between items-center"><span class="font-bold text-emerald-400"><i class="fa-solid fa-award"></i> Superb Consistency (${score}%)</span><span class="px-2 py-0.5 bg-emerald-900 text-emerald-300 text-[10px] rounded-full font-bold">Optimal 🔥</span></div>
+          <p class="text-[11px] text-gray-200">Your cells and liver are actively thanking you. Perfect momentum today!</p>
         `;
-      } else if (dayPct >= 50) {
-        banner.className = "p-3 rounded-2xl border border-amber-500/40 bg-amber-950/40 text-xs space-y-1";
+      } else if (score >= 50) {
+        banner.className = "p-3.5 rounded-2xl border border-amber-500/40 bg-amber-950/40 text-xs space-y-1";
         banner.innerHTML = `
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-amber-400"><i class="fa-solid fa-heart"></i> Progress Over Perfection (${dayPct}%)</span>
-            <span class="px-2 py-0.5 bg-amber-900 text-amber-300 text-[10px] rounded-full font-bold">Keep Going 💛</span>
-          </div>
-          <p class="text-[11px] text-gray-200">50% consistency is infinitely better than 0%! Life happens, and minor deviations are completely natural. Zero guilt—stay hydrated tonight and bounce right back tomorrow morning!</p>
+          <div class="flex justify-between items-center"><span class="font-bold text-amber-400"><i class="fa-solid fa-heart"></i> Honest Effort (${score}%)</span><span class="px-2 py-0.5 bg-amber-900 text-amber-300 text-[10px] rounded-full font-bold">Good Going 💛</span></div>
+          <p class="text-[11px] text-gray-200">50% consistency is far superior to skipping! Life happens, zero guilt—stay hydrated tonight and keep rocking.</p>
         `;
       } else {
-        banner.className = "p-3 rounded-2xl border border-rose-500/40 bg-rose-950/40 text-xs space-y-1";
+        banner.className = "p-3.5 rounded-2xl border border-rose-500/40 bg-rose-950/40 text-xs space-y-1";
         banner.innerHTML = `
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-rose-400"><i class="fa-solid fa-shield-halved"></i> Reset & Reclaim (${dayPct}%)</span>
-            <span class="px-2 py-0.5 bg-rose-900 text-rose-300 text-[10px] rounded-full font-bold">Safe Haven 🤍</span>
-          </div>
-          <p class="text-[11px] text-gray-200">Don't stress for a second! One off-track day does not undo your hard work. Drink a warm glass of water, sleep soundly, and tomorrow is a fresh clean reset with your coach!</p>
+          <div class="flex justify-between items-center"><span class="font-bold text-rose-400"><i class="fa-solid fa-shield-halved"></i> Fresh Reset Tomorrow (${score}%)</span><span class="px-2 py-0.5 bg-rose-900 text-rose-300 text-[10px] rounded-full font-bold">Safe Haven 🤍</span></div>
+          <p class="text-[11px] text-gray-200">Don't be disheartened! One off day never defines your health journey. Drink warm water, sleep peacefully, and tomorrow is a fresh start.</p>
         `;
       }
     }
 
-    function submitClientDailyReport() {
+    function openCustomizer(slotKey, currentText, defaultText) {
+      cstActiveSlot = slotKey;
+      cstIdealString = defaultText;
+
+      const slotTitles = {
+        morning: 'Morning Detox Base',
+        breakfast: 'Breakfast Nutrition',
+        lunch: 'Lunch Plate Assembly',
+        snack: 'Afternoon Snack',
+        dinner: 'Dinner Recovery',
+        rule: 'Daily Protocol'
+      };
+      document.getElementById('cstModalTitle').innerHTML = `<i class="fa-solid fa-mortar-pestle"></i> ${slotTitles[slotKey]}`;
+
+      cstActiveTags = currentText.split('+').map(s => s.trim()).filter(s => s.length > 0);
+      renderCustomizerTags();
+      renderCustomizerSubstitutes();
+
+      document.getElementById('ingredientCustomizerModal').classList.remove('hidden');
+    }
+
+    function closeCustomizer() {
+      document.getElementById('ingredientCustomizerModal').classList.add('hidden');
+    }
+
+    function renderCustomizerTags() {
+      const container = document.getElementById('cstActiveTags');
+      container.innerHTML = '';
+      if(cstActiveTags.length === 0) {
+        container.innerHTML = `<span class="text-gray-500 italic text-[11px]">No items selected. Tap substitutes below to add.</span>`;
+        return;
+      }
+      cstActiveTags.forEach((t, idx) => {
+        const tag = document.createElement('span');
+        tag.className = "px-2.5 py-1 rounded-xl bg-amber-500/15 border border-amber-500 text-amber-200 text-xs font-semibold flex items-center gap-1.5 shadow";
+        tag.innerHTML = `
+          <span>${t}</span>
+          <button onclick="removeCstTag(${idx})" class="text-amber-400 hover:text-red-400 ml-0.5"><i class="fa-solid fa-xmark"></i></button>
+        `;
+        container.appendChild(tag);
+      });
+    }
+
+    function removeCstTag(index) {
+      cstActiveTags.splice(index, 1);
+      renderCustomizerTags();
+    }
+
+    function addCstTag(text) {
+      if(!cstActiveTags.includes(text)) {
+        cstActiveTags.push(text);
+        renderCustomizerTags();
+      }
+    }
+
+    function resetCustomizerToIdeal() {
+      cstActiveTags = cstIdealString.split('+').map(s => s.trim()).filter(s => s.length > 0);
+      renderCustomizerTags();
+    }
+
+    function renderCustomizerSubstitutes() {
+      const c = clients.find(x => x.id === activeClientId);
+      const isNonVeg = c && c.diet === 'nonveg';
+
+      let poolKey = cstActiveSlot;
+      if(['breakfast', 'lunch', 'snack', 'dinner'].includes(cstActiveSlot)) {
+        poolKey = isNonVeg ? `${cstActiveSlot}_nonveg` : `${cstActiveSlot}_veg`;
+      }
+      const pool = SUBSTITUTES_POOL[poolKey] || SUBSTITUTES_POOL[cstActiveSlot] || [];
+
+      const container = document.getElementById('cstSubstitutesContainer');
+      container.innerHTML = '';
+      pool.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = "px-2.5 py-1.5 rounded-xl bg-[#171a26] hover:bg-emerald-600 hover:text-white border border-gray-700 text-[10px] text-gray-300 font-medium transition flex items-center gap-1";
+        btn.innerHTML = `<i class="fa-solid fa-plus text-[9px] text-emerald-400"></i> ${item}`;
+        btn.onclick = () => addCstTag(item);
+        container.appendChild(btn);
+      });
+    }
+
+    function applyCustomizerTags() {
       const c = clients.find(x => x.id === activeClientId);
       if(!c) return;
-      saveClientDayInputs();
+      if(!c.compliance[clientViewDay]) c.compliance[clientViewDay] = {};
+      if(!c.compliance[clientViewDay].customMeals) c.compliance[clientViewDay].customMeals = {};
 
-      const comp = c.compliance[cpActiveDay] || {};
-      const dObj = DAYS.find(x => x.id === cpActiveDay);
+      const finalString = cstActiveTags.join(' + ');
+      c.compliance[clientViewDay].customMeals[cstActiveSlot] = finalString;
 
-      const symbolMap = { done: '✅ 100% Done', half: '⚠️ 50% Partial', miss: '❌ Missed' };
+      localStorage.setItem('met_pro_clients_v8', JSON.stringify(clients));
+      closeCustomizer();
+      loadTodayClientView();
+    }
 
-      let totalPoints = 0, earnedPoints = 0;
-      ['morning', 'breakfast', 'lunch', 'snack', 'dinner', 'rule'].forEach(k => {
-        totalPoints += 100;
-        const st = comp[k] || 'done';
-        if(st === 'done') earnedPoints += 100;
-        else if(st === 'half') earnedPoints += 50;
-      });
-      const score = Math.round((earnedPoints / totalPoints) * 100);
+    function submitClientReport(type) {
+      const c = clients.find(x => x.id === activeClientId);
+      if(!c) return;
+      saveVitals();
 
-      let motivationalNote = "";
-      if (score >= 85) motivationalNote = "Coach Note: Exceptional discipline! Keep charging ahead.";
-      else if (score >= 50) motivationalNote = "Coach Note: Proud of your honest effort! Progress over perfection always.";
-      else motivationalNote = "Coach Note: Zero guilt! We reset together tomorrow morning.";
+      const symbolMap = { done: '✅ Done (100%)', half: '⚠️ Partial (50%)', miss: '❌ Missed' };
 
-      let msg = `🩺 *Metabolic Pro - Daily Protocol Sync*
+      if (type === 'daily') {
+        const comp = c.compliance[clientViewDay] || {};
+        const dObj = DAYS.find(x => x.id === clientViewDay);
+
+        let earned = 0;
+        ['morning', 'breakfast', 'lunch', 'snack', 'dinner', 'rule'].forEach(k => {
+          const st = comp[k] || 'done';
+          if(st === 'done') earned += 100; else if(st === 'half') earned += 50;
+        });
+        const score = Math.round(earned / 6);
+
+        let msg = `🩺 *Metabolic Pro - Daily Routine Sync*
 Client: *${c.name}*
-Goal: *${c.goal}*
+Goal: *${c.goal}* (${c.diet === 'nonveg' ? '🍗 Non-Veg' : '🌱 Veg'})
 Day: *${dObj.name}*
-Score: *${score}% Compliance*
+Daily Score: *${score}% Compliance*
 
-📊 *Meal & Routine Status:*
+📋 *Today's Meal Breakdown & Customization:*
 • 1. Morning Detox: ${symbolMap[comp.morning || 'done']}
+  ↳ Plate: _${comp.customMeals?.morning || 'Standard Detox'}_
 • 2. Breakfast Fuel: ${symbolMap[comp.breakfast || 'done']}
+  ↳ Plate: _${comp.customMeals?.breakfast || 'Standard Breakfast'}_
 • 3. Lunch Plate: ${symbolMap[comp.lunch || 'done']}
+  ↳ Plate: _${comp.customMeals?.lunch || 'Standard Lunch'}_
 • 4. Afternoon Snack: ${symbolMap[comp.snack || 'done']}
+  ↳ Plate: _${comp.customMeals?.snack || 'Standard Snack'}_
 • 5. Dinner Recovery: ${symbolMap[comp.dinner || 'done']}
+  ↳ Plate: _${comp.customMeals?.dinner || 'Standard Dinner'}_
 • 6. Daily Protocol: ${symbolMap[comp.rule || 'done']}
 
-📈 *Tracked Metrics:*
-- Metric 1: ${comp.metric1 || 'Logged'}
-- Metric 2 / Status: ${comp.metric2 || 'Logged'}
-- Workout / Activity: ${comp.workout || 'Tracked'}
+🩸 *Vitals & Habits:*
+- Fasting / Metric 1: ${comp.metric1 || 'Logged'}
+- Post-Meal / Metric 2: ${comp.metric2 || 'Logged'}
+- Notes: "${comp.note || 'All feels well.'}"`;
 
-📝 *Client Notes:*
-"${comp.note || 'All feels well.'}"
+        window.open(`https://wa.me/919081421028?text=${encodeURIComponent(msg)}`, '_blank');
 
-💬 *Mindset Reminder:*
-"${motivationalNote}"`;
+      } else {
+        let totalPossible = 0;
+        let totalEarned = 0;
+        let weekBreakdown = "";
 
-      window.open(`https://wa.me/919081421028?text=${encodeURIComponent(msg)}`, '_blank');
+        DAYS.forEach(d => {
+          const dayComp = c.compliance[d.id] || {};
+          let dayEarned = 0;
+          ['morning', 'breakfast', 'lunch', 'snack', 'dinner', 'rule'].forEach(k => {
+            totalPossible += 100;
+            const st = dayComp[k] || 'done';
+            if(st === 'done') { dayEarned += 100; totalEarned += 100; }
+            else if(st === 'half') { dayEarned += 50; totalEarned += 50; }
+          });
+          const dayScore = Math.round(dayEarned / 6);
+          weekBreakdown += `• ${d.short}: ${dayScore}% adherence\n`;
+        });
+
+        const weeklyScore = Math.round((totalEarned / totalPossible) * 100);
+
+        let msg = `📊 *Metabolic Pro - 7-Day Weekly Summary*
+Client: *${c.name}*
+Target: *${c.goal}*
+Weekly Score: *${weeklyScore}% Overall Adherence*
+
+🗓️ *Daily Consistency Snapshot:*
+${weekBreakdown}
+Ready for next week's adjustments & clinical review!`;
+
+        window.open(`https://wa.me/919081421028?text=${encodeURIComponent(msg)}`, '_blank');
+      }
     }
 
     function openModal() { document.getElementById('admModal').classList.remove('hidden'); }
@@ -1035,23 +983,18 @@ Score: *${score}% Compliance*
       const n = document.getElementById('mName').value.trim();
       const p = document.getElementById('mPhone').value.trim();
       const g = document.getElementById('mGoal').value;
-      const q = document.getElementById('mQuery').value.trim();
-      if(!n || !p) return alert('Please enter client name and phone number.');
-
-      let templateKey = 'diabetes';
-      if(g.includes('Gym')) templateKey = 'fitness';
-      else if(g.includes('Pregnancy')) templateKey = 'pregnancy';
-      else if(g.includes('Menopause')) templateKey = 'menopause';
+      const d = document.getElementById('mDiet').value;
+      if(!n || !p) return alert('Please enter name and phone number.');
 
       const newId = "CL-" + (100 + clients.length + 1);
       clients.unshift({
-        id: newId, name: n, phone: p, goal: g, status: 'ACTIVE', query: q,
-        weeklyPlan: JSON.parse(JSON.stringify(TEMPLATES[templateKey])),
+        id: newId, name: n, phone: p, goal: g, diet: d, status: 'ACTIVE',
+        weeklyPlan: { mon: { morning: '', breakfast: '', lunch: '', snack: '', dinner: '', rule: '' } },
         compliance: {}
       });
       closeModal();
       renderAdminClients();
-      alert(`Client ${n} created with specialized ${g} protocol!`);
+      alert(`Client ${n} created successfully!`);
     }
 
     function deleteClient(id) {
@@ -1077,9 +1020,8 @@ Score: *${score}% Compliance*
         <span class="px-2 py-0.5 rounded text-[10px] font-bold ${lRisk==='NORMAL'?'bg-emerald-950 text-emerald-400':'bg-yellow-950 text-yellow-400'} border border-gray-700">Liver Risk: ${lRisk}</span>
       `;
       document.getElementById('dietAdvice').innerHTML = `
-        <div>• <strong>Bile & Liver Activation:</strong> Fresh bottle gourd + amla + raw turmeric juice every morning on an empty stomach.</div>
-        <div>• <strong>Glycemic Barrier:</strong> 1 full bowl raw salad before taking 1 Super Flour (Multi-Millet) roti.</div>
-        <div>• <strong>Visceral Fat Melt:</strong> Sautéed vegetables with light paneer for dinner; avoid grain after 8:30 PM.</div>
+        <div>• <strong>Bile Flow:</strong> Bottle gourd + turmeric + amla on empty stomach.</div>
+        <div>• <strong>Glycemic Barrier:</strong> Raw salad bowl before Super Flour roti.</div>
       `;
       document.getElementById('labResult').classList.remove('hidden');
     }
