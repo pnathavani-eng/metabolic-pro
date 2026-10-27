@@ -105,14 +105,14 @@
           </div>
           <span class="text-[10px] font-bold px-2.5 py-1 bg-white border border-teal-300 text-teal-800 rounded-xl shadow-xs" id="cpFixedBadge">Fatty Liver (veg)</span>
         </div>
-        <p class="text-xs text-slate-600 leading-snug">30-Day Non-Repeating Clinical Protocol with Live Calorie & GI Tracking.</p>
+        <p class="text-xs text-slate-600 leading-snug">30-Day Non-Repeating Protocol with Live Calorie, GI & Water Tracking.</p>
       </div>
 
-      <!-- DAILY METABOLIC BUDGET DASHBOARD (NEW REQUESTED FEATURE) -->
+      <!-- DAILY METABOLIC BUDGET DASHBOARD -->
       <div class="card-clean p-4 rounded-3xl space-y-3 bg-gradient-to-br from-slate-900 to-teal-950 text-white shadow-md border border-teal-800">
         <div class="flex justify-between items-center">
           <h3 class="font-extrabold text-xs flex items-center gap-1.5 text-teal-300"><i class="fa-solid fa-fire text-amber-400"></i> Daily Calorie & GI Budget</h3>
-          <span class="text-[10px] bg-teal-900/80 text-teal-200 px-2.5 py-0.5 rounded-full font-bold border border-teal-700">Daily Target: <span id="cpTargetCal">1200</span> kcal</span>
+          <span class="text-[10px] bg-teal-900/80 text-teal-200 px-2.5 py-0.5 rounded-full font-bold border border-teal-700">Target: <span id="cpTargetCal">1200</span> kcal</span>
         </div>
         <div class="grid grid-cols-3 gap-2 text-center pt-1">
           <div class="bg-white/10 p-2.5 rounded-2xl border border-white/5">
@@ -130,6 +130,23 @@
         </div>
         <div class="w-full bg-white/20 h-2 rounded-full overflow-hidden">
           <div id="cpCalProgress" class="bg-gradient-to-r from-teal-400 to-amber-400 h-full w-0 transition-all duration-500"></div>
+        </div>
+      </div>
+
+      <!-- DAILY WATER HYDRATION TRACKER (NEW FEATURE) -->
+      <div class="card-clean p-3.5 rounded-2xl space-y-2 border">
+        <div class="flex justify-between items-center text-xs">
+          <span class="font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-droplet text-sky-500 text-sm"></i> Water Hydration Target (પાણીનું પ્રમાણ)</span>
+          <span class="font-black text-sky-600 text-xs" id="cpWaterCount">0.0 / 3.0 Liters</span>
+        </div>
+        <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+          <div id="cpWaterBar" class="bg-sky-500 h-full w-0 transition-all"></div>
+        </div>
+        <div class="grid grid-cols-4 gap-1.5 pt-1">
+          <button onclick="addWater(0.25)" class="py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 1 Glass (250ml)</button>
+          <button onclick="addWater(0.5)" class="py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 500ml Bottle</button>
+          <button onclick="addWater(1.0)" class="py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 1 Liter</button>
+          <button onclick="resetWater()" class="py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-[11px] font-bold">Reset 🔄</button>
         </div>
       </div>
 
@@ -461,7 +478,12 @@
     function loadTodayClientView() {
       if(!currentClient) return;
       if(!currentClient.compliance) currentClient.compliance = {};
-      const comp = currentClient.compliance[selectedDateKey] || { morning: 'idle', breakfast: 'idle', lunch: 'idle', snack: 'idle', dinner: 'idle', rule: 'idle', customMeals: {}, metric1: '', metric2: '', note: '' };
+      const comp = currentClient.compliance[selectedDateKey] || { morning: 'idle', breakfast: 'idle', lunch: 'idle', snack: 'idle', dinner: 'idle', rule: 'idle', customMeals: {}, metric1: '', metric2: '', note: '', water: 0 };
+
+      // Water update
+      const waterVal = comp.water || 0;
+      document.getElementById('cpWaterCount').innerText = waterVal.toFixed(2) + ' / 3.0 Liters';
+      document.getElementById('cpWaterBar').style.width = Math.min((waterVal / 3.0) * 100, 100) + '%';
 
       const dObj = parseDateKey(selectedDateKey);
       const dayOfYear = Math.floor((dObj - new Date(dObj.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
@@ -511,7 +533,6 @@
         container.appendChild(card);
       });
 
-      // UPDATE DAILY BUDGET DASHBOARD VALUES
       const dailyTarget = 1200;
       const remaining = dailyTarget - totalDayCalories;
       const avgGi = Math.round(totalDayGi / slots.length);
@@ -544,6 +565,22 @@
       currentClient.compliance[selectedDateKey][slotKey] = state;
       loadTodayClientView();
       await db.collection('clients').doc(currentClient.phone).update({ [`compliance.${selectedDateKey}.${slotKey}`]: state });
+    }
+
+    async function addWater(amount) {
+      if(!currentClient.compliance[selectedDateKey]) currentClient.compliance[selectedDateKey] = {};
+      let cur = currentClient.compliance[selectedDateKey].water || 0;
+      cur += amount;
+      currentClient.compliance[selectedDateKey].water = cur;
+      loadTodayClientView();
+      await db.collection('clients').doc(currentClient.phone).update({ [`compliance.${selectedDateKey}.water`]: cur });
+    }
+
+    async function resetWater() {
+      if(!currentClient.compliance[selectedDateKey]) currentClient.compliance[selectedDateKey] = {};
+      currentClient.compliance[selectedDateKey].water = 0;
+      loadTodayClientView();
+      await db.collection('clients').doc(currentClient.phone).update({ [`compliance.${selectedDateKey}.water`]: 0 });
     }
 
     async function saveVitals() {
@@ -613,7 +650,15 @@
     }
 
     function submitClientReport(type) {
-      window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent('Hello Coach, here is my update for ' + selectedDateKey)}`, '_blank');
+      const comp = currentClient.compliance[selectedDateKey] || {};
+      const waterVal = comp.water || 0;
+      const msg = `🩺 *Metabolic Pro - Daily Report*
+Client: *${currentClient.name}*
+Date: *${selectedDateKey}*
+💧 Water Intake: *${waterVal.toFixed(2)} Liters*
+🩸 Fasting Sugar: *${comp.metric1 || 'N/A'}* | PP2BS: *${comp.metric2 || 'N/A'}*
+Notes: "${comp.note || 'All good'}"`;
+      window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
     }
   </script>
 </body>
