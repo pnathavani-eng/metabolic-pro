@@ -31,7 +31,9 @@
 </head>
 <body class="pb-24 antialiased">
 
-  <!-- ==================== VIEW 1: DEDICATED ADMIN LOGIN ==================== -->
+  <!-- ==========================================
+       VIEW 1: ADMIN LOGIN SCREEN
+       ========================================== -->
   <div id="adminAuthView" class="min-h-screen flex flex-col justify-center p-4 max-w-sm mx-auto space-y-4">
     <div class="card-clean rounded-3xl p-6 shadow-xl border border-slate-200 text-center space-y-4">
       <div class="w-14 h-14 rounded-2xl bg-slate-900 text-teal-400 flex items-center justify-center text-2xl font-black shadow-lg mx-auto">
@@ -51,14 +53,13 @@
         <button onclick="verifyAdminPin()" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-extrabold text-xs shadow hover:bg-slate-800 transition">
           Access Master CRM 🔐
         </button>
-        <button onclick="openAdminForgotPinModal()" class="w-full text-center text-[11px] font-bold text-teal-700 hover:underline">
-          Reset / Forgot Admin PIN?
-        </button>
       </div>
     </div>
   </div>
 
-  <!-- ==================== VIEW 2: LIVE CLOUD CRM DASHBOARD ==================== -->
+  <!-- ==========================================
+       VIEW 2: LIVE CLOUD CRM DASHBOARD
+       ========================================== -->
   <div id="adminMainView" class="hidden min-h-screen">
     <header class="p-3.5 bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-40 flex justify-between items-center shadow-md">
       <div class="flex items-center gap-2.5">
@@ -74,8 +75,8 @@
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="openChangeAdminPinModal()" class="px-2.5 py-1 bg-slate-800 border border-slate-700 text-teal-300 rounded-lg text-xs font-bold hover:bg-slate-700 flex items-center gap-1">
-          <i class="fa-solid fa-key text-[10px]"></i> PIN
+        <button onclick="openCoachSettingsModal()" class="px-2.5 py-1 bg-slate-800 border border-slate-700 text-teal-300 rounded-lg text-xs font-bold hover:bg-slate-700 flex items-center gap-1">
+          <i class="fa-brands fa-whatsapp text-[10px]"></i> WhatsApp
         </button>
         <button onclick="logoutAdmin()" class="px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs hover:text-white">
           Logout
@@ -92,13 +93,13 @@
     <main class="p-3.5 max-w-lg mx-auto space-y-3.5">
       <!-- KPI Metrics -->
       <div class="grid grid-cols-4 gap-2 text-center text-xs">
-        <div class="card-clean p-2.5 rounded-2xl"><div id="admTotal" class="text-base font-black text-slate-900">0</div><div class="text-[9px] text-slate-500">Live Clients</div></div>
+        <div class="card-clean p-2.5 rounded-2xl"><div id="admTotal" class="text-base font-black text-slate-900">0</div><div class="text-[9px] text-slate-500">Clients</div></div>
         <div class="card-clean p-2.5 rounded-2xl"><div id="admClinical" class="text-base font-black text-teal-700">0</div><div class="text-[9px] text-slate-500">Clinical</div></div>
         <div class="card-clean p-2.5 rounded-2xl"><div id="admFitness" class="text-base font-black text-sky-700">0</div><div class="text-[9px] text-slate-500">Gym Pro</div></div>
-        <div class="card-clean p-2.5 rounded-2xl"><div id="admTrialActive" class="text-base font-black text-rose-600">0</div><div class="text-[9px] text-slate-500">Free Trials</div></div>
+        <div class="card-clean p-2.5 rounded-2xl"><div id="admTrialActive" class="text-base font-black text-rose-600">0</div><div class="text-[9px] text-slate-500">Trials</div></div>
       </div>
 
-      <!-- TAB 1: CLIENTS DIRECTORY -->
+      <!-- TAB 1: CLIENTS DIRECTORY WITH TRIAL / LIFETIME ACCESS CONTROL -->
       <section id="aview-clients" class="space-y-3">
         <button onclick="openModal()" class="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm">
           <i class="fa-solid fa-user-plus"></i> Add New Client Direct to Cloud
@@ -109,11 +110,11 @@
         </div>
       </section>
 
-      <!-- TAB 2: MASTER PROTOCOL SETUP -->
+      <!-- TAB 2: MASTER PROTOCOL SETUP & OVERRIDE -->
       <section id="aview-planner" class="hidden space-y-3 text-xs">
         <div class="card-clean p-4 rounded-2xl space-y-3">
           <div class="flex justify-between items-center border-b border-slate-200 pb-2">
-            <h2 class="font-bold text-slate-800 text-sm">Protocol Configuration</h2>
+            <h2 class="font-bold text-slate-800 text-sm">Protocol Customization & Override</h2>
             <span class="text-[10px] text-teal-700 font-extrabold" id="admCurrentClientBadge"></span>
           </div>
 
@@ -131,7 +132,6 @@
             <div><label class="text-[10px] text-slate-500 font-semibold">3. Lunch Plate:</label><input type="text" id="admLunch" class="w-full bg-white border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
             <div><label class="text-[10px] text-slate-500 font-semibold">4. Afternoon Snack:</label><input type="text" id="admSnack" class="w-full bg-white border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
             <div><label class="text-[10px] text-slate-500 font-semibold">5. Dinner & Recovery:</label><input type="text" id="admDinner" class="w-full bg-white border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
-            <div><label class="text-[10px] text-slate-500 font-semibold">6. Daily Protocol (Habits/Sleep):</label><input type="text" id="admRule" class="w-full bg-white border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
           </div>
 
           <div class="flex gap-2">
@@ -152,7 +152,6 @@
             <div><label class="text-[10px] text-slate-500">HbA1c (%)</label><input type="number" step="0.1" id="inHba1c" placeholder="7.2" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800"></div>
             <div><label class="text-[10px] text-slate-500">Fasting Sugar (mg/dL)</label><input type="number" id="inFast" placeholder="135" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800"></div>
             <div><label class="text-[10px] text-slate-500">SGPT / ALT (Liver)</label><input type="number" id="inSgpt" placeholder="48" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800"></div>
-            <div><label class="text-[10px] text-slate-500">Triglycerides</label><input type="number" id="inTg" placeholder="185" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800"></div>
           </div>
           <button onclick="runLabAnalysis()" class="w-full bg-teal-600 text-white font-bold py-2.5 rounded-xl text-xs shadow-sm">Analyze Biomarkers</button>
           <div id="labResult" class="hidden space-y-2 pt-2 border-t border-slate-200">
@@ -174,15 +173,13 @@
       <div><label class="text-[10px] text-slate-500">Full Name</label><input type="text" id="mName" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
       <div><label class="text-[10px] text-slate-500">WhatsApp Phone (10 digits)</label><input type="text" id="mPhone" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
       <div>
-        <label class="text-[10px] text-slate-500">Health Category & Goal</label>
+        <label class="text-[10px] text-slate-500">Primary Health Goal</label>
         <select id="mGoal" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5">
           <option value="Fatty Liver Detox">🥒 Fatty Liver Detox</option>
           <option value="Type 2 Diabetes Reversal">🩺 Type 2 Diabetes Reversal</option>
+          <option value="High Blood Pressure (BP)">🫀 High BP Control</option>
           <option value="Gym & High Protein">🏋️ Gym & High Protein</option>
-          <option value="Pregnancy Nutrition">🤰 Pregnancy Care</option>
-          <option value="Postpartum Recovery">👶 Postpartum Care</option>
-          <option value="Menopause Care">🌸 Menopause Balance</option>
-          <option value="Longevity & Energy">🌿 Daily Energy</option>
+          <option value="Menopause Care">🌸 Menopause Care</option>
         </select>
       </div>
       <div>
@@ -192,6 +189,10 @@
           <option value="nonveg">🍗 Non-Vegetarian</option>
         </select>
       </div>
+      <div>
+        <label class="text-[10px] text-slate-500">Trial / Access Days (e.g. 30 or 999 for Lifetime)</label>
+        <input type="number" id="mDays" value="30" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5">
+      </div>
       <div class="flex gap-2 pt-2">
         <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl">Cancel</button>
         <button onclick="addNewClientToCloud()" class="flex-1 bg-teal-600 text-white font-bold py-2 rounded-xl">Save to Cloud</button>
@@ -199,43 +200,20 @@
     </div>
   </div>
 
-  <!-- Modal: Change Admin PIN -->
-  <div id="modalChangeAdminPin" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+  <!-- Modal: Coach WhatsApp Settings -->
+  <div id="modalCoachSettings" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-xs p-5 rounded-3xl space-y-3 text-xs shadow-xl border border-slate-200">
       <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-        <h3 class="font-bold text-slate-900">Change Admin PIN</h3>
-        <button onclick="closeChangeAdminPinModal()"><i class="fa-solid fa-xmark text-slate-400"></i></button>
-      </div>
-      <div class="space-y-2">
-        <div>
-          <label class="text-[10px] font-bold text-slate-600">Current PIN</label>
-          <input type="password" maxlength="8" id="inOldAdminPin" placeholder="Current PIN" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-center font-bold">
-        </div>
-        <div>
-          <label class="text-[10px] font-bold text-slate-600">New PIN</label>
-          <input type="password" maxlength="8" id="inNewAdminPin" placeholder="New PIN" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-center font-bold">
-        </div>
-      </div>
-      <div class="flex gap-2 pt-1">
-        <button onclick="closeChangeAdminPinModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl font-bold">Cancel</button>
-        <button onclick="saveNewAdminPin()" class="flex-1 bg-teal-600 text-white py-2 rounded-xl font-bold">Update</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal: Admin Forgot PIN -->
-  <div id="modalAdminForgotPin" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-xs p-5 rounded-3xl space-y-3 text-xs shadow-xl border border-slate-200">
-      <div class="text-center space-y-1">
-        <h3 class="font-extrabold text-slate-900 text-sm">Emergency Admin Reset</h3>
-        <p class="text-[10px] text-slate-500">Enter Registered Coach Mobile to reset PIN to default (1234).</p>
+        <h3 class="font-bold text-slate-900">Coach WhatsApp Number</h3>
+        <button onclick="closeCoachSettingsModal()"><i class="fa-solid fa-xmark text-slate-400"></i></button>
       </div>
       <div>
-        <input type="tel" id="inAdminEmergencyPhone" placeholder="e.g. 919081421028" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-center font-bold">
+        <label class="text-[10px] font-bold text-slate-600">WhatsApp Phone (with Country Code)</label>
+        <input type="tel" id="inCoachPhoneSetting" placeholder="919081421028" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-bold mt-1">
       </div>
       <div class="flex gap-2 pt-1">
-        <button onclick="closeAdminForgotPinModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl font-bold">Cancel</button>
-        <button onclick="handleEmergencyAdminReset()" class="flex-1 bg-rose-600 text-white py-2 rounded-xl font-bold">Reset</button>
+        <button onclick="closeCoachSettingsModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl font-bold">Cancel</button>
+        <button onclick="saveCoachWhatsAppSetting()" class="flex-1 bg-teal-600 text-white py-2 rounded-xl font-bold">Save 💾</button>
       </div>
     </div>
   </div>
@@ -267,7 +245,6 @@
     let selectedClientId = null;
     let activeDay = 'mon';
     let adminMasterPin = localStorage.getItem('met_pro_admin_master_pin') || '1234';
-    const COACH_PHONE = "919081421028";
 
     function verifyAdminPin() {
       const pin = document.getElementById('inAdminPin').value.trim();
@@ -295,23 +272,21 @@
           liveClients.push({ id: doc.id, ...doc.data() });
         });
         renderLiveClients();
-      }, err => {
-        console.error("Firestore listener error:", err);
-      });
+      }, err => { console.error("Firestore listener error:", err); });
     }
 
     function renderLiveClients() {
       document.getElementById('admTotal').innerText = liveClients.length;
       document.getElementById('tabCount').innerText = liveClients.length;
       document.getElementById('admClinical').innerText = liveClients.filter(c => c.goal && (c.goal.includes('Diabetes') || c.goal.includes('Liver'))).length;
-      document.getElementById('admFitness').innerText = liveClients.filter(c => c.goal && (c.goal.includes('Gym') || c.goal.includes('Energy'))).length;
+      document.getElementById('admFitness').innerText = liveClients.filter(c => c.goal && c.goal.includes('Gym')).length;
       document.getElementById('admTrialActive').innerText = liveClients.filter(c => c.tier === 'trial').length;
 
       const container = document.getElementById('admClientsList');
       container.innerHTML = '';
 
       if (liveClients.length === 0) {
-        container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">No clients registered yet. Clients will automatically appear here live!</div>`;
+        container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">No clients registered yet.</div>`;
         return;
       }
 
@@ -323,7 +298,6 @@
             <div class="flex items-center gap-1.5">
               <span class="text-[10px] font-black px-2 py-0.5 rounded bg-slate-900 text-white">#${c.refCode || c.id.slice(-4)}</span>
               <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">${c.goal || 'General Health'}</span>
-              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">${c.diet==='nonveg'?'🍗 Non-Veg':'🌱 Veg'}</span>
             </div>
             <div class="flex items-center gap-2">
               <button onclick="openPlannerFor('${c.id}')" class="text-xs text-teal-700 font-bold hover:underline"><i class="fa-solid fa-pen-to-square"></i> Protocol</button>
@@ -335,10 +309,9 @@
               <h3 class="font-bold text-slate-900 text-sm">${c.name}</h3>
               <p class="text-[11px] text-slate-500">${c.phone} | <span class="text-teal-700 font-bold">${c.trialDays || 30}d Access (PIN: ${c.pin||'1234'})</span></p>
             </div>
-            <div class="flex flex-col gap-1.5">
-              <button onclick="sendWhatsAppDirect('${c.phone}', '${c.name}')" class="bg-teal-600 hover:bg-teal-500 text-white font-bold px-2.5 py-1 rounded-xl text-[10px] flex items-center justify-center gap-1 shadow-xs">
-                <i class="fa-brands fa-whatsapp"></i> WhatsApp 📲
-              </button>
+            <div class="flex items-center gap-1.5">
+              <button onclick="extendClientTrial('${c.id}', 30)" class="px-2 py-1 bg-teal-50 border border-teal-200 text-teal-800 rounded-lg text-[10px] font-bold">+30d</button>
+              <button onclick="extendClientTrial('${c.id}', 999)" class="px-2 py-1 bg-slate-900 text-white rounded-lg text-[10px] font-bold">Lifetime VIP</button>
             </div>
           </div>
         `;
@@ -360,13 +333,13 @@
       }
     }
 
-    function sendWhatsAppDirect(phone, name) {
-      const msg = `Hello ${name}, this is your coach from Metabolic Pro. How is your nutrition routine going today?`;
-      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    async function extendClientTrial(id, days) {
+      await db.collection('clients').doc(id).update({ trialDays: days });
+      alert(`✅ Access updated to ${days === 999 ? 'Lifetime VIP' : days + ' Days'}!`);
     }
 
     async function deleteClientFromCloud(id) {
-      if(confirm('Are you sure you want to permanently delete this client from Google Cloud?')) {
+      if(confirm('Permanently delete this client from Cloud?')) {
         await db.collection('clients').doc(id).delete();
       }
     }
@@ -424,16 +397,15 @@
       const c = liveClients.find(x => x.id === selectedClientId);
       if(!c) return;
       if(!c.weeklyPlan) c.weeklyPlan = {};
-      const d = c.weeklyPlan[activeDay] || c.weeklyPlan['mon'] || {};
+      const d = c.weeklyPlan[activeDay] || {};
       const dObj = DAYS.find(x => x.id === activeDay);
 
-      document.getElementById('admDayFormTitle').innerText = `${dObj.name} Protocol (${c.name})`;
+      document.getElementById('admDayFormTitle').innerText = `${dObj.name} Override (${c.name})`;
       document.getElementById('admMorning').value = d.morning || '';
       document.getElementById('admBreakfast').value = d.breakfast || '';
       document.getElementById('admLunch').value = d.lunch || '';
       document.getElementById('admSnack').value = d.snack || '';
       document.getElementById('admDinner').value = d.dinner || '';
-      document.getElementById('admRule').value = d.rule || '';
     }
 
     async function saveActiveDayToCloud() {
@@ -445,14 +417,13 @@
         breakfast: document.getElementById('admBreakfast').value.trim(),
         lunch: document.getElementById('admLunch').value.trim(),
         snack: document.getElementById('admSnack').value.trim(),
-        dinner: document.getElementById('admDinner').value.trim(),
-        rule: document.getElementById('admRule').value.trim()
+        dinner: document.getElementById('admDinner').value.trim()
       };
 
       await db.collection('clients').doc(c.id).update({
         [`weeklyPlan.${activeDay}`]: updatedDay
       });
-      alert(`✅ ${DAYS.find(x=>x.id===activeDay).name} protocol updated in Cloud!`);
+      alert(`✅ ${DAYS.find(x=>x.id===activeDay).name} protocol override saved in Cloud!`);
     }
 
     function openModal() { document.getElementById('admModal').classList.remove('hidden'); }
@@ -463,67 +434,44 @@
       const p = document.getElementById('mPhone').value.trim().replace(/\D/g, '');
       const g = document.getElementById('mGoal').value;
       const d = document.getElementById('mDiet').value;
+      const days = parseInt(document.getElementById('mDays').value) || 30;
       if(!n || p.length < 10) return alert('Enter full name and 10-digit number.');
 
       const pin = p.slice(-4) || '1234';
+      const todayKey = new Date().toISOString().split('T')[0];
+
       await db.collection('clients').doc(p).set({
-        name: n, phone: p, pin: pin, goal: g, diet: d, tier: 'trial', trialDays: 30,
+        name: n, phone: p, pin: pin, goal: g, diet: d, tier: 'trial', trialDays: days,
+        joiningDate: todayKey,
         refCode: 'CL-' + p.slice(-4),
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        weeklyPlan: {
-          mon: { morning: '', breakfast: '', lunch: '', snack: '', dinner: '', rule: '' }
-        },
+        weeklyPlan: {},
         compliance: {}
       });
       closeModal();
       alert(`Client ${n} saved to Cloud! (PIN: ${pin})`);
     }
 
-    function openChangeAdminPinModal() {
-      document.getElementById('inOldAdminPin').value = '';
-      document.getElementById('inNewAdminPin').value = '';
-      document.getElementById('modalChangeAdminPin').classList.remove('hidden');
-    }
-    function closeChangeAdminPinModal() { document.getElementById('modalChangeAdminPin').classList.add('hidden'); }
-    function saveNewAdminPin() {
-      const o = document.getElementById('inOldAdminPin').value.trim();
-      const n = document.getElementById('inNewAdminPin').value.trim();
-      if(o !== adminMasterPin) return alert('Current PIN mismatch.');
-      if(n.length < 4) return alert('At least 4 digits required.');
-      adminMasterPin = n;
-      localStorage.setItem('met_pro_admin_master_pin', n);
-      alert('Admin PIN updated!');
-      closeChangeAdminPinModal();
-    }
-
-    function openAdminForgotPinModal() { document.getElementById('modalAdminForgotPin').classList.remove('hidden'); }
-    function closeAdminForgotPinModal() { document.getElementById('modalAdminForgotPin').classList.add('hidden'); }
-    function handleEmergencyAdminReset() {
-      const p = document.getElementById('inAdminEmergencyPhone').value.trim().replace(/\D/g, '');
-      if(p === COACH_PHONE || p.endsWith("9081421028")) {
-        adminMasterPin = '1234';
-        localStorage.setItem('met_pro_admin_master_pin', '1234');
-        alert('PIN reset to default: 1234');
-        closeAdminForgotPinModal();
-        document.getElementById('inAdminPin').value = '1234';
-      } else {
-        alert('Verification failed.');
-      }
+    function openCoachSettingsModal() { document.getElementById('modalCoachSettings').classList.remove('hidden'); }
+    function closeCoachSettingsModal() { document.getElementById('modalCoachSettings').classList.add('hidden'); }
+    
+    async function saveCoachWhatsAppSetting() {
+      const phone = document.getElementById('inCoachPhoneSetting').value.trim().replace(/\D/g, '');
+      if(!phone) return alert('Enter valid phone number');
+      await db.collection('settings').doc('config').set({ coachPhone: phone }, { merge: true });
+      alert('✅ Coach WhatsApp number updated globally!');
+      closeCoachSettingsModal();
     }
 
     function runLabAnalysis() {
       const h = parseFloat(document.getElementById('inHba1c').value)||0;
       const f = parseFloat(document.getElementById('inFast').value)||0;
-      const s = parseFloat(document.getElementById('inSgpt').value)||0;
       let sRisk = (h > 6.5 || f > 125) ? 'DIABETIC' : (h > 5.7 ? 'PRE-DIABETIC' : 'NORMAL');
-      let lRisk = s > 45 ? 'HIGH (FATTY LIVER)' : 'NORMAL';
 
       document.getElementById('riskBadges').innerHTML = `
         <span class="px-2 py-0.5 rounded text-[10px] font-bold ${sRisk==='NORMAL'?'bg-emerald-100 text-emerald-800':'bg-rose-100 text-rose-800'} border border-slate-200">Sugar Risk: ${sRisk}</span>
-        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${lRisk==='NORMAL'?'bg-emerald-100 text-emerald-800':'bg-amber-100 text-amber-800'} border border-slate-200">Liver Risk: ${lRisk}</span>
       `;
       document.getElementById('dietAdvice').innerHTML = `
-        <div>• <strong>Bile Flow:</strong> Bottle gourd + turmeric + amla on empty stomach.</div>
         <div>• <strong>Glycemic Barrier:</strong> Raw salad bowl before Super Flour roti.</div>
       `;
       document.getElementById('labResult').classList.remove('hidden');
