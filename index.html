@@ -105,7 +105,7 @@
           </div>
           <span class="text-[10px] font-bold px-2.5 py-1 bg-white border border-teal-300 text-teal-800 rounded-xl shadow-xs" id="cpFixedBadge">Fatty Liver (veg)</span>
         </div>
-        <p class="text-xs text-slate-600 leading-snug">30-Day Non-Repeating Protocol with Live Calorie, GI & Water Tracking.</p>
+        <p class="text-xs text-slate-600 leading-snug">30-Day Protocol with Live Calorie, GI & Water Tracking.</p>
       </div>
 
       <!-- DAILY METABOLIC BUDGET DASHBOARD -->
@@ -133,7 +133,7 @@
         </div>
       </div>
 
-      <!-- DAILY WATER HYDRATION TRACKER (NEW FEATURE) -->
+      <!-- DAILY WATER HYDRATION TRACKER -->
       <div class="card-clean p-3.5 rounded-2xl space-y-2 border">
         <div class="flex justify-between items-center text-xs">
           <span class="font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-droplet text-sky-500 text-sm"></i> Water Hydration Target (પાણીનું પ્રમાણ)</span>
@@ -449,12 +449,15 @@
         const isSelected = (dateKey === selectedDateKey);
         const isToday = (dateKey === todayKey);
         const isBeforeJoining = (dateKey < joiningKey);
-        const isFuture = (dateKey > todayKey);
+        
+        // FIX: Regular clients can view the entire current week (weekOffset === 0). 
+        // Future weeks (weekOffset > 0) are locked for trial users unless Lifetime VIP.
+        const isFutureWeek = (weekOffset > 0);
 
         const btn = document.createElement('button');
-        if (isBeforeJoining || (!isLifetimeVIP && isFuture)) {
+        if (isBeforeJoining || (!isLifetimeVIP && isFutureWeek)) {
           btn.className = "py-2 px-1 rounded-2xl bg-slate-100 text-slate-300 border border-slate-200 text-xs flex flex-col items-center justify-center cursor-not-allowed";
-          btn.onclick = () => alert(isBeforeJoining ? "🔒 Before joining date." : "🔒 Future menu locked for regular trial.");
+          btn.onclick = () => alert(isBeforeJoining ? "🔒 Before joining date." : "🔒 Future weeks locked for regular trial. VIP members have full access!");
         } else {
           btn.onclick = () => selectClientDate(dateKey);
           if (isSelected) btn.className = "py-2 px-1 rounded-2xl bg-teal-600 text-white font-extrabold text-xs shadow-md shadow-teal-700/30 flex flex-col items-center justify-center";
@@ -480,7 +483,6 @@
       if(!currentClient.compliance) currentClient.compliance = {};
       const comp = currentClient.compliance[selectedDateKey] || { morning: 'idle', breakfast: 'idle', lunch: 'idle', snack: 'idle', dinner: 'idle', rule: 'idle', customMeals: {}, metric1: '', metric2: '', note: '', water: 0 };
 
-      // Water update
       const waterVal = comp.water || 0;
       document.getElementById('cpWaterCount').innerText = waterVal.toFixed(2) + ' / 3.0 Liters';
       document.getElementById('cpWaterBar').style.width = Math.min((waterVal / 3.0) * 100, 100) + '%';
