@@ -3,99 +3,308 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Metabolic Pro Hub - Health & Protocol Portal</title>
+  <title>Metabolic Pro Hub - Clinical Wellness & Nutrition</title>
+  <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {
-      background-color: #08090e;
-      color: #e2e8f0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
-    .gold-gradient { background: linear-gradient(135deg, #f59e0b, #d97706); }
-    .emerald-gradient { background: linear-gradient(135deg, #10b981, #059669); }
-    .card-dark { background-color: #12141e; border: 1px solid #202436; }
-    .card-glow { box-shadow: 0 4px 20px -2px rgba(245, 158, 11, 0.12); }
-    .tab-active { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000 !important; font-weight: 700; }
-    .btn-done-active { background-color: #065f46; border-color: #10b981; color: #34d399; font-weight: 700; }
-    .btn-half-active { background-color: #78350f; border-color: #f59e0b; color: #fbbf24; font-weight: 700; }
-    .btn-miss-active { background-color: #7f1d1d; border-color: #ef4444; color: #f87171; font-weight: 700; }
-    .btn-state-idle { background-color: #181a26; border-color: #374151; color: #9ca3af; }
-    .chip-active { background-color: #065f46; border-color: #10b981; color: #a7f3d0; }
-    .chip-inactive { background-color: #1b1d2a; border-color: #374151; color: #9ca3af; }
+    .brand-gradient { background: linear-gradient(135deg, #0d9488, #0284c7); }
+    .brand-gradient-subtle { background: linear-gradient(135deg, #f0fdfa, #f0f9ff); }
+    .card-clean {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+    }
+    .card-clean-hover:hover {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    }
+    .btn-done-active { background-color: #059669; color: #ffffff; border-color: #059669; font-weight: 700; }
+    .btn-half-active { background-color: #d97706; color: #ffffff; border-color: #d97706; font-weight: 700; }
+    .btn-miss-active { background-color: #e11d48; color: #ffffff; border-color: #e11d48; font-weight: 700; }
+    .btn-idle { background-color: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+    .chip-active { background-color: #0f766e; color: #ffffff; font-weight: 700; }
+    .chip-inactive { background-color: #f1f5f9; color: #64748b; font-weight: 600; border: 1px solid #e2e8f0; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="pb-28">
+<body class="pb-24 antialiased">
 
-  <!-- ==================== VIEW 1: ADMIN CRM DASHBOARD ==================== -->
-  <div id="adminView" class="space-y-3">
-    <!-- Admin Topbar -->
-    <header class="p-3.5 bg-[#0e1017] border-b border-[#1f2335] sticky top-0 z-40 flex justify-between items-center shadow-lg">
+  <!-- ==========================================
+       VIEW 1: CLEAN CLIENT LANDING & LOGIN / REGISTRATION
+       ========================================== -->
+  <div id="authView" class="min-h-screen flex flex-col justify-between p-4 max-w-md mx-auto space-y-4">
+    <!-- Brand Header -->
+    <div class="text-center pt-6 space-y-2">
+      <div class="w-16 h-16 rounded-2xl brand-gradient flex items-center justify-center text-white text-3xl font-black shadow-lg mx-auto shadow-teal-500/20">
+        🩺
+      </div>
+      <div>
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight" id="authBrandName">Metabolic Pro</h1>
+        <p class="text-xs font-semibold text-teal-700 uppercase tracking-widest mt-0.5">Clinical Lifestyle Medicine</p>
+      </div>
+      <p class="text-xs text-slate-500 max-w-xs mx-auto">Reversing Diabetes, Fatty Liver & Optimizing Peak Vitality with Science-backed Nutrition.</p>
+    </div>
+
+    <!-- Auth Card -->
+    <div class="card-clean rounded-3xl p-5 shadow-sm space-y-4 border border-slate-200">
+      <!-- Tabs: Register or Login -->
+      <div class="flex p-1 bg-slate-100 rounded-2xl text-xs font-bold text-slate-600">
+        <button onclick="setAuthTab('register')" id="tabRegister" class="flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold">
+          ✨ New Client (30-Day Free)
+        </button>
+        <button onclick="setAuthTab('login')" id="tabLogin" class="flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold">
+          🔑 Client Login
+        </button>
+      </div>
+
+      <!-- Registration Form -->
+      <div id="formRegister" class="space-y-3 text-xs">
+        <div>
+          <label class="font-bold text-slate-700">Full Name</label>
+          <input type="text" id="regName" placeholder="e.g. Ramesh Patel" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:bg-white focus:border-teal-600 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700">WhatsApp Mobile Number</label>
+          <input type="tel" id="regPhone" placeholder="e.g. 9876543210" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:bg-white focus:border-teal-600 focus:outline-none">
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold text-slate-700">Dietary Mode</label>
+            <select id="regDiet" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 font-semibold focus:outline-none">
+              <option value="veg">🌱 Vegetarian</option>
+              <option value="nonveg">🍗 Non-Vegetarian</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold text-slate-700">Health Goal</label>
+            <select id="regGoal" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 font-semibold focus:outline-none">
+              <option value="Type 2 Diabetes Reversal">🩺 Diabetes Reversal</option>
+              <option value="Fatty Liver Detox">🥒 Fatty Liver Detox</option>
+              <option value="Gym & High Protein">🏋️ Gym & Fitness</option>
+              <option value="Pregnancy Nutrition">🤰 Pregnancy Care</option>
+              <option value="Postpartum Recovery">👶 Postpartum Care</option>
+              <option value="Menopause Care">🌸 Menopause Balance</option>
+              <option value="Longevity & Energy">🌿 Daily Energy</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700">Referral Code (Optional)</label>
+          <input type="text" id="regRefCode" placeholder="e.g. CL-101" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 uppercase focus:outline-none">
+        </div>
+
+        <button onclick="handleClientRegister()" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-sm shadow-md shadow-teal-600/30 hover:opacity-95 transition">
+          Start My 30-Day Free Trial 🚀
+        </button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="formLogin" class="hidden space-y-3.5 text-xs">
+        <div>
+          <label class="font-bold text-slate-700">WhatsApp Mobile or Client ID</label>
+          <input type="text" id="loginId" placeholder="e.g. 9876543210 or CL-101" class="w-full mt-1 p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:bg-white focus:border-teal-600 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700">4-Digit Access PIN</label>
+          <input type="password" maxlength="4" id="loginPin" placeholder="Last 4 digits of phone" class="w-full mt-1 p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 tracking-widest text-center text-base focus:bg-white focus:border-teal-600 focus:outline-none">
+          <p class="text-[10px] text-slate-400 mt-1">Default PIN is the last 4 digits of your registered phone.</p>
+        </div>
+
+        <button onclick="handleClientLogin()" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-extrabold text-sm shadow hover:bg-slate-800 transition">
+          Open My Health Portal 📲
+        </button>
+      </div>
+    </div>
+
+    <!-- Admin Link Discreetly at the bottom -->
+    <div class="text-center pt-2">
+      <button onclick="openAdminPinModal()" class="text-[11px] font-bold text-slate-400 hover:text-teal-700 transition flex items-center justify-center gap-1 mx-auto">
+        <i class="fa-solid fa-lock text-[10px]"></i> Coach / Admin Login
+      </button>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       VIEW 2: CLEAN, CRISP CLIENT VIP PORTAL
+       ========================================== -->
+  <div id="clientPortalView" class="hidden min-h-screen">
+    <!-- Top Bar -->
+    <header class="p-3.5 bg-white border-b border-slate-200 sticky top-0 z-40 flex justify-between items-center shadow-xs">
       <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-black font-black text-sm shadow">
-          MP
+        <div class="w-9 h-9 rounded-xl brand-gradient flex items-center justify-center text-white font-bold text-sm shadow-sm" id="cpAvatar">
+          🩺
         </div>
         <div>
-          <h1 class="font-extrabold text-amber-500 text-sm tracking-wide">Metabolic Pro CRM</h1>
-          <p class="text-[9px] text-gray-400">Super Business Admin Dashboard</p>
+          <h1 class="font-extrabold text-slate-900 text-sm leading-tight" id="cpClientTitle">Welcome</h1>
+          <p class="text-[10px] font-bold text-teal-700" id="cpClientSub">Metabolic Health Plan</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="previewClientPortal(activeClientId)" class="px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 text-xs font-bold flex items-center gap-1.5 shadow">
-          <i class="fa-solid fa-mobile-screen"></i> Client View
+        <button onclick="openFeedbackModal()" class="px-2.5 py-1 rounded-xl bg-teal-50 border border-teal-200 text-teal-800 text-[10px] font-bold flex items-center gap-1 shadow-xs hover:bg-teal-100">
+          <i class="fa-solid fa-headset text-teal-600"></i> Support
+        </button>
+        <button onclick="logoutToAuth()" class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 text-[10px] font-bold hover:bg-slate-200">
+          Logout
         </button>
       </div>
     </header>
 
-    <!-- Admin Navigation Tabs -->
-    <div class="flex p-2 gap-1.5 bg-[#08090e] border-b border-[#1b1e2c] text-xs overflow-x-auto no-scrollbar">
+    <main class="p-3.5 max-w-lg mx-auto space-y-3.5">
+      <!-- 30-Day Free Trial & Referral Banner -->
+      <div class="brand-gradient-subtle p-3.5 rounded-3xl border border-teal-200 shadow-xs space-y-2">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-1.5">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-teal-600 text-white uppercase tracking-wider" id="cpTierBadge">30-Day Free Trial</span>
+            <span class="text-[11px] text-teal-900 font-extrabold" id="cpTrialDaysLeft">29 Days Left</span>
+          </div>
+          <button onclick="openGrowthModal()" class="text-[10px] font-extrabold text-teal-700 bg-white border border-teal-300 px-2.5 py-1 rounded-xl shadow-xs flex items-center gap-1 hover:bg-teal-50">
+            <i class="fa-solid fa-gift text-teal-600"></i> +30 Days Free
+          </button>
+        </div>
+        <p class="text-xs text-slate-600 leading-snug">Invite a friend with diabetes or fitness goals to permanently unlock your free membership!</p>
+      </div>
+
+      <!-- Category & Dietary Switcher -->
+      <div class="card-clean p-3 rounded-2xl space-y-2">
+        <div class="flex justify-between items-center text-xs">
+          <span class="font-bold text-slate-700 flex items-center gap-1"><i class="fa-solid fa-sliders text-teal-600"></i> Target Goal:</span>
+          <!-- Dietary Switcher -->
+          <div class="flex gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
+            <button onclick="setClientDietType('veg')" id="btnDietVeg" class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition chip-active">🌱 Veg</button>
+            <button onclick="setClientDietType('nonveg')" id="btnDietNonVeg" class="px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition chip-inactive">🍗 Non-Veg</button>
+          </div>
+        </div>
+
+        <select id="cpGoalSelector" onchange="clientChangeGoal(this.value)" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-xl text-xs text-slate-800 font-bold focus:outline-none">
+          <option value="Type 2 Diabetes Reversal">🩺 Type 2 Diabetes Reversal</option>
+          <option value="Fatty Liver Detox">🥒 Fatty Liver Detox</option>
+          <option value="Gym & High Protein">🏋️ Gym & High Protein Fitness</option>
+          <option value="Pregnancy Nutrition">🤰 Pregnancy Nutrition</option>
+          <option value="Postpartum Recovery">👶 Postpartum Recovery</option>
+          <option value="Menopause Care">🌸 Menopause Balance</option>
+          <option value="Longevity & Energy">🌿 Daily Energy & Vitality</option>
+        </select>
+      </div>
+
+      <!-- Motivation Banner -->
+      <div id="cpMotivationBanner" class="p-3.5 rounded-2xl border text-xs space-y-1 transition-all"></div>
+
+      <!-- Day Navigation (Large, Spacious & Crisp) -->
+      <div class="space-y-1.5">
+        <div class="flex justify-between items-center px-1">
+          <span class="text-xs font-black text-slate-700">Select Day:</span>
+          <span class="text-[11px] text-teal-700 font-extrabold" id="cpActiveDayLabel">Today's Protocol</span>
+        </div>
+        <div class="grid grid-cols-7 gap-1 text-center" id="cpDayGridButtons"></div>
+      </div>
+
+      <!-- Meal Cards (Crisp White Card UI) -->
+      <div class="space-y-3" id="cpTodayMealCards"></div>
+
+      <!-- Daily Vitals -->
+      <div class="card-clean p-3.5 rounded-2xl space-y-2 text-xs">
+        <div class="font-bold text-slate-700 text-xs flex items-center justify-between">
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-notes-medical text-teal-600"></i> Daily Vitals & Blood Sugar</span>
+          <span class="text-[10px] text-slate-400 font-normal">Optional</span>
+        </div>
+        <div id="cpDynamicInputs" class="space-y-2"></div>
+      </div>
+
+      <!-- Reporting Actions (Daily & Weekly) -->
+      <div class="space-y-2 pt-1">
+        <button onclick="submitClientReport('daily')" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md shadow-teal-700/20 hover:opacity-95">
+          <i class="fa-brands fa-whatsapp text-lg"></i> Send Today's Update to Coach 📲
+        </button>
+
+        <button onclick="submitClientReport('weekly')" class="w-full py-3 rounded-2xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center justify-center gap-2 shadow-xs">
+          <i class="fa-solid fa-chart-line text-teal-600"></i> Send 7-Day Weekly Summary to Coach 📊
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <!-- ==========================================
+       VIEW 3: CLEAN EXECUTIVE ADMIN CRM
+       ========================================== -->
+  <div id="adminView" class="hidden min-h-screen">
+    <!-- Admin Topbar -->
+    <header class="p-3.5 bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-40 flex justify-between items-center shadow-md">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-teal-500 text-slate-900 font-black flex items-center justify-center text-sm">
+          MP
+        </div>
+        <div>
+          <h1 class="font-extrabold text-white text-sm">Admin Control Center</h1>
+          <p class="text-[9px] text-teal-400">Client Directory & Protocol Engine</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="previewClientPortal(activeClientId)" class="px-2.5 py-1 bg-teal-600 text-white rounded-lg text-xs font-bold hover:bg-teal-500">
+          Client View
+        </button>
+        <button onclick="logoutToAuth()" class="px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs hover:text-white">
+          Exit
+        </button>
+      </div>
+    </header>
+
+    <!-- Admin Tabs -->
+    <div class="flex p-2 gap-1.5 bg-white border-b border-slate-200 text-xs overflow-x-auto no-scrollbar">
       <button onclick="setAdminTab('clients')" id="atab-clients" class="tab-active px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-users"></i> Client Directory</button>
-      <button onclick="setAdminTab('planner')" id="atab-planner" class="px-3.5 py-2 rounded-xl text-gray-400 bg-[#151722] flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-calendar-check"></i> Master Protocols</button>
-      <button onclick="setAdminTab('lab')" id="atab-lab" class="px-3.5 py-2 rounded-xl text-gray-400 bg-[#151722] flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-vial"></i> Lab & Biomarkers</button>
+      <button onclick="setAdminTab('planner')" id="atab-planner" class="px-3.5 py-2 rounded-xl text-slate-600 bg-slate-100 flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-calendar-check"></i> Master Protocols</button>
+      <button onclick="setAdminTab('lab')" id="atab-lab" class="px-3.5 py-2 rounded-xl text-slate-600 bg-slate-100 flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-vial"></i> Lab Biomarkers</button>
     </div>
 
     <main class="p-3.5 max-w-lg mx-auto space-y-3.5">
       <!-- KPI Metrics -->
       <div class="grid grid-cols-4 gap-2 text-center text-xs">
-        <div class="card-dark p-2.5 rounded-2xl"><div id="admTotal" class="text-base font-black text-amber-500">2</div><div class="text-[9px] text-gray-400 mt-0.5">Total Clients</div></div>
-        <div class="card-dark p-2.5 rounded-2xl"><div id="admClinical" class="text-base font-black text-emerald-400">1</div><div class="text-[9px] text-gray-400 mt-0.5">Clinical</div></div>
-        <div class="card-dark p-2.5 rounded-2xl"><div id="admFitness" class="text-base font-black text-cyan-400">1</div><div class="text-[9px] text-gray-400 mt-0.5">Gym / Sports</div></div>
-        <div class="card-dark p-2.5 rounded-2xl"><div id="admTrialActive" class="text-base font-black text-pink-400">2</div><div class="text-[9px] text-gray-400 mt-0.5">Free Trials</div></div>
+        <div class="card-clean p-2.5 rounded-2xl"><div id="admTotal" class="text-base font-black text-slate-900">2</div><div class="text-[9px] text-slate-500">Total Clients</div></div>
+        <div class="card-clean p-2.5 rounded-2xl"><div id="admClinical" class="text-base font-black text-teal-700">1</div><div class="text-[9px] text-slate-500">Clinical</div></div>
+        <div class="card-clean p-2.5 rounded-2xl"><div id="admFitness" class="text-base font-black text-sky-700">1</div><div class="text-[9px] text-slate-500">Gym Pro</div></div>
+        <div class="card-clean p-2.5 rounded-2xl"><div id="admTrialActive" class="text-base font-black text-rose-600">2</div><div class="text-[9px] text-slate-500">Active Trials</div></div>
       </div>
 
       <!-- TAB 1: CLIENTS DIRECTORY -->
       <section id="aview-clients" class="space-y-3">
-        <button onclick="openModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/40">
-          <i class="fa-solid fa-user-plus text-sm"></i> Add New Client (30-Day Free Trial)
+        <button onclick="openModal()" class="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm">
+          <i class="fa-solid fa-user-plus"></i> Add New Client (30-Day Free Access)
         </button>
-        <input type="text" id="admSearch" oninput="filterAdminClients()" placeholder="Search clients by name, phone or category..." class="w-full bg-[#11131c] border border-[#232738] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-amber-500">
+        <input type="text" id="admSearch" oninput="filterAdminClients()" placeholder="Search clients by name, phone or category..." class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-600">
         <div id="admClientsList" class="space-y-3"></div>
       </section>
 
       <!-- TAB 2: MASTER PROTOCOL SETUP -->
       <section id="aview-planner" class="hidden space-y-3 text-xs">
-        <div class="card-dark p-4 rounded-2xl space-y-3.5">
-          <div class="flex justify-between items-center border-b border-gray-800 pb-2">
-            <h2 class="font-bold text-amber-500 text-sm flex items-center gap-1.5"><i class="fa-solid fa-sliders"></i> Protocol Architecture</h2>
-            <span class="text-[10px] text-emerald-400 font-bold" id="admCurrentClientBadge"></span>
+        <div class="card-clean p-4 rounded-2xl space-y-3">
+          <div class="flex justify-between items-center border-b border-slate-200 pb-2">
+            <h2 class="font-bold text-slate-800 text-sm">Protocol Configuration</h2>
+            <span class="text-[10px] text-teal-700 font-extrabold" id="admCurrentClientBadge"></span>
           </div>
 
           <div>
-            <label class="text-[10px] text-gray-400">Target Client:</label>
-            <select id="admPlannerSelect" onchange="switchPlannerClient(this.value)" class="w-full bg-[#0c0d13] border border-[#25293d] p-2.5 rounded-xl text-white mt-1"></select>
+            <label class="text-[10px] text-slate-500 font-semibold">Select Client:</label>
+            <select id="admPlannerSelect" onchange="switchPlannerClient(this.value)" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-xl text-slate-800 mt-0.5"></select>
           </div>
 
-          <!-- Quick Template Selector -->
+          <!-- Quick Templates -->
           <div class="space-y-1">
-            <span class="text-[10px] text-gray-400">Apply Instant 7-Day Template:</span>
+            <span class="text-[10px] text-slate-400 font-semibold">Load Complete 7-Day Template:</span>
             <div class="grid grid-cols-4 gap-1.5">
-              <button onclick="applyPreset('diabetes')" class="bg-[#171a25] border border-emerald-800 hover:border-emerald-500 text-emerald-400 py-2 rounded-xl text-[10px] font-bold">🩺 Diabetes</button>
-              <button onclick="applyPreset('fitness')" class="bg-[#171a25] border border-cyan-800 hover:border-cyan-500 text-cyan-400 py-2 rounded-xl text-[10px] font-bold">🏋️ Gym Pro</button>
-              <button onclick="applyPreset('pregnancy')" class="bg-[#171a25] border border-pink-800 hover:border-pink-500 text-pink-400 py-2 rounded-xl text-[10px] font-bold">🤰 Pregnancy</button>
-              <button onclick="applyPreset('menopause')" class="bg-[#171a25] border border-purple-800 hover:border-purple-500 text-purple-400 py-2 rounded-xl text-[10px] font-bold">🌸 Menopause</button>
+              <button onclick="applyPreset('diabetes')" class="bg-teal-50 border border-teal-200 text-teal-800 py-1.5 rounded-xl text-[10px] font-bold">🩺 Diabetes</button>
+              <button onclick="applyPreset('fitness')" class="bg-sky-50 border border-sky-200 text-sky-800 py-1.5 rounded-xl text-[10px] font-bold">🏋️ Gym</button>
+              <button onclick="applyPreset('pregnancy')" class="bg-rose-50 border border-rose-200 text-rose-800 py-1.5 rounded-xl text-[10px] font-bold">🤰 Pregnancy</button>
+              <button onclick="applyPreset('menopause')" class="bg-purple-50 border border-purple-200 text-purple-800 py-1.5 rounded-xl text-[10px] font-bold">🌸 Menopause</button>
             </div>
           </div>
 
@@ -103,265 +312,182 @@
           <div class="flex gap-1 overflow-x-auto py-1 no-scrollbar text-[11px]" id="admDayTabs"></div>
 
           <!-- Inputs -->
-          <div class="bg-[#0b0c12] p-3 rounded-xl border border-gray-800 space-y-2.5">
-            <div class="text-amber-400 font-bold" id="admDayFormTitle">Monday Protocol</div>
-            <div><label class="text-[10px] text-gray-400">1. Morning Detox / Pre-Workout:</label><input type="text" id="admMorning" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5"></div>
-            <div><label class="text-[10px] text-gray-400">2. Breakfast Fuel:</label><input type="text" id="admBreakfast" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5"></div>
-            <div><label class="text-[10px] text-gray-400">3. Lunch Plate:</label><input type="text" id="admLunch" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5"></div>
-            <div><label class="text-[10px] text-gray-400">4. Afternoon Snack:</label><input type="text" id="admSnack" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5"></div>
-            <div><label class="text-[10px] text-gray-400">5. Dinner & Recovery:</label><input type="text" id="admDinner" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5"></div>
-            <div><label class="text-[10px] text-gray-400">6. Daily Protocol (Habits/Sleep):</label><input type="text" id="admRule" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white mt-0.5"></div>
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+            <div class="text-slate-800 font-bold" id="admDayFormTitle">Monday Protocol</div>
+            <div><label class="text-[10px] text-slate-500 font-semibold">1. Morning Detox:</label><input type="text" id="admMorning" class="w-full bg-white border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
+            <div><label class="text-[10px] text-slate-500 font-semibold">2. Breakfast Fuel:</label><input type="text" id="admBreakfast" class="w-full bg-white border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
+            <div><label class="text-[10px] text-slate-500 font-semibold">3. Lunch Plate:</label><input type="text" id="admLunch" class="w-full bg-white border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
+            <div><label class="text-[10px] text-slate-500 font-semibold">4. Afternoon Snack:</label><input type="text" id="admSnack" class="w-full bg-white border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
+            <div><label class="text-[10px] text-slate-500 font-semibold">5. Dinner & Recovery:</label><input type="text" id="admDinner" class="w-full bg-white border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
+            <div><label class="text-[10px] text-slate-500 font-semibold">6. Daily Protocol (Habits/Sleep):</label><input type="text" id="admRule" class="w-full bg-white border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
           </div>
 
           <div class="flex gap-2">
-            <button onclick="saveActiveDay()" class="flex-1 gold-gradient text-black font-bold py-2.5 rounded-xl shadow">Save This Day</button>
-            <button onclick="sendPortalLinkToClient(activeClientId)" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl shadow flex items-center justify-center gap-1.5"><i class="fa-brands fa-whatsapp"></i> Send Portal Link 📲</button>
+            <button onclick="saveActiveDay()" class="flex-1 bg-slate-900 text-white font-bold py-2.5 rounded-xl shadow">Save This Day</button>
+            <button onclick="sendPortalLinkToClient(activeClientId)" class="flex-1 bg-teal-600 hover:bg-teal-500 text-white font-bold py-2.5 rounded-xl shadow flex items-center justify-center gap-1.5"><i class="fa-brands fa-whatsapp"></i> Send Portal Link 📲</button>
           </div>
         </div>
       </section>
 
-      <!-- TAB 3: LAB HUB -->
+      <!-- TAB 3: LAB REPORT -->
       <section id="aview-lab" class="hidden space-y-3 text-xs">
-        <div class="card-dark p-4 rounded-2xl space-y-3">
-          <h2 class="font-bold text-amber-500 flex items-center gap-1.5"><i class="fa-solid fa-microscope"></i> Biomarkers & Risk Evaluation</h2>
+        <div class="card-clean p-4 rounded-2xl space-y-3">
+          <h2 class="font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-microscope text-teal-600"></i> Biomarker Analyzer</h2>
           <div class="grid grid-cols-2 gap-2">
             <div class="col-span-2">
-              <label class="text-[10px] text-gray-400">Select Client</label>
-              <select id="admLabSelect" class="w-full bg-[#0d0e14] border border-[#272a3b] p-2 rounded-xl text-white mt-0.5"></select>
+              <label class="text-[10px] text-slate-500">Client</label>
+              <select id="admLabSelect" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-xl text-slate-800 mt-0.5"></select>
             </div>
-            <div><label class="text-[10px] text-gray-400">HbA1c (%)</label><input type="number" step="0.1" id="inHba1c" placeholder="7.2" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
-            <div><label class="text-[10px] text-gray-400">Fasting Sugar (mg/dL)</label><input type="number" id="inFast" placeholder="135" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
-            <div><label class="text-[10px] text-gray-400">SGPT / ALT (Liver)</label><input type="number" id="inSgpt" placeholder="48" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
-            <div><label class="text-[10px] text-gray-400">Triglycerides</label><input type="number" id="inTg" placeholder="185" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
+            <div><label class="text-[10px] text-slate-500">HbA1c (%)</label><input type="number" step="0.1" id="inHba1c" placeholder="7.2" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800"></div>
+            <div><label class="text-[10px] text-slate-500">Fasting Sugar (mg/dL)</label><input type="number" id="inFast" placeholder="135" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800"></div>
+            <div><label class="text-[10px] text-slate-500">SGPT / ALT (Liver)</label><input type="number" id="inSgpt" placeholder="48" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800"></div>
+            <div><label class="text-[10px] text-slate-500">Triglycerides</label><input type="number" id="inTg" placeholder="185" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800"></div>
           </div>
-          <button onclick="runLabAnalysis()" class="w-full gold-gradient text-black font-bold py-2.5 rounded-xl text-xs">Analyze Biomarkers</button>
-          <div id="labResult" class="hidden space-y-2 pt-2 border-t border-gray-800">
+          <button onclick="runLabAnalysis()" class="w-full bg-teal-600 text-white font-bold py-2.5 rounded-xl text-xs shadow-sm">Analyze Biomarkers</button>
+          <div id="labResult" class="hidden space-y-2 pt-2 border-t border-slate-200">
             <div id="riskBadges" class="flex gap-1.5 flex-wrap"></div>
-            <div id="dietAdvice" class="bg-[#0e1017] p-2.5 rounded-xl border border-gray-800 text-[11px] space-y-1"></div>
+            <div id="dietAdvice" class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-[11px] space-y-1"></div>
           </div>
         </div>
       </section>
     </main>
   </div>
 
-  <!-- ==================== VIEW 2: CLIENT READABLE "TODAY-FOCUSED" VIP PORTAL ==================== -->
-  <div id="clientPortalView" class="hidden min-h-screen">
-    <!-- VIP Header -->
-    <header class="p-3.5 bg-[#0e1017] border-b border-[#202436] sticky top-0 z-50 flex justify-between items-center shadow-lg">
-      <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-black font-black text-sm shadow" id="cpAvatar">
-          MP
+  <!-- ==========================================
+       MODALS: (ADMIN PIN, CUSTOMIZER, GROWTH, SUPPORT)
+       ========================================== -->
+
+  <!-- Modal: Admin PIN Lock -->
+  <div id="modalAdminPin" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-xs p-5 rounded-3xl space-y-3.5 text-xs shadow-xl border border-slate-200">
+      <div class="text-center space-y-1">
+        <div class="w-10 h-10 rounded-full bg-teal-50 text-teal-700 flex items-center justify-center mx-auto text-base">
+          <i class="fa-solid fa-lock"></i>
         </div>
-        <div>
-          <h1 class="font-extrabold text-white text-sm" id="cpClientTitle">Welcome</h1>
-          <p class="text-[10px] text-amber-400" id="cpClientSub">Personalized Metabolic Portal</p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <button onclick="openFeedbackModal()" class="px-2.5 py-1 rounded-xl bg-blue-950/80 border border-blue-800 text-blue-400 text-[10px] font-bold flex items-center gap-1 shadow">
-          <i class="fa-solid fa-headset"></i> Support
-        </button>
-        <button onclick="exitToAdmin()" class="px-2.5 py-1 bg-gray-800 text-gray-400 rounded-lg text-[10px] hover:text-white">Admin</button>
-      </div>
-    </header>
-
-    <main class="p-3.5 max-w-lg mx-auto space-y-4">
-
-      <!-- 30-DAY FREE TRIAL & UPGRADE VIP STATUS BANNER -->
-      <div class="card-dark p-3.5 rounded-2xl bg-gradient-to-br from-[#161928] via-[#10121d] to-[#0c0d14] border border-amber-500/30 card-glow space-y-2">
-        <div class="flex justify-between items-center">
-          <div class="flex items-center gap-1.5">
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500 text-black uppercase tracking-wider" id="cpTierBadge">30-Day Free Trial</span>
-            <span class="text-[10px] text-emerald-400 font-bold" id="cpTrialDaysLeft">28 Days Left</span>
-          </div>
-          <button onclick="openGrowthModal()" class="text-[10px] font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-lg">
-            <i class="fa-solid fa-gift"></i> +30 Days Free
-          </button>
-        </div>
-        <p class="text-[11px] text-gray-300">Invite 1 friend or maintain a 21-day streak to extend your free membership permanently!</p>
+        <h3 class="font-extrabold text-slate-900 text-sm">Coach Admin Access</h3>
+        <p class="text-[10px] text-slate-500">Enter your 4-digit Master Security PIN</p>
       </div>
 
-      <!-- CLIENT SELF-SELECTORS (CATEGORY & VEG/NON-VEG) -->
-      <div class="card-dark p-3 rounded-2xl border border-gray-800 space-y-2.5">
-        <div class="flex justify-between items-center text-xs">
-          <span class="text-gray-400 text-[11px] font-semibold flex items-center gap-1"><i class="fa-solid fa-user-gear text-amber-400"></i> My Target Category:</span>
-          <!-- Dietary Switcher -->
-          <div class="flex gap-1 bg-[#0b0c10] p-1 rounded-xl border border-gray-800">
-            <button onclick="setClientDietType('veg')" id="btnDietVeg" class="px-2.5 py-1 rounded-lg text-[10px] font-bold transition chip-active">🌱 Veg</button>
-            <button onclick="setClientDietType('nonveg')" id="btnDietNonVeg" class="px-2.5 py-1 rounded-lg text-[10px] font-bold transition chip-inactive">🍗 Non-Veg</button>
-          </div>
-        </div>
-
-        <select id="cpGoalSelector" onchange="clientChangeGoal(this.value)" class="w-full bg-[#0d0e14] border border-[#272a3b] p-2.5 rounded-xl text-xs text-white font-semibold">
-          <option value="Type 2 Diabetes Reversal">🩺 Type 2 Diabetes Reversal (Low GI & Insulin Reset)</option>
-          <option value="Fatty Liver Detox">🥒 Fatty Liver Detox (Alkaline Care & Bile Flow)</option>
-          <option value="Gym & High Protein Performance">🏋️ Gym & High Protein Performance (Muscle Synthesis)</option>
-          <option value="Pregnancy Nutrition (Pre-Natal)">🤰 Pregnancy Nutrition (Pre-Natal Health & Iron)</option>
-          <option value="Postpartum & Lactation Recovery">👶 Postpartum & Lactation Recovery (Tissue Healing)</option>
-          <option value="Menopause & Hormonal Balance">🌸 Menopause & Hormonal Balance (Bone Density)</option>
-          <option value="Longevity & Gut Health">🌿 Longevity & Peak Energy</option>
-        </select>
+      <div>
+        <input type="password" maxlength="4" id="inAdminPin" placeholder="••••" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 tracking-widest text-center text-lg font-black focus:outline-none focus:border-teal-600">
       </div>
 
-      <!-- Motivation Banner -->
-      <div id="cpMotivationBanner" class="p-3.5 rounded-2xl border text-xs space-y-1 transition-all"></div>
-
-      <!-- SPACIOUS DAY NAVIGATION -->
-      <div class="space-y-1.5">
-        <div class="flex justify-between items-center px-1">
-          <span class="text-xs font-bold text-gray-300">Select Day:</span>
-          <span class="text-[10px] text-amber-400 font-bold" id="cpActiveDayLabel">Today's Protocol</span>
-        </div>
-        <div class="grid grid-cols-7 gap-1 text-center" id="cpDayGridButtons">
-          <!-- Big Day Buttons Mon-Sun -->
-        </div>
+      <div class="flex gap-2 pt-1">
+        <button onclick="closeAdminPinModal()" class="flex-1 bg-slate-100 text-slate-600 py-2.5 rounded-xl font-bold">Cancel</button>
+        <button onclick="verifyAdminPin()" class="flex-1 bg-slate-900 text-white py-2.5 rounded-xl font-bold">Enter CRM</button>
       </div>
-
-      <!-- TODAY'S PROTOCOL CARDS -->
-      <div class="space-y-3" id="cpTodayMealCards">
-        <!-- Rendered via JS -->
-      </div>
-
-      <!-- DAILY VITALS / BIOMARKERS LOG -->
-      <div class="card-dark p-3.5 rounded-2xl space-y-2.5 text-xs">
-        <div class="font-bold text-gray-300 text-xs flex items-center justify-between">
-          <span class="flex items-center gap-1.5"><i class="fa-solid fa-notes-medical text-amber-400"></i> Daily Vitals & Observations</span>
-          <span class="text-[10px] text-gray-500">Optional</span>
-        </div>
-        <div id="cpDynamicInputs" class="space-y-2"></div>
-      </div>
-
-      <!-- REPORTING ACTIONS (DAILY & WEEKLY) -->
-      <div class="space-y-2.5 pt-1">
-        <button onclick="submitClientReport('daily')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50">
-          <i class="fa-brands fa-whatsapp text-lg"></i> Send Today's Update to Coach 📲
-        </button>
-
-        <button onclick="submitClientReport('weekly')" class="w-full bg-[#181a28] hover:bg-[#202438] text-amber-400 border border-amber-500/40 font-bold py-3 rounded-2xl text-xs flex items-center justify-center gap-2">
-          <i class="fa-solid fa-chart-line text-sm"></i> Send 7-Day Weekly Summary to Coach 📊
-        </button>
-      </div>
-
-    </main>
+    </div>
   </div>
 
-  <!-- Modal: Add New Client -->
-  <div id="admModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="card-dark w-full max-w-sm p-4 rounded-2xl space-y-2.5 text-xs">
-      <div class="flex justify-between items-center border-b border-gray-800 pb-2">
-        <h3 class="font-bold text-amber-500">Add New Client (30-Day Free Trial)</h3>
-        <button onclick="closeModal()"><i class="fa-solid fa-xmark text-gray-400 text-sm"></i></button>
+  <!-- Modal: Add New Client (Admin) -->
+  <div id="admModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm p-4 rounded-3xl space-y-2.5 text-xs shadow-xl border border-slate-200">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+        <h3 class="font-bold text-slate-800">Add New Client (30-Day Free Access)</h3>
+        <button onclick="closeModal()"><i class="fa-solid fa-xmark text-slate-400 text-sm"></i></button>
       </div>
-      <div><label class="text-[10px] text-gray-400">Full Name</label><input type="text" id="mName" class="w-full bg-[#0d0e14] border border-[#272a3b] p-2 rounded-lg text-white mt-0.5"></div>
-      <div><label class="text-[10px] text-gray-400">WhatsApp Phone (with Country Code e.g. 919081421028)</label><input type="text" id="mPhone" class="w-full bg-[#0d0e14] border border-[#272a3b] p-2 rounded-lg text-white mt-0.5"></div>
+      <div><label class="text-[10px] text-slate-500">Full Name</label><input type="text" id="mName" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
+      <div><label class="text-[10px] text-slate-500">WhatsApp Phone (e.g. 919081421028)</label><input type="text" id="mPhone" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5"></div>
       <div>
-        <label class="text-[10px] text-gray-400">Health Category & Goal</label>
-        <select id="mGoal" class="w-full bg-[#0d0e14] border border-[#272a3b] p-2 rounded-lg text-white mt-0.5">
+        <label class="text-[10px] text-slate-500">Health Category & Goal</label>
+        <select id="mGoal" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5">
           <option value="Type 2 Diabetes Reversal">🩺 Type 2 Diabetes Reversal</option>
           <option value="Fatty Liver Detox">🥒 Fatty Liver Detox</option>
-          <option value="Gym & High Protein Performance">🏋️ Gym & High Protein Performance</option>
-          <option value="Pregnancy Nutrition (Pre-Natal)">🤰 Pregnancy Nutrition (Pre-Natal)</option>
-          <option value="Postpartum & Lactation Recovery">👶 Postpartum & Lactation Recovery</option>
-          <option value="Menopause & Hormonal Balance">🌸 Menopause & Hormonal Balance</option>
-          <option value="Longevity & Gut Health">🌿 Longevity & Gut Health</option>
+          <option value="Gym & High Protein">🏋️ Gym & High Protein</option>
+          <option value="Pregnancy Nutrition">🤰 Pregnancy Nutrition</option>
+          <option value="Postpartum Recovery">👶 Postpartum Recovery</option>
+          <option value="Menopause Care">🌸 Menopause Care</option>
+          <option value="Longevity & Energy">🌿 Longevity & Energy</option>
         </select>
       </div>
       <div>
-        <label class="text-[10px] text-gray-400">Dietary Preference</label>
-        <select id="mDiet" class="w-full bg-[#0d0e14] border border-[#272a3b] p-2 rounded-lg text-white mt-0.5">
-          <option value="veg">🌱 Vegetarian (100% Plant & Dairy)</option>
-          <option value="nonveg">🍗 Non-Vegetarian (Eggs, Chicken, Fish)</option>
-        </select>
-      </div>
-      <div>
-        <label class="text-[10px] text-gray-400">Subscription Tier</label>
-        <select id="mTier" class="w-full bg-[#0d0e14] border border-[#272a3b] p-2 rounded-lg text-white mt-0.5">
-          <option value="trial">🎁 30-Day Free Trial (Active)</option>
-          <option value="pro">⭐ PRO Member (Paid)</option>
-          <option value="ultra">👑 Ultra Pro VIP Member (Paid)</option>
+        <label class="text-[10px] text-slate-500">Dietary Preference</label>
+        <select id="mDiet" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-lg text-slate-800 mt-0.5">
+          <option value="veg">🌱 Vegetarian</option>
+          <option value="nonveg">🍗 Non-Vegetarian</option>
         </select>
       </div>
       <div class="flex gap-2 pt-2">
-        <button onclick="closeModal()" class="flex-1 bg-gray-800 text-gray-300 py-2 rounded-xl">Cancel</button>
-        <button onclick="addNewClient()" class="flex-1 gold-gradient text-black font-bold py-2 rounded-xl">Save Client</button>
+        <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl">Cancel</button>
+        <button onclick="addNewClient()" class="flex-1 bg-teal-600 text-white font-bold py-2 rounded-xl">Save Client</button>
       </div>
     </div>
   </div>
 
   <!-- Modal: Ingredient Customizer & Seasonal Substitutes -->
-  <div id="ingredientCustomizerModal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-3.5">
-    <div class="card-dark w-full max-w-md p-4 rounded-2xl space-y-3 text-xs max-h-[85vh] flex flex-col">
-      <div class="flex justify-between items-center border-b border-gray-800 pb-2">
+  <div id="ingredientCustomizerModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3.5">
+    <div class="bg-white w-full max-w-md p-4 rounded-3xl space-y-3 text-xs max-h-[85vh] flex flex-col shadow-2xl border border-slate-200">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-2">
         <div>
-          <h3 class="font-bold text-amber-400 text-sm flex items-center gap-1.5" id="cstModalTitle">
-            <i class="fa-solid fa-kitchen-set"></i> Customize Ingredients
+          <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5" id="cstModalTitle">
+            <i class="fa-solid fa-kitchen-set text-teal-600"></i> Customize Ingredients
           </h3>
-          <p class="text-[10px] text-gray-400">Skip seasonal items & pick approved substitutes</p>
+          <p class="text-[10px] text-slate-400">Skip unavailable items & pick seasonal substitutes</p>
         </div>
-        <button onclick="closeCustomizer()"><i class="fa-solid fa-xmark text-gray-400 text-base"></i></button>
+        <button onclick="closeCustomizer()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
       </div>
 
       <!-- Current Formula Tags -->
-      <div class="bg-[#0b0c10] p-3 rounded-xl border border-amber-500/30 space-y-1.5">
+      <div class="bg-slate-50 p-3 rounded-2xl border border-teal-200 space-y-1.5">
         <div class="flex justify-between items-center">
-          <span class="text-[10px] text-amber-400 font-bold uppercase tracking-wider">Your Plate Today (તમારી થાળી):</span>
-          <button onclick="resetCustomizerToIdeal()" class="text-[10px] text-emerald-400 hover:underline">Reset to Standard</button>
+          <span class="text-[10px] text-teal-800 font-extrabold uppercase tracking-wider">Your Plate Today:</span>
+          <button onclick="resetCustomizerToIdeal()" class="text-[10px] text-teal-600 hover:underline">Reset</button>
         </div>
         <div id="cstActiveTags" class="flex flex-wrap gap-1.5 min-h-[36px] items-center"></div>
       </div>
 
       <!-- Approved Substitutes -->
       <div class="space-y-1.5 flex-1 overflow-y-auto pr-1">
-        <span class="text-[10px] text-gray-400 font-semibold">Available Clinical & Seasonal Substitutes:</span>
+        <span class="text-[10px] text-slate-600 font-bold">Approved Clinical Substitutes:</span>
         <div class="flex flex-wrap gap-1.5" id="cstSubstitutesContainer"></div>
       </div>
 
-      <div class="pt-2 border-t border-gray-800 flex gap-2">
-        <button onclick="closeCustomizer()" class="flex-1 bg-gray-800 text-gray-300 font-bold py-2.5 rounded-xl">Cancel</button>
-        <button onclick="applyCustomizerTags()" class="flex-1 gold-gradient text-black font-bold py-2.5 rounded-xl shadow">Apply Changes ✅</button>
+      <div class="pt-2 border-t border-slate-100 flex gap-2">
+        <button onclick="closeCustomizer()" class="flex-1 bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl">Cancel</button>
+        <button onclick="applyCustomizerTags()" class="flex-1 brand-gradient text-white font-bold py-2.5 rounded-xl shadow">Apply Changes ✅</button>
       </div>
     </div>
   </div>
 
   <!-- Modal: Viral Growth & Extend Trial -->
-  <div id="modalGrowth" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="card-dark w-full max-w-sm p-4 rounded-2xl space-y-3 text-xs">
-      <div class="flex justify-between items-center border-b border-gray-800 pb-2">
-        <h3 class="font-bold text-amber-400 text-sm flex items-center gap-1.5"><i class="fa-solid fa-gift"></i> Unlock Extra 30 Days Free!</h3>
-        <button onclick="closeGrowthModal()"><i class="fa-solid fa-xmark text-gray-400 text-base"></i></button>
+  <div id="modalGrowth" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm p-4 rounded-3xl space-y-3 text-xs shadow-xl border border-slate-200">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-gift text-teal-600"></i> Unlock +30 Days Free!</h3>
+        <button onclick="closeGrowthModal()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
       </div>
 
       <div class="space-y-2">
-        <div class="bg-[#0b0c10] p-3 rounded-xl border border-gray-800 space-y-1.5">
-          <div class="font-bold text-white flex items-center gap-1.5"><i class="fa-solid fa-user-plus text-emerald-400"></i> 1. Invite Friends & Family</div>
-          <p class="text-[11px] text-gray-400">Invite a friend with diabetes, fatty liver or gym goals. When they join, you both get +30 days free access!</p>
-          <button onclick="shareReferralWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-[11px] flex items-center justify-center gap-1.5 shadow mt-1">
+        <div class="bg-teal-50/60 p-3 rounded-2xl border border-teal-200 space-y-1.5">
+          <div class="font-bold text-teal-900 flex items-center gap-1.5"><i class="fa-solid fa-user-plus text-teal-600"></i> 1. Invite Friends & Family</div>
+          <p class="text-[11px] text-slate-600">Share your referral link with anyone with diabetes, liver, or gym goals. When they join, you both unlock +30 days completely free!</p>
+          <button onclick="shareReferralWhatsApp()" class="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold py-2 rounded-xl text-[11px] flex items-center justify-center gap-1.5 shadow mt-1">
             <i class="fa-brands fa-whatsapp text-sm"></i> Share Referral Link on WhatsApp
           </button>
         </div>
 
-        <div class="bg-[#0b0c10] p-3 rounded-xl border border-gray-800 space-y-1">
-          <div class="font-bold text-white flex items-center gap-1.5"><i class="fa-solid fa-fire text-amber-500"></i> 2. 21-Day Habit Streak</div>
-          <p class="text-[11px] text-gray-400">Log your meals and walk consistently for 21 days to automatically unlock another full month for free.</p>
+        <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-1">
+          <div class="font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-fire text-amber-500"></i> 2. 21-Day Habit Streak</div>
+          <p class="text-[11px] text-slate-500">Track your meals and walk consistently for 21 days to automatically unlock another full month for free.</p>
         </div>
       </div>
 
-      <button onclick="closeGrowthModal()" class="w-full bg-gray-800 text-gray-300 font-bold py-2 rounded-xl">Close</button>
+      <button onclick="closeGrowthModal()" class="w-full bg-slate-100 text-slate-700 font-bold py-2 rounded-xl">Close</button>
     </div>
   </div>
 
-  <!-- Modal: Support, Complaints & Suggestions -->
-  <div id="modalFeedback" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="card-dark w-full max-w-sm p-4 rounded-2xl space-y-3 text-xs">
-      <div class="flex justify-between items-center border-b border-gray-800 pb-2">
-        <h3 class="font-bold text-amber-400 text-sm flex items-center gap-1.5"><i class="fa-solid fa-headset"></i> Support & Suggestions</h3>
-        <button onclick="closeFeedbackModal()"><i class="fa-solid fa-xmark text-gray-400 text-base"></i></button>
+  <!-- Modal: Support & Feedback -->
+  <div id="modalFeedback" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm p-4 rounded-3xl space-y-3 text-xs shadow-xl border border-slate-200">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+        <h3 class="font-bold text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-headset text-teal-600"></i> Help & Feedback</h3>
+        <button onclick="closeFeedbackModal()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
       </div>
 
       <div class="space-y-2">
         <div>
-          <label class="text-[10px] text-gray-400 font-semibold">Category:</label>
-          <select id="fbCategory" class="w-full bg-[#0d0e14] border border-[#272a3b] p-2 rounded-xl text-white mt-0.5">
+          <label class="text-[10px] text-slate-500 font-semibold">Category:</label>
+          <select id="fbCategory" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-xl text-slate-800 mt-0.5">
             <option value="Food & Seasonal Recipe Suggestion">💡 Food / Recipe Suggestion</option>
             <option value="Diet / Health Question">❓ Diet & Health Query</option>
             <option value="App Bug or Glitch">⚠️ Report an Issue / Glitch</option>
@@ -370,14 +496,14 @@
         </div>
 
         <div>
-          <label class="text-[10px] text-gray-400 font-semibold">Your Message:</label>
-          <textarea id="fbMessage" rows="3" class="w-full bg-[#0d0e14] border border-[#272a3b] p-2 rounded-xl text-white mt-0.5 placeholder-gray-500" placeholder="Type your suggestion or issue here..."></textarea>
+          <label class="text-[10px] text-slate-500 font-semibold">Your Message:</label>
+          <textarea id="fbMessage" rows="3" class="w-full bg-slate-50 border border-slate-300 p-2 rounded-xl text-slate-800 mt-0.5 placeholder-slate-400" placeholder="Type your suggestion or issue here..."></textarea>
         </div>
       </div>
 
       <div class="flex gap-2 pt-1">
-        <button onclick="closeFeedbackModal()" class="flex-1 bg-gray-800 text-gray-300 py-2 rounded-xl font-bold">Cancel</button>
-        <button onclick="sendFeedbackWhatsApp()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl flex items-center justify-center gap-1 shadow">
+        <button onclick="closeFeedbackModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl font-bold">Cancel</button>
+        <button onclick="sendFeedbackWhatsApp()" class="flex-1 bg-teal-600 hover:bg-teal-500 text-white font-bold py-2 rounded-xl flex items-center justify-center gap-1 shadow">
           <i class="fa-brands fa-whatsapp"></i> Submit 📲
         </button>
       </div>
@@ -441,19 +567,21 @@
       ]
     };
 
-    let clients = JSON.parse(localStorage.getItem('met_pro_clients_v9')) || [
+    // Client Directory Store
+    let clients = JSON.parse(localStorage.getItem('met_pro_clients_fresh_v10')) || [
       {
         id: "CL-101",
         name: "Piyush Nathvani",
         phone: "919081421028",
+        pin: "1028",
         goal: "Type 2 Diabetes Reversal",
         diet: "veg",
         tier: "trial",
-        trialDays: 28,
+        trialDays: 29,
         status: "ACTIVE",
         weeklyPlan: {
           mon: {
-            morning: "Ash Gourd (સફેદ પેઠા) + Coriander Leaves + Raw Turmeric (લીલી હળદર) + Fresh Ginger (આદુ)",
+            morning: "Ash Gourd + Coriander + Raw Turmeric + Fresh Ginger",
             breakfast: "Moong Dal Chila (મગદાળ પુડલા) + Fresh Cow Paneer 30g + Raw Cucumber & Tomato Salad",
             lunch: "1 Big Bowl Raw Salad Barrier + 1 Super Flour Multi-Millet Roti + Palak Paneer + 1 Glass Thin Buttermilk / Chaas",
             snack: "1 Bowl Spiced Guava (મસાલા જામફળ) + Roasted Pumpkin Seeds (કોળાના બી)",
@@ -467,7 +595,8 @@
         id: "CL-102",
         name: "Vikram Shah (Athlete)",
         phone: "919876543210",
-        goal: "Gym & High Protein Performance",
+        pin: "3210",
+        goal: "Gym & High Protein",
         diet: "nonveg",
         tier: "trial",
         trialDays: 25,
@@ -476,7 +605,7 @@
           mon: {
             morning: "Warm Lemon-Salt Electrolyte Water + Soaked Almonds & Walnuts + 1 Banana",
             breakfast: "3 Boiled Egg Whites (બાફેલા ઈંડા) + Steamed Moong Chaat + Fresh Thick Curd",
-            lunch: "1 Big Bowl Raw Salad Barrier + 2 Super Flour Multi-Millet Rotis + Grilled Chicken Breast (૧૦૦ ગ્રામ) + 1 Glass Thin Buttermilk / Chaas",
+            lunch: "1 Big Bowl Raw Salad Barrier + 2 Super Flour Multi-Millet Rotis + Grilled Chicken Breast + 1 Glass Thin Buttermilk / Chaas",
             snack: "Roasted Makhana + Roasted Pumpkin Seeds + 1 Boiled Egg with Black Pepper",
             dinner: "Clear Chicken & Vegetable Soup + Grilled Chicken Breast with Sauteed Veggies",
             rule: "45-min Strength Workout + 3.5 Liters Daily Water Target + Digital Detox 1 hr before bed"
@@ -489,17 +618,26 @@
     let activeClientId = clients[0]?.id || "CL-101";
     let activeDay = "mon";
 
+    // Detect actual day of week
     const currentDayIndex = new Date().getDay();
     const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
     let clientViewDay = dayMap[currentDayIndex] || 'mon';
 
+    // Customizer State
     let cstActiveSlot = 'morning';
     let cstActiveTags = [];
     let cstIdealString = '';
 
+    // --- INITIALIZATION ---
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const payload = urlParams.get('data');
+      const ref = urlParams.get('ref');
+
+      // Auto fill referral code if present
+      if (ref) {
+        document.getElementById('regRefCode').value = ref;
+      }
 
       if (payload) {
         try {
@@ -510,16 +648,137 @@
           }
           openClientPortalById(decoded.id);
         } catch(e) {
-          initAdmin();
+          showAuthView();
         }
       } else {
-        initAdmin();
+        // By default, show crisp Client Landing / Login Screen
+        showAuthView();
       }
     });
 
-    function initAdmin() {
-      document.getElementById('adminView').classList.remove('hidden');
+    function showAuthView() {
+      document.getElementById('authView').classList.remove('hidden');
       document.getElementById('clientPortalView').classList.add('hidden');
+      document.getElementById('adminView').classList.add('hidden');
+    }
+
+    function setAuthTab(tab) {
+      if (tab === 'register') {
+        document.getElementById('formRegister').classList.remove('hidden');
+        document.getElementById('formLogin').classList.add('hidden');
+        document.getElementById('tabRegister').className = "flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold";
+        document.getElementById('tabLogin').className = "flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold";
+      } else {
+        document.getElementById('formLogin').classList.remove('hidden');
+        document.getElementById('formRegister').classList.add('hidden');
+        document.getElementById('tabLogin').className = "flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold";
+        document.getElementById('tabRegister').className = "flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold";
+      }
+    }
+
+    function handleClientRegister() {
+      const name = document.getElementById('regName').value.trim();
+      const phone = document.getElementById('regPhone').value.trim();
+      const diet = document.getElementById('regDiet').value;
+      const goal = document.getElementById('regGoal').value;
+      const refCode = document.getElementById('regRefCode').value.trim().toUpperCase();
+
+      if (!name || !phone) {
+        return alert('Please enter your full name and WhatsApp mobile number.');
+      }
+
+      const cleanPhone = phone.replace(/\D/g, '');
+      const pin = cleanPhone.slice(-4) || '1234';
+      const newId = "CL-" + (100 + clients.length + 1);
+
+      // Check referral bonus
+      if (refCode) {
+        const referrer = clients.find(c => c.id === refCode);
+        if (referrer) {
+          referrer.trialDays = (referrer.trialDays || 30) + 30;
+        }
+      }
+
+      const newClient = {
+        id: newId,
+        name: name,
+        phone: cleanPhone,
+        pin: pin,
+        goal: goal,
+        diet: diet,
+        tier: 'trial',
+        trialDays: 30,
+        status: 'ACTIVE',
+        weeklyPlan: {
+          mon: {
+            morning: "Ash Gourd + Coriander + Raw Turmeric + Fresh Ginger",
+            breakfast: diet === 'nonveg' ? "3 Boiled Egg Whites + Moong Chaat" : "Moong Dal Chila + Fresh Paneer 30g + Salad",
+            lunch: diet === 'nonveg' ? "Salad + 1 Super Flour Roti + Grilled Chicken + Chaas" : "1 Big Bowl Raw Salad + 1 Super Flour Roti + Sabzi + Chaas",
+            snack: "1 Bowl Spiced Guava + Roasted Pumpkin Seeds",
+            dinner: diet === 'nonveg' ? "Clear Chicken Soup + Sauteed Greens" : "Creamy Pumpkin Soup + Sauteed Veggies + Paneer",
+            rule: "Post-Meal 15-min walk + Elevate legs on pillows for 15-20 min"
+          }
+        },
+        compliance: {}
+      };
+
+      clients.unshift(newClient);
+      localStorage.setItem('met_pro_clients_fresh_v10', JSON.stringify(clients));
+
+      alert(`🎉 Welcome ${name}! Your 30-Day Free Trial is activated. (Your PIN is: ${pin})`);
+      openClientPortalById(newId);
+    }
+
+    function handleClientLogin() {
+      const input = document.getElementById('loginId').value.trim();
+      const pin = document.getElementById('loginPin').value.trim();
+
+      if (!input) return alert('Please enter your WhatsApp Number or Client ID.');
+
+      const client = clients.find(c => 
+        c.phone.endsWith(input.replace(/\D/g, '')) || 
+        c.id.toLowerCase() === input.toLowerCase()
+      );
+
+      if (!client) {
+        return alert('Client not found. Please register for a free 30-day trial.');
+      }
+
+      if (pin && client.pin && pin !== client.pin) {
+        return alert('Incorrect 4-digit PIN. (Hint: last 4 digits of your phone)');
+      }
+
+      openClientPortalById(client.id);
+    }
+
+    function logoutToAuth() {
+      window.history.pushState({}, document.title, window.location.pathname);
+      showAuthView();
+    }
+
+    function openAdminPinModal() {
+      document.getElementById('inAdminPin').value = '';
+      document.getElementById('modalAdminPin').classList.remove('hidden');
+    }
+
+    function closeAdminPinModal() {
+      document.getElementById('modalAdminPin').classList.add('hidden');
+    }
+
+    function verifyAdminPin() {
+      const pin = document.getElementById('inAdminPin').value.trim();
+      if (pin === '1234') { // Default Master Admin PIN
+        closeAdminPinModal();
+        openAdminCRM();
+      } else {
+        alert('Invalid Security PIN.');
+      }
+    }
+
+    function openAdminCRM() {
+      document.getElementById('authView').classList.add('hidden');
+      document.getElementById('clientPortalView').classList.add('hidden');
+      document.getElementById('adminView').classList.remove('hidden');
       renderAdminClients();
       setupAdminDayTabs();
       loadPlannerClientData(activeClientId);
@@ -528,53 +787,47 @@
     function setAdminTab(tab) {
       ['clients', 'planner', 'lab'].forEach(t => {
         document.getElementById('aview-' + t).classList.add('hidden');
-        document.getElementById('atab-' + t).className = "px-3.5 py-2 rounded-xl text-gray-400 bg-[#151722] flex items-center gap-1.5 whitespace-nowrap";
+        document.getElementById('atab-' + t).className = "px-3.5 py-2 rounded-xl text-slate-600 bg-slate-100 flex items-center gap-1.5 whitespace-nowrap";
       });
       document.getElementById('aview-' + tab).classList.remove('hidden');
       document.getElementById('atab-' + tab).className = "tab-active px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap shadow";
     }
 
     function renderAdminClients() {
-      localStorage.setItem('met_pro_clients_v9', JSON.stringify(clients));
+      localStorage.setItem('met_pro_clients_fresh_v10', JSON.stringify(clients));
       document.getElementById('admTotal').innerText = clients.length;
       document.getElementById('admClinical').innerText = clients.filter(c => c.goal.includes('Diabetes') || c.goal.includes('Liver')).length;
-      document.getElementById('admFitness').innerText = clients.filter(c => c.goal.includes('Gym') || c.goal.includes('Longevity')).length;
+      document.getElementById('admFitness').innerText = clients.filter(c => c.goal.includes('Gym') || c.goal.includes('Energy')).length;
       document.getElementById('admTrialActive').innerText = clients.filter(c => c.tier === 'trial').length;
 
       const container = document.getElementById('admClientsList');
       container.innerHTML = '';
       clients.forEach(c => {
-        let badgeColor = "bg-amber-950 text-amber-400 border-amber-800";
-        let icon = "🩺";
-        if(c.goal.includes('Gym')) { badgeColor = "bg-cyan-950 text-cyan-400 border-cyan-800"; icon = "🏋️"; }
-        else if(c.goal.includes('Pregnancy')) { badgeColor = "bg-pink-950 text-pink-400 border-pink-800"; icon = "🤰"; }
-        else if(c.goal.includes('Menopause')) { badgeColor = "bg-purple-950 text-purple-400 border-purple-800"; icon = "🌸"; }
-
         const card = document.createElement('div');
-        card.className = "card-dark p-3.5 rounded-2xl space-y-2.5";
+        card.className = "card-clean p-3.5 rounded-2xl space-y-2 border border-slate-200";
         card.innerHTML = `
           <div class="flex justify-between items-center">
             <div class="flex items-center gap-1.5">
-              <span class="text-[10px] font-black px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">#${c.id}</span>
-              <span class="text-[9px] font-bold px-2 py-0.5 rounded border ${badgeColor}">${icon} ${c.goal}</span>
-              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-gray-800 text-gray-300 border border-gray-700">${c.diet==='nonveg'?'🍗 Non-Veg':'🌱 Veg'}</span>
+              <span class="text-[10px] font-black px-2 py-0.5 rounded bg-slate-900 text-white">#${c.id}</span>
+              <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">${c.goal}</span>
+              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">${c.diet==='nonveg'?'🍗 Non-Veg':'🌱 Veg'}</span>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="openPlannerFor('${c.id}')" class="text-xs text-amber-400 font-bold hover:underline"><i class="fa-solid fa-pen-to-square"></i> Protocol</button>
-              <button onclick="deleteClient('${c.id}')" class="text-gray-500 hover:text-red-400 text-xs"><i class="fa-solid fa-trash-can"></i></button>
+              <button onclick="openPlannerFor('${c.id}')" class="text-xs text-teal-700 font-bold hover:underline"><i class="fa-solid fa-pen-to-square"></i> Protocol</button>
+              <button onclick="deleteClient('${c.id}')" class="text-slate-400 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash-can"></i></button>
             </div>
           </div>
           <div class="flex justify-between items-center">
             <div>
-              <h3 class="font-bold text-white text-sm">${c.name}</h3>
-              <p class="text-[11px] text-gray-400">${c.phone} | <span class="text-emerald-400">${c.tier==='trial'? (c.trialDays||28) + 'd Trial': c.tier.toUpperCase()}</span></p>
+              <h3 class="font-bold text-slate-900 text-sm">${c.name}</h3>
+              <p class="text-[11px] text-slate-500">${c.phone} | <span class="text-teal-700 font-bold">${c.trialDays || 30}d Access (PIN: ${c.pin||'1234'})</span></p>
             </div>
             <div class="flex flex-col gap-1.5">
-              <button onclick="previewClientPortal('${c.id}')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-2.5 py-1 rounded-xl text-[10px] flex items-center justify-center gap-1 shadow">
-                <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Portal
+              <button onclick="previewClientPortal('${c.id}')" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-2.5 py-1 rounded-xl text-[10px] flex items-center justify-center gap-1 shadow-xs">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> Portal
               </button>
-              <button onclick="sendPortalLinkToClient('${c.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-2.5 py-1 rounded-xl text-[10px] flex items-center justify-center gap-1 shadow">
-                <i class="fa-brands fa-whatsapp"></i> WhatsApp Link 📲
+              <button onclick="sendPortalLinkToClient('${c.id}')" class="bg-teal-600 hover:bg-teal-500 text-white font-bold px-2.5 py-1 rounded-xl text-[10px] flex items-center justify-center gap-1 shadow-xs">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp 📲
               </button>
             </div>
           </div>
@@ -599,8 +852,8 @@
         const btn = document.createElement('button');
         btn.id = 'admtab-' + d.id;
         btn.className = (d.id === activeDay) 
-          ? "px-2.5 py-1.5 rounded-lg bg-amber-500 text-black font-bold whitespace-nowrap shadow" 
-          : "px-2.5 py-1.5 rounded-lg bg-[#151722] text-gray-400 hover:text-white whitespace-nowrap border border-gray-800";
+          ? "px-2.5 py-1.5 rounded-lg bg-teal-600 text-white font-bold whitespace-nowrap shadow" 
+          : "px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap border border-slate-200";
         btn.innerText = d.short;
         btn.onclick = () => selectAdminDay(d.id);
         container.appendChild(btn);
@@ -662,7 +915,7 @@
         dinner: document.getElementById('admDinner').value.trim(),
         rule: document.getElementById('admRule').value.trim()
       };
-      localStorage.setItem('met_pro_clients_v9', JSON.stringify(clients));
+      localStorage.setItem('met_pro_clients_fresh_v10', JSON.stringify(clients));
       alert(`✅ ${DAYS.find(x=>x.id===activeDay).name} protocol saved!`);
     }
 
@@ -679,17 +932,16 @@
       const portalUrl = generatePortalUrl(c);
 
       const msg = `Hello ${c.name},
-Your personalized "Metabolic Pro" Interactive Health Portal is live!
+Your personalized "Metabolic Pro" Clinical Health Portal is now live!
 
-👉 Open Your Personal App:
+👉 Open Your Health App:
 ${portalUrl}
 
-✨ Key Highlights:
-• 30-Day Free Access to Full Protocol.
-• Daily Morning-to-Night Check-in with 1-Touch Done/Partial.
-• Interactive Ingredient Customizer (Skip seasonal items easily).
-• Instant Veg / Non-Veg Adaptor.
-• 1-Click WhatsApp Sync for Daily Updates or Full Weekly Summary.`;
+✨ Access Highlights:
+• 30-Day Free Clinical Access.
+• 1-Touch Done/Partial/Missed Meal Log.
+• Custom Ingredients with Seasonal Substitutes.
+• WhatsApp Progress Sync with your coach.`;
 
       window.open(`https://wa.me/${c.phone}?text=${encodeURIComponent(msg)}`, '_blank');
     }
@@ -704,6 +956,7 @@ ${portalUrl}
       if(!c) return;
       activeClientId = c.id;
 
+      document.getElementById('authView').classList.add('hidden');
       document.getElementById('adminView').classList.add('hidden');
       document.getElementById('clientPortalView').classList.remove('hidden');
 
@@ -717,27 +970,22 @@ ${portalUrl}
       document.getElementById('cpClientSub').innerText = `${c.goal} (${c.diet === 'nonveg' ? '🍗 Non-Veg' : '🌱 Veg'})`;
       document.getElementById('cpGoalSelector').value = c.goal;
 
-      const isTrial = c.tier === 'trial' || !c.tier;
-      document.getElementById('cpTierBadge').innerText = isTrial ? "30-Day Free Trial" : (c.tier.toUpperCase() + " VIP");
-      document.getElementById('cpTrialDaysLeft').innerText = isTrial ? `${c.trialDays || 28} Days Left` : "Active Member";
+      // Tier & Trial Display
+      document.getElementById('cpTierBadge').innerText = "30-Day Free Trial";
+      document.getElementById('cpTrialDaysLeft').innerText = `${c.trialDays || 29} Days Left`;
 
       updateDietSwitcherUI(c.diet || 'veg');
       renderClientDayButtons();
       loadTodayClientView();
     }
 
-    function exitToAdmin() {
-      window.history.pushState({}, document.title, window.location.pathname);
-      initAdmin();
-    }
-
     function updateDietSwitcherUI(diet) {
       if(diet === 'nonveg') {
-        document.getElementById('btnDietNonVeg').className = "px-2.5 py-1 rounded-lg text-[10px] font-bold transition chip-active";
-        document.getElementById('btnDietVeg').className = "px-2.5 py-1 rounded-lg text-[10px] font-bold transition chip-inactive";
+        document.getElementById('btnDietNonVeg').className = "px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition chip-active";
+        document.getElementById('btnDietVeg').className = "px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition chip-inactive";
       } else {
-        document.getElementById('btnDietVeg').className = "px-2.5 py-1 rounded-lg text-[10px] font-bold transition chip-active";
-        document.getElementById('btnDietNonVeg').className = "px-2.5 py-1 rounded-lg text-[10px] font-bold transition chip-inactive";
+        document.getElementById('btnDietVeg').className = "px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition chip-active";
+        document.getElementById('btnDietNonVeg').className = "px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition chip-inactive";
       }
     }
 
@@ -746,7 +994,7 @@ ${portalUrl}
       if(!c) return;
       c.diet = diet;
       updateDietSwitcherUI(diet);
-      localStorage.setItem('met_pro_clients_v9', JSON.stringify(clients));
+      localStorage.setItem('met_pro_clients_fresh_v10', JSON.stringify(clients));
       loadTodayClientView();
     }
 
@@ -755,7 +1003,7 @@ ${portalUrl}
       if(!c) return;
       c.goal = newGoal;
       document.getElementById('cpClientSub').innerText = `${c.goal} (${c.diet === 'nonveg' ? '🍗 Non-Veg' : '🌱 Veg'})`;
-      localStorage.setItem('met_pro_clients_v9', JSON.stringify(clients));
+      localStorage.setItem('met_pro_clients_fresh_v10', JSON.stringify(clients));
       loadTodayClientView();
     }
 
@@ -766,8 +1014,8 @@ ${portalUrl}
         const isCurrent = d.id === clientViewDay;
         const btn = document.createElement('button');
         btn.className = isCurrent 
-          ? "py-2.5 rounded-xl bg-amber-500 text-black font-extrabold text-xs shadow-md shadow-amber-500/20" 
-          : "py-2.5 rounded-xl bg-[#141620] text-gray-400 font-bold text-xs border border-gray-800 hover:text-white";
+          ? "py-2 rounded-xl bg-teal-600 text-white font-extrabold text-xs shadow-sm" 
+          : "py-2 rounded-xl bg-white text-slate-600 font-bold text-xs border border-slate-200 hover:bg-slate-50";
         btn.innerText = d.short;
         btn.onclick = () => {
           clientViewDay = d.id;
@@ -798,7 +1046,7 @@ ${portalUrl}
       const slots = [
         { key: 'morning', time: 'Early Morning (ખાલી પેટે)', label: '1. Alkaline Detox Infusion', icon: '🥒', defaultText: plan.morning || "Ash Gourd + Coriander + Raw Turmeric + Fresh Ginger" },
         { key: 'breakfast', time: 'Morning Breakfast (નાસ્તો)', label: '2. Breakfast & Protein Charge', icon: '🥗', defaultText: plan.breakfast || (c.diet==='nonveg'?"3 Boiled Egg Whites + Moong Chaat":"Moong Dal Chila + Fresh Paneer 30g + Salad") },
-        { key: 'lunch', time: 'Afternoon Lunch (બપોરનું ભોજન)', label: '3. Glycemic Barrier Lunch Plate', icon: '🫓', defaultText: plan.lunch || (c.diet==='nonveg'?"Salad + 1 Super Flour Roti + Grilled Chicken / Fish + Chaas":"1 Big Salad Bowl + 1 Super Flour Roti + Sabzi + Chaas") },
+        { key: 'lunch', time: 'Afternoon Lunch (બપોરનું ભોજન)', label: '3. Glycemic Barrier Lunch Plate', icon: '🫓', defaultText: plan.lunch || (c.diet==='nonveg'?"Salad + 1 Super Flour Roti + Grilled Chicken + Chaas":"1 Big Salad Bowl + 1 Super Flour Roti + Sabzi + Chaas") },
         { key: 'snack', time: 'Evening Snack (સાંજે ૪-૫ વાગ્યે)', label: '4. Anti-Craving Evening Fuel', icon: '🍈', defaultText: plan.snack || "1 Bowl Spiced Guava + Roasted Pumpkin Seeds" },
         { key: 'dinner', time: 'Night Dinner (રાત્રે ૮:૩૦ પહેલાં)', label: '5. Restorative Dinner & Sleep Fuel', icon: '🍲', defaultText: plan.dinner || (c.diet==='nonveg'?"Clear Chicken Soup + Sauteed Greens":"Creamy Pumpkin Soup + Sauteed Veggies + Paneer") },
         { key: 'rule', time: 'Night Routine (સૂતી વખતે)', label: '6. Circadian Habits & Leg Elevation', icon: '🌙', defaultText: plan.rule || "Post-Meal 15-min walk + Elevate legs on pillows for 15-20 min" }
@@ -812,30 +1060,30 @@ ${portalUrl}
         const activeText = comp.customMeals?.[s.key] || s.defaultText;
 
         const card = document.createElement('div');
-        card.className = "card-dark p-3.5 rounded-2xl space-y-2.5";
+        card.className = "card-clean p-3.5 rounded-2xl space-y-2 border border-slate-200";
         card.innerHTML = `
           <div class="flex justify-between items-start">
             <div>
-              <span class="text-[9px] font-bold text-gray-500 uppercase tracking-wider">${s.time}</span>
-              <h3 class="text-xs font-bold text-amber-400 flex items-center gap-1.5">${s.icon} ${s.label}</h3>
+              <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">${s.time}</span>
+              <h3 class="text-xs font-bold text-slate-900 flex items-center gap-1.5">${s.icon} ${s.label}</h3>
             </div>
-            <button onclick="openCustomizer('${s.key}', '${activeText.replace(/'/g, "\\'")}', '${s.defaultText.replace(/'/g, "\\'")}')" class="text-[10px] text-emerald-400 font-bold bg-emerald-950/70 border border-emerald-800 px-2.5 py-1 rounded-xl flex items-center gap-1 hover:bg-emerald-900">
+            <button onclick="openCustomizer('${s.key}', '${activeText.replace(/'/g, "\\'")}', '${s.defaultText.replace(/'/g, "\\'")}')" class="text-[10px] text-teal-700 font-bold bg-teal-50 border border-teal-200 px-2.5 py-1 rounded-xl flex items-center gap-1 hover:bg-teal-100">
               <i class="fa-solid fa-pen-to-square"></i> Customize / Skip
             </button>
           </div>
 
-          <div class="bg-[#0b0c10] p-2.5 rounded-xl border border-gray-800 text-xs text-white leading-relaxed">
+          <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 leading-relaxed font-medium">
             ${activeText}
           </div>
 
           <div class="grid grid-cols-3 gap-1.5 pt-0.5">
-            <button onclick="setClientCheck('${s.key}', 'done')" class="py-2 px-2 rounded-xl text-xs flex items-center justify-center gap-1 border transition ${currentCheck === 'done' ? 'btn-done-active' : 'btn-state-idle'}">
+            <button onclick="setClientCheck('${s.key}', 'done')" class="py-2 px-2 rounded-xl text-xs flex items-center justify-center gap-1 border transition ${currentCheck === 'done' ? 'btn-done-active' : 'btn-idle'}">
               <i class="fa-solid fa-check"></i> Done
             </button>
-            <button onclick="setClientCheck('${s.key}', 'half')" class="py-2 px-2 rounded-xl text-xs flex items-center justify-center gap-1 border transition ${currentCheck === 'half' ? 'btn-half-active' : 'btn-state-idle'}">
+            <button onclick="setClientCheck('${s.key}', 'half')" class="py-2 px-2 rounded-xl text-xs flex items-center justify-center gap-1 border transition ${currentCheck === 'half' ? 'btn-half-active' : 'btn-idle'}">
               <i class="fa-solid fa-triangle-exclamation"></i> 50% Partial
             </button>
-            <button onclick="setClientCheck('${s.key}', 'miss')" class="py-2 px-2 rounded-xl text-xs flex items-center justify-center gap-1 border transition ${currentCheck === 'miss' ? 'btn-miss-active' : 'btn-state-idle'}">
+            <button onclick="setClientCheck('${s.key}', 'miss')" class="py-2 px-2 rounded-xl text-xs flex items-center justify-center gap-1 border transition ${currentCheck === 'miss' ? 'btn-miss-active' : 'btn-idle'}">
               <i class="fa-solid fa-xmark"></i> Missed
             </button>
           </div>
@@ -852,7 +1100,7 @@ ${portalUrl}
       if(!c) return;
       if(!c.compliance[clientViewDay]) c.compliance[clientViewDay] = {};
       c.compliance[clientViewDay][slotKey] = state;
-      localStorage.setItem('met_pro_clients_v9', JSON.stringify(clients));
+      localStorage.setItem('met_pro_clients_fresh_v10', JSON.stringify(clients));
       loadTodayClientView();
     }
 
@@ -863,18 +1111,18 @@ ${portalUrl}
       if (isGym) {
         container.innerHTML = `
           <div class="grid grid-cols-2 gap-2">
-            <div><label class="text-[9px] text-gray-400">Protein Target</label><input type="text" id="cpInM1" onchange="saveVitals()" value="${comp.metric1||''}" placeholder="e.g. 110g taken" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white text-xs"></div>
-            <div><label class="text-[9px] text-gray-400">Water (Litres)</label><input type="number" step="0.5" id="cpInM2" onchange="saveVitals()" value="${comp.metric2||''}" placeholder="e.g. 3.5L" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white text-xs"></div>
+            <div><label class="text-[9px] text-slate-500 font-semibold">Protein Intake</label><input type="text" id="cpInM1" onchange="saveVitals()" value="${comp.metric1||''}" placeholder="e.g. 110g taken" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs"></div>
+            <div><label class="text-[9px] text-slate-500 font-semibold">Water (Litres)</label><input type="number" step="0.5" id="cpInM2" onchange="saveVitals()" value="${comp.metric2||''}" placeholder="e.g. 3.5L" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs"></div>
           </div>
-          <div><input type="text" id="cpInNote" onchange="saveVitals()" value="${comp.note||''}" placeholder="Workout comments / energy feel..." class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white text-xs mt-1"></div>
+          <div><input type="text" id="cpInNote" onchange="saveVitals()" value="${comp.note||''}" placeholder="Workout comments, pump, energy feel..." class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs mt-1"></div>
         `;
       } else {
         container.innerHTML = `
           <div class="grid grid-cols-2 gap-2">
-            <div><label class="text-[9px] text-gray-400">Fasting Sugar (mg/dL)</label><input type="number" id="cpInM1" onchange="saveVitals()" value="${comp.metric1||''}" placeholder="e.g. 125" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white text-xs"></div>
-            <div><label class="text-[9px] text-gray-400">PP2BS / Post-Meal</label><input type="number" id="cpInM2" onchange="saveVitals()" value="${comp.metric2||''}" placeholder="e.g. 160" class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white text-xs"></div>
+            <div><label class="text-[9px] text-slate-500 font-semibold">Fasting Sugar (mg/dL)</label><input type="number" id="cpInM1" onchange="saveVitals()" value="${comp.metric1||''}" placeholder="e.g. 125" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs"></div>
+            <div><label class="text-[9px] text-slate-500 font-semibold">PP2BS / Post-Meal</label><input type="number" id="cpInM2" onchange="saveVitals()" value="${comp.metric2||''}" placeholder="e.g. 160" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs"></div>
           </div>
-          <div><input type="text" id="cpInNote" onchange="saveVitals()" value="${comp.note||''}" placeholder="Daily observations, sleep quality..." class="w-full bg-[#151722] border border-gray-700 p-2 rounded-lg text-white text-xs mt-1"></div>
+          <div><input type="text" id="cpInNote" onchange="saveVitals()" value="${comp.note||''}" placeholder="Daily feel, sleep quality, observations..." class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs mt-1"></div>
         `;
       }
     }
@@ -885,7 +1133,7 @@ ${portalUrl}
       c.compliance[clientViewDay].metric1 = document.getElementById('cpInM1')?.value || '';
       c.compliance[clientViewDay].metric2 = document.getElementById('cpInM2')?.value || '';
       c.compliance[clientViewDay].note = document.getElementById('cpInNote')?.value || '';
-      localStorage.setItem('met_pro_clients_v9', JSON.stringify(clients));
+      localStorage.setItem('met_pro_clients_fresh_v10', JSON.stringify(clients));
     }
 
     function evaluateMotivation(comp) {
@@ -900,22 +1148,22 @@ ${portalUrl}
 
       const banner = document.getElementById('cpMotivationBanner');
       if (score >= 85) {
-        banner.className = "p-3.5 rounded-2xl border border-emerald-500/40 bg-emerald-950/40 text-xs space-y-1";
+        banner.className = "p-3 rounded-2xl border border-emerald-200 bg-emerald-50 text-xs space-y-1";
         banner.innerHTML = `
-          <div class="flex justify-between items-center"><span class="font-bold text-emerald-400"><i class="fa-solid fa-award"></i> Superb Consistency (${score}%)</span><span class="px-2 py-0.5 bg-emerald-900 text-emerald-300 text-[10px] rounded-full font-bold">Optimal 🔥</span></div>
-          <p class="text-[11px] text-gray-200">Your metabolism is responding wonderfully. Perfect momentum today!</p>
+          <div class="flex justify-between items-center"><span class="font-bold text-emerald-800"><i class="fa-solid fa-award text-emerald-600"></i> Superb Consistency (${score}%)</span><span class="px-2 py-0.5 bg-emerald-200 text-emerald-900 text-[10px] rounded-full font-bold">Optimal 🔥</span></div>
+          <p class="text-[11px] text-emerald-700">Your metabolism is responding wonderfully. Perfect momentum today!</p>
         `;
       } else if (score >= 50) {
-        banner.className = "p-3.5 rounded-2xl border border-amber-500/40 bg-amber-950/40 text-xs space-y-1";
+        banner.className = "p-3 rounded-2xl border border-amber-200 bg-amber-50 text-xs space-y-1";
         banner.innerHTML = `
-          <div class="flex justify-between items-center"><span class="font-bold text-amber-400"><i class="fa-solid fa-heart"></i> Honest Effort (${score}%)</span><span class="px-2 py-0.5 bg-amber-900 text-amber-300 text-[10px] rounded-full font-bold">Good Going 💛</span></div>
-          <p class="text-[11px] text-gray-200">50% consistency is far superior to skipping! Life happens, zero guilt—stay hydrated tonight and keep rocking.</p>
+          <div class="flex justify-between items-center"><span class="font-bold text-amber-800"><i class="fa-solid fa-heart text-amber-600"></i> Honest Effort (${score}%)</span><span class="px-2 py-0.5 bg-amber-200 text-amber-900 text-[10px] rounded-full font-bold">Good Going 💛</span></div>
+          <p class="text-[11px] text-amber-700">50% consistency is far superior to skipping! Life happens, zero guilt—stay hydrated tonight and keep rocking.</p>
         `;
       } else {
-        banner.className = "p-3.5 rounded-2xl border border-rose-500/40 bg-rose-950/40 text-xs space-y-1";
+        banner.className = "p-3 rounded-2xl border border-rose-200 bg-rose-50 text-xs space-y-1";
         banner.innerHTML = `
-          <div class="flex justify-between items-center"><span class="font-bold text-rose-400"><i class="fa-solid fa-shield-halved"></i> Fresh Reset Tomorrow (${score}%)</span><span class="px-2 py-0.5 bg-rose-900 text-rose-300 text-[10px] rounded-full font-bold">Safe Haven 🤍</span></div>
-          <p class="text-[11px] text-gray-200">Don't be disheartened! One off day never defines your health journey. Drink warm water, sleep peacefully, and tomorrow is a fresh start.</p>
+          <div class="flex justify-between items-center"><span class="font-bold text-rose-800"><i class="fa-solid fa-shield-halved text-rose-600"></i> Fresh Reset Tomorrow (${score}%)</span><span class="px-2 py-0.5 bg-rose-200 text-rose-900 text-[10px] rounded-full font-bold">Safe Haven 🤍</span></div>
+          <p class="text-[11px] text-rose-700">Don't be disheartened! One off day never defines your health journey. Drink warm water, sleep peacefully, and tomorrow is a fresh start.</p>
         `;
       }
     }
@@ -933,7 +1181,7 @@ ${portalUrl}
         dinner: 'Dinner Recovery',
         rule: 'Daily Protocol'
       };
-      document.getElementById('cstModalTitle').innerHTML = `<i class="fa-solid fa-mortar-pestle"></i> ${slotTitles[slotKey]}`;
+      document.getElementById('cstModalTitle').innerHTML = `<i class="fa-solid fa-kitchen-set text-teal-600"></i> ${slotTitles[slotKey]}`;
 
       cstActiveTags = currentText.split('+').map(s => s.trim()).filter(s => s.length > 0);
       renderCustomizerTags();
@@ -950,15 +1198,15 @@ ${portalUrl}
       const container = document.getElementById('cstActiveTags');
       container.innerHTML = '';
       if(cstActiveTags.length === 0) {
-        container.innerHTML = `<span class="text-gray-500 italic text-[11px]">No items selected. Tap substitutes below to add.</span>`;
+        container.innerHTML = `<span class="text-slate-400 italic text-[11px]">No items selected. Tap substitutes below to add.</span>`;
         return;
       }
       cstActiveTags.forEach((t, idx) => {
         const tag = document.createElement('span');
-        tag.className = "px-2.5 py-1 rounded-xl bg-amber-500/15 border border-amber-500 text-amber-200 text-xs font-semibold flex items-center gap-1.5 shadow";
+        tag.className = "px-2.5 py-1 rounded-xl bg-teal-50 border border-teal-300 text-teal-800 text-xs font-semibold flex items-center gap-1.5 shadow-xs";
         tag.innerHTML = `
           <span>${t}</span>
-          <button onclick="removeCstTag(${idx})" class="text-amber-400 hover:text-red-400 ml-0.5"><i class="fa-solid fa-xmark"></i></button>
+          <button onclick="removeCstTag(${idx})" class="text-teal-700 hover:text-rose-600 ml-0.5"><i class="fa-solid fa-xmark"></i></button>
         `;
         container.appendChild(tag);
       });
@@ -995,8 +1243,8 @@ ${portalUrl}
       container.innerHTML = '';
       pool.forEach(item => {
         const btn = document.createElement('button');
-        btn.className = "px-2.5 py-1.5 rounded-xl bg-[#171a26] hover:bg-emerald-600 hover:text-white border border-gray-700 text-[10px] text-gray-300 font-medium transition flex items-center gap-1";
-        btn.innerHTML = `<i class="fa-solid fa-plus text-[9px] text-emerald-400"></i> ${item}`;
+        btn.className = "px-2.5 py-1.5 rounded-xl bg-slate-50 hover:bg-teal-600 hover:text-white border border-slate-200 text-[10px] text-slate-700 font-medium transition flex items-center gap-1 shadow-xs";
+        btn.innerHTML = `<i class="fa-solid fa-plus text-[9px] text-teal-600"></i> ${item}`;
         btn.onclick = () => addCstTag(item);
         container.appendChild(btn);
       });
@@ -1011,26 +1259,27 @@ ${portalUrl}
       const finalString = cstActiveTags.join(' + ');
       c.compliance[clientViewDay].customMeals[cstActiveSlot] = finalString;
 
-      localStorage.setItem('met_pro_clients_v9', JSON.stringify(clients));
+      localStorage.setItem('met_pro_clients_fresh_v10', JSON.stringify(clients));
       closeCustomizer();
       loadTodayClientView();
     }
 
-    // --- VIRAL GROWTH / EXTEND TRIAL HELPERS ---
+    // --- GROWTH / REFERRAL ---
     function openGrowthModal() { document.getElementById('modalGrowth').classList.remove('hidden'); }
     function closeGrowthModal() { document.getElementById('modalGrowth').classList.add('hidden'); }
     function shareReferralWhatsApp() {
       const c = clients.find(x => x.id === activeClientId);
       const origin = window.location.origin + window.location.pathname;
-      const refMsg = `Hey! I am using the *Metabolic Pro Hub* app to reverse metabolic fatigue and track my nutrition. 
-Join using my link and get 30 days of VIP clinical health coaching completely FREE:
-${origin}
+      const refLink = `${origin}?ref=${c?.id || 'CL-101'}`;
+      const refMsg = `Hey! I am using the *Metabolic Pro* app to reverse metabolic fatigue and optimize my health. 
+Join using my link and get 30 days of VIP health coaching completely FREE:
+${refLink}
 
 Let's stay healthy together!`;
       window.open(`https://wa.me/?text=${encodeURIComponent(refMsg)}`, '_blank');
     }
 
-    // --- SUPPORT / FEEDBACK / COMPLAINT TICKET HELPERS ---
+    // --- SUPPORT / FEEDBACK TICKET ---
     function openFeedbackModal() { document.getElementById('modalFeedback').classList.remove('hidden'); }
     function closeFeedbackModal() { document.getElementById('modalFeedback').classList.add('hidden'); }
     function sendFeedbackWhatsApp() {
@@ -1042,7 +1291,7 @@ Let's stay healthy together!`;
       const userAgent = navigator.userAgent.includes('iPhone') ? 'iPhone Safari' : (navigator.userAgent.includes('Android') ? 'Android Chrome' : 'Desktop Browser');
 
       const ticketMsg = `📩 *Metabolic Pro - Support & Feedback Ticket*
-Client: *${c.name}* (#${c.id})
+Client: *${c?.name || 'User'}* (#${c?.id || 'CL-New'})
 Category: *${cat}*
 Device: *${userAgent}*
 
@@ -1074,7 +1323,7 @@ Device: *${userAgent}*
         const score = Math.round(earned / 6);
 
         let msg = `🩺 *Metabolic Pro - Daily Routine Sync*
-Client: *${c.name}*
+Client: *${c.name}* (#${c.id})
 Goal: *${c.goal}* (${c.diet === 'nonveg' ? '🍗 Non-Veg' : '🌱 Veg'})
 Day: *${dObj.name}*
 Daily Score: *${score}% Compliance*
@@ -1120,7 +1369,7 @@ Daily Score: *${score}% Compliance*
         const weeklyScore = Math.round((totalEarned / totalPossible) * 100);
 
         let msg = `📊 *Metabolic Pro - 7-Day Weekly Summary*
-Client: *${c.name}*
+Client: *${c.name}* (#${c.id})
 Target: *${c.goal}*
 Weekly Score: *${weeklyScore}% Overall Adherence*
 
@@ -1140,18 +1389,20 @@ Ready for next week's adjustments & clinical review!`;
       const p = document.getElementById('mPhone').value.trim();
       const g = document.getElementById('mGoal').value;
       const d = document.getElementById('mDiet').value;
-      const t = document.getElementById('mTier').value;
       if(!n || !p) return alert('Please enter name and phone number.');
 
+      const cleanPhone = p.replace(/\D/g, '');
+      const pin = cleanPhone.slice(-4) || '1234';
       const newId = "CL-" + (100 + clients.length + 1);
+
       clients.unshift({
-        id: newId, name: n, phone: p, goal: g, diet: d, tier: t, trialDays: 30, status: 'ACTIVE',
+        id: newId, name: n, phone: cleanPhone, pin: pin, goal: g, diet: d, tier: 'trial', trialDays: 30, status: 'ACTIVE',
         weeklyPlan: { mon: { morning: '', breakfast: '', lunch: '', snack: '', dinner: '', rule: '' } },
         compliance: {}
       });
       closeModal();
       renderAdminClients();
-      alert(`Client ${n} created with 30-Day Free Access!`);
+      alert(`Client ${n} created with 30-Day Free Access! (PIN: ${pin})`);
     }
 
     function deleteClient(id) {
@@ -1173,8 +1424,8 @@ Ready for next week's adjustments & clinical review!`;
       let lRisk = s > 45 ? 'HIGH (FATTY LIVER)' : 'NORMAL';
 
       document.getElementById('riskBadges').innerHTML = `
-        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${sRisk==='NORMAL'?'bg-emerald-950 text-emerald-400':'bg-red-950 text-red-400'} border border-gray-700">Sugar Risk: ${sRisk}</span>
-        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${lRisk==='NORMAL'?'bg-emerald-950 text-emerald-400':'bg-yellow-950 text-yellow-400'} border border-gray-700">Liver Risk: ${lRisk}</span>
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${sRisk==='NORMAL'?'bg-emerald-100 text-emerald-800':'bg-rose-100 text-rose-800'} border border-slate-200">Sugar Risk: ${sRisk}</span>
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${lRisk==='NORMAL'?'bg-emerald-100 text-emerald-800':'bg-amber-100 text-amber-800'} border border-slate-200">Liver Risk: ${lRisk}</span>
       `;
       document.getElementById('dietAdvice').innerHTML = `
         <div>• <strong>Bile Flow:</strong> Bottle gourd + turmeric + amla on empty stomach.</div>
