@@ -21,9 +21,6 @@
       border: 1px solid #e2e8f0;
       box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
     }
-    .card-clean-hover:hover {
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
-    }
     .btn-done-active { background-color: #059669; color: #ffffff; border-color: #059669; font-weight: 700; }
     .btn-half-active { background-color: #d97706; color: #ffffff; border-color: #d97706; font-weight: 700; }
     .btn-miss-active { background-color: #e11d48; color: #ffffff; border-color: #e11d48; font-weight: 700; }
@@ -37,11 +34,11 @@
 <body class="pb-24 antialiased">
 
   <!-- ==========================================
-       VIEW 1: CLEAN CLIENT LANDING & LOGIN / REGISTRATION
+       VIEW 1: CLIENT PUBLIC LANDING & LOGIN / REGISTRATION
        ========================================== -->
   <div id="authView" class="min-h-screen flex flex-col justify-between p-4 max-w-md mx-auto space-y-4">
     <!-- Brand Header -->
-    <div class="text-center pt-6 space-y-2">
+    <div class="text-center pt-8 space-y-2">
       <div class="w-16 h-16 rounded-2xl brand-gradient flex items-center justify-center text-white text-3xl font-black shadow-lg mx-auto shadow-teal-500/20">
         🩺
       </div>
@@ -49,7 +46,7 @@
         <h1 class="text-2xl font-black text-slate-900 tracking-tight" id="authBrandName">Metabolic Pro</h1>
         <p class="text-xs font-semibold text-teal-700 uppercase tracking-widest mt-0.5">Clinical Lifestyle Medicine</p>
       </div>
-      <p class="text-xs text-slate-500 max-w-xs mx-auto">Reversing Diabetes, Fatty Liver & Optimizing Peak Vitality with Science-backed Nutrition.</p>
+      <p class="text-xs text-slate-500 max-w-xs mx-auto">Reversing Diabetes, Fatty Liver & Optimizing Peak Vitality with Evidence-Based Nutrition.</p>
     </div>
 
     <!-- Auth Card -->
@@ -108,7 +105,7 @@
         </button>
       </div>
 
-      <!-- Login Form -->
+      <!-- Login Form with Forgot PIN -->
       <div id="formLogin" class="hidden space-y-3.5 text-xs">
         <div>
           <label class="font-bold text-slate-700">WhatsApp Mobile or Client ID</label>
@@ -116,8 +113,11 @@
         </div>
 
         <div>
-          <label class="font-bold text-slate-700">4-Digit Access PIN</label>
-          <input type="password" maxlength="4" id="loginPin" placeholder="Last 4 digits of phone" class="w-full mt-1 p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 tracking-widest text-center text-base focus:bg-white focus:border-teal-600 focus:outline-none">
+          <div class="flex justify-between items-center">
+            <label class="font-bold text-slate-700">4-Digit Access PIN</label>
+            <button onclick="openClientForgotPinModal()" class="text-teal-700 font-extrabold hover:underline text-[11px]">Forgot PIN? (પિન ભૂલી ગયા?)</button>
+          </div>
+          <input type="password" maxlength="4" id="loginPin" placeholder="••••" class="w-full mt-1 p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 tracking-widest text-center text-base focus:bg-white focus:border-teal-600 focus:outline-none">
           <p class="text-[10px] text-slate-400 mt-1">Default PIN is the last 4 digits of your registered phone.</p>
         </div>
 
@@ -127,16 +127,49 @@
       </div>
     </div>
 
-    <!-- Admin Link Discreetly at the bottom -->
-    <div class="text-center pt-2">
-      <button onclick="openAdminPinModal()" class="text-[11px] font-bold text-slate-400 hover:text-teal-700 transition flex items-center justify-center gap-1 mx-auto">
-        <i class="fa-solid fa-lock text-[10px]"></i> Coach / Admin Login
-      </button>
+    <!-- Client Trust Note -->
+    <div class="text-center text-[11px] text-slate-400 pb-2">
+      🔒 100% Private, Encrypted & Zero Spam Assurance
     </div>
   </div>
 
   <!-- ==========================================
-       VIEW 2: CLEAN, CRISP CLIENT VIP PORTAL
+       VIEW 2: DEDICATED ADMIN LOGIN SCREEN
+       ========================================== -->
+  <div id="adminAuthView" class="hidden min-h-screen flex flex-col justify-center p-4 max-w-sm mx-auto space-y-4">
+    <div class="card-clean rounded-3xl p-6 shadow-xl border border-slate-200 text-center space-y-4">
+      <div class="w-14 h-14 rounded-2xl bg-slate-900 text-teal-400 flex items-center justify-center text-2xl font-black shadow-lg mx-auto">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <div>
+        <h2 class="text-xl font-black text-slate-900">Coach Admin Login</h2>
+        <p class="text-xs text-slate-500 mt-0.5">Secure Control Panel</p>
+      </div>
+
+      <div class="space-y-3 text-left">
+        <div>
+          <label class="text-xs font-bold text-slate-700">Admin Security PIN</label>
+          <input type="password" maxlength="8" id="inDedicatedAdminPin" placeholder="••••" class="w-full mt-1 p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 tracking-widest text-center text-xl font-black focus:bg-white focus:border-teal-600 focus:outline-none">
+        </div>
+
+        <button onclick="verifyDedicatedAdminPin()" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-extrabold text-xs shadow hover:bg-slate-800 transition">
+          Access Master CRM 🔐
+        </button>
+        <button onclick="openAdminForgotPinModal()" class="w-full text-center text-[11px] font-bold text-teal-700 hover:underline">
+          Reset / Forgot Admin PIN?
+        </button>
+      </div>
+
+      <div class="pt-2 border-t border-slate-100">
+        <button onclick="returnToClientHome()" class="text-xs text-slate-400 hover:text-slate-600 font-semibold">
+          ← Return to Client Portal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       VIEW 3: CLIENT VIP DAILY PORTAL (WITH DYNAMIC DATES & CLEAN BLANK LOGS)
        ========================================== -->
   <div id="clientPortalView" class="hidden min-h-screen">
     <!-- Top Bar -->
@@ -200,16 +233,37 @@
       <!-- Motivation Banner -->
       <div id="cpMotivationBanner" class="p-3.5 rounded-2xl border text-xs space-y-1 transition-all"></div>
 
-      <!-- Day Navigation (Large, Spacious & Crisp) -->
-      <div class="space-y-1.5">
-        <div class="flex justify-between items-center px-1">
-          <span class="text-xs font-black text-slate-700">Select Day:</span>
-          <span class="text-[11px] text-teal-700 font-extrabold" id="cpActiveDayLabel">Today's Protocol</span>
+      <!-- ==========================================
+           DYNAMIC CALENDAR DATE STRIP (DATES + DAYS + WEEK NAVIGATOR)
+           ========================================== -->
+      <div class="card-clean p-3 rounded-2xl space-y-2">
+        <!-- Week Navigator -->
+        <div class="flex justify-between items-center text-xs pb-1 border-b border-slate-100">
+          <div class="flex items-center gap-1.5">
+            <button onclick="changeWeek(-1)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold">
+              <i class="fa-solid fa-chevron-left text-[10px]"></i>
+            </button>
+            <span class="font-extrabold text-slate-800 text-[11px]" id="cpCurrentWeekLabel">This Week</span>
+            <button onclick="changeWeek(1)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold">
+              <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            </button>
+          </div>
+          <button onclick="jumpToToday()" class="text-[10px] font-extrabold bg-teal-50 text-teal-800 border border-teal-200 px-2 py-1 rounded-lg hover:bg-teal-100">
+            Today (આજે) 📍
+          </button>
         </div>
-        <div class="grid grid-cols-7 gap-1 text-center" id="cpDayGridButtons"></div>
+
+        <!-- 7 Days Buttons with Real Dates -->
+        <div class="grid grid-cols-7 gap-1 text-center" id="cpDateGridButtons"></div>
+
+        <!-- Selected Date Header -->
+        <div class="pt-1 flex justify-between items-center text-[11px]">
+          <span class="font-black text-slate-900" id="cpActiveDateFullHeading">Tuesday, 27 October 2026</span>
+          <span class="font-bold px-2 py-0.5 rounded-full text-[10px]" id="cpDateStatusBadge">New Blank Log</span>
+        </div>
       </div>
 
-      <!-- Meal Cards (Crisp White Card UI) -->
+      <!-- Meal Cards (Clean White Card UI) -->
       <div class="space-y-3" id="cpTodayMealCards"></div>
 
       <!-- Daily Vitals -->
@@ -224,7 +278,7 @@
       <!-- Reporting Actions (Daily & Weekly) -->
       <div class="space-y-2 pt-1">
         <button onclick="submitClientReport('daily')" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md shadow-teal-700/20 hover:opacity-95">
-          <i class="fa-brands fa-whatsapp text-lg"></i> Send Today's Update to Coach 📲
+          <i class="fa-brands fa-whatsapp text-lg"></i> Send Selected Date's Update to Coach 📲
         </button>
 
         <button onclick="submitClientReport('weekly')" class="w-full py-3 rounded-2xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center justify-center gap-2 shadow-xs">
@@ -235,7 +289,7 @@
   </div>
 
   <!-- ==========================================
-       VIEW 3: CLEAN EXECUTIVE ADMIN CRM
+       VIEW 4: EXECUTIVE ADMIN CRM
        ========================================== -->
   <div id="adminView" class="hidden min-h-screen">
     <!-- Admin Topbar -->
@@ -250,10 +304,13 @@
         </div>
       </div>
       <div class="flex items-center gap-2">
+        <button onclick="openChangeAdminPinModal()" class="px-2.5 py-1 bg-slate-800 border border-slate-700 text-teal-300 rounded-lg text-xs font-bold hover:bg-slate-700 flex items-center gap-1">
+          <i class="fa-solid fa-key text-[10px]"></i> Change PIN
+        </button>
         <button onclick="previewClientPortal(activeClientId)" class="px-2.5 py-1 bg-teal-600 text-white rounded-lg text-xs font-bold hover:bg-teal-500">
           Client View
         </button>
-        <button onclick="logoutToAuth()" class="px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs hover:text-white">
+        <button onclick="logoutToAuth()" class="px-2 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs hover:text-white">
           Exit
         </button>
       </div>
@@ -354,27 +411,85 @@
   </div>
 
   <!-- ==========================================
-       MODALS: (ADMIN PIN, CUSTOMIZER, GROWTH, SUPPORT)
+       MODALS: (CHANGE ADMIN PIN, CLIENT FORGOT PIN, ADMIN FORGOT PIN, ETC.)
        ========================================== -->
 
-  <!-- Modal: Admin PIN Lock -->
-  <div id="modalAdminPin" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-xs p-5 rounded-3xl space-y-3.5 text-xs shadow-xl border border-slate-200">
+  <!-- Modal: Client Forgot PIN -->
+  <div id="modalClientForgotPin" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm p-5 rounded-3xl space-y-3.5 text-xs shadow-xl border border-slate-200">
       <div class="text-center space-y-1">
         <div class="w-10 h-10 rounded-full bg-teal-50 text-teal-700 flex items-center justify-center mx-auto text-base">
-          <i class="fa-solid fa-lock"></i>
+          <i class="fa-solid fa-key"></i>
         </div>
-        <h3 class="font-extrabold text-slate-900 text-sm">Coach Admin Access</h3>
-        <p class="text-[10px] text-slate-500">Enter your 4-digit Master Security PIN</p>
+        <h3 class="font-extrabold text-slate-900 text-sm">Reset Client PIN</h3>
+        <p class="text-[11px] text-slate-500">Enter your registered WhatsApp number to restore access</p>
       </div>
 
-      <div>
-        <input type="password" maxlength="4" id="inAdminPin" placeholder="••••" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 tracking-widest text-center text-lg font-black focus:outline-none focus:border-teal-600">
+      <div class="space-y-2">
+        <div>
+          <label class="text-[10px] font-bold text-slate-700">Registered WhatsApp Number</label>
+          <input type="tel" id="inClientForgotPhone" placeholder="e.g. 9876543210" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600">
+        </div>
+      </div>
+
+      <div class="space-y-2 pt-1">
+        <button onclick="handleClientSelfResetPin()" class="w-full bg-teal-600 hover:bg-teal-500 text-white font-extrabold py-2.5 rounded-xl shadow-xs">
+          Auto-Reset to Default PIN (Last 4 digits) 🔄
+        </button>
+        <button onclick="requestPinFromCoachWhatsApp()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl flex items-center justify-center gap-1.5">
+          <i class="fa-brands fa-whatsapp text-emerald-600"></i> Ask Coach on WhatsApp 📲
+        </button>
+        <button onclick="closeClientForgotPinModal()" class="w-full text-slate-400 hover:text-slate-600 text-center py-1">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Change Admin PIN (Inside Admin Panel) -->
+  <div id="modalChangeAdminPin" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-xs p-5 rounded-3xl space-y-3 text-xs shadow-xl border border-slate-200">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+        <h3 class="font-bold text-slate-900">Change Admin Master PIN</h3>
+        <button onclick="closeChangeAdminPinModal()"><i class="fa-solid fa-xmark text-slate-400"></i></button>
+      </div>
+
+      <div class="space-y-2">
+        <div>
+          <label class="text-[10px] font-bold text-slate-600">Current PIN</label>
+          <input type="password" maxlength="8" id="inOldAdminPin" placeholder="Enter current PIN" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-center font-bold">
+        </div>
+        <div>
+          <label class="text-[10px] font-bold text-slate-600">New Secure PIN</label>
+          <input type="password" maxlength="8" id="inNewAdminPin" placeholder="Enter new PIN" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-center font-bold">
+        </div>
       </div>
 
       <div class="flex gap-2 pt-1">
-        <button onclick="closeAdminPinModal()" class="flex-1 bg-slate-100 text-slate-600 py-2.5 rounded-xl font-bold">Cancel</button>
-        <button onclick="verifyAdminPin()" class="flex-1 bg-slate-900 text-white py-2.5 rounded-xl font-bold">Enter CRM</button>
+        <button onclick="closeChangeAdminPinModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl font-bold">Cancel</button>
+        <button onclick="saveNewAdminPin()" class="flex-1 bg-teal-600 text-white py-2 rounded-xl font-bold">Update PIN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Admin Forgot Master PIN -->
+  <div id="modalAdminForgotPin" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-xs p-5 rounded-3xl space-y-3 text-xs shadow-xl border border-slate-200">
+      <div class="text-center space-y-1">
+        <div class="w-10 h-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto text-base">
+          <i class="fa-solid fa-lock-open"></i>
+        </div>
+        <h3 class="font-extrabold text-slate-900 text-sm">Emergency Admin PIN Reset</h3>
+        <p class="text-[10px] text-slate-500">Enter your Registered Coach WhatsApp Phone to reset your PIN to default (1234).</p>
+      </div>
+
+      <div>
+        <input type="tel" id="inAdminEmergencyPhone" placeholder="e.g. 919081421028" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 text-center font-bold">
+      </div>
+
+      <div class="flex gap-2 pt-1">
+        <button onclick="closeAdminForgotPinModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl font-bold">Cancel</button>
+        <button onclick="handleEmergencyAdminReset()" class="flex-1 bg-rose-600 text-white py-2 rounded-xl font-bold">Reset PIN</button>
       </div>
     </div>
   </div>
@@ -427,7 +542,6 @@
         <button onclick="closeCustomizer()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
       </div>
 
-      <!-- Current Formula Tags -->
       <div class="bg-slate-50 p-3 rounded-2xl border border-teal-200 space-y-1.5">
         <div class="flex justify-between items-center">
           <span class="text-[10px] text-teal-800 font-extrabold uppercase tracking-wider">Your Plate Today:</span>
@@ -436,7 +550,6 @@
         <div id="cstActiveTags" class="flex flex-wrap gap-1.5 min-h-[36px] items-center"></div>
       </div>
 
-      <!-- Approved Substitutes -->
       <div class="space-y-1.5 flex-1 overflow-y-auto pr-1">
         <span class="text-[10px] text-slate-600 font-bold">Approved Clinical Substitutes:</span>
         <div class="flex flex-wrap gap-1.5" id="cstSubstitutesContainer"></div>
@@ -511,542 +624,151 @@
   </div>
 
   <!-- ==========================================
-       JAVASCRIPT APPLICATION ENGINE
+       JAVASCRIPT APPLICATION ENGINE WITH CALENDAR DATES & CLEAN RESET
        ========================================== -->
   <script>
-    const DAYS = [
-      { id: 'mon', name: 'Monday', short: 'Mon' },
-      { id: 'tue', name: 'Tuesday', short: 'Tue' },
-      { id: 'wed', name: 'Wednesday', short: 'Wed' },
-      { id: 'thu', name: 'Thursday', short: 'Thu' },
-      { id: 'fri', name: 'Friday', short: 'Fri' },
-      { id: 'sat', name: 'Saturday', short: 'Sat' },
-      { id: 'sun', name: 'Sunday', short: 'Sun' }
-    ];
+    const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const DAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
-    const SUBSTITUTES_POOL = {
-      morning: [
-        "Fresh Bottle Gourd (દૂધી)", "Ash Gourd (સફેદ પેઠા)", "Cucumber (કાકડી)",
-        "Raw Turmeric (લીલી હળદર)", "Fresh Ginger (આદુ)", "Amla (આમળા)",
-        "Fresh Lemon (લીંબુ)", "Mint Leaves (ફુદીનો)", "Fenugreek Seeds (મેથી દાણા)", "Cumin Seeds (જીરું)"
-      ],
-      breakfast_veg: [
-        "Moong Dal Chila (મગદાળ પુડલા)", "Steamed Moong Chaat (બાફેલા મગ)", "Sprouted Black Chana",
-        "Fresh Cow Paneer 30g", "Homemade Thick Curd", "Ragi Cheela", "Rolled Oats Bowl"
-      ],
-      breakfast_nonveg: [
-        "3 Boiled Egg Whites (બાફેલા ઈંડા)", "2 Whole Eggs Omelette with Spinach & Mushrooms",
-        "Poached Eggs on Cucumber Salad", "Egg Bhurji (Less Oil) + Salad", "Fresh Cow Paneer 30g"
-      ],
-      lunch_veg: [
-        "1 Big Bowl Raw Salad Barrier", "1 Super Flour Multi-Millet Roti", "Palak Paneer",
-        "Thick Moong Dal", "Bottle Gourd Sabzi", "Rajma Curry", "1 Glass Thin Buttermilk / Chaas"
-      ],
-      lunch_nonveg: [
-        "1 Big Bowl Raw Salad Barrier", "1 Super Flour Multi-Millet Roti", "Grilled Chicken Breast (૧૦૦ ગ્રામ)",
-        "Steamed / Grilled Fish", "Light Egg Curry (૨ ઈંડા)", "1 Glass Thin Buttermilk / Chaas"
-      ],
-      snack_veg: [
-        "1 Bowl Spiced Guava (મસાલા જામફળ)", "Roasted Pumpkin Seeds (કોળાના બી)", "Roasted Makhana",
-        "Fresh Papaya Slices", "Roasted Flaxseeds", "1 Sweet Lime (મોસંબી)"
-      ],
-      snack_nonveg: [
-        "1-2 Boiled Eggs with Black Pepper", "1 Bowl Spiced Guava", "Roasted Pumpkin Seeds", "Roasted Makhana"
-      ],
-      dinner_veg: [
-        "Creamy Pumpkin Puree Soup (કોળાનું સૂપ)", "Bottle Gourd & Tomato Soup",
-        "Sauteed Broccoli, Zucchini & Bell Peppers", "Fresh Cow Paneer 25g", "Grilled Tofu Cubes"
-      ],
-      dinner_nonveg: [
-        "Clear Chicken & Vegetable Soup", "Grilled Chicken Breast with Sauteed Veggies",
-        "Steamed Fish Fillet + Sauteed Greens", "Creamy Pumpkin Puree Soup + 2 Boiled Eggs"
-      ],
-      rule: [
-        "Post-Meal 15-min Brisk Walk", "Elevate legs on pillows for 15-20 min before sleeping",
-        "Remove pillow before deep sleep", "3.0 Liters Daily Water Target", "Digital Detox 1 hr before bed"
-      ]
-    };
+    let weekOffset = 0;
+    let selectedDateKey = getTodayDateKey();
 
-    // Client Directory Store
-    let clients = JSON.parse(localStorage.getItem('met_pro_clients_fresh_v10')) || [
-      {
-        id: "CL-101",
-        name: "Piyush Nathvani",
-        phone: "919081421028",
-        pin: "1028",
-        goal: "Type 2 Diabetes Reversal",
-        diet: "veg",
-        tier: "trial",
-        trialDays: 29,
-        status: "ACTIVE",
-        weeklyPlan: {
-          mon: {
-            morning: "Ash Gourd + Coriander + Raw Turmeric + Fresh Ginger",
-            breakfast: "Moong Dal Chila (મગદાળ પુડલા) + Fresh Cow Paneer 30g + Raw Cucumber & Tomato Salad",
-            lunch: "1 Big Bowl Raw Salad Barrier + 1 Super Flour Multi-Millet Roti + Palak Paneer + 1 Glass Thin Buttermilk / Chaas",
-            snack: "1 Bowl Spiced Guava (મસાલા જામફળ) + Roasted Pumpkin Seeds (કોળાના બી)",
-            dinner: "Creamy Pumpkin Puree Soup (કોળાનું સૂપ) + Sauteed Broccoli, Zucchini & Bell Peppers + Fresh Cow Paneer 25g",
-            rule: "Post-Meal 15-min Brisk Walk + Elevate legs on pillows for 15-20 min before sleeping + 3.0 Liters Daily Water Target"
-          }
-        },
-        compliance: {}
-      },
-      {
-        id: "CL-102",
-        name: "Vikram Shah (Athlete)",
-        phone: "919876543210",
-        pin: "3210",
-        goal: "Gym & High Protein",
-        diet: "nonveg",
-        tier: "trial",
-        trialDays: 25,
-        status: "ACTIVE",
-        weeklyPlan: {
-          mon: {
-            morning: "Warm Lemon-Salt Electrolyte Water + Soaked Almonds & Walnuts + 1 Banana",
-            breakfast: "3 Boiled Egg Whites (બાફેલા ઈંડા) + Steamed Moong Chaat + Fresh Thick Curd",
-            lunch: "1 Big Bowl Raw Salad Barrier + 2 Super Flour Multi-Millet Rotis + Grilled Chicken Breast + 1 Glass Thin Buttermilk / Chaas",
-            snack: "Roasted Makhana + Roasted Pumpkin Seeds + 1 Boiled Egg with Black Pepper",
-            dinner: "Clear Chicken & Vegetable Soup + Grilled Chicken Breast with Sauteed Veggies",
-            rule: "45-min Strength Workout + 3.5 Liters Daily Water Target + Digital Detox 1 hr before bed"
-          }
-        },
-        compliance: {}
+    function getTodayDateKey() {
+      const now = new Date();
+      return formatDateToKey(now);
+    }
+
+    function formatDateToKey(d) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function parseDateKey(key) {
+      const parts = key.split('-');
+      return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    }
+
+    function getCurrentWeekDates() {
+      const now = new Date();
+      const currentDay = now.getDay();
+      const distanceToMon = (currentDay === 0 ? -6 : 1) - currentDay;
+      const monday = new Date(now);
+      monday.setDate(now.getDate() + distanceToMon + (weekOffset * 7));
+
+      const weekDates = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        weekDates.push(d);
       }
-    ];
-
-    let activeClientId = clients[0]?.id || "CL-101";
-    let activeDay = "mon";
-
-    // Detect actual day of week
-    const currentDayIndex = new Date().getDay();
-    const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-    let clientViewDay = dayMap[currentDayIndex] || 'mon';
-
-    // Customizer State
-    let cstActiveSlot = 'morning';
-    let cstActiveTags = [];
-    let cstIdealString = '';
-
-    // --- INITIALIZATION ---
-    window.addEventListener('DOMContentLoaded', () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const payload = urlParams.get('data');
-      const ref = urlParams.get('ref');
-
-      // Auto fill referral code if present
-      if (ref) {
-        document.getElementById('regRefCode').value = ref;
-      }
-
-      if (payload) {
-        try {
-          const decoded = JSON.parse(decodeURIComponent(atob(payload)));
-          activeClientId = decoded.id;
-          if(!clients.find(x => x.id === decoded.id)) {
-            clients.push(decoded);
-          }
-          openClientPortalById(decoded.id);
-        } catch(e) {
-          showAuthView();
-        }
-      } else {
-        // By default, show crisp Client Landing / Login Screen
-        showAuthView();
-      }
-    });
-
-    function showAuthView() {
-      document.getElementById('authView').classList.remove('hidden');
-      document.getElementById('clientPortalView').classList.add('hidden');
-      document.getElementById('adminView').classList.add('hidden');
+      return weekDates;
     }
 
-    function setAuthTab(tab) {
-      if (tab === 'register') {
-        document.getElementById('formRegister').classList.remove('hidden');
-        document.getElementById('formLogin').classList.add('hidden');
-        document.getElementById('tabRegister').className = "flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold";
-        document.getElementById('tabLogin').className = "flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold";
-      } else {
-        document.getElementById('formLogin').classList.remove('hidden');
-        document.getElementById('formRegister').classList.add('hidden');
-        document.getElementById('tabLogin').className = "flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold";
-        document.getElementById('tabRegister').className = "flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold";
-      }
-    }
-
-    function handleClientRegister() {
-      const name = document.getElementById('regName').value.trim();
-      const phone = document.getElementById('regPhone').value.trim();
-      const diet = document.getElementById('regDiet').value;
-      const goal = document.getElementById('regGoal').value;
-      const refCode = document.getElementById('regRefCode').value.trim().toUpperCase();
-
-      if (!name || !phone) {
-        return alert('Please enter your full name and WhatsApp mobile number.');
-      }
-
-      const cleanPhone = phone.replace(/\D/g, '');
-      const pin = cleanPhone.slice(-4) || '1234';
-      const newId = "CL-" + (100 + clients.length + 1);
-
-      // Check referral bonus
-      if (refCode) {
-        const referrer = clients.find(c => c.id === refCode);
-        if (referrer) {
-          referrer.trialDays = (referrer.trialDays || 30) + 30;
-        }
-      }
-
-      const newClient = {
-        id: newId,
-        name: name,
-        phone: cleanPhone,
-        pin: pin,
-        goal: goal,
-        diet: diet,
-        tier: 'trial',
-        trialDays: 30,
-        status: 'ACTIVE',
-        weeklyPlan: {
-          mon: {
-            morning: "Ash Gourd + Coriander + Raw Turmeric + Fresh Ginger",
-            breakfast: diet === 'nonveg' ? "3 Boiled Egg Whites + Moong Chaat" : "Moong Dal Chila + Fresh Paneer 30g + Salad",
-            lunch: diet === 'nonveg' ? "Salad + 1 Super Flour Roti + Grilled Chicken + Chaas" : "1 Big Bowl Raw Salad + 1 Super Flour Roti + Sabzi + Chaas",
-            snack: "1 Bowl Spiced Guava + Roasted Pumpkin Seeds",
-            dinner: diet === 'nonveg' ? "Clear Chicken Soup + Sauteed Greens" : "Creamy Pumpkin Soup + Sauteed Veggies + Paneer",
-            rule: "Post-Meal 15-min walk + Elevate legs on pillows for 15-20 min"
-          }
-        },
-        compliance: {}
-      };
-
-      clients.unshift(newClient);
-      localStorage.setItem('met_pro_clients_fresh_v10', JSON.stringify(clients));
-
-      alert(`🎉 Welcome ${name}! Your 30-Day Free Trial is activated. (Your PIN is: ${pin})`);
-      openClientPortalById(newId);
-    }
-
-    function handleClientLogin() {
-      const input = document.getElementById('loginId').value.trim();
-      const pin = document.getElementById('loginPin').value.trim();
-
-      if (!input) return alert('Please enter your WhatsApp Number or Client ID.');
-
-      const client = clients.find(c => 
-        c.phone.endsWith(input.replace(/\D/g, '')) || 
-        c.id.toLowerCase() === input.toLowerCase()
-      );
-
-      if (!client) {
-        return alert('Client not found. Please register for a free 30-day trial.');
-      }
-
-      if (pin && client.pin && pin !== client.pin) {
-        return alert('Incorrect 4-digit PIN. (Hint: last 4 digits of your phone)');
-      }
-
-      openClientPortalById(client.id);
-    }
-
-    function logoutToAuth() {
-      window.history.pushState({}, document.title, window.location.pathname);
-      showAuthView();
-    }
-
-    function openAdminPinModal() {
-      document.getElementById('inAdminPin').value = '';
-      document.getElementById('modalAdminPin').classList.remove('hidden');
-    }
-
-    function closeAdminPinModal() {
-      document.getElementById('modalAdminPin').classList.add('hidden');
-    }
-
-    function verifyAdminPin() {
-      const pin = document.getElementById('inAdminPin').value.trim();
-      if (pin === '1234') { // Default Master Admin PIN
-        closeAdminPinModal();
-        openAdminCRM();
-      } else {
-        alert('Invalid Security PIN.');
-      }
-    }
-
-    function openAdminCRM() {
-      document.getElementById('authView').classList.add('hidden');
-      document.getElementById('clientPortalView').classList.add('hidden');
-      document.getElementById('adminView').classList.remove('hidden');
-      renderAdminClients();
-      setupAdminDayTabs();
-      loadPlannerClientData(activeClientId);
-    }
-
-    function setAdminTab(tab) {
-      ['clients', 'planner', 'lab'].forEach(t => {
-        document.getElementById('aview-' + t).classList.add('hidden');
-        document.getElementById('atab-' + t).className = "px-3.5 py-2 rounded-xl text-slate-600 bg-slate-100 flex items-center gap-1.5 whitespace-nowrap";
-      });
-      document.getElementById('aview-' + tab).classList.remove('hidden');
-      document.getElementById('atab-' + tab).className = "tab-active px-3.5 py-2 rounded-xl flex items-center gap-1.5 whitespace-nowrap shadow";
-    }
-
-    function renderAdminClients() {
-      localStorage.setItem('met_pro_clients_fresh_v10', JSON.stringify(clients));
-      document.getElementById('admTotal').innerText = clients.length;
-      document.getElementById('admClinical').innerText = clients.filter(c => c.goal.includes('Diabetes') || c.goal.includes('Liver')).length;
-      document.getElementById('admFitness').innerText = clients.filter(c => c.goal.includes('Gym') || c.goal.includes('Energy')).length;
-      document.getElementById('admTrialActive').innerText = clients.filter(c => c.tier === 'trial').length;
-
-      const container = document.getElementById('admClientsList');
+    function renderClientDateStrip() {
+      const weekDates = getCurrentWeekDates();
+      const container = document.getElementById('cpDateGridButtons');
       container.innerHTML = '';
-      clients.forEach(c => {
-        const card = document.createElement('div');
-        card.className = "card-clean p-3.5 rounded-2xl space-y-2 border border-slate-200";
-        card.innerHTML = `
-          <div class="flex justify-between items-center">
-            <div class="flex items-center gap-1.5">
-              <span class="text-[10px] font-black px-2 py-0.5 rounded bg-slate-900 text-white">#${c.id}</span>
-              <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-800 border border-teal-200">${c.goal}</span>
-              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">${c.diet==='nonveg'?'🍗 Non-Veg':'🌱 Veg'}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <button onclick="openPlannerFor('${c.id}')" class="text-xs text-teal-700 font-bold hover:underline"><i class="fa-solid fa-pen-to-square"></i> Protocol</button>
-              <button onclick="deleteClient('${c.id}')" class="text-slate-400 hover:text-rose-600 text-xs"><i class="fa-solid fa-trash-can"></i></button>
-            </div>
-          </div>
-          <div class="flex justify-between items-center">
-            <div>
-              <h3 class="font-bold text-slate-900 text-sm">${c.name}</h3>
-              <p class="text-[11px] text-slate-500">${c.phone} | <span class="text-teal-700 font-bold">${c.trialDays || 30}d Access (PIN: ${c.pin||'1234'})</span></p>
-            </div>
-            <div class="flex flex-col gap-1.5">
-              <button onclick="previewClientPortal('${c.id}')" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-2.5 py-1 rounded-xl text-[10px] flex items-center justify-center gap-1 shadow-xs">
-                <i class="fa-solid fa-arrow-up-right-from-square"></i> Portal
-              </button>
-              <button onclick="sendPortalLinkToClient('${c.id}')" class="bg-teal-600 hover:bg-teal-500 text-white font-bold px-2.5 py-1 rounded-xl text-[10px] flex items-center justify-center gap-1 shadow-xs">
-                <i class="fa-brands fa-whatsapp"></i> WhatsApp 📲
-              </button>
-            </div>
-          </div>
+
+      const weekLabel = document.getElementById('cpCurrentWeekLabel');
+      if (weekOffset === 0) weekLabel.innerText = "This Week (ચાલુ અઠવાડિયું)";
+      else if (weekOffset === 1) weekLabel.innerText = "Next Week (આવતું અઠવાડિયું)";
+      else if (weekOffset === -1) weekLabel.innerText = "Last Week (ગયું અઠવાડિયું)";
+      else if (weekOffset > 1) weekLabel.innerText = `+${weekOffset} Weeks Ahead`;
+      else weekLabel.innerText = `${Math.abs(weekOffset)} Weeks Ago`;
+
+      const todayKey = getTodayDateKey();
+
+      weekDates.forEach(d => {
+        const dateKey = formatDateToKey(d);
+        const dayNumber = d.getDate();
+        const monthShort = d.toLocaleString('en-US', { month: 'short' });
+        const dayShort = DAY_NAMES[d.getDay()].substring(0, 3);
+        const isSelected = (dateKey === selectedDateKey);
+        const isToday = (dateKey === todayKey);
+
+        const btn = document.createElement('button');
+        btn.onclick = () => selectClientDate(dateKey);
+
+        if (isSelected) {
+          btn.className = "py-2 px-1 rounded-2xl bg-teal-600 text-white font-extrabold text-xs shadow-md shadow-teal-700/30 flex flex-col items-center justify-center transition";
+        } else if (isToday) {
+          btn.className = "py-2 px-1 rounded-2xl bg-teal-50 border-2 border-teal-500 text-teal-800 font-extrabold text-xs flex flex-col items-center justify-center transition hover:bg-teal-100";
+        } else {
+          btn.className = "py-2 px-1 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-xs flex flex-col items-center justify-center transition hover:bg-slate-50";
+        }
+
+        btn.innerHTML = `
+          <span class="text-[9px] uppercase tracking-wider ${isSelected ? 'text-teal-100' : 'text-slate-400'}">${dayShort}</span>
+          <span class="text-sm font-black leading-tight mt-0.5">${dayNumber}</span>
+          <span class="text-[8px] ${isSelected ? 'text-teal-200' : 'text-slate-400'}">${monthShort}</span>
         `;
-        container.appendChild(card);
-      });
-
-      const pSel = document.getElementById('admPlannerSelect');
-      const lSel = document.getElementById('admLabSelect');
-      pSel.innerHTML = '';
-      lSel.innerHTML = '';
-      clients.forEach(c => {
-        pSel.innerHTML += `<option value="${c.id}" ${c.id===activeClientId?'selected':''}>${c.name} (${c.goal})</option>`;
-        lSel.innerHTML += `<option value="${c.id}">${c.name} (#${c.id})</option>`;
-      });
-    }
-
-    function setupAdminDayTabs() {
-      const container = document.getElementById('admDayTabs');
-      container.innerHTML = '';
-      DAYS.forEach(d => {
-        const btn = document.createElement('button');
-        btn.id = 'admtab-' + d.id;
-        btn.className = (d.id === activeDay) 
-          ? "px-2.5 py-1.5 rounded-lg bg-teal-600 text-white font-bold whitespace-nowrap shadow" 
-          : "px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 whitespace-nowrap border border-slate-200";
-        btn.innerText = d.short;
-        btn.onclick = () => selectAdminDay(d.id);
         container.appendChild(btn);
       });
+
+      updateDateHeader();
     }
 
-    function selectAdminDay(dayId) {
-      activeDay = dayId;
-      setupAdminDayTabs();
-      loadActiveDayForm();
-    }
-
-    function openPlannerFor(cId) {
-      activeClientId = cId;
-      document.getElementById('admPlannerSelect').value = cId;
-      setAdminTab('planner');
-      loadPlannerClientData(cId);
-    }
-
-    function switchPlannerClient(cId) {
-      activeClientId = cId;
-      loadPlannerClientData(cId);
-    }
-
-    function loadPlannerClientData(cId) {
-      const c = clients.find(x => x.id === cId);
-      if(!c) return;
-      if(!c.weeklyPlan) c.weeklyPlan = {};
-      document.getElementById('admCurrentClientBadge').innerText = `${c.name} (${c.goal})`;
-      loadActiveDayForm();
-    }
-
-    function loadActiveDayForm() {
-      const c = clients.find(x => x.id === activeClientId);
-      if(!c) return;
-      if(!c.weeklyPlan[activeDay]) {
-        c.weeklyPlan[activeDay] = c.weeklyPlan['mon'] || { morning: '', breakfast: '', lunch: '', snack: '', dinner: '', rule: '' };
-      }
-      const d = c.weeklyPlan[activeDay];
-      const dObj = DAYS.find(x => x.id === activeDay);
-
-      document.getElementById('admDayFormTitle').innerText = `${dObj.name} Protocol (${c.name})`;
-      document.getElementById('admMorning').value = d.morning || '';
-      document.getElementById('admBreakfast').value = d.breakfast || '';
-      document.getElementById('admLunch').value = d.lunch || '';
-      document.getElementById('admSnack').value = d.snack || '';
-      document.getElementById('admDinner').value = d.dinner || '';
-      document.getElementById('admRule').value = d.rule || '';
-    }
-
-    function saveActiveDay() {
-      const c = clients.find(x => x.id === activeClientId);
-      if(!c) return;
-      c.weeklyPlan[activeDay] = {
-        morning: document.getElementById('admMorning').value.trim(),
-        breakfast: document.getElementById('admBreakfast').value.trim(),
-        lunch: document.getElementById('admLunch').value.trim(),
-        snack: document.getElementById('admSnack').value.trim(),
-        dinner: document.getElementById('admDinner').value.trim(),
-        rule: document.getElementById('admRule').value.trim()
-      };
-      localStorage.setItem('met_pro_clients_fresh_v10', JSON.stringify(clients));
-      alert(`✅ ${DAYS.find(x=>x.id===activeDay).name} protocol saved!`);
-    }
-
-    // --- CLIENT VIP PORTAL ENGINE ---
-    function generatePortalUrl(c) {
-      const origin = window.location.origin + window.location.pathname;
-      const payload = btoa(unescape(encodeURIComponent(JSON.stringify(c))));
-      return `${origin}?data=${payload}`;
-    }
-
-    function sendPortalLinkToClient(cId) {
-      const c = clients.find(x => x.id === cId);
-      if(!c) return;
-      const portalUrl = generatePortalUrl(c);
-
-      const msg = `Hello ${c.name},
-Your personalized "Metabolic Pro" Clinical Health Portal is now live!
-
-👉 Open Your Health App:
-${portalUrl}
-
-✨ Access Highlights:
-• 30-Day Free Clinical Access.
-• 1-Touch Done/Partial/Missed Meal Log.
-• Custom Ingredients with Seasonal Substitutes.
-• WhatsApp Progress Sync with your coach.`;
-
-      window.open(`https://wa.me/${c.phone}?text=${encodeURIComponent(msg)}`, '_blank');
-    }
-
-    function previewClientPortal(cId) {
-      activeClientId = cId;
-      openClientPortalById(cId);
-    }
-
-    function openClientPortalById(cId) {
-      const c = clients.find(x => x.id === cId) || clients[0];
-      if(!c) return;
-      activeClientId = c.id;
-
-      document.getElementById('authView').classList.add('hidden');
-      document.getElementById('adminView').classList.add('hidden');
-      document.getElementById('clientPortalView').classList.remove('hidden');
-
-      let icon = "🩺";
-      if(c.goal.includes('Gym')) icon = "🏋️";
-      else if(c.goal.includes('Pregnancy')) icon = "🤰";
-      else if(c.goal.includes('Menopause')) icon = "🌸";
-
-      document.getElementById('cpAvatar').innerText = icon;
-      document.getElementById('cpClientTitle').innerText = `${c.name}`;
-      document.getElementById('cpClientSub').innerText = `${c.goal} (${c.diet === 'nonveg' ? '🍗 Non-Veg' : '🌱 Veg'})`;
-      document.getElementById('cpGoalSelector').value = c.goal;
-
-      // Tier & Trial Display
-      document.getElementById('cpTierBadge').innerText = "30-Day Free Trial";
-      document.getElementById('cpTrialDaysLeft').innerText = `${c.trialDays || 29} Days Left`;
-
-      updateDietSwitcherUI(c.diet || 'veg');
-      renderClientDayButtons();
+    function selectClientDate(dateKey) {
+      selectedDateKey = dateKey;
+      renderClientDateStrip();
       loadTodayClientView();
     }
 
-    function updateDietSwitcherUI(diet) {
-      if(diet === 'nonveg') {
-        document.getElementById('btnDietNonVeg').className = "px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition chip-active";
-        document.getElementById('btnDietVeg').className = "px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition chip-inactive";
+    function changeWeek(direction) {
+      weekOffset += direction;
+      const shiftedWeekDates = getCurrentWeekDates();
+      selectedDateKey = formatDateToKey(shiftedWeekDates[0]);
+      renderClientDateStrip();
+      loadTodayClientView();
+    }
+
+    function jumpToToday() {
+      weekOffset = 0;
+      selectedDateKey = getTodayDateKey();
+      renderClientDateStrip();
+      loadTodayClientView();
+    }
+
+    function updateDateHeader() {
+      const dObj = parseDateKey(selectedDateKey);
+      const dayName = DAY_NAMES[dObj.getDay()];
+      const formatted = dObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      document.getElementById('cpActiveDateFullHeading').innerText = `${dayName}, ${formatted}`;
+
+      const c = clients.find(x => x.id === activeClientId);
+      const isBlank = !c || !c.compliance || !c.compliance[selectedDateKey] || Object.keys(c.compliance[selectedDateKey]).length === 0;
+      const badge = document.getElementById('cpDateStatusBadge');
+
+      if (isBlank) {
+        badge.innerText = "Fresh Blank Sheet ⚪";
+        badge.className = "font-bold px-2 py-0.5 rounded-full text-[10px] bg-slate-100 text-slate-600 border border-slate-200";
       } else {
-        document.getElementById('btnDietVeg').className = "px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition chip-active";
-        document.getElementById('btnDietNonVeg').className = "px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition chip-inactive";
+        badge.innerText = "Routine Logged 🟢";
+        badge.className = "font-bold px-2 py-0.5 rounded-full text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-200";
       }
-    }
-
-    function setClientDietType(diet) {
-      const c = clients.find(x => x.id === activeClientId);
-      if(!c) return;
-      c.diet = diet;
-      updateDietSwitcherUI(diet);
-      localStorage.setItem('met_pro_clients_fresh_v10', JSON.stringify(clients));
-      loadTodayClientView();
-    }
-
-    function clientChangeGoal(newGoal) {
-      const c = clients.find(x => x.id === activeClientId);
-      if(!c) return;
-      c.goal = newGoal;
-      document.getElementById('cpClientSub').innerText = `${c.goal} (${c.diet === 'nonveg' ? '🍗 Non-Veg' : '🌱 Veg'})`;
-      localStorage.setItem('met_pro_clients_fresh_v10', JSON.stringify(clients));
-      loadTodayClientView();
-    }
-
-    function renderClientDayButtons() {
-      const container = document.getElementById('cpDayGridButtons');
-      container.innerHTML = '';
-      DAYS.forEach(d => {
-        const isCurrent = d.id === clientViewDay;
-        const btn = document.createElement('button');
-        btn.className = isCurrent 
-          ? "py-2 rounded-xl bg-teal-600 text-white font-extrabold text-xs shadow-sm" 
-          : "py-2 rounded-xl bg-white text-slate-600 font-bold text-xs border border-slate-200 hover:bg-slate-50";
-        btn.innerText = d.short;
-        btn.onclick = () => {
-          clientViewDay = d.id;
-          renderClientDayButtons();
-          loadTodayClientView();
-        };
-        container.appendChild(btn);
-      });
     }
 
     function loadTodayClientView() {
       const c = clients.find(x => x.id === activeClientId);
       if(!c) return;
       if(!c.compliance) c.compliance = {};
-      if(!c.compliance[clientViewDay]) {
-        c.compliance[clientViewDay] = {
-          morning: 'done', breakfast: 'done', lunch: 'done', snack: 'done', dinner: 'done', rule: 'done',
-          customMeals: {}, metric1: '', metric2: '', note: ''
-        };
-      }
 
-      const comp = c.compliance[clientViewDay];
-      const dObj = DAYS.find(x => x.id === clientViewDay);
-      document.getElementById('cpActiveDayLabel').innerText = `${dObj.name}'s Flow`;
+      const isBlankDate = !c.compliance[selectedDateKey];
+      const comp = isBlankDate ? {
+        morning: 'idle', breakfast: 'idle', lunch: 'idle', snack: 'idle', dinner: 'idle', rule: 'idle',
+        customMeals: {}, metric1: '', metric2: '', note: ''
+      } : c.compliance[selectedDateKey];
 
-      const plan = (c.weeklyPlan && c.weeklyPlan[clientViewDay]) ? c.weeklyPlan[clientViewDay] : (c.weeklyPlan['mon'] || {});
+      const dObj = parseDateKey(selectedDateKey);
+      const dayKey = DAY_KEYS[dObj.getDay()];
+      const plan = (c.weeklyPlan && c.weeklyPlan[dayKey]) ? c.weeklyPlan[dayKey] : (c.weeklyPlan['mon'] || {});
 
       const slots = [
         { key: 'morning', time: 'Early Morning (ખાલી પેટે)', label: '1. Alkaline Detox Infusion', icon: '🥒', defaultText: plan.morning || "Ash Gourd + Coriander + Raw Turmeric + Fresh Ginger" },
         { key: 'breakfast', time: 'Morning Breakfast (નાસ્તો)', label: '2. Breakfast & Protein Charge', icon: '🥗', defaultText: plan.breakfast || (c.diet==='nonveg'?"3 Boiled Egg Whites + Moong Chaat":"Moong Dal Chila + Fresh Paneer 30g + Salad") },
-        { key: 'lunch', time: 'Afternoon Lunch (બપોરનું ભોજન)', label: '3. Glycemic Barrier Lunch Plate', icon: '🫓', defaultText: plan.lunch || (c.diet==='nonveg'?"Salad + 1 Super Flour Roti + Grilled Chicken + Chaas":"1 Big Salad Bowl + 1 Super Flour Roti + Sabzi + Chaas") },
+        { key: 'lunch', time: 'Afternoon Lunch (બપોરનું ભોજન)', label: '3. Glycemic Barrier Lunch Plate', icon: '🫓', defaultText: plan.lunch || (c.diet==='nonveg'?"Salad + 1 Super Flour Roti + Grilled Chicken + Chaas":"1 Big Bowl Raw Salad + 1 Super Flour Roti + Sabzi + Chaas") },
         { key: 'snack', time: 'Evening Snack (સાંજે ૪-૫ વાગ્યે)', label: '4. Anti-Craving Evening Fuel', icon: '🍈', defaultText: plan.snack || "1 Bowl Spiced Guava + Roasted Pumpkin Seeds" },
         { key: 'dinner', time: 'Night Dinner (રાત્રે ૮:૩૦ પહેલાં)', label: '5. Restorative Dinner & Sleep Fuel', icon: '🍲', defaultText: plan.dinner || (c.diet==='nonveg'?"Clear Chicken Soup + Sauteed Greens":"Creamy Pumpkin Soup + Sauteed Veggies + Paneer") },
         { key: 'rule', time: 'Night Routine (સૂતી વખતે)', label: '6. Circadian Habits & Leg Elevation', icon: '🌙', defaultText: plan.rule || "Post-Meal 15-min walk + Elevate legs on pillows for 15-20 min" }
@@ -1056,7 +778,7 @@ ${portalUrl}
       container.innerHTML = '';
 
       slots.forEach(s => {
-        const currentCheck = comp[s.key] || 'done';
+        const currentCheck = comp[s.key] || 'idle';
         const activeText = comp.customMeals?.[s.key] || s.defaultText;
 
         const card = document.createElement('div');
@@ -1077,13 +799,13 @@ ${portalUrl}
           </div>
 
           <div class="grid grid-cols-3 gap-1.5 pt-0.5">
-            <button onclick="setClientCheck('${s.key}', 'done')" class="py-2 px-2 rounded-xl text-xs flex items-center justify-center gap-1 border transition ${currentCheck === 'done' ? 'btn-done-active' : 'btn-idle'}">
+            <button onclick="setClientDateCheck('${s.key}', 'done')" class="py-2 px-2 rounded-xl text-xs flex items-center justify-center gap-1 border transition ${currentCheck === 'done' ? 'btn-done-active' : 'btn-idle'}">
               <i class="fa-solid fa-check"></i> Done
             </button>
-            <button onclick="setClientCheck('${s.key}', 'half')" class="py-2 px-2 rounded-xl text-xs flex items-center justify-center gap-1 border transition ${currentCheck === 'half' ? 'btn-half-active' : 'btn-idle'}">
+            <button onclick="setClientDateCheck('${s.key}', 'half')" class="py-2 px-2 rounded-xl text-xs flex items-center justify-center gap-1 border transition ${currentCheck === 'half' ? 'btn-half-active' : 'btn-idle'}">
               <i class="fa-solid fa-triangle-exclamation"></i> 50% Partial
             </button>
-            <button onclick="setClientCheck('${s.key}', 'miss')" class="py-2 px-2 rounded-xl text-xs flex items-center justify-center gap-1 border transition ${currentCheck === 'miss' ? 'btn-miss-active' : 'btn-idle'}">
+            <button onclick="setClientDateCheck('${s.key}', 'miss')" class="py-2 px-2 rounded-xl text-xs flex items-center justify-center gap-1 border transition ${currentCheck === 'miss' ? 'btn-miss-active' : 'btn-idle'}">
               <i class="fa-solid fa-xmark"></i> Missed
             </button>
           </div>
@@ -1092,15 +814,21 @@ ${portalUrl}
       });
 
       renderVitalsSection(c, comp);
-      evaluateMotivation(comp);
+      evaluateMotivation(comp, isBlankDate);
+      updateDateHeader();
     }
 
-    function setClientCheck(slotKey, state) {
+    function setClientDateCheck(slotKey, state) {
       const c = clients.find(x => x.id === activeClientId);
       if(!c) return;
-      if(!c.compliance[clientViewDay]) c.compliance[clientViewDay] = {};
-      c.compliance[clientViewDay][slotKey] = state;
-      localStorage.setItem('met_pro_clients_fresh_v10', JSON.stringify(clients));
+      if(!c.compliance[selectedDateKey]) {
+        c.compliance[selectedDateKey] = {
+          morning: 'idle', breakfast: 'idle', lunch: 'idle', snack: 'idle', dinner: 'idle', rule: 'idle',
+          customMeals: {}, metric1: '', metric2: '', note: ''
+        };
+      }
+      c.compliance[selectedDateKey][slotKey] = state;
+      localStorage.setItem('met_pro_clients_fresh_v11', JSON.stringify(clients));
       loadTodayClientView();
     }
 
@@ -1111,42 +839,58 @@ ${portalUrl}
       if (isGym) {
         container.innerHTML = `
           <div class="grid grid-cols-2 gap-2">
-            <div><label class="text-[9px] text-slate-500 font-semibold">Protein Intake</label><input type="text" id="cpInM1" onchange="saveVitals()" value="${comp.metric1||''}" placeholder="e.g. 110g taken" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs"></div>
-            <div><label class="text-[9px] text-slate-500 font-semibold">Water (Litres)</label><input type="number" step="0.5" id="cpInM2" onchange="saveVitals()" value="${comp.metric2||''}" placeholder="e.g. 3.5L" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs"></div>
+            <div><label class="text-[9px] text-slate-500 font-semibold">Protein Intake</label><input type="text" id="cpInM1" onchange="saveDateVitals()" value="${comp.metric1||''}" placeholder="e.g. 110g taken" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs"></div>
+            <div><label class="text-[9px] text-slate-500 font-semibold">Water (Litres)</label><input type="number" step="0.5" id="cpInM2" onchange="saveDateVitals()" value="${comp.metric2||''}" placeholder="e.g. 3.5L" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs"></div>
           </div>
-          <div><input type="text" id="cpInNote" onchange="saveVitals()" value="${comp.note||''}" placeholder="Workout comments, pump, energy feel..." class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs mt-1"></div>
+          <div><input type="text" id="cpInNote" onchange="saveDateVitals()" value="${comp.note||''}" placeholder="Workout comments, pump, energy feel..." class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs mt-1"></div>
         `;
       } else {
         container.innerHTML = `
           <div class="grid grid-cols-2 gap-2">
-            <div><label class="text-[9px] text-slate-500 font-semibold">Fasting Sugar (mg/dL)</label><input type="number" id="cpInM1" onchange="saveVitals()" value="${comp.metric1||''}" placeholder="e.g. 125" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs"></div>
-            <div><label class="text-[9px] text-slate-500 font-semibold">PP2BS / Post-Meal</label><input type="number" id="cpInM2" onchange="saveVitals()" value="${comp.metric2||''}" placeholder="e.g. 160" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs"></div>
+            <div><label class="text-[9px] text-slate-500 font-semibold">Fasting Sugar (mg/dL)</label><input type="number" id="cpInM1" onchange="saveDateVitals()" value="${comp.metric1||''}" placeholder="e.g. 125" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs"></div>
+            <div><label class="text-[9px] text-slate-500 font-semibold">PP2BS / Post-Meal</label><input type="number" id="cpInM2" onchange="saveDateVitals()" value="${comp.metric2||''}" placeholder="e.g. 160" class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs"></div>
           </div>
-          <div><input type="text" id="cpInNote" onchange="saveVitals()" value="${comp.note||''}" placeholder="Daily feel, sleep quality, observations..." class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs mt-1"></div>
+          <div><input type="text" id="cpInNote" onchange="saveDateVitals()" value="${comp.note||''}" placeholder="Daily feel, sleep quality, observations..." class="w-full bg-slate-50 border border-slate-200 p-2 rounded-lg text-slate-800 text-xs mt-1"></div>
         `;
       }
     }
 
-    function saveVitals() {
+    function saveDateVitals() {
       const c = clients.find(x => x.id === activeClientId);
-      if(!c || !c.compliance[clientViewDay]) return;
-      c.compliance[clientViewDay].metric1 = document.getElementById('cpInM1')?.value || '';
-      c.compliance[clientViewDay].metric2 = document.getElementById('cpInM2')?.value || '';
-      c.compliance[clientViewDay].note = document.getElementById('cpInNote')?.value || '';
-      localStorage.setItem('met_pro_clients_fresh_v10', JSON.stringify(clients));
+      if(!c) return;
+      if(!c.compliance[selectedDateKey]) {
+        c.compliance[selectedDateKey] = {
+          morning: 'idle', breakfast: 'idle', lunch: 'idle', snack: 'idle', dinner: 'idle', rule: 'idle',
+          customMeals: {}, metric1: '', metric2: '', note: ''
+        };
+      }
+      c.compliance[selectedDateKey].metric1 = document.getElementById('cpInM1')?.value || '';
+      c.compliance[selectedDateKey].metric2 = document.getElementById('cpInM2')?.value || '';
+      c.compliance[selectedDateKey].note = document.getElementById('cpInNote')?.value || '';
+      localStorage.setItem('met_pro_clients_fresh_v11', JSON.stringify(clients));
+      updateDateHeader();
     }
 
-    function evaluateMotivation(comp) {
+    function evaluateMotivation(comp, isBlankDate) {
+      const banner = document.getElementById('cpMotivationBanner');
+      if (isBlankDate || !comp) {
+        banner.className = "p-3 rounded-2xl border border-slate-200 bg-white text-xs space-y-1";
+        banner.innerHTML = `
+          <div class="flex justify-between items-center"><span class="font-bold text-slate-700"><i class="fa-solid fa-calendar-day text-teal-600"></i> Fresh Day Ahead</span><span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] rounded-full font-bold">Unlogged</span></div>
+          <p class="text-[11px] text-slate-500">Tap Done, 50% Partial, or Missed as you complete each routine throughout the day!</p>
+        `;
+        return;
+      }
+
       const slots = ['morning', 'breakfast', 'lunch', 'snack', 'dinner', 'rule'];
       let earned = 0;
       slots.forEach(s => {
-        const st = comp[s] || 'done';
+        const st = comp[s] || 'idle';
         if(st === 'done') earned += 100;
         else if(st === 'half') earned += 50;
       });
       const score = Math.round(earned / 6);
 
-      const banner = document.getElementById('cpMotivationBanner');
       if (score >= 85) {
         banner.className = "p-3 rounded-2xl border border-emerald-200 bg-emerald-50 text-xs space-y-1";
         banner.innerHTML = `
@@ -1168,7 +912,93 @@ ${portalUrl}
       }
     }
 
-    // --- INGREDIENT CUSTOMIZER & SEASONAL SUBSTITUTE LOGIC ---
+    function submitClientReport(type) {
+      const c = clients.find(x => x.id === activeClientId);
+      if(!c) return;
+      saveDateVitals();
+
+      const symbolMap = { done: '✅ Done (100%)', half: '⚠️ Partial (50%)', miss: '❌ Missed', idle: '⚪ Not Logged' };
+
+      if (type === 'daily') {
+        const comp = c.compliance[selectedDateKey] || {};
+        const dObj = parseDateKey(selectedDateKey);
+        const dayFormatted = dObj.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
+
+        let earned = 0;
+        ['morning', 'breakfast', 'lunch', 'snack', 'dinner', 'rule'].forEach(k => {
+          const st = comp[k] || 'idle';
+          if(st === 'done') earned += 100; else if(st === 'half') earned += 50;
+        });
+        const score = Math.round(earned / 6);
+
+        let msg = `🩺 *Metabolic Pro - Daily Routine Sync*
+Client: *${c.name}* (#${c.id})
+Goal: *${c.goal}* (${c.diet === 'nonveg' ? '🍗 Non-Veg' : '🌱 Veg'})
+📅 Date: *${dayFormatted}*
+Score: *${score}% Compliance*
+
+📋 *Meal Breakdown & Status for this Date:*
+• 1. Morning Detox: ${symbolMap[comp.morning || 'idle']}
+  ↳ Plate: _${comp.customMeals?.morning || 'Standard Detox'}_
+• 2. Breakfast Fuel: ${symbolMap[comp.breakfast || 'idle']}
+  ↳ Plate: _${comp.customMeals?.breakfast || 'Standard Breakfast'}_
+• 3. Lunch Plate: ${symbolMap[comp.lunch || 'idle']}
+  ↳ Plate: _${comp.customMeals?.lunch || 'Standard Lunch'}_
+• 4. Afternoon Snack: ${symbolMap[comp.snack || 'idle']}
+  ↳ Plate: _${comp.customMeals?.snack || 'Standard Snack'}_
+• 5. Dinner Recovery: ${symbolMap[comp.dinner || 'idle']}
+  ↳ Plate: _${comp.customMeals?.dinner || 'Standard Dinner'}_
+• 6. Daily Protocol: ${symbolMap[comp.rule || 'idle']}
+
+🩸 *Vitals & Habits:*
+- Fasting / Metric 1: ${comp.metric1 || 'Not logged'}
+- Post-Meal / Metric 2: ${comp.metric2 || 'Not logged'}
+- Notes: "${comp.note || 'All feels well.'}"`;
+
+        window.open(`https://wa.me/${COACH_EMERGENCY_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
+
+      } else {
+        const weekDates = getCurrentWeekDates();
+        let totalPossible = 0;
+        let totalEarned = 0;
+        let weekBreakdown = "";
+
+        weekDates.forEach(d => {
+          const dKey = formatDateToKey(d);
+          const dComp = c.compliance[dKey] || {};
+          let dayEarned = 0;
+          let hasEntries = false;
+
+          ['morning', 'breakfast', 'lunch', 'snack', 'dinner', 'rule'].forEach(k => {
+            totalPossible += 100;
+            const st = dComp[k] || 'idle';
+            if(st === 'done') { dayEarned += 100; totalEarned += 100; hasEntries = true; }
+            else if(st === 'half') { dayEarned += 50; totalEarned += 50; hasEntries = true; }
+            else if(st === 'miss') { hasEntries = true; }
+          });
+
+          const dayScore = Math.round(dayEarned / 6);
+          const dayShort = DAY_NAMES[d.getDay()].substring(0, 3);
+          const dateNum = d.getDate();
+          weekBreakdown += `• ${dayShort} (${dateNum}th): ${hasEntries ? `${dayScore}% adherence` : 'Blank / Rest'}\n`;
+        });
+
+        const weeklyScore = Math.round((totalEarned / totalPossible) * 100);
+
+        let msg = `📊 *Metabolic Pro - 7-Day Weekly Summary*
+Client: *${c.name}* (#${c.id})
+Target: *${c.goal}*
+Weekly Score: *${weeklyScore}% Overall Adherence*
+
+🗓️ *Daily Consistency Snapshot for this Week:*
+${weekBreakdown}
+Ready for next week's adjustments & clinical review!`;
+
+        window.open(`https://wa.me/${COACH_EMERGENCY_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
+      }
+    }
+
+    // Modal Helpers, Customizer & General CRM Logic
     function openCustomizer(slotKey, currentText, defaultText) {
       cstActiveSlot = slotKey;
       cstIdealString = defaultText;
@@ -1182,17 +1012,13 @@ ${portalUrl}
         rule: 'Daily Protocol'
       };
       document.getElementById('cstModalTitle').innerHTML = `<i class="fa-solid fa-kitchen-set text-teal-600"></i> ${slotTitles[slotKey]}`;
-
       cstActiveTags = currentText.split('+').map(s => s.trim()).filter(s => s.length > 0);
       renderCustomizerTags();
       renderCustomizerSubstitutes();
-
       document.getElementById('ingredientCustomizerModal').classList.remove('hidden');
     }
 
-    function closeCustomizer() {
-      document.getElementById('ingredientCustomizerModal').classList.add('hidden');
-    }
+    function closeCustomizer() { document.getElementById('ingredientCustomizerModal').classList.add('hidden'); }
 
     function renderCustomizerTags() {
       const container = document.getElementById('cstActiveTags');
@@ -1204,41 +1030,23 @@ ${portalUrl}
       cstActiveTags.forEach((t, idx) => {
         const tag = document.createElement('span');
         tag.className = "px-2.5 py-1 rounded-xl bg-teal-50 border border-teal-300 text-teal-800 text-xs font-semibold flex items-center gap-1.5 shadow-xs";
-        tag.innerHTML = `
-          <span>${t}</span>
-          <button onclick="removeCstTag(${idx})" class="text-teal-700 hover:text-rose-600 ml-0.5"><i class="fa-solid fa-xmark"></i></button>
-        `;
+        tag.innerHTML = `<span>${t}</span><button onclick="removeCstTag(${idx})" class="text-teal-700 hover:text-rose-600 ml-0.5"><i class="fa-solid fa-xmark"></i></button>`;
         container.appendChild(tag);
       });
     }
 
-    function removeCstTag(index) {
-      cstActiveTags.splice(index, 1);
-      renderCustomizerTags();
-    }
-
-    function addCstTag(text) {
-      if(!cstActiveTags.includes(text)) {
-        cstActiveTags.push(text);
-        renderCustomizerTags();
-      }
-    }
-
-    function resetCustomizerToIdeal() {
-      cstActiveTags = cstIdealString.split('+').map(s => s.trim()).filter(s => s.length > 0);
-      renderCustomizerTags();
-    }
+    function removeCstTag(index) { cstActiveTags.splice(index, 1); renderCustomizerTags(); }
+    function addCstTag(text) { if(!cstActiveTags.includes(text)) { cstActiveTags.push(text); renderCustomizerTags(); } }
+    function resetCustomizerToIdeal() { cstActiveTags = cstIdealString.split('+').map(s => s.trim()).filter(s => s.length > 0); renderCustomizerTags(); }
 
     function renderCustomizerSubstitutes() {
       const c = clients.find(x => x.id === activeClientId);
       const isNonVeg = c && c.diet === 'nonveg';
-
       let poolKey = cstActiveSlot;
       if(['breakfast', 'lunch', 'snack', 'dinner'].includes(cstActiveSlot)) {
         poolKey = isNonVeg ? `${cstActiveSlot}_nonveg` : `${cstActiveSlot}_veg`;
       }
       const pool = SUBSTITUTES_POOL[poolKey] || SUBSTITUTES_POOL[cstActiveSlot] || [];
-
       const container = document.getElementById('cstSubstitutesContainer');
       container.innerHTML = '';
       pool.forEach(item => {
@@ -1253,18 +1061,16 @@ ${portalUrl}
     function applyCustomizerTags() {
       const c = clients.find(x => x.id === activeClientId);
       if(!c) return;
-      if(!c.compliance[clientViewDay]) c.compliance[clientViewDay] = {};
-      if(!c.compliance[clientViewDay].customMeals) c.compliance[clientViewDay].customMeals = {};
-
-      const finalString = cstActiveTags.join(' + ');
-      c.compliance[clientViewDay].customMeals[cstActiveSlot] = finalString;
-
-      localStorage.setItem('met_pro_clients_fresh_v10', JSON.stringify(clients));
+      if(!c.compliance[selectedDateKey]) {
+        c.compliance[selectedDateKey] = { morning: 'idle', breakfast: 'idle', lunch: 'idle', snack: 'idle', dinner: 'idle', rule: 'idle', customMeals: {}, metric1: '', metric2: '', note: '' };
+      }
+      if(!c.compliance[selectedDateKey].customMeals) c.compliance[selectedDateKey].customMeals = {};
+      c.compliance[selectedDateKey].customMeals[cstActiveSlot] = cstActiveTags.join(' + ');
+      localStorage.setItem('met_pro_clients_fresh_v11', JSON.stringify(clients));
       closeCustomizer();
       loadTodayClientView();
     }
 
-    // --- GROWTH / REFERRAL ---
     function openGrowthModal() { document.getElementById('modalGrowth').classList.remove('hidden'); }
     function closeGrowthModal() { document.getElementById('modalGrowth').classList.add('hidden'); }
     function shareReferralWhatsApp() {
@@ -1273,115 +1079,24 @@ ${portalUrl}
       const refLink = `${origin}?ref=${c?.id || 'CL-101'}`;
       const refMsg = `Hey! I am using the *Metabolic Pro* app to reverse metabolic fatigue and optimize my health. 
 Join using my link and get 30 days of VIP health coaching completely FREE:
-${refLink}
-
-Let's stay healthy together!`;
+${refLink}`;
       window.open(`https://wa.me/?text=${encodeURIComponent(refMsg)}`, '_blank');
     }
 
-    // --- SUPPORT / FEEDBACK TICKET ---
     function openFeedbackModal() { document.getElementById('modalFeedback').classList.remove('hidden'); }
     function closeFeedbackModal() { document.getElementById('modalFeedback').classList.add('hidden'); }
     function sendFeedbackWhatsApp() {
       const c = clients.find(x => x.id === activeClientId);
       const cat = document.getElementById('fbCategory').value;
       const msg = document.getElementById('fbMessage').value.trim();
-      if(!msg) return alert('Please enter your message or question.');
-
-      const userAgent = navigator.userAgent.includes('iPhone') ? 'iPhone Safari' : (navigator.userAgent.includes('Android') ? 'Android Chrome' : 'Desktop Browser');
-
-      const ticketMsg = `📩 *Metabolic Pro - Support & Feedback Ticket*
-Client: *${c?.name || 'User'}* (#${c?.id || 'CL-New'})
-Category: *${cat}*
-Device: *${userAgent}*
-
-*Message:*
-"${msg}"`;
-
-      window.open(`https://wa.me/919081421028?text=${encodeURIComponent(ticketMsg)}`, '_blank');
+      if(!msg) return alert('Please enter your message.');
+      const userAgent = navigator.userAgent.includes('iPhone') ? 'iPhone Safari' : 'Android Chrome';
+      const ticketMsg = `📩 *Metabolic Pro - Support Ticket*\nClient: *${c?.name || 'User'}* (#${c?.id || 'CL-New'})\nCategory: *${cat}*\nDevice: *${userAgent}*\n\n*Message:*\n"${msg}"`;
+      window.open(`https://wa.me/${COACH_EMERGENCY_PHONE}?text=${encodeURIComponent(ticketMsg)}`, '_blank');
       closeFeedbackModal();
       document.getElementById('fbMessage').value = '';
     }
 
-    // --- REPORTING LOGIC: DAILY & WEEKLY WHATSAPP SYNC ---
-    function submitClientReport(type) {
-      const c = clients.find(x => x.id === activeClientId);
-      if(!c) return;
-      saveVitals();
-
-      const symbolMap = { done: '✅ Done (100%)', half: '⚠️ Partial (50%)', miss: '❌ Missed' };
-
-      if (type === 'daily') {
-        const comp = c.compliance[clientViewDay] || {};
-        const dObj = DAYS.find(x => x.id === clientViewDay);
-
-        let earned = 0;
-        ['morning', 'breakfast', 'lunch', 'snack', 'dinner', 'rule'].forEach(k => {
-          const st = comp[k] || 'done';
-          if(st === 'done') earned += 100; else if(st === 'half') earned += 50;
-        });
-        const score = Math.round(earned / 6);
-
-        let msg = `🩺 *Metabolic Pro - Daily Routine Sync*
-Client: *${c.name}* (#${c.id})
-Goal: *${c.goal}* (${c.diet === 'nonveg' ? '🍗 Non-Veg' : '🌱 Veg'})
-Day: *${dObj.name}*
-Daily Score: *${score}% Compliance*
-
-📋 *Today's Meal Breakdown & Customization:*
-• 1. Morning Detox: ${symbolMap[comp.morning || 'done']}
-  ↳ Plate: _${comp.customMeals?.morning || 'Standard Detox'}_
-• 2. Breakfast Fuel: ${symbolMap[comp.breakfast || 'done']}
-  ↳ Plate: _${comp.customMeals?.breakfast || 'Standard Breakfast'}_
-• 3. Lunch Plate: ${symbolMap[comp.lunch || 'done']}
-  ↳ Plate: _${comp.customMeals?.lunch || 'Standard Lunch'}_
-• 4. Afternoon Snack: ${symbolMap[comp.snack || 'done']}
-  ↳ Plate: _${comp.customMeals?.snack || 'Standard Snack'}_
-• 5. Dinner Recovery: ${symbolMap[comp.dinner || 'done']}
-  ↳ Plate: _${comp.customMeals?.dinner || 'Standard Dinner'}_
-• 6. Daily Protocol: ${symbolMap[comp.rule || 'done']}
-
-🩸 *Vitals & Habits:*
-- Fasting / Metric 1: ${comp.metric1 || 'Logged'}
-- Post-Meal / Metric 2: ${comp.metric2 || 'Logged'}
-- Notes: "${comp.note || 'All feels well.'}"`;
-
-        window.open(`https://wa.me/919081421028?text=${encodeURIComponent(msg)}`, '_blank');
-
-      } else {
-        let totalPossible = 0;
-        let totalEarned = 0;
-        let weekBreakdown = "";
-
-        DAYS.forEach(d => {
-          const dayComp = c.compliance[d.id] || {};
-          let dayEarned = 0;
-          ['morning', 'breakfast', 'lunch', 'snack', 'dinner', 'rule'].forEach(k => {
-            totalPossible += 100;
-            const st = dayComp[k] || 'done';
-            if(st === 'done') { dayEarned += 100; totalEarned += 100; }
-            else if(st === 'half') { dayEarned += 50; totalEarned += 50; }
-          });
-          const dayScore = Math.round(dayEarned / 6);
-          weekBreakdown += `• ${d.short}: ${dayScore}% adherence\n`;
-        });
-
-        const weeklyScore = Math.round((totalEarned / totalPossible) * 100);
-
-        let msg = `📊 *Metabolic Pro - 7-Day Weekly Summary*
-Client: *${c.name}* (#${c.id})
-Target: *${c.goal}*
-Weekly Score: *${weeklyScore}% Overall Adherence*
-
-🗓️ *Daily Consistency Snapshot:*
-${weekBreakdown}
-Ready for next week's adjustments & clinical review!`;
-
-        window.open(`https://wa.me/919081421028?text=${encodeURIComponent(msg)}`, '_blank');
-      }
-    }
-
-    // Modal Helpers
     function openModal() { document.getElementById('admModal').classList.remove('hidden'); }
     function closeModal() { document.getElementById('admModal').classList.add('hidden'); }
     function addNewClient() {
@@ -1390,15 +1105,12 @@ Ready for next week's adjustments & clinical review!`;
       const g = document.getElementById('mGoal').value;
       const d = document.getElementById('mDiet').value;
       if(!n || !p) return alert('Please enter name and phone number.');
-
       const cleanPhone = p.replace(/\D/g, '');
       const pin = cleanPhone.slice(-4) || '1234';
       const newId = "CL-" + (100 + clients.length + 1);
-
       clients.unshift({
         id: newId, name: n, phone: cleanPhone, pin: pin, goal: g, diet: d, tier: 'trial', trialDays: 30, status: 'ACTIVE',
-        weeklyPlan: { mon: { morning: '', breakfast: '', lunch: '', snack: '', dinner: '', rule: '' } },
-        compliance: {}
+        weeklyPlan: { mon: { morning: '', breakfast: '', lunch: '', snack: '', dinner: '', rule: '' } }, compliance: {}
       });
       closeModal();
       renderAdminClients();
@@ -1412,9 +1124,7 @@ Ready for next week's adjustments & clinical review!`;
       }
     }
 
-    function filterAdminClients() {
-      const q = document.getElementById('admSearch').value.toLowerCase();
-    }
+    function filterAdminClients() { const q = document.getElementById('admSearch').value.toLowerCase(); }
 
     function runLabAnalysis() {
       const h = parseFloat(document.getElementById('inHba1c').value)||0;
@@ -1432,6 +1142,38 @@ Ready for next week's adjustments & clinical review!`;
         <div>• <strong>Glycemic Barrier:</strong> Raw salad bowl before Super Flour roti.</div>
       `;
       document.getElementById('labResult').classList.remove('hidden');
+    }
+
+    // Portal hook
+    function openClientPortalById(cId) {
+      const c = clients.find(x => x.id === cId) || clients[0];
+      if(!c) return;
+      activeClientId = c.id;
+
+      document.getElementById('authView').classList.add('hidden');
+      document.getElementById('adminAuthView').classList.add('hidden');
+      document.getElementById('adminView').classList.add('hidden');
+      document.getElementById('clientPortalView').classList.remove('hidden');
+
+      let icon = "🩺";
+      if(c.goal.includes('Gym')) icon = "🏋️";
+      else if(c.goal.includes('Pregnancy')) icon = "🤰";
+      else if(c.goal.includes('Menopause')) icon = "🌸";
+
+      document.getElementById('cpAvatar').innerText = icon;
+      document.getElementById('cpClientTitle').innerText = `${c.name}`;
+      document.getElementById('cpClientSub').innerText = `${c.goal} (${c.diet === 'nonveg' ? '🍗 Non-Veg' : '🌱 Veg'})`;
+      document.getElementById('cpGoalSelector').value = c.goal;
+      document.getElementById('cpTierBadge').innerText = "30-Day Free Trial";
+      document.getElementById('cpTrialDaysLeft').innerText = `${c.trialDays || 29} Days Left`;
+
+      updateDietSwitcherUI(c.diet || 'veg');
+
+      // Initialize to current real calendar date
+      selectedDateKey = getTodayDateKey();
+      weekOffset = 0;
+      renderClientDateStrip();
+      loadTodayClientView();
     }
   </script>
 </body>
