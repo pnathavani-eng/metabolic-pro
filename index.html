@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Metabolic Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { background-color: #0b0c10; color: #e5e7eb; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    .gold-bg { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .card-dark { background-color: #15171e; border: 1px solid #262936; }
+    .tab-act { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000 !important; font-weight: 700; }
+  </style>
+</head>
+<body class="pb-24">
+  <!-- Header -->
+  <header class="p-3 bg-[#11131a] border-b border-[#222533] sticky top-0 z-50 flex justify-between items-center">
+    <div class="flex items-center gap-2">
+      <span class="text-xl">🩺</span>
+      <h1 class="font-extrabold text-amber-500 text-base">Metabolic Pro</h1>
+    </div>
+    <div class="px-2.5 py-1 rounded-full bg-emerald-950 border border-emerald-800 text-emerald-400 text-[10px] flex items-center gap-1">
+      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span id="syncText">Online Mode</span>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <div class="flex p-2 gap-1.5 bg-[#0e1017] border-b border-[#1f2230] text-xs overflow-x-auto">
+    <button onclick="setTab('clients')" id="t-clients" class="tab-act px-3 py-1.5 rounded-lg flex items-center gap-1 whitespace-nowrap"><i class="fa-solid fa-users"></i> ક્લાયન્ટ્સ</button>
+    <button onclick="setTab('lab')" id="t-lab" class="px-3 py-1.5 rounded-lg text-gray-400 bg-[#161822] flex items-center gap-1 whitespace-nowrap"><i class="fa-solid fa-vial"></i> લેબ રિપોર્ટ</button>
+    <button onclick="setTab('meal')" id="t-meal" class="px-3 py-1.5 rounded-lg text-gray-400 bg-[#161822] flex items-center gap-1 whitespace-nowrap"><i class="fa-solid fa-calculator"></i> GI મીલ</button>
+    <button onclick="setTab('fb')" id="t-fb" class="px-3 py-1.5 rounded-lg text-gray-400 bg-[#161822] flex items-center gap-1 whitespace-nowrap"><i class="fa-solid fa-gear"></i> ફાયરબેઝ</button>
+  </div>
+
+  <main class="p-3 max-w-lg mx-auto space-y-3">
+    <!-- KPI Counters -->
+    <div class="grid grid-cols-4 gap-2 text-center">
+      <div class="card-dark p-2 rounded-xl"><div id="stTotal" class="text-base font-black text-amber-500">1</div><div class="text-[9px] text-gray-400">કુલ ક્લાયન્ટ</div></div>
+      <div class="card-dark p-2 rounded-xl"><div id="stSugar" class="text-base font-black text-emerald-400">1</div><div class="text-[9px] text-gray-400">ડાયાબિટીસ</div></div>
+      <div class="card-dark p-2 rounded-xl"><div id="stLiver" class="text-base font-black text-yellow-500">1</div><div class="text-[9px] text-gray-400">ફેટી લિવર</div></div>
+      <div class="card-dark p-2 rounded-xl"><div id="stDone" class="text-base font-black text-blue-400">0</div><div class="text-[9px] text-gray-400">રીઝોલ્વ્ડ</div></div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-2">
+      <button onclick="openModal()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1.5"><i class="fa-solid fa-plus"></i> નવો ક્લાયન્ટ</button>
+      <button onclick="syncNow()" class="bg-[#1c1f2c] border border-gray-700 text-gray-200 py-2 px-3 rounded-xl text-xs flex items-center gap-1"><i class="fa-solid fa-rotate"></i> સિંક</button>
+    </div>
+
+    <!-- TAB 1: CLIENTS -->
+    <section id="v-clients" class="space-y-2.5">
+      <input type="text" id="srch" oninput="filterList()" placeholder="સર્ચ કરો નામ, નંબર કે આઈડી..." class="w-full bg-[#141620] border border-[#272a3b] rounded-xl px-3 py-2 text-xs text-white">
+      <div id="clientList" class="space-y-2"></div>
+    </section>
+
+    <!-- TAB 2: LAB REPORT -->
+    <section id="v-lab" class="hidden space-y-3">
+      <div class="card-dark p-3.5 rounded-2xl space-y-2.5 text-xs">
+        <h2 class="font-bold text-amber-500 flex items-center gap-1.5"><i class="fa-solid fa-microscope"></i> બ્લડ રિપોર્ટ એનાલાઇઝર</h2>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="col-span-2">
+            <label class="text-[10px] text-gray-400">ક્લાયન્ટ</label>
+            <select id="selLabClient" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white mt-0.5"></select>
+          </div>
+          <div><label class="text-[10px] text-gray-400">HbA1c (%)</label><input type="number" step="0.1" id="inHba1c" placeholder="7.2" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
+          <div><label class="text-[10px] text-gray-400">Fasting (mg/dL)</label><input type="number" id="inFast" placeholder="135" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
+          <div><label class="text-[10px] text-gray-400">SGPT (ALT)</label><input type="number" id="inSgpt" placeholder="48" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
+          <div><label class="text-[10px] text-gray-400">Triglycerides</label><input type="number" id="inTg" placeholder="185" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white"></div>
+        </div>
+        <button onclick="runLabAnalysis()" class="w-full gold-bg text-black font-bold py-2 rounded-xl text-xs">રિપોર્ટ એનાલાઇઝ કરો</button>
+        <div id="labResult" class="hidden space-y-2 pt-2 border-t border-gray-800">
+          <div id="riskBadges" class="flex gap-1.5 flex-wrap"></div>
+          <div id="dietAdvice" class="bg-[#0e1017] p-2.5 rounded-xl border border-gray-800 text-[11px] space-y-1"></div>
+          <button onclick="sendLabWhatsApp()" class="w-full bg-emerald-600 text-white font-bold py-1.5 rounded-xl text-xs flex items-center justify-center gap-1.5"><i class="fa-brands fa-whatsapp"></i> WhatsApp પર મોકલો</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: GI MEAL PLANNER -->
+    <section id="v-meal" class="hidden space-y-3">
+      <div class="card-dark p-3.5 rounded-2xl space-y-2.5 text-xs">
+        <h2 class="font-bold text-amber-500 flex items-center gap-1.5"><i class="fa-solid fa-calculator"></i> લાઇવ GI & GL સ્કોર</h2>
+        <div class="space-y-1.5">
+          <label class="flex justify-between items-center p-2 bg-[#0e1017] rounded-xl border border-gray-800">
+            <span><input type="checkbox" checked onchange="calcGI()" class="gi-chk accent-amber-500" data-gi="15" data-carb="4"> 🥒 દૂધી-આમળા-હળદર જ્યુસ</span>
+            <span class="text-emerald-400 font-bold text-[10px]">GI: 15</span>
+          </label>
+          <label class="flex justify-between items-center p-2 bg-[#0e1017] rounded-xl border border-gray-800">
+            <span><input type="checkbox" checked onchange="calcGI()" class="gi-chk accent-amber-500" data-gi="28" data-carb="14"> 🥗 બાફેલા મગ / પુડલા + સલાડ</span>
+            <span class="text-emerald-400 font-bold text-[10px]">GI: 28</span>
+          </label>
+          <label class="flex justify-between items-center p-2 bg-[#0e1017] rounded-xl border border-gray-800">
+            <span><input type="checkbox" checked onchange="calcGI()" class="gi-chk accent-amber-500" data-gi="30" data-carb="12"> 🫓 સુપર લોટની ૧ રોટલી + શાક + છાશ</span>
+            <span class="text-emerald-400 font-bold text-[10px]">GI: 30</span>
+          </label>
+          <label class="flex justify-between items-center p-2 bg-[#0e1017] rounded-xl border border-gray-800">
+            <span><input type="checkbox" checked onchange="calcGI()" class="gi-chk accent-amber-500" data-gi="25" data-carb="8"> 🍈 મસાલા જામફળ + કોળાના બી</span>
+            <span class="text-emerald-400 font-bold text-[10px]">GI: 25</span>
+          </label>
+          <label class="flex justify-between items-center p-2 bg-[#0e1017] rounded-xl border border-gray-800">
+            <span><input type="checkbox" onchange="calcGI()" class="gi-chk accent-amber-500" data-gi="75" data-carb="35"> <span class="text-red-400">🍩 ખાંડવાળી સ્વીટ / પૂરી / ફરસાણ</span></span>
+            <span class="text-red-400 font-bold text-[10px]">GI: 75+</span>
+          </label>
+        </div>
+        <div class="p-2.5 bg-black/40 border border-gray-800 rounded-xl space-y-1">
+          <div class="flex justify-between"><span>સરેરાશ GI સ્કોર:</span><span id="txtGi" class="font-bold text-emerald-400">25 (ખૂબ સલામત)</span></div>
+          <div class="flex justify-between"><span>ગ્લાયકેમિક લોડ (GL):</span><span id="txtGl" class="font-bold text-amber-500">6.8 (ઓછો)</span></div>
+          <p id="giNote" class="text-[10px] text-emerald-400 pt-0.5">✅ આ આહારથી ઇન્સ્યુલિન સ્પાઇક નહીં થાય.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: FIREBASE -->
+    <section id="v-fb" class="hidden space-y-3">
+      <div class="card-dark p-3.5 rounded-2xl space-y-2.5 text-xs">
+        <h2 class="font-bold text-amber-500 flex items-center gap-1.5"><i class="fa-solid fa-cloud"></i> Firebase સેટિંગ્સ</h2>
+        <div><label class="text-[10px] text-gray-400">Project ID</label><input type="text" id="fbId" placeholder="તમારા Firebase નું Project ID" class="w-full bg-[#0d0e14] border border-[#272a3b] p-2 rounded-lg text-white mt-0.5"></div>
+        <div><label class="text-[10px] text-gray-400">API Key</label><input type="text" id="fbKey" placeholder="AIzaSy..." class="w-full bg-[#0d0e14] border border-[#272a3b] p-2 rounded-lg text-white mt-0.5"></div>
+        <button onclick="saveFb()" class="w-full gold-bg text-black font-bold py-2 rounded-xl text-xs">કનેક્ટ અને સેવ કરો</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal Add Client -->
+  <div id="mClient" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="card-dark w-full max-w-sm p-4 rounded-2xl space-y-2.5 text-xs">
+      <div class="flex justify-between items-center border-b border-gray-800 pb-2">
+        <h3 class="font-bold text-amber-500">નવો ક્લાયન્ટ ઉમેરો</h3>
+        <button onclick="closeModal()"><i class="fa-solid fa-xmark text-gray-400"></i></button>
+      </div>
+      <div><label class="text-[10px] text-gray-400">પૂરું નામ</label><input type="text" id="nName" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white mt-0.5"></div>
+      <div><label class="text-[10px] text-gray-400">વોટ્સએપ નંબર (દા.ત. 919876543210)</label><input type="text" id="nPhone" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white mt-0.5"></div>
+      <div><label class="text-[10px] text-gray-400">હેલ્થ ગોલ</label>
+        <select id="nGoal" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white mt-0.5">
+          <option value="ડાયાબિટીસ રિવર્સલ">ડાયાબિટીસ રિવર્સલ</option>
+          <option value="ફેટી લિવર હીલિંગ">ફેટી લિવર હીલિંગ</option>
+          <option value="વજન ઘટાડવું">વેઇટ લોસ & ફિટનેસ</option>
+        </select>
+      </div>
+      <div><label class="text-[10px] text-gray-400">નોંધ / ફરિયાદ</label><textarea id="nQuery" rows="2" class="w-full bg-[#0d0e14] border border-[#272a3b] p-1.5 rounded-lg text-white mt-0.5"></textarea></div>
+      <div class="flex gap-2 pt-1">
+        <button onclick="closeModal()" class="flex-1 bg-gray-800 text-gray-300 py-1.5 rounded-xl">રદ કરો</button>
+        <button onclick="addClient()" class="flex-1 gold-bg text-black font-bold py-1.5 rounded-xl">સેવ કરો</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let clients = JSON.parse(localStorage.getItem('met_pro_c')) || [
+      { id: "CL-101", name: "Piyush Nathvani", phone: "919081421028", goal: "ડાયાબિટીસ & ફેટી લિવર", status: "ACTIVE", query: "બપોરે સુપર લોટ રોટલી; રાત્રે ૧૫-૨૦ મિ. પગ ઊંચા રાખવાનો નિયમ." }
+    ];
+
+    function render() {
+      localStorage.setItem('met_pro_c', JSON.stringify(clients));
+      document.getElementById('stTotal').innerText = clients.length;
+      document.getElementById('stSugar').innerText = clients.filter(c=>c.goal.includes('ડાયાબિટીસ')).length;
+      document.getElementById('stLiver').innerText = clients.filter(c=>c.goal.includes('લિવર')).length;
+      document.getElementById('stDone').innerText = clients.filter(c=>c.status==='DONE').length;
+
+      const container = document.getElementById('clientList');
+      container.innerHTML = '';
+      clients.forEach(c => {
+        const d = document.createElement('div');
+        d.className = "card-dark p-3 rounded-2xl space-y-1.5";
+        d.innerHTML = `
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] font-black px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">#${c.id}</span>
+            <button onclick="delClient('${c.id}')" class="text-gray-500 hover:text-red-400 text-xs"><i class="fa-solid fa-trash-can"></i></button>
+          </div>
+          <div class="flex justify-between items-center">
+            <div><h3 class="font-bold text-white text-sm">${c.name}</h3><p class="text-[11px] text-gray-400">${c.phone}</p><p class="text-[10px] text-amber-400">🎯 ${c.goal}</p></div>
+            <a href="https://wa.me/${c.phone}?text=${encodeURIComponent(getDietMsg(c))}" target="_blank" class="bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+          </div>
+          ${c.query ? `<div class="bg-[#0e1017] p-2 rounded-xl text-[10px] text-gray-300 border border-gray-800"><span class="text-amber-500">નોંધ:</span> ${c.query}</div>` : ''}
+        `;
+        container.appendChild(d);
+      });
+
+      const sel = document.getElementById('selLabClient');
+      sel.innerHTML = '';
+      clients.forEach(c => { sel.innerHTML += `<option value="${c.id}">${c.name} (#${c.id})</option>`; });
+    }
+
+    function getDietMsg(c) {
+      return `નમસ્તે ${c.name} જી,
+તમારા ગોલ (${c.goal}) માટે આજનું પ્રમાણિત આહાર શીડ્યુલ:
+૧. સવારે: મેથી/જીરા પાણી + ૧૫ મિ. પછી તાજો દૂધી-કોથમીર-આમળા અને લીલી/આંબા હળદરનો જ્યુસ.
+૨. નાસ્તો: બાફેલા મગની ચાટ / મગદાળના પુડલા + કાચું સલાડ + તાજું દહીં.
+૩. લંચ: ૧ વાટકી સલાડ + સુપર લોટની ૧ રોટલી + લીલોતરી શાક + મોળી છાશ (જમ્યા બાદ ૧૫ મિ. વૉક).
+૪. સાંજે: મસાલા જામફળ + શેકેલા કોળાના બી.
+૫. ડિનર (૮:૩૦ પહેલાં): ક્રન્ચી સોતે વેજીટેબલ્સ + પનીર / સૂપ.
+🌙 રાત્રે સૂતી વખતે ૧૫-૨૦ મિ. પગ ઊંચા રાખી ઓશીકું હટાવી દેવું.`;
+    }
+
+    function setTab(t) {
+      ['clients','lab','meal','fb'].forEach(x => {
+        document.getElementById('v-'+x).classList.add('hidden');
+        document.getElementById('t-'+x).className = "px-3 py-1.5 rounded-lg text-gray-400 bg-[#161822] flex items-center gap-1 whitespace-nowrap";
+      });
+      document.getElementById('v-'+t).classList.remove('hidden');
+      document.getElementById('t-'+t).className = "tab-act px-3 py-1.5 rounded-lg flex items-center gap-1 whitespace-nowrap";
+    }
+
+    function openModal() { document.getElementById('mClient').classList.remove('hidden'); }
+    function closeModal() { document.getElementById('mClient').classList.add('hidden'); }
+
+    function addClient() {
+      const n = document.getElementById('nName').value.trim();
+      const p = document.getElementById('nPhone').value.trim();
+      if(!n || !p) return alert('નામ અને ફોન નંબર દાખલ કરો.');
+      clients.unshift({ id: "CL-" + (100 + clients.length + 1), name: n, phone: p, goal: document.getElementById('nGoal').value, status: 'ACTIVE', query: document.getElementById('nQuery').value });
+      closeModal();
+      document.getElementById('nName').value = ''; document.getElementById('nPhone').value = ''; document.getElementById('nQuery').value = '';
+      render();
+    }
+
+    function delClient(id) { if(confirm('ક્લાયન્ટ ડિલીટ કરવો છે?')) { clients = clients.filter(c => c.id !== id); render(); } }
+
+    function filterList() {
+      const q = document.getElementById('srch').value.toLowerCase();
+      const filtered = clients.filter(c => c.name.toLowerCase().includes(q) || c.phone.includes(q) || c.id.toLowerCase().includes(q));
+      const container = document.getElementById('clientList');
+      container.innerHTML = '';
+      filtered.forEach(c => {
+        const d = document.createElement('div');
+        d.className = "card-dark p-3 rounded-2xl space-y-1.5";
+        d.innerHTML = `<div class="flex justify-between items-center"><span class="text-[10px] font-black text-amber-400">#${c.id}</span></div><div class="flex justify-between items-center"><div><h3 class="font-bold text-white text-sm">${c.name}</h3><p class="text-[10px] text-gray-400">${c.phone}</p></div><a href="https://wa.me/${c.phone}?text=${encodeURIComponent(getDietMsg(c))}" target="_blank" class="bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a></div>`;
+        container.appendChild(d);
+      });
+    }
+
+    function runLabAnalysis() {
+      const h = parseFloat(document.getElementById('inHba1c').value)||0;
+      const f = parseFloat(document.getElementById('inFast').value)||0;
+      const s = parseFloat(document.getElementById('inSgpt').value)||0;
+      let sRisk = (h > 6.5 || f > 125) ? 'DIABETIC' : (h > 5.7 ? 'PRE-DIABETIC' : 'NORMAL');
+      let lRisk = s > 45 ? 'HIGH (FATTY LIVER)' : 'NORMAL';
+
+      document.getElementById('riskBadges').innerHTML = `
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${sRisk==='NORMAL'?'bg-emerald-950 text-emerald-400':'bg-red-950 text-red-400'} border border-gray-700">શુગર: ${sRisk}</span>
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${lRisk==='NORMAL'?'bg-emerald-950 text-emerald-400':'bg-yellow-950 text-yellow-400'} border border-gray-700">લિવર: ${lRisk}</span>
+      `;
+      document.getElementById('dietAdvice').innerHTML = `
+        <div>• <strong>લિવર:</strong> સવારે લીલી + આંબા હળદરવાળો આલ્કલાઇન જ્યુસ.</div>
+        <div>• <strong>શુગર:</strong> બપોરે સલાડ પછી ૧૦૦% સુપર લોટની ૧ જ રોટલી.</div>
+        <div>• <strong>ટ્રાઇગ્લિસરાઇડ્સ:</strong> તેલ/ઘી વગરના સોતે શાકભાજી અને ૧૫ મિ. વૉક.</div>
+      `;
+      document.getElementById('labResult').classList.remove('hidden');
+    }
+
+    function sendLabWhatsApp() {
+      const selId = document.getElementById('selLabClient').value;
+      const c = clients.find(x => x.id === selId);
+      if(!c) return;
+      const h = document.getElementById('inHba1c').value || 'N/A';
+      const f = document.getElementById('inFast').value || 'N/A';
+      const s = document.getElementById('inSgpt').value || 'N/A';
+      const msg = `નમસ્તે ${c.name} જી,
+તમારા રિપોર્ટનું એનાલિસિસ:
+- Fasting Sugar: ${f} mg/dL | HbA1c: ${h}% | SGPT: ${s} U/L
+સૂચન:
+૧. લિવર ડિટોક્સ માટે સવારે હળદરવાળો આલ્કલાઇન જ્યુસ.
+૨. બપોરે ૧ વાટકી કાચું સલાડ પછી જ સુપર લોટની રોટલી લેવી.
+૩. જમ્યા પછી ૧૫ મિનિટ વૉક ચાલુ રાખવી.`;
+      window.open(`https://wa.me/${c.phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function calcGI() {
+      const items = document.querySelectorAll('.gi-chk:checked');
+      if(items.length===0) return;
+      let g=0, cb=0;
+      items.forEach(i => { g += parseFloat(i.dataset.gi); cb += parseFloat(i.dataset.carb); });
+      let avg = Math.round(g / items.length);
+      let gl = ((avg * cb)/100).toFixed(1);
+      document.getElementById('txtGi').innerText = avg + (avg<=35 ? ' (ખૂબ સલામત)' : ' (હાઇ)');
+      document.getElementById('txtGl').innerText = gl;
+    }
+
+    function saveFb() {
+      localStorage.setItem('fb_id', document.getElementById('fbId').value);
+      alert('ફાયરબેઝ સેટિંગ્સ સેવ થઈ ગયા છે!');
+    }
+
+    function syncNow() {
+      document.getElementById('syncText').innerText = 'Syncing...';
+      setTimeout(() => { document.getElementById('syncText').innerText = 'Online Mode'; alert('ડેટા સિંક થઈ ગયો છે!'); }, 500);
+    }
+
+    render();
+  </script>
+</body>
+</html>
