@@ -28,7 +28,8 @@
     .btn-half-active { background-color: #d97706; color: #ffffff; font-weight: 700; }
     .btn-miss-active { background-color: #e11d48; color: #ffffff; font-weight: 700; }
     .btn-idle { background-color: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .tab-active-btn { background: #0f766e; color: #ffffff !important; font-weight: 800; box-shadow: 0 2px 5px rgba(13,148,136,0.3); }
+    .tab-inactive-btn { background: #f1f5f9; color: #475569; font-weight: 600; }
   </style>
 </head>
 <body class="pb-24 antialiased">
@@ -96,95 +97,159 @@
       </div>
     </header>
 
+    <!-- TOP TWO-TAB SWITCHER -->
+    <div class="bg-white border-b px-3.5 py-2 sticky top-[61px] z-30 shadow-xs">
+      <div class="flex p-1 bg-slate-100 rounded-2xl text-xs gap-1">
+        <button onclick="switchPortalTab('today')" id="portalTabToday" class="flex-1 py-2 rounded-xl tab-active-btn transition text-center flex items-center justify-center gap-1.5"><i class="fa-solid fa-utensils"></i> 🍽️ આજનું ડાયેટ (Today)</button>
+        <button onclick="switchPortalTab('reports')" id="portalTabReports" class="flex-1 py-2 rounded-xl tab-inactive-btn transition text-center flex items-center justify-center gap-1.5"><i class="fa-solid fa-calendar-days"></i> 📅 આગળનું મેનૂ & રિપોર્ટ્સ</button>
+      </div>
+    </div>
+
     <main class="p-3.5 max-w-lg mx-auto space-y-3.5">
-      <div class="brand-gradient-subtle p-3.5 rounded-3xl border border-teal-200 shadow-xs space-y-2">
-        <div class="flex justify-between items-center">
-          <div class="flex items-center gap-1.5">
-            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-teal-600 text-white uppercase" id="cpTierBadge">VIP Membership</span>
-            <span class="text-[11px] text-teal-900 font-extrabold" id="cpTrialDaysLeft">Active Access</span>
+      
+      <!-- TAB 1: TODAY'S PROTOCOL -->
+      <div id="tabContentToday" class="space-y-3.5">
+        
+        <!-- DAILY METABOLIC BUDGET & INTEGRATED SCORECARD -->
+        <div class="card-clean p-4 rounded-3xl space-y-3 bg-gradient-to-br from-slate-900 to-teal-950 text-white shadow-md border border-teal-800">
+          <div class="flex justify-between items-center">
+            <h3 class="font-extrabold text-xs flex items-center gap-1.5 text-teal-300"><i class="fa-solid fa-fire text-amber-400"></i> Daily Metabolic & Protocol Budget</h3>
+            <span class="text-[10px] bg-teal-900/80 text-teal-200 px-2.5 py-0.5 rounded-full font-bold border border-teal-700">Target: <span id="cpTargetCal">1200</span> kcal</span>
           </div>
-          <span class="text-[10px] font-bold px-2.5 py-1 bg-white border border-teal-300 text-teal-800 rounded-xl shadow-xs" id="cpFixedBadge">Fatty Liver (veg)</span>
-        </div>
-        <p class="text-xs text-slate-600 leading-snug">30-Day Rotating Protocol with Live Calorie, GI & Water Tracking.</p>
-      </div>
 
-      <!-- DAILY METABOLIC BUDGET DASHBOARD -->
-      <div class="card-clean p-4 rounded-3xl space-y-3 bg-gradient-to-br from-slate-900 to-teal-950 text-white shadow-md border border-teal-800">
-        <div class="flex justify-between items-center">
-          <h3 class="font-extrabold text-xs flex items-center gap-1.5 text-teal-300"><i class="fa-solid fa-fire text-amber-400"></i> Daily Calorie & GI Budget</h3>
-          <span class="text-[10px] bg-teal-900/80 text-teal-200 px-2.5 py-0.5 rounded-full font-bold border border-teal-700">Target: <span id="cpTargetCal">1200</span> kcal</span>
-        </div>
-        <div class="grid grid-cols-3 gap-2 text-center pt-1">
-          <div class="bg-white/10 p-2.5 rounded-2xl border border-white/5">
-            <div class="text-[9px] text-teal-200 uppercase tracking-wider">Consumed</div>
-            <div class="text-sm font-black text-amber-300 mt-0.5" id="cpConsumedCal">0 kcal</div>
+          <!-- 4 COLUMNS: CONSUMED, REMAINING, GI AVG, TODAY'S SCORE -->
+          <div class="grid grid-cols-4 gap-1.5 text-center pt-1">
+            <div class="bg-white/10 p-2 rounded-xl border border-white/5">
+              <div class="text-[8px] text-teal-200 uppercase tracking-wider font-semibold">Consumed</div>
+              <div class="text-xs font-black text-amber-300 mt-0.5" id="cpConsumedCal">0 kcal</div>
+            </div>
+            <div class="bg-white/10 p-2 rounded-xl border border-white/5">
+              <div class="text-[8px] text-teal-200 uppercase tracking-wider font-semibold">Remaining</div>
+              <div class="text-xs font-black text-emerald-300 mt-0.5" id="cpRemainingCal">1200 kcal</div>
+            </div>
+            <div class="bg-white/10 p-2 rounded-xl border border-white/5">
+              <div class="text-[8px] text-teal-200 uppercase tracking-wider font-semibold">Day GI</div>
+              <div class="text-xs font-black text-sky-300 mt-0.5" id="cpDailyGi">GI: 0</div>
+            </div>
+            <div class="bg-teal-500/20 p-2 rounded-xl border border-teal-400/30">
+              <div class="text-[8px] text-teal-300 uppercase tracking-wider font-bold">Score</div>
+              <div class="text-xs font-black text-white mt-0.5" id="cpScoreBadge">0%</div>
+            </div>
           </div>
-          <div class="bg-white/10 p-2.5 rounded-2xl border border-white/5">
-            <div class="text-[9px] text-teal-200 uppercase tracking-wider">Remaining</div>
-            <div class="text-sm font-black text-emerald-300 mt-0.5" id="cpRemainingCal">1200 kcal</div>
+
+          <div class="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
+            <div id="cpCalProgress" class="bg-gradient-to-r from-teal-400 to-amber-400 h-full w-0 transition-all duration-500"></div>
           </div>
-          <div class="bg-white/10 p-2.5 rounded-2xl border border-white/5">
-            <div class="text-[9px] text-teal-200 uppercase tracking-wider">Day GI Avg</div>
-            <div class="text-sm font-black text-sky-300 mt-0.5" id="cpDailyGi">GI: 0</div>
+
+          <!-- IN-DASHBOARD MOTIVATION MESSAGE -->
+          <div class="bg-white/10 rounded-2xl p-2.5 border border-white/10 flex items-center gap-2">
+            <span class="text-base" id="cpMotiIcon">💬</span>
+            <p class="text-[11px] font-semibold text-teal-100 leading-tight" id="cpMotivationText">આજના મીલ્સ માર્ક કરો એટલે તમારો સ્કોર અને પ્રેરણાદાયી સંદેશ અહીં લાઈવ દેખાશે.</p>
           </div>
         </div>
-        <div class="w-full bg-white/20 h-2 rounded-full overflow-hidden">
-          <div id="cpCalProgress" class="bg-gradient-to-r from-teal-400 to-amber-400 h-full w-0 transition-all duration-500"></div>
-        </div>
-      </div>
 
-      <!-- DAILY WATER HYDRATION TRACKER -->
-      <div class="card-clean p-3.5 rounded-2xl space-y-2 border">
-        <div class="flex justify-between items-center text-xs">
-          <span class="font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-droplet text-sky-500 text-sm"></i> Water Hydration Target (પાણીનું પ્રમાણ)</span>
-          <span class="font-black text-sky-600 text-xs" id="cpWaterCount">0.0 / 3.0 Liters</span>
-        </div>
-        <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-          <div id="cpWaterBar" class="bg-sky-500 h-full w-0 transition-all"></div>
-        </div>
-        <div class="grid grid-cols-4 gap-1.5 pt-1">
-          <button onclick="addWater(0.25)" class="py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 1 Glass (250ml)</button>
-          <button onclick="addWater(0.5)" class="py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 500ml Bottle</button>
-          <button onclick="addWater(1.0)" class="py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 1 Liter</button>
-          <button onclick="resetWater()" class="py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-[11px] font-bold">Reset 🔄</button>
-        </div>
-      </div>
-
-      <div id="cpMotivationBanner" class="p-3.5 rounded-2xl border text-xs space-y-1 transition-all"></div>
-
-      <!-- CALENDAR STRIP -->
-      <div class="card-clean p-3 rounded-2xl space-y-2">
-        <div class="flex justify-between items-center text-xs pb-1 border-b border-slate-100">
-          <div class="flex items-center gap-1.5">
-            <button onclick="changeWeek(-1)" class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold"><i class="fa-solid fa-chevron-left text-[10px]"></i></button>
-            <span class="font-extrabold text-slate-800 text-[11px]" id="cpCurrentWeekLabel">This Week</span>
-            <button onclick="changeWeek(1)" class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>
+        <!-- DAILY WATER HYDRATION TRACKER -->
+        <div class="card-clean p-3.5 rounded-2xl space-y-2 border">
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-droplet text-sky-500 text-sm"></i> Water Target (પાણીનું પ્રમાણ)</span>
+            <span class="font-black text-sky-600 text-xs" id="cpWaterCount">0.0 / 3.0 Liters</span>
           </div>
-          <button onclick="jumpToToday()" class="text-[10px] font-extrabold bg-teal-50 text-teal-800 border border-teal-200 px-2 py-1 rounded-lg">Today (આજે) 📍</button>
+          <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+            <div id="cpWaterBar" class="bg-sky-500 h-full w-0 transition-all"></div>
+          </div>
+          <div class="grid grid-cols-4 gap-1.5 pt-1">
+            <button onclick="addWater(0.25)" class="py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 250ml</button>
+            <button onclick="addWater(0.5)" class="py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 500ml</button>
+            <button onclick="addWater(1.0)" class="py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 1 Liter</button>
+            <button onclick="resetWater()" class="py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-[11px] font-bold">Reset 🔄</button>
+          </div>
         </div>
-        <div class="grid grid-cols-7 gap-1 text-center" id="cpDateGridButtons"></div>
-        <div class="pt-1 flex justify-between items-center text-[11px]">
-          <span class="font-black text-slate-900" id="cpActiveDateFullHeading">Tuesday, 27 October 2026</span>
-          <span class="font-bold px-2 py-0.5 rounded-full text-[10px]" id="cpDateStatusBadge">Routine Logged</span>
+
+        <!-- CALENDAR STRIP -->
+        <div class="card-clean p-3 rounded-2xl space-y-2">
+          <div class="flex justify-between items-center text-xs pb-1 border-b border-slate-100">
+            <div class="flex items-center gap-1.5">
+              <button onclick="changeWeek(-1)" class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold"><i class="fa-solid fa-chevron-left text-[10px]"></i></button>
+              <span class="font-extrabold text-slate-800 text-[11px]" id="cpCurrentWeekLabel">This Week</span>
+              <button onclick="changeWeek(1)" class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>
+            </div>
+            <button onclick="jumpToToday()" class="text-[10px] font-extrabold bg-teal-50 text-teal-800 border border-teal-200 px-2 py-1 rounded-lg">Today (આજે) 📍</button>
+          </div>
+          <div class="grid grid-cols-7 gap-1 text-center" id="cpDateGridButtons"></div>
+          <div class="pt-1 flex justify-between items-center text-[11px]">
+            <span class="font-black text-slate-900" id="cpActiveDateFullHeading">Wednesday, 28 October 2026</span>
+            <span class="font-bold px-2 py-0.5 rounded-full text-[10px]" id="cpDateStatusBadge">Routine Logged</span>
+          </div>
+        </div>
+
+        <!-- MEAL CARDS (WITH BIG BOLD GUJARATI HEADINGS) -->
+        <div class="space-y-3" id="cpTodayMealCards"></div>
+
+        <!-- VITALS -->
+        <div class="card-clean p-3.5 rounded-2xl space-y-2 text-xs">
+          <div class="font-bold text-slate-700 text-xs flex items-center justify-between">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-notes-medical text-teal-600"></i> Daily Vitals & Blood Sugar</span>
+          </div>
+          <div id="cpDynamicInputs" class="space-y-2"></div>
+        </div>
+
+        <div class="space-y-2 pt-1">
+          <button onclick="submitClientReport('daily')" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md">
+            <i class="fa-brands fa-whatsapp text-lg"></i> Send Selected Date's Update to Coach 📲
+          </button>
         </div>
       </div>
 
-      <!-- MEAL CARDS -->
-      <div class="space-y-3" id="cpTodayMealCards"></div>
+      <!-- TAB 2: REPORTS & ADVANCE UPCOMING MENU PLANNER -->
+      <div id="tabContentReports" class="hidden space-y-3.5 text-xs">
+        
+        <!-- UPCOMING 7 DAYS MENU FORECAST -->
+        <div class="card-clean p-4 rounded-3xl space-y-3 border-teal-200">
+          <div class="flex items-center justify-between border-b pb-2.5">
+            <div>
+              <h3 class="font-black text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-calendar-check text-teal-600"></i> આગામી ૭ દિવસનું એડવાન્સ મેનૂ</h3>
+              <p class="text-[11px] text-slate-500">આવતીકાલે શું બનાવવું છે તેનું અગાઉથી આયોજન કરો</p>
+            </div>
+            <span class="px-2 py-0.5 bg-teal-50 text-teal-800 text-[10px] font-extrabold rounded-lg border border-teal-200">Advance Planner</span>
+          </div>
 
-      <!-- VITALS -->
-      <div class="card-clean p-3.5 rounded-2xl space-y-2 text-xs">
-        <div class="font-bold text-slate-700 text-xs flex items-center justify-between">
-          <span class="flex items-center gap-1.5"><i class="fa-solid fa-notes-medical text-teal-600"></i> Daily Vitals & Blood Sugar</span>
+          <!-- SMART GROCERY PREP ALERT -->
+          <div class="bg-amber-50 p-3 rounded-2xl border border-amber-200 space-y-1">
+            <span class="font-extrabold text-amber-900 text-[11px] flex items-center gap-1"><i class="fa-solid fa-basket-shopping text-amber-600"></i> 🛒 જરૂરી ગ્રોસરી પ્લાનિંગ:</span>
+            <p class="text-[11px] text-amber-800 leading-snug">દૂધી, પેઠું (Ash Gourd), મખાના, ફણગાવેલા મગ-ચણા, તાજું પનીર અને છાશ ઘરમાં અગાઉથી લાવીને રાખો જેથી પ્રોટોકોલ બરાબર જળવાય.</p>
+          </div>
+
+          <!-- 7-DAY FORECAST CONTAINER -->
+          <div id="upcomingForecastContainer" class="space-y-2 pt-1"></div>
         </div>
-        <div id="cpDynamicInputs" class="space-y-2"></div>
+
+        <!-- OVERALL PERFORMANCE & STATS -->
+        <div class="card-clean p-4 rounded-3xl space-y-3">
+          <div class="flex items-center gap-2 border-b pb-2.5">
+            <div class="w-8 h-8 rounded-xl brand-gradient text-white flex items-center justify-center text-sm"><i class="fa-solid fa-chart-line"></i></div>
+            <div>
+              <h3 class="font-black text-slate-900 text-sm">Overall Protocol Performance</h3>
+              <p class="text-[10px] text-slate-500">Clinical tracking & consistency report</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <div class="bg-slate-50 p-2.5 rounded-2xl border text-center space-y-0.5">
+              <div class="text-[9px] text-slate-500 font-bold uppercase">Average Compliance</div>
+              <div class="text-lg font-black text-teal-700" id="repAvgCompliance">0%</div>
+            </div>
+            <div class="bg-slate-50 p-2.5 rounded-2xl border text-center space-y-0.5">
+              <div class="text-[9px] text-slate-500 font-bold uppercase">Daily Water Avg</div>
+              <div class="text-lg font-black text-sky-600" id="repAvgWater">0.0 L</div>
+            </div>
+          </div>
+
+          <button onclick="submitClientReport('summary')" class="w-full py-3 rounded-2xl bg-slate-900 text-white font-extrabold text-xs shadow">
+            <i class="fa-brands fa-whatsapp"></i> Send Full Summary Report to Coach 📲
+          </button>
+        </div>
       </div>
 
-      <div class="space-y-2 pt-1">
-        <button onclick="submitClientReport('daily')" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md">
-          <i class="fa-brands fa-whatsapp text-lg"></i> Send Selected Date's Update to Coach 📲
-        </button>
-      </div>
     </main>
   </div>
 
@@ -209,9 +274,9 @@
         <div id="cstActiveTags" class="flex flex-wrap gap-1.5 min-h-[36px] items-center"></div>
       </div>
       <div class="space-y-1 pt-1 border-t">
-        <span class="text-[10px] text-slate-600 font-bold">અન્ય કંઈ ખાધું હોય તો અહીં ઉમેરો (Type local food e.g. Ganthiya, Puri):</span>
+        <span class="text-[10px] text-slate-600 font-bold">અન્ય કંઈ ખાધું હોય તો અહીં ઉમેરો (Type local food e.g. Sweet, Ganthiya):</span>
         <div class="flex gap-1.5">
-          <input type="text" id="cstCustomInput" placeholder="e.g. સેવ ઉસળ, ગાંઠિયા..." class="flex-1 bg-slate-50 border p-2 rounded-xl text-xs">
+          <input type="text" id="cstCustomInput" placeholder="e.g. Sweet, Jalebi..." class="flex-1 bg-slate-50 border p-2 rounded-xl text-xs">
           <button onclick="addCustomTypedFood()" class="px-3.5 py-2 bg-slate-900 text-white rounded-xl font-bold text-xs">+ Add</button>
         </div>
       </div>
@@ -251,6 +316,7 @@
     const db = firebase.firestore();
 
     const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const DAY_NAMES_GUJ = ['રવિવાર', 'સોમવાર', 'મંગળવાર', 'બુધવાર', 'ગુરુવાર', 'શુક્રવાર', 'શનિવાર'];
     let COACH_PHONE = "919081421028";
     let weekOffset = 0;
     let selectedDateKey = getTodayDateKey();
@@ -282,6 +348,13 @@
       "Sev": { cal: 520, gi: 78 },
       "Kachori": { cal: 450, gi: 75 },
       "Samosa": { cal: 310, gi: 72 },
+      "Sweet": { cal: 400, gi: 75 },
+      "Mithai": { cal: 400, gi: 75 },
+      "Gulab Jamun": { cal: 330, gi: 75 },
+      "Jalebi": { cal: 450, gi: 78 },
+      "Kaju Katli": { cal: 539, gi: 70 },
+      "Besan Ladoo": { cal: 450, gi: 68 },
+      "Peda": { cal: 385, gi: 70 },
       "Kiwi": { cal: 61, gi: 52 },
       "Dragon Fruit": { cal: 60, gi: 48 },
       "Pomegranate": { cal: 83, gi: 53 },
@@ -316,7 +389,7 @@
       return { totalCal, gi: maxGi };
     }
 
-    // EXPANDED 15-DAY UNIQUE ROTATING CLINICAL MENU (No repetition for 15 days)
+    // 15-DAY NON-REPEATING MASTER ROTATING MENU
     const MASTER_30_DAY_MENU = [
       { morning: "Ash Gourd + Coriander + Raw Turmeric", breakfast: "Moong Dal Chila + Fresh Paneer", lunch: "Salad Barrier + Multi-Millet Roti + Bottle Gourd + Chaas", snack: "Roasted Makhana", dinner: "Pumpkin Puree + Sauteed Veggies" },
       { morning: "Bottle Gourd + Ginger", breakfast: "Steamed Moong + Lemon", lunch: "Salad Barrier + Multi-Millet Roti + Palak Paneer + Chaas", snack: "Pomegranate", dinner: "Pumpkin Puree + Paneer" },
@@ -396,6 +469,22 @@
       }
     }
 
+    function switchPortalTab(tab) {
+      if (tab === 'today') {
+        document.getElementById('tabContentToday').classList.remove('hidden');
+        document.getElementById('tabContentReports').classList.add('hidden');
+        document.getElementById('portalTabToday').className = "flex-1 py-2 rounded-xl tab-active-btn transition text-center flex items-center justify-center gap-1.5";
+        document.getElementById('portalTabReports').className = "flex-1 py-2 rounded-xl tab-inactive-btn transition text-center flex items-center justify-center gap-1.5";
+      } else {
+        document.getElementById('tabContentReports').classList.remove('hidden');
+        document.getElementById('tabContentToday').classList.add('hidden');
+        document.getElementById('portalTabReports').className = "flex-1 py-2 rounded-xl tab-active-btn transition text-center flex items-center justify-center gap-1.5";
+        document.getElementById('portalTabToday').className = "flex-1 py-2 rounded-xl tab-inactive-btn transition text-center flex items-center justify-center gap-1.5";
+        renderUpcomingPlanner();
+        calculateOverallReports();
+      }
+    }
+
     async function handleClientRegister() {
       const name = document.getElementById('regName').value.trim();
       const phone = document.getElementById('regPhone').value.trim().replace(/\D/g, '');
@@ -459,9 +548,6 @@
 
       document.getElementById('cpClientTitle').innerText = currentClient.name;
       document.getElementById('cpClientSub').innerText = currentClient.goal || 'Health Plan';
-      document.getElementById('cpFixedBadge').innerText = `${currentClient.goal || 'General'} (${currentClient.diet})`;
-      document.getElementById('cpTrialDaysLeft').innerText = currentClient.trialDays >= 900 ? 'Lifetime VIP Access' : `${currentClient.trialDays} Days VIP Access`;
-
       selectedDateKey = getTodayDateKey();
       weekOffset = 0;
       renderClientDateStrip();
@@ -522,16 +608,19 @@
       const dayOfYear = Math.floor((dObj - new Date(dObj.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
       const plan = MASTER_30_DAY_MENU[dayOfYear % MASTER_30_DAY_MENU.length];
 
+      // BIG CLEAR GUJARATI TITLES FOR HIGH READABILITY
       const slots = [
-        { key: 'morning', time: 'Early Morning (ખાલી પેટે)', label: '1. Alkaline Detox Infusion', text: comp.customMeals?.morning || plan.morning },
-        { key: 'breakfast', time: 'Morning Breakfast (નાસ્તો)', label: '2. Breakfast & Protein Charge', text: comp.customMeals?.breakfast || plan.breakfast },
-        { key: 'lunch', time: 'Afternoon Lunch (બપોરનું ભોજન)', label: '3. Glycemic Barrier Lunch Plate', text: comp.customMeals?.lunch || plan.lunch },
-        { key: 'snack', time: 'Evening Snack (સાંજે ૪-૫ વાગ્યે)', label: '4. Anti-Craving Evening Fuel', text: comp.customMeals?.snack || plan.snack },
-        { key: 'dinner', time: 'Night Dinner (રાત્રે ૮:૩૦ પહેલાં)', label: '5. Restorative Dinner', text: comp.customMeals?.dinner || plan.dinner }
+        { key: 'morning', time: 'સવારે ખાલી પેટે (Early Morning)', label: '🌅 ૧. સવારે ભૂખ્યા પેટે (Detox Infusion)', text: comp.customMeals?.morning || plan.morning },
+        { key: 'breakfast', time: 'સવારનો નાસ્તો (Breakfast)', label: '🥗 ૨. સવારનો પૌષ્ટિક નાસ્તો (Protein Charge)', text: comp.customMeals?.breakfast || plan.breakfast },
+        { key: 'lunch', time: 'બપોરનું ભોજન (Lunch)', label: '🍲 ૩. બપોરનું ભોજન (Glycemic Barrier Plate)', text: comp.customMeals?.lunch || plan.lunch },
+        { key: 'snack', time: 'સાંજનો હળવો નાસ્તો (Evening 4-5 PM)', label: '🥜 ૪. સાંજનો નાસ્તો (Anti-Craving Fuel)', text: comp.customMeals?.snack || plan.snack },
+        { key: 'dinner', time: 'રાત્રિ ભોજન ૮:૩૦ પહેલાં (Dinner)', label: '🥣 ૫. રાત્રિ ભોજન (Restorative Light Dinner)', text: comp.customMeals?.dinner || plan.dinner }
       ];
 
       let totalDayCalories = 0;
       let totalDayGiSum = 0;
+      let scorePoints = 0;
+      let markedCount = 0;
 
       const container = document.getElementById('cpTodayMealCards');
       container.innerHTML = '';
@@ -541,32 +630,58 @@
         totalDayCalories += nut.totalCal;
         totalDayGiSum += nut.gi;
 
-        const isRedZone = (nut.gi >= 70);
         const currentCheck = comp[s.key] || 'idle';
+        if(currentCheck === 'done') { scorePoints += 100; markedCount++; }
+        else if(currentCheck === 'half') { scorePoints += 50; markedCount++; }
+        else if(currentCheck === 'miss') { scorePoints += 0; markedCount++; }
+
+        const isRedZone = (nut.gi >= 70);
         const card = document.createElement('div');
-        card.className = "card-clean p-3.5 rounded-2xl space-y-2 border border-slate-200";
+        card.className = "card-clean p-4 rounded-3xl space-y-2.5 border border-slate-200 shadow-sm";
         card.innerHTML = `
           <div class="flex justify-between items-start">
             <div>
-              <span class="text-[9px] font-bold text-slate-400 uppercase">${s.time}</span>
-              <h3 class="text-xs font-bold text-slate-900">${s.label}</h3>
+              <span class="text-[10px] font-bold text-teal-700 uppercase tracking-wide">${s.time}</span>
+              <h3 class="text-sm font-extrabold text-slate-900 leading-tight mt-0.5">${s.label}</h3>
             </div>
             <div class="flex items-center gap-1.5 flex-wrap justify-end">
               ${isRedZone ? '<span class="px-2 py-0.5 rounded-md bg-rose-100 text-rose-800 text-[10px] font-black border border-rose-300">🔴 Red Zone</span>' : ''}
-              <span class="px-2 py-0.5 rounded-md bg-teal-50 text-teal-800 text-[10px] font-extrabold border border-teal-200">🔥 ${nut.totalCal} kcal</span>
-              <span class="px-2 py-0.5 rounded-md bg-sky-50 text-sky-800 text-[10px] font-extrabold border border-sky-200">📊 GI: ${nut.gi}</span>
-              <button onclick="openCustomizer('${s.key}', '${s.text.replace(/'/g, "\\\'")}')" class="text-[10px] text-teal-700 font-bold bg-teal-50 px-2 py-1 rounded-xl">Customize</button>
+              <span class="px-2 py-0.5 rounded-md bg-teal-50 text-teal-800 text-[10px] font-black border border-teal-200">🔥 ${nut.totalCal} kcal</span>
+              <span class="px-2 py-0.5 rounded-md bg-sky-50 text-sky-800 text-[10px] font-black border border-sky-200">📊 GI: ${nut.gi}</span>
+              <button onclick="openCustomizer('${s.key}', '${s.text.replace(/'/g, "\\\'")}')" class="text-[10px] text-teal-700 font-extrabold bg-teal-50 px-2.5 py-1 rounded-xl border border-teal-200">Customize</button>
             </div>
           </div>
-          <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 font-medium">${s.text}</div>
-          <div class="grid grid-cols-3 gap-1.5">
-            <button onclick="setCheck('${s.key}', 'done')" class="py-2 rounded-xl text-xs ${currentCheck==='done'?'btn-done-active':'btn-idle'}">Done</button>
-            <button onclick="setCheck('${s.key}', 'half')" class="py-2 rounded-xl text-xs ${currentCheck==='half'?'btn-half-active':'btn-idle'}">50%</button>
-            <button onclick="setCheck('${s.key}', 'miss')" class="py-2 rounded-xl text-xs ${currentCheck==='miss'?'btn-miss-active':'btn-idle'}">Missed</button>
+          <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-xs text-slate-800 font-semibold leading-relaxed">${s.text}</div>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="setCheck('${s.key}', 'done')" class="py-2.5 rounded-xl text-xs ${currentCheck==='done'?'btn-done-active':'btn-idle'}">✅ પૂરું કર્યું</button>
+            <button onclick="setCheck('${s.key}', 'half')" class="py-2.5 rounded-xl text-xs ${currentCheck==='half'?'btn-half-active':'btn-idle'}">⚡ 50%</button>
+            <button onclick="setCheck('${s.key}', 'miss')" class="py-2.5 rounded-xl text-xs ${currentCheck==='miss'?'btn-miss-active':'btn-idle'}">❌ બાકી રહ્યું</button>
           </div>
         `;
         container.appendChild(card);
       });
+
+      // SCORE & MOTIVATION CALCULATION INTEGRATED IN DASHBOARD
+      const finalScore = markedCount > 0 ? Math.round(scorePoints / slots.length) : 0;
+      document.getElementById('cpScoreBadge').innerText = finalScore + '%';
+
+      let motivationMsg = "આજના મીલ્સ માર્ક કરો એટલે તમારો સ્કોર અને પ્રેરણાદાયી સંદેશ અહીં લાઈવ દેખાશે.";
+      let motiIcon = "💬";
+
+      if (markedCount > 0) {
+        if (finalScore >= 80) {
+          motivationMsg = "🌟 અદભૂત! આજનું પાલન ખૂબ જ શાનદાર રહ્યું છે. આ જ રીતે પ્રોટોકોલ ફોલો કરતા રહો!";
+          motiIcon = "🏆";
+        } else if (finalScore >= 50) {
+          motivationMsg = "👍 સારો પ્રયાસ! કાલે હજી થોડી વધુ કાળજી રાખજો, તમે સ્વાસ્થ્ય લક્ષ્યની ખૂબ નજીક છો.";
+          motiIcon = "🎯";
+        } else {
+          motivationMsg = "💪 કોઈ વાંધો નહીં! આવતીકાલે નવી શરૂઆત સાથે ફરી નિયમિતતા જાળવી લઈએ!";
+          motiIcon = "🌱";
+        }
+      }
+      document.getElementById('cpMotivationText').innerText = motivationMsg;
+      document.getElementById('cpMotiIcon').innerText = motiIcon;
 
       const dailyTarget = 1200;
       const remaining = dailyTarget - totalDayCalories;
@@ -575,15 +690,15 @@
 
       document.getElementById('cpTargetCal').innerText = dailyTarget;
       document.getElementById('cpConsumedCal').innerText = totalDayCalories + ' kcal';
-      document.getElementById('cpRemainingCal').innerText = (remaining >= 0 ? remaining : 0) + ' kcal';
       document.getElementById('cpDailyGi').innerText = 'GI: ' + avgGi;
       document.getElementById('cpCalProgress').style.width = progressPercent + '%';
 
       if (remaining < 0) {
-        document.getElementById('cpRemainingCal').className = "text-sm font-black text-rose-300 mt-0.5";
-        document.getElementById('cpRemainingCal').innerText = `Exceeded by ${Math.abs(remaining)} kcal!`;
+        document.getElementById('cpRemainingCal').className = "text-xs font-black text-rose-300 mt-0.5";
+        document.getElementById('cpRemainingCal').innerText = `+${Math.abs(remaining)} Exceeded`;
       } else {
-        document.getElementById('cpRemainingCal').className = "text-sm font-black text-emerald-300 mt-0.5";
+        document.getElementById('cpRemainingCal').className = "text-xs font-black text-emerald-300 mt-0.5";
+        document.getElementById('cpRemainingCal').innerText = remaining + ' kcal';
       }
 
       document.getElementById('cpDynamicInputs').innerHTML = `
@@ -591,8 +706,73 @@
           <div><label class="text-[9px] text-slate-500 font-semibold">Fasting Sugar</label><input type="number" id="cpInM1" onchange="saveVitals()" value="${comp.metric1||''}" class="w-full bg-slate-50 border p-2 rounded-lg text-xs"></div>
           <div><label class="text-[9px] text-slate-500 font-semibold">PP2BS Sugar</label><input type="number" id="cpInM2" onchange="saveVitals()" value="${comp.metric2||''}" class="w-full bg-slate-50 border p-2 rounded-lg text-xs"></div>
         </div>
-        <input type="text" id="cpInNote" onchange="saveVitals()" value="${comp.note||''}" placeholder="Notes, local food eaten (e.g. Ganthiya)..." class="w-full bg-slate-50 border p-2 rounded-lg text-xs mt-1">
+        <input type="text" id="cpInNote" onchange="saveVitals()" value="${comp.note||''}" placeholder="Notes, local food eaten..." class="w-full bg-slate-50 border p-2 rounded-lg text-xs mt-1">
       `;
+    }
+
+    // TAB 2: UPCOMING 7 DAYS PLANNER RENDERER
+    function renderUpcomingPlanner() {
+      const container = document.getElementById('upcomingForecastContainer');
+      container.innerHTML = '';
+      const today = new Date();
+
+      for (let i = 1; i <= 7; i++) {
+        const nextDate = new Date(today);
+        nextDate.setDate(today.getDate() + i);
+        const dayOfYear = Math.floor((nextDate - new Date(nextDate.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+        const plan = MASTER_30_DAY_MENU[dayOfYear % MASTER_30_DAY_MENU.length];
+        
+        const dayNameGuj = DAY_NAMES_GUJ[nextDate.getDay()];
+        const dateFormatted = nextDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+        const isTomorrow = (i === 1);
+
+        const card = document.createElement('div');
+        card.className = `p-3 rounded-2xl border ${isTomorrow ? 'bg-teal-50/70 border-teal-300' : 'bg-slate-50 border-slate-200'} space-y-1.5`;
+        card.innerHTML = `
+          <div class="flex justify-between items-center">
+            <span class="font-extrabold ${isTomorrow ? 'text-teal-900' : 'text-slate-800'} text-xs">
+              ${isTomorrow ? '🌟 આવતીકાલ (' + dayNameGuj + ', ' + dateFormatted + ')' : '🗓️ ' + dayNameGuj + ', ' + dateFormatted}
+            </span>
+            ${isTomorrow ? '<span class="text-[9px] bg-teal-600 text-white px-2 py-0.5 rounded-full font-bold">Tomorrow</span>' : ''}
+          </div>
+          <div class="text-[11px] text-slate-700 space-y-0.5 leading-snug">
+            <div><span class="font-bold text-teal-800">• સવારે:</span> ${plan.morning}</div>
+            <div><span class="font-bold text-teal-800">• નાસ્તો:</span> ${plan.breakfast}</div>
+            <div><span class="font-bold text-teal-800">• બપોરે:</span> ${plan.lunch}</div>
+            <div><span class="font-bold text-teal-800">• સાંજે:</span> ${plan.snack}  |  <span class="font-bold text-teal-800">• રાત્રે:</span> ${plan.dinner}</div>
+          </div>
+        `;
+        container.appendChild(card);
+      }
+    }
+
+    function calculateOverallReports() {
+      if(!currentClient || !currentClient.compliance) return;
+      let totalScores = 0;
+      let totalWaterSum = 0;
+      let daysCount = 0;
+
+      for(let dKey in currentClient.compliance) {
+        const dayObj = currentClient.compliance[dKey];
+        let dayPts = 0;
+        let daySlots = 0;
+        ['morning', 'breakfast', 'lunch', 'snack', 'dinner'].forEach(s => {
+          if(dayObj[s] === 'done') { dayPts += 100; daySlots++; }
+          else if(dayObj[s] === 'half') { dayPts += 50; daySlots++; }
+          else if(dayObj[s] === 'miss') { dayPts += 0; daySlots++; }
+        });
+        if(daySlots > 0) {
+          totalScores += Math.round(dayPts / daySlots);
+          daysCount++;
+        }
+        totalWaterSum += (dayObj.water || 0);
+      }
+
+      const avgComp = daysCount > 0 ? Math.round(totalScores / daysCount) : 0;
+      const avgWat = daysCount > 0 ? (totalWaterSum / daysCount).toFixed(2) : '0.0';
+
+      document.getElementById('repAvgCompliance').innerText = avgComp + '%';
+      document.getElementById('repAvgWater').innerText = avgWat + ' L';
     }
 
     async function setCheck(slotKey, state) {
@@ -698,4 +878,3 @@ Notes / Log: "${comp.note || 'All good'}"`;
   </script>
 </body>
 </html>
-
