@@ -1,1 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Metabolic Pro - Client Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .brand-gradient { background: linear-gradient(135deg, #0d9488, #0284c7); }
+    .brand-gradient-subtle { background: linear-gradient(135deg, #f0fdfa, #f0f9ff); }
+    .card-clean {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    }
+    .btn-done-active { background-color: #059669; color: #ffffff; font-weight: 700; }
+    .btn-half-active { background-color: #d97706; color: #ffffff; font-weight: 700; }
+    .btn-miss-active { background-color: #e11d48; color: #ffffff; font-weight: 700; }
+    .btn-idle { background-color: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="pb-24 antialiased">
+
+  <!-- AUTH VIEW -->
+  <div id="authView" class="min-h-screen flex flex-col justify-between p-4 max-w-md mx-auto space-y-4">
+    <div class="text-center pt-6 space-y-2">
+      <div class="w-16 h-16 rounded-2xl brand-gradient flex items-center justify-center text-white text-3xl font-black shadow-lg mx-auto">🩺</div>
+      <div>
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight">Metabolic Pro</h1>
+        <p class="text-xs font-semibold text-teal-700 uppercase tracking-widest mt-0.5">Clinical Lifestyle Medicine</p>
+      </div>
+      <p class="text-xs text-slate-500 max-w-xs mx-auto">Reversing Diabetes, Fatty Liver & Peak Vitality with Evidence-Based Nutrition.</p>
+    </div>
+
+    <div class="card-clean rounded-3xl p-5 shadow-sm space-y-4 border">
+      <div class="flex p-1 bg-slate-100 rounded-2xl text-xs font-bold text-slate-600">
+        <button onclick="setAuthTab('register')" id="tabRegister" class="flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold">✨ New Client</button>
+        <button onclick="setAuthTab('login')" id="tabLogin" class="flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold">🔑 Login</button>
+      </div>
+
+      <div id="formRegister" class="space-y-3 text-xs">
+        <div><label class="font-bold text-slate-700">Full Name</label><input type="text" id="regName" placeholder="e.g. Ruchi" class="w-full mt-1 p-2.5 bg-slate-50 border rounded-xl text-slate-800"></div>
+        <div><label class="font-bold text-slate-700">WhatsApp Mobile Number</label><input type="tel" id="regPhone" placeholder="e.g. 9925879138" class="w-full mt-1 p-2.5 bg-slate-50 border rounded-xl text-slate-800"></div>
+        <div>
+          <label class="font-bold text-slate-700">Dietary Mode</label>
+          <select id="regDiet" class="w-full mt-1 p-2.5 bg-slate-50 border rounded-xl text-slate-800 font-semibold"><option value="veg">🌱 Vegetarian</option><option value="nonveg">🍗 Non-Vegetarian</option></select>
+        </div>
+        <div class="space-y-1.5 pt-1">
+          <label class="font-bold text-slate-700">Select Health Goals:</label>
+          <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-2xl border">
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium"><input type="checkbox" name="regCondition" value="Type 2 Diabetes Reversal" class="w-4 h-4 text-teal-600 rounded"> 🩺 Diabetes</label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium"><input type="checkbox" name="regCondition" value="Fatty Liver Detox" checked class="w-4 h-4 text-teal-600 rounded"> 🥒 Fatty Liver</label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium"><input type="checkbox" name="regCondition" value="High Blood Pressure (BP)" class="w-4 h-4 text-teal-600 rounded"> 🫀 High BP</label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium"><input type="checkbox" name="regCondition" value="Weight Loss" class="w-4 h-4 text-teal-600 rounded"> ⚖️ Weight Loss</label>
+          </div>
+        </div>
+        <button onclick="handleClientRegister()" id="btnRegisterSubmit" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-sm shadow-md">Start My VIP Portal 🚀</button>
+      </div>
+
+      <div id="formLogin" class="hidden space-y-3.5 text-xs">
+        <div><label class="font-bold text-slate-700">WhatsApp Mobile Number</label><input type="text" id="loginId" placeholder="e.g. 9925879138" class="w-full mt-1 p-3 bg-slate-50 border rounded-xl text-slate-800"></div>
+        <div>
+          <div class="flex justify-between items-center"><label class="font-bold text-slate-700">4-Digit PIN</label><button onclick="openClientForgotPinModal()" class="text-teal-700 font-extrabold text-[11px]">Forgot PIN?</button></div>
+          <input type="password" maxlength="4" id="loginPin" placeholder="••••" class="w-full mt-1 p-3 bg-slate-50 border rounded-xl text-center text-base tracking-widest">
+        </div>
+        <button onclick="handleClientLogin()" id="btnLoginSubmit" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-extrabold text-sm shadow">Open Portal 📲</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLIENT PORTAL VIEW -->
+  <div id="clientPortalView" class="hidden min-h-screen">
+    <header class="p-3.5 bg-white border-b sticky top-0 z-40 flex justify-between items-center shadow-xs">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl brand-gradient flex items-center justify-center text-white font-bold text-sm">🩺</div>
+        <div>
+          <h1 class="font-extrabold text-slate-900 text-sm leading-tight" id="cpClientTitle">Welcome</h1>
+          <p class="text-[10px] font-bold text-teal-700" id="cpClientSub">Metabolic Health Plan</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="openFeedbackModal()" class="px-2.5 py-1 rounded-xl bg-teal-50 border border-teal-200 text-teal-800 text-[10px] font-bold"><i class="fa-solid fa-headset"></i> Support</button>
+        <button onclick="logoutClient()" class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 text-[10px] font-bold">Logout</button>
+      </div>
+    </header>
+
+    <main class="p-3.5 max-w-lg mx-auto space-y-3.5">
+      <div class="brand-gradient-subtle p-3.5 rounded-3xl border border-teal-200 shadow-xs space-y-2">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-1.5">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-teal-600 text-white uppercase" id="cpTierBadge">VIP Membership</span>
+            <span class="text-[11px] text-teal-900 font-extrabold" id="cpTrialDaysLeft">Active Access</span>
+          </div>
+          <span class="text-[10px] font-bold px-2.5 py-1 bg-white border border-teal-300 text-teal-800 rounded-xl shadow-xs" id="cpFixedBadge">Fatty Liver (veg)</span>
+        </div>
+        <p class="text-xs text-slate-600 leading-snug">30-Day Rotating Protocol with Live Calorie, GI & Water Tracking.</p>
+      </div>
+
+      <!-- DAILY METABOLIC BUDGET DASHBOARD -->
+      <div class="card-clean p-4 rounded-3xl space-y-3 bg-gradient-to-br from-slate-900 to-teal-950 text-white shadow-md border border-teal-800">
+        <div class="flex justify-between items-center">
+          <h3 class="font-extrabold text-xs flex items-center gap-1.5 text-teal-300"><i class="fa-solid fa-fire text-amber-400"></i> Daily Calorie & GI Budget</h3>
+          <span class="text-[10px] bg-teal-900/80 text-teal-200 px-2.5 py-0.5 rounded-full font-bold border border-teal-700">Target: <span id="cpTargetCal">1200</span> kcal</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-center pt-1">
+          <div class="bg-white/10 p-2.5 rounded-2xl border border-white/5">
+            <div class="text-[9px] text-teal-200 uppercase tracking-wider">Consumed</div>
+            <div class="text-sm font-black text-amber-300 mt-0.5" id="cpConsumedCal">0 kcal</div>
+          </div>
+          <div class="bg-white/10 p-2.5 rounded-2xl border border-white/5">
+            <div class="text-[9px] text-teal-200 uppercase tracking-wider">Remaining</div>
+            <div class="text-sm font-black text-emerald-300 mt-0.5" id="cpRemainingCal">1200 kcal</div>
+          </div>
+          <div class="bg-white/10 p-2.5 rounded-2xl border border-white/5">
+            <div class="text-[9px] text-teal-200 uppercase tracking-wider">Day GI Avg</div>
+            <div class="text-sm font-black text-sky-300 mt-0.5" id="cpDailyGi">GI: 0</div>
+          </div>
+        </div>
+        <div class="w-full bg-white/20 h-2 rounded-full overflow-hidden">
+          <div id="cpCalProgress" class="bg-gradient-to-r from-teal-400 to-amber-400 h-full w-0 transition-all duration-500"></div>
+        </div>
+      </div>
+
+      <!-- DAILY WATER HYDRATION TRACKER -->
+      <div class="card-clean p-3.5 rounded-2xl space-y-2 border">
+        <div class="flex justify-between items-center text-xs">
+          <span class="font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-droplet text-sky-500 text-sm"></i> Water Hydration Target (પાણીનું પ્રમાણ)</span>
+          <span class="font-black text-sky-600 text-xs" id="cpWaterCount">0.0 / 3.0 Liters</span>
+        </div>
+        <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+          <div id="cpWaterBar" class="bg-sky-500 h-full w-0 transition-all"></div>
+        </div>
+        <div class="grid grid-cols-4 gap-1.5 pt-1">
+          <button onclick="addWater(0.25)" class="py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 1 Glass (250ml)</button>
+          <button onclick="addWater(0.5)" class="py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 500ml Bottle</button>
+          <button onclick="addWater(1.0)" class="py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 1 Liter</button>
+          <button onclick="resetWater()" class="py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-[11px] font-bold">Reset 🔄</button>
+        </div>
+      </div>
+
+      <div id="cpMotivationBanner" class="p-3.5 rounded-2xl border text-xs space-y-1 transition-all"></div>
+
+      <!-- CALENDAR STRIP -->
+      <div class="card-clean p-3 rounded-2xl space-y-2">
+        <div class="flex justify-between items-center text-xs pb-1 border-b border-slate-100">
+          <div class="flex items-center gap-1.5">
+            <button onclick="changeWeek(-1)" class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold"><i class="fa-solid fa-chevron-left text-[10px]"></i></button>
+            <span class="font-extrabold text-slate-800 text-[11px]" id="cpCurrentWeekLabel">This Week</span>
+            <button onclick="changeWeek(1)" class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>
+          </div>
+          <button onclick="jumpToToday()" class="text-[10px] font-extrabold bg-teal-50 text-teal-800 border border-teal-200 px-2 py-1 rounded-lg">Today (આજે) 📍</button>
+        </div>
+        <div class="grid grid-cols-7 gap-1 text-center" id="cpDateGridButtons"></div>
+        <div class="pt-1 flex justify-between items-center text-[11px]">
+          <span class="font-black text-slate-900" id="cpActiveDateFullHeading">Tuesday, 27 October 2026</span>
+          <span class="font-bold px-2 py-0.5 rounded-full text-[10px]" id="cpDateStatusBadge">Routine Logged</span>
+        </div>
+      </div>
+
+      <!-- MEAL CARDS -->
+      <div class="space-y-3" id="cpTodayMealCards"></div>
+
+      <!-- VITALS -->
+      <div class="card-clean p-3.5 rounded-2xl space-y-2 text-xs">
+        <div class="font-bold text-slate-700 text-xs flex items-center justify-between">
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-notes-medical text-teal-600"></i> Daily Vitals & Blood Sugar</span>
+        </div>
+        <div id="cpDynamicInputs" class="space-y-2"></div>
+      </div>
+
+      <div class="space-y-2 pt-1">
+        <button onclick="submitClientReport('daily')" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md">
+          <i class="fa-brands fa-whatsapp text-lg"></i> Send Selected Date's Update to Coach 📲
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODALS -->
+  <div id="modalClientForgotPin" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm p-5 rounded-3xl space-y-3.5 text-xs shadow-xl border">
+      <h3 class="font-extrabold text-slate-900 text-sm text-center">Reset Client PIN</h3>
+      <input type="tel" id="inClientForgotPhone" placeholder="Enter mobile number" class="w-full p-2.5 bg-slate-50 border rounded-xl">
+      <button onclick="handleClientSelfResetPin()" class="w-full bg-teal-600 text-white font-extrabold py-2.5 rounded-xl">Auto-Reset PIN 🔄</button>
+      <button onclick="closeClientForgotPinModal()" class="w-full text-slate-400 text-center py-1">Cancel</button>
+    </div>
+  </div>
+
+  <div id="ingredientCustomizerModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-3.5">
+    <div class="bg-white w-full max-w-md p-4 rounded-3xl space-y-3 text-xs max-h-[85vh] flex flex-col shadow-2xl border">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-slate-800 text-sm">Customize & Log Local Food</h3>
+        <button onclick="closeCustomizer()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
+      </div>
+      <div class="bg-slate-50 p-3 rounded-2xl border space-y-1.5">
+        <span class="text-[10px] text-teal-800 font-extrabold uppercase">Your Plate Today:</span>
+        <div id="cstActiveTags" class="flex flex-wrap gap-1.5 min-h-[36px] items-center"></div>
+      </div>
+      <div class="space-y-1 pt-1 border-t">
+        <span class="text-[10px] text-slate-600 font-bold">અન્ય કંઈ ખાધું હોય તો અહીં ઉમેરો (Type local food e.g. Ganthiya, Puri):</span>
+        <div class="flex gap-1.5">
+          <input type="text" id="cstCustomInput" placeholder="e.g. સેવ ઉસળ, ગાંઠિયા..." class="flex-1 bg-slate-50 border p-2 rounded-xl text-xs">
+          <button onclick="addCustomTypedFood()" class="px-3.5 py-2 bg-slate-900 text-white rounded-xl font-bold text-xs">+ Add</button>
+        </div>
+      </div>
+      <div class="space-y-1.5 flex-1 overflow-y-auto pr-1">
+        <span class="text-[10px] text-slate-600 font-bold">Healthy Substitutes & Fresh Options:</span>
+        <div class="flex flex-wrap gap-1.5" id="cstSubstitutesContainer"></div>
+      </div>
+      <div class="pt-2 border-t flex gap-2">
+        <button onclick="closeCustomizer()" class="flex-1 bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl">Cancel</button>
+        <button onclick="applyCustomizerTags()" class="flex-1 brand-gradient text-white font-bold py-2.5 rounded-xl">Apply Changes ✅</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalFeedback" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm p-4 rounded-3xl space-y-3 text-xs shadow-xl border">
+      <h3 class="font-bold text-slate-900 text-sm">Help & Support</h3>
+      <textarea id="fbMessage" rows="3" class="w-full bg-slate-50 border p-2 rounded-xl" placeholder="Type message..."></textarea>
+      <div class="flex gap-2 pt-1">
+        <button onclick="closeFeedbackModal()" class="flex-1 bg-slate-100 py-2 rounded-xl font-bold">Cancel</button>
+        <button onclick="sendFeedbackWhatsApp()" class="flex-1 bg-teal-600 text-white py-2 rounded-xl font-bold">Submit 📲</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC7HLpZIEayOfmUuHVK_8Fm34Un73i33KE",
+      authDomain: "metabolic-pro-bd3a2.firebaseapp.com",
+      projectId: "metabolic-pro-bd3a2",
+      storageBucket: "metabolic-pro-bd3a2.firebasestorage.app",
+      messagingSenderId: "462945165017",
+      appId: "1:462945165017:web:4e4727c725eb643a29a8c8"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    let COACH_PHONE = "919081421028";
+    let weekOffset = 0;
+    let selectedDateKey = getTodayDateKey();
+    let currentClient = null;
+
+    const MASTER_GROCERY_DB = {
+      "Ash Gourd": { cal: 13, gi: 15 },
+      "Bottle Gourd": { cal: 21, gi: 15 },
+      "Coriander": { cal: 23, gi: 15 },
+      "Raw Turmeric": { cal: 35, gi: 20 },
+      "Fresh Ginger": { cal: 80, gi: 15 },
+      "Moong Dal Chila": { cal: 220, gi: 38 },
+      "Fresh Paneer": { cal: 265, gi: 15 },
+      "Salad Barrier": { cal: 25, gi: 15 },
+      "Multi-Millet Roti": { cal: 110, gi: 35 },
+      "Chaas": { cal: 40, gi: 15 },
+      "Roasted Makhana": { cal: 347, gi: 45 },
+      "Pumpkin Puree": { cal: 40, gi: 30 },
+      "Steamed Moong": { cal: 105, gi: 25 },
+      "Sprouted Chana": { cal: 120, gi: 28 },
+      "Ragi Cheela": { cal: 240, gi: 50 },
+      "Palak Paneer": { cal: 180, gi: 20 },
+      "Sev Usal": { cal: 310, gi: 55 },
+      "Poha": { cal: 180, gi: 65 },
+      "Ganthiya": { cal: 480, gi: 75 },
+      "Bhajiya": { cal: 420, gi: 70 },
+      "Puri": { cal: 500, gi: 80 },
+      "Fafda": { cal: 430, gi: 72 },
+      "Sev": { cal: 520, gi: 78 },
+      "Kachori": { cal: 450, gi: 75 },
+      "Samosa": { cal: 310, gi: 72 },
+      "Kiwi": { cal: 61, gi: 52 },
+      "Dragon Fruit": { cal: 60, gi: 48 },
+      "Pomegranate": { cal: 83, gi: 53 },
+      "Apple": { cal: 52, gi: 36 },
+      "Guava": { cal: 68, gi: 24 },
+      "Papaya": { cal: 43, gi: 60 },
+      "Sweet Lime": { cal: 47, gi: 43 },
+      "Watermelon": { cal: 30, gi: 72 },
+      "Mango": { cal: 60, gi: 51 },
+      "Banana": { cal: 89, gi: 51 }
+    };
+
+    function calculateItemNutrition(itemName) {
+      let clean = itemName.trim();
+      for (let key in MASTER_GROCERY_DB) {
+        if (clean.toLowerCase().includes(key.toLowerCase())) {
+          return MASTER_GROCERY_DB[key];
+        }
+      }
+      return { cal: 120, gi: 30 };
+    }
+
+    function calculateDishNutrition(dishString) {
+      const parts = dishString.split('+').map(s => s.trim());
+      let totalCal = 0;
+      let maxGi = 0;
+      parts.forEach(p => {
+        const nut = calculateItemNutrition(p);
+        totalCal += nut.cal;
+        if(nut.gi > maxGi) maxGi = nut.gi;
+      });
+      return { totalCal, gi: maxGi };
+    }
+
+    // EXPANDED 15-DAY UNIQUE ROTATING CLINICAL MENU (No repetition for 15 days)
+    const MASTER_30_DAY_MENU = [
+      { morning: "Ash Gourd + Coriander + Raw Turmeric", breakfast: "Moong Dal Chila + Fresh Paneer", lunch: "Salad Barrier + Multi-Millet Roti + Bottle Gourd + Chaas", snack: "Roasted Makhana", dinner: "Pumpkin Puree + Sauteed Veggies" },
+      { morning: "Bottle Gourd + Ginger", breakfast: "Steamed Moong + Lemon", lunch: "Salad Barrier + Multi-Millet Roti + Palak Paneer + Chaas", snack: "Pomegranate", dinner: "Pumpkin Puree + Paneer" },
+      { morning: "Amla Juice + Cumin Water", breakfast: "Sprouted Chana Salad", lunch: "Salad Barrier + Multi-Millet Roti + Moong Dal + Chaas", snack: "Kiwi", dinner: "Pumpkin Puree + Sprouts" },
+      { morning: "Cucumber + Mint Infusion", breakfast: "Ragi Cheela + Mint Chutney", lunch: "Salad Barrier + Multi-Millet Roti + Ridge Gourd Sabzi + Chaas", snack: "Roasted Chana", dinner: "Clear Veg Soup + Tofu" },
+      { morning: "Warm Lemon Water", breakfast: "Poha with Peanuts & Curry Leaves", lunch: "Salad Barrier + Jowar Roti + Stuffed Capsicum + Chaas", snack: "Guava", dinner: "Mixed Veg Soup + Paneer Tikka" },
+      { morning: "Bottle Gourd Juice", breakfast: "Sprouts & Pomegranate Salad", lunch: "Salad Barrier + Multi-Millet Roti + Bhindi Masala + Chaas", snack: "Roasted Makhana", dinner: "Tomato Basil Soup + Sauteed Mushrooms" },
+      { morning: "Raw Turmeric + Warm Water", breakfast: "Moong Dal Chila + Green Chutney", lunch: "Salad Barrier + Bajra Roti + Cabbage Matar + Chaas", snack: "Papaya Slices", dinner: "Spinach Soup + Boiled Chana" },
+      { morning: "Ash Gourd Detox Juice", breakfast: "Steamed Moong with Coconut", lunch: "Salad Barrier + Multi-Millet Roti + French Beans Sabzi + Chaas", snack: "Sweet Lime", dinner: "Broccoli Soup + Paneer" },
+      { morning: "Cumin Water + Ginger", breakfast: "Ragi Cheela + Curd", lunch: "Salad Barrier + Multi-Millet Roti + Cauliflower Sabzi + Chaas", snack: "Pumpkin Seeds", dinner: "Clear Soup + Steamed Sprouts" },
+      { morning: "Amla & Aloe Juice", breakfast: "Sprouted Chana + Lemon", lunch: "Salad Barrier + Jowar Roti + Bitter Gourd Sabzi + Chaas", snack: "Apple Slices", dinner: "Zucchini Soup + Grilled Paneer" },
+      { morning: "Mint & Lemon Infusion", breakfast: "Moong Dal Chila + Paneer Cubes", lunch: "Salad Barrier + Multi-Millet Roti + Tomato Curry + Chaas", snack: "Roasted Makhana", dinner: "Mixed Veg Soup + Tofu" },
+      { morning: "Bottle Gourd + Coriander", breakfast: "Steamed Moong + Pepper", lunch: "Salad Barrier + Multi-Millet Roti + Palak Paneer + Chaas", snack: "Dragon Fruit", dinner: "Pumpkin Puree + Sprouts" },
+      { morning: "Warm Ginger Water", breakfast: "Ragi Cheela + Tomato Chutney", lunch: "Salad Barrier + Multi-Millet Roti + Bottle Gourd + Chaas", snack: "Guava", dinner: "Tomato Soup + Sauteed Veggies" },
+      { morning: "Ash Gourd Juice", breakfast: "Sprouted Chana Salad", lunch: "Salad Barrier + Multi-Millet Roti + Moong Dal + Chaas", snack: "Pomegranate", dinner: "Clear Soup + Paneer Tikka" },
+      { morning: "Amla Juice", breakfast: "Moong Dal Chila + Curd", lunch: "Salad Barrier + Multi-Millet Roti + Ridge Gourd + Chaas", snack: "Kiwi", dinner: "Spinach Soup + Sprouts" }
+    ];
+
+    const SUBSTITUTES_POOL = [
+      "Bottle Gourd", "Ash Gourd", "Cucumber", "Moong Dal Chila", "Fresh Paneer", 
+      "Salad Barrier", "Multi-Millet Roti", "Chaas", "Roasted Makhana", "Steamed Moong",
+      "Kiwi", "Dragon Fruit", "Pomegranate", "Apple", "Guava", "Papaya", "Sweet Lime"
+    ];
+
+    function getTodayDateKey() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    }
+
+    function parseDateKey(key) {
+      const parts = key.split('-');
+      return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    }
+
+    function getCurrentWeekDates() {
+      const now = new Date();
+      const currentDay = now.getDay();
+      const distanceToMon = (currentDay === 0 ? -6 : 1) - currentDay;
+      const monday = new Date(now);
+      monday.setDate(now.getDate() + distanceToMon + (weekOffset * 7));
+      const weekDates = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        weekDates.push(d);
+      }
+      return weekDates;
+    }
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      const savedPhone = localStorage.getItem('met_pro_session_phone');
+      if (savedPhone) {
+        try {
+          const doc = await db.collection('clients').doc(savedPhone).get();
+          if (doc.exists) { currentClient = doc.data(); openPortal(); return; }
+        } catch(e) { console.error(e); }
+      }
+      showAuth();
+    });
+
+    function showAuth() {
+      document.getElementById('authView').classList.remove('hidden');
+      document.getElementById('clientPortalView').classList.add('hidden');
+    }
+
+    function setAuthTab(tab) {
+      if (tab === 'register') {
+        document.getElementById('formRegister').classList.remove('hidden');
+        document.getElementById('formLogin').classList.add('hidden');
+        document.getElementById('tabRegister').className = "flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold";
+        document.getElementById('tabLogin').className = "flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold";
+      } else {
+        document.getElementById('formLogin').classList.remove('hidden');
+        document.getElementById('formRegister').classList.add('hidden');
+        document.getElementById('tabLogin').className = "flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold";
+        document.getElementById('tabRegister').className = "flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold";
+      }
+    }
+
+    async function handleClientRegister() {
+      const name = document.getElementById('regName').value.trim();
+      const phone = document.getElementById('regPhone').value.trim().replace(/\D/g, '');
+      const diet = document.getElementById('regDiet').value;
+      const conditions = Array.from(document.querySelectorAll('input[name="regCondition"]:checked')).map(cb => cb.value);
+
+      if (!name || phone.length < 10) return alert('Enter full name and 10-digit number.');
+      if (conditions.length === 0) return alert('Select at least one goal.');
+
+      const pin = phone.slice(-4) || '1234';
+      const clientRef = db.collection('clients').doc(phone);
+      const newClientData = {
+        name, phone, pin, diet,
+        goal: conditions.join(' + '),
+        conditions,
+        tier: 'trial',
+        trialDays: 30,
+        joiningDate: getTodayDateKey(),
+        refCode: 'CL-' + phone.slice(-4),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        weeklyPlan: {},
+        compliance: {}
+      };
+
+      await clientRef.set(newClientData);
+      currentClient = newClientData;
+      localStorage.setItem('met_pro_session_phone', phone);
+      alert(`🎉 Welcome ${name}! Portal is live. (PIN: ${pin})`);
+      openPortal();
+    }
+
+    async function handleClientLogin() {
+      const input = document.getElementById('loginId').value.trim().replace(/\D/g, '');
+      const pin = document.getElementById('loginPin').value.trim();
+      if (input.length < 10) return alert('Enter 10-digit number.');
+
+      const doc = await db.collection('clients').doc(input).get();
+      if (!doc.exists) return alert('Account not found.');
+      const data = doc.data();
+      if (pin && data.pin && pin !== data.pin) return alert('Incorrect PIN.');
+
+      currentClient = data;
+      localStorage.setItem('met_pro_session_phone', input);
+      openPortal();
+    }
+
+    function logoutClient() { localStorage.removeItem('met_pro_session_phone'); currentClient = null; showAuth(); }
+    function openClientForgotPinModal() { document.getElementById('inClientForgotPhone').value = document.getElementById('loginId').value.trim(); document.getElementById('modalClientForgotPin').classList.remove('hidden'); }
+    function closeClientForgotPinModal() { document.getElementById('modalClientForgotPin').classList.add('hidden'); }
+    async function handleClientSelfResetPin() {
+      const phone = document.getElementById('inClientForgotPhone').value.trim().replace(/\D/g, '');
+      const defaultPin = phone.slice(-4) || '1234';
+      await db.collection('clients').doc(phone).update({ pin: defaultPin });
+      alert(`✅ PIN reset to: ${defaultPin}`);
+      closeClientForgotPinModal();
+    }
+
+    function openPortal() {
+      document.getElementById('authView').classList.add('hidden');
+      document.getElementById('clientPortalView').classList.remove('hidden');
+
+      document.getElementById('cpClientTitle').innerText = currentClient.name;
+      document.getElementById('cpClientSub').innerText = currentClient.goal || 'Health Plan';
+      document.getElementById('cpFixedBadge').innerText = `${currentClient.goal || 'General'} (${currentClient.diet})`;
+      document.getElementById('cpTrialDaysLeft').innerText = currentClient.trialDays >= 900 ? 'Lifetime VIP Access' : `${currentClient.trialDays} Days VIP Access`;
+
+      selectedDateKey = getTodayDateKey();
+      weekOffset = 0;
+      renderClientDateStrip();
+      loadTodayClientView();
+    }
+
+    function renderClientDateStrip() {
+      const weekDates = getCurrentWeekDates();
+      const container = document.getElementById('cpDateGridButtons');
+      container.innerHTML = '';
+      const todayKey = getTodayDateKey();
+      const joiningKey = currentClient.joiningDate || todayKey;
+      const isLifetimeVIP = (currentClient.trialDays >= 900);
+      const isFutureWeek = (weekOffset > 0);
+
+      weekDates.forEach(d => {
+        const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        const dayNumber = d.getDate();
+        const dayShort = DAY_NAMES[d.getDay()].substring(0, 3);
+        const isSelected = (dateKey === selectedDateKey);
+        const isToday = (dateKey === todayKey);
+        const isBeforeJoining = (dateKey < joiningKey);
+
+        const btn = document.createElement('button');
+        if (isBeforeJoining || (!isLifetimeVIP && isFutureWeek)) {
+          btn.className = "py-2 px-1 rounded-2xl bg-slate-100 text-slate-300 border border-slate-200 text-xs flex flex-col items-center justify-center cursor-not-allowed";
+          btn.onclick = () => alert(isBeforeJoining ? "🔒 Before joining date." : "🔒 Future weeks locked for regular trial.");
+        } else {
+          btn.onclick = () => selectClientDate(dateKey);
+          if (isSelected) btn.className = "py-2 px-1 rounded-2xl bg-teal-600 text-white font-extrabold text-xs shadow-md shadow-teal-700/30 flex flex-col items-center justify-center";
+          else if (isToday) btn.className = "py-2 px-1 rounded-2xl bg-teal-50 border-2 border-teal-500 text-teal-800 font-extrabold text-xs flex flex-col items-center justify-center";
+          else btn.className = "py-2 px-1 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-xs flex flex-col items-center justify-center";
+        }
+        btn.innerHTML = `<span class="text-[9px] uppercase tracking-wider ${isSelected ? 'text-teal-100' : 'text-slate-400'}">${dayShort}</span><span class="text-sm font-black leading-tight mt-0.5">${dayNumber}</span>`;
+        container.appendChild(btn);
+      });
+      updateDateHeader();
+    }
+
+    function selectClientDate(dateKey) { selectedDateKey = dateKey; renderClientDateStrip(); loadTodayClientView(); }
+    function changeWeek(direction) { weekOffset += direction; renderClientDateStrip(); }
+    function jumpToToday() { weekOffset = 0; selectedDateKey = getTodayDateKey(); renderClientDateStrip(); loadTodayClientView(); }
+    function updateDateHeader() {
+      const dObj = parseDateKey(selectedDateKey);
+      document.getElementById('cpActiveDateFullHeading').innerText = `${DAY_NAMES[dObj.getDay()]}, ${dObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+    }
+
+    function loadTodayClientView() {
+      if(!currentClient) return;
+      if(!currentClient.compliance) currentClient.compliance = {};
+      const comp = currentClient.compliance[selectedDateKey] || { morning: 'idle', breakfast: 'idle', lunch: 'idle', snack: 'idle', dinner: 'idle', rule: 'idle', customMeals: {}, metric1: '', metric2: '', note: '', water: 0 };
+
+      const waterVal = comp.water || 0;
+      document.getElementById('cpWaterCount').innerText = waterVal.toFixed(2) + ' / 3.0 Liters';
+      document.getElementById('cpWaterBar').style.width = Math.min((waterVal / 3.0) * 100, 100) + '%';
+
+      const dObj = parseDateKey(selectedDateKey);
+      const dayOfYear = Math.floor((dObj - new Date(dObj.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+      const plan = MASTER_30_DAY_MENU[dayOfYear % MASTER_30_DAY_MENU.length];
+
+      const slots = [
+        { key: 'morning', time: 'Early Morning (ખાલી પેટે)', label: '1. Alkaline Detox Infusion', text: comp.customMeals?.morning || plan.morning },
+        { key: 'breakfast', time: 'Morning Breakfast (નાસ્તો)', label: '2. Breakfast & Protein Charge', text: comp.customMeals?.breakfast || plan.breakfast },
+        { key: 'lunch', time: 'Afternoon Lunch (બપોરનું ભોજન)', label: '3. Glycemic Barrier Lunch Plate', text: comp.customMeals?.lunch || plan.lunch },
+        { key: 'snack', time: 'Evening Snack (સાંજે ૪-૫ વાગ્યે)', label: '4. Anti-Craving Evening Fuel', text: comp.customMeals?.snack || plan.snack },
+        { key: 'dinner', time: 'Night Dinner (રાત્રે ૮:૩૦ પહેલાં)', label: '5. Restorative Dinner', text: comp.customMeals?.dinner || plan.dinner }
+      ];
+
+      let totalDayCalories = 0;
+      let totalDayGiSum = 0;
+
+      const container = document.getElementById('cpTodayMealCards');
+      container.innerHTML = '';
+
+      slots.forEach(s => {
+        const nut = calculateDishNutrition(s.text);
+        totalDayCalories += nut.totalCal;
+        totalDayGiSum += nut.gi;
+
+        const isRedZone = (nut.gi >= 70);
+        const currentCheck = comp[s.key] || 'idle';
+        const card = document.createElement('div');
+        card.className = "card-clean p-3.5 rounded-2xl space-y-2 border border-slate-200";
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-[9px] font-bold text-slate-400 uppercase">${s.time}</span>
+              <h3 class="text-xs font-bold text-slate-900">${s.label}</h3>
+            </div>
+            <div class="flex items-center gap-1.5 flex-wrap justify-end">
+              ${isRedZone ? '<span class="px-2 py-0.5 rounded-md bg-rose-100 text-rose-800 text-[10px] font-black border border-rose-300">🔴 Red Zone</span>' : ''}
+              <span class="px-2 py-0.5 rounded-md bg-teal-50 text-teal-800 text-[10px] font-extrabold border border-teal-200">🔥 ${nut.totalCal} kcal</span>
+              <span class="px-2 py-0.5 rounded-md bg-sky-50 text-sky-800 text-[10px] font-extrabold border border-sky-200">📊 GI: ${nut.gi}</span>
+              <button onclick="openCustomizer('${s.key}', '${s.text.replace(/'/g, "\\\'")}')" class="text-[10px] text-teal-700 font-bold bg-teal-50 px-2 py-1 rounded-xl">Customize</button>
+            </div>
+          </div>
+          <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 font-medium">${s.text}</div>
+          <div class="grid grid-cols-3 gap-1.5">
+            <button onclick="setCheck('${s.key}', 'done')" class="py-2 rounded-xl text-xs ${currentCheck==='done'?'btn-done-active':'btn-idle'}">Done</button>
+            <button onclick="setCheck('${s.key}', 'half')" class="py-2 rounded-xl text-xs ${currentCheck==='half'?'btn-half-active':'btn-idle'}">50%</button>
+            <button onclick="setCheck('${s.key}', 'miss')" class="py-2 rounded-xl text-xs ${currentCheck==='miss'?'btn-miss-active':'btn-idle'}">Missed</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      const dailyTarget = 1200;
+      const remaining = dailyTarget - totalDayCalories;
+      const avgGi = Math.round(totalDayGiSum / slots.length);
+      const progressPercent = Math.min(Math.round((totalDayCalories / dailyTarget) * 100), 100);
+
+      document.getElementById('cpTargetCal').innerText = dailyTarget;
+      document.getElementById('cpConsumedCal').innerText = totalDayCalories + ' kcal';
+      document.getElementById('cpRemainingCal').innerText = (remaining >= 0 ? remaining : 0) + ' kcal';
+      document.getElementById('cpDailyGi').innerText = 'GI: ' + avgGi;
+      document.getElementById('cpCalProgress').style.width = progressPercent + '%';
+
+      if (remaining < 0) {
+        document.getElementById('cpRemainingCal').className = "text-sm font-black text-rose-300 mt-0.5";
+        document.getElementById('cpRemainingCal').innerText = `Exceeded by ${Math.abs(remaining)} kcal!`;
+      } else {
+        document.getElementById('cpRemainingCal').className = "text-sm font-black text-emerald-300 mt-0.5";
+      }
+
+      document.getElementById('cpDynamicInputs').innerHTML = `
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="text-[9px] text-slate-500 font-semibold">Fasting Sugar</label><input type="number" id="cpInM1" onchange="saveVitals()" value="${comp.metric1||''}" class="w-full bg-slate-50 border p-2 rounded-lg text-xs"></div>
+          <div><label class="text-[9px] text-slate-500 font-semibold">PP2BS Sugar</label><input type="number" id="cpInM2" onchange="saveVitals()" value="${comp.metric2||''}" class="w-full bg-slate-50 border p-2 rounded-lg text-xs"></div>
+        </div>
+        <input type="text" id="cpInNote" onchange="saveVitals()" value="${comp.note||''}" placeholder="Notes, local food eaten (e.g. Ganthiya)..." class="w-full bg-slate-50 border p-2 rounded-lg text-xs mt-1">
+      `;
+    }
+
+    async function setCheck(slotKey, state) {
+      if(!currentClient.compliance[selectedDateKey]) currentClient.compliance[selectedDateKey] = {};
+      currentClient.compliance[selectedDateKey][slotKey] = state;
+      loadTodayClientView();
+      await db.collection('clients').doc(currentClient.phone).update({ [`compliance.${selectedDateKey}.${slotKey}`]: state });
+    }
+
+    async function addWater(amount) {
+      if(!currentClient.compliance[selectedDateKey]) currentClient.compliance[selectedDateKey] = {};
+      let cur = currentClient.compliance[selectedDateKey].water || 0;
+      cur += amount;
+      currentClient.compliance[selectedDateKey].water = cur;
+      loadTodayClientView();
+      await db.collection('clients').doc(currentClient.phone).update({ [`compliance.${selectedDateKey}.water`]: cur });
+    }
+
+    async function resetWater() {
+      if(!currentClient.compliance[selectedDateKey]) currentClient.compliance[selectedDateKey] = {};
+      currentClient.compliance[selectedDateKey].water = 0;
+      loadTodayClientView();
+      await db.collection('clients').doc(currentClient.phone).update({ [`compliance.${selectedDateKey}.water`]: 0 });
+    }
+
+    async function saveVitals() {
+      if(!currentClient.compliance[selectedDateKey]) currentClient.compliance[selectedDateKey] = {};
+      const m1 = document.getElementById('cpInM1')?.value || '';
+      const m2 = document.getElementById('cpInM2')?.value || '';
+      const note = document.getElementById('cpInNote')?.value || '';
+      currentClient.compliance[selectedDateKey].metric1 = m1;
+      currentClient.compliance[selectedDateKey].metric2 = m2;
+      currentClient.compliance[selectedDateKey].note = note;
+      await db.collection('clients').doc(currentClient.phone).update({
+        [`compliance.${selectedDateKey}.metric1`]: m1,
+        [`compliance.${selectedDateKey}.metric2`]: m2,
+        [`compliance.${selectedDateKey}.note`]: note
+      });
+    }
+
+    let cstActiveSlot = 'morning';
+    let cstActiveTags = [];
+    function openCustomizer(slotKey, currentText) {
+      cstActiveSlot = slotKey;
+      cstActiveTags = currentText.split('+').map(s => s.trim()).filter(s => s.length > 0);
+      renderCstTags();
+      renderCstSubs();
+      document.getElementById('ingredientCustomizerModal').classList.remove('hidden');
+    }
+    function closeCustomizer() { document.getElementById('ingredientCustomizerModal').classList.add('hidden'); }
+
+    function renderCstTags() {
+      const c = document.getElementById('cstActiveTags');
+      c.innerHTML = '';
+      cstActiveTags.forEach((t, idx) => {
+        c.innerHTML += `<span class="px-2.5 py-1 rounded-xl bg-teal-50 border text-teal-800 text-xs font-semibold flex items-center gap-1">${t} <button onclick="cstActiveTags.splice(${idx},1);renderCstTags()"><i class="fa-solid fa-xmark"></i></button></span>`;
+      });
+    }
+
+    function addCustomTypedFood() {
+      const val = document.getElementById('cstCustomInput').value.trim();
+      if(val && !cstActiveTags.includes(val)) { cstActiveTags.push(val); renderCstTags(); document.getElementById('cstCustomInput').value=''; }
+    }
+
+    function renderCstSubs() {
+      const c = document.getElementById('cstSubstitutesContainer');
+      c.innerHTML = '';
+      SUBSTITUTES_POOL.forEach(item => {
+        c.innerHTML += `<button onclick="if(!cstActiveTags.includes('${item}')){cstActiveTags.push('${item}');renderCstTags();}" class="px-2 py-1 bg-slate-50 border text-[10px] rounded-xl">+ ${item}</button>`;
+      });
+    }
+
+    async function applyCustomizerTags() {
+      if(!currentClient.compliance[selectedDateKey]) currentClient.compliance[selectedDateKey] = {};
+      if(!currentClient.compliance[selectedDateKey].customMeals) currentClient.compliance[selectedDateKey].customMeals = {};
+      const finalStr = cstActiveTags.join(' + ');
+      currentClient.compliance[selectedDateKey].customMeals[cstActiveSlot] = finalStr;
+      closeCustomizer();
+      loadTodayClientView();
+      await db.collection('clients').doc(currentClient.phone).update({ [`compliance.${selectedDateKey}.customMeals.${cstActiveSlot}`]: finalStr });
+    }
+
+    function openFeedbackModal() { document.getElementById('modalFeedback').classList.remove('hidden'); }
+    function closeFeedbackModal() { document.getElementById('modalFeedback').classList.add('hidden'); }
+    function sendFeedbackWhatsApp() {
+      const msg = document.getElementById('fbMessage').value.trim();
+      if(!msg) return alert('Enter message.');
+      window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent('Support: ' + msg)}`, '_blank');
+      closeFeedbackModal();
+    }
+
+    function submitClientReport(type) {
+      const comp = currentClient.compliance[selectedDateKey] || {};
+      const waterVal = comp.water || 0;
+      const msg = `🩺 *Metabolic Pro - Daily Report*
+Client: *${currentClient.name}*
+Date: *${selectedDateKey}*
+💧 Water Intake: *${waterVal.toFixed(2)} Liters*
+🩸 Fasting Sugar: *${comp.metric1 || 'N/A'}* | PP2BS: *${comp.metric2 || 'N/A'}*
+Notes / Log: "${comp.note || 'All good'}"`;
+      window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+  </script>
+</body>
+</html>
 
