@@ -92,7 +92,7 @@
 
           <!-- Pool Filter Chips -->
           <div class="flex gap-1.5 text-[11px] overflow-x-auto pb-1">
-            <button onclick="setPoolFilter('trial')" id="pfilter-trial" class="px-3 py-1.5 rounded-xl bg-teal-600 text-white font-bold whitespace-nowrap">⏳ 30-Day Trial (<span id="cntTrial">0</span>)</button>
+            <button onclick="setPoolFilter('trial')" id="pfilter-trial" class="px-3 py-1.5 rounded-xl bg-teal-600 text-white font-bold whitespace-nowrap">⏳ 30-Day Free (<span id="cntTrial">0</span>)</button>
             <button onclick="setPoolFilter('vip')" id="pfilter-vip" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 font-bold whitespace-nowrap">👑 VIP Paid (<span id="cntVip">0</span>)</button>
             <button onclick="setPoolFilter('pending')" id="pfilter-pending" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 font-bold whitespace-nowrap">⚠️ Pending WA (<span id="cntPending">0</span>)</button>
             <button onclick="setPoolFilter('expired')" id="pfilter-expired" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 font-bold whitespace-nowrap">🔒 Expired (<span id="cntExpired">0</span>)</button>
@@ -139,20 +139,41 @@
 
   <!-- OWNER SETTINGS MODAL -->
   <div id="modalCoachSettings" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm p-5 rounded-3xl space-y-3.5 text-xs shadow-2xl border">
+    <div class="bg-white w-full max-w-sm max-h-[90vh] overflow-y-auto p-5 rounded-3xl space-y-3.5 text-xs shadow-2xl border">
       <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-extrabold text-slate-900 text-sm">ઓનર કંટ્રોલ & હેલ્પલાઇન સેટિંગ્સ</h3>
+        <h3 class="font-extrabold text-slate-900 text-sm">ઓનર કંટ્રોલ & સેટિંગ્સ</h3>
         <button onclick="closeCoachSettingsModal()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
       </div>
 
       <div class="space-y-2.5">
         <div>
-          <label class="font-bold text-slate-700 block mb-1">મુખ્ય હેલ્પલાઇન WhatsApp નંબર (૧૦ અંક)</label>
-          <input type="tel" id="setCoachPhone" placeholder="દા.ત. 9925879138" class="w-full p-2.5 bg-slate-50 border rounded-xl font-bold">
+          <label class="font-bold text-slate-700 block mb-1">મુખ્ય હેલ્પલાઇન WhatsApp નંબર</label>
+          <input type="tel" id="setCoachPhone" placeholder="દા.ત. 9925879138" class="w-full p-2 bg-slate-50 border rounded-xl font-bold">
         </div>
         <div>
-          <label class="font-bold text-slate-700 block mb-1">ઓનર માસ્ટર PIN (Master PIN)</label>
-          <input type="password" maxlength="8" id="setMasterPin" placeholder="નવો માસ્ટર PIN" class="w-full p-2.5 bg-slate-50 border rounded-xl font-bold">
+          <label class="font-bold text-slate-700 block mb-1">ઓનર માસ્ટર PIN</label>
+          <input type="password" maxlength="8" id="setMasterPin" placeholder="નવો માસ્ટર PIN" class="w-full p-2 bg-slate-50 border rounded-xl font-bold">
+        </div>
+
+        <!-- LIVE SESSIONS LINK CONTROLS -->
+        <div class="pt-2 border-t border-slate-200 space-y-2">
+          <span class="font-black text-teal-900 block text-xs">🔴 લાઈવ ક્લાસ લિંક્સ (Google Meet / Zoom)</span>
+          <div>
+            <label class="font-bold text-slate-600 block mb-0.5">🧘‍♀️ યોગા & પ્રાણાયામ લિંક</label>
+            <input type="url" id="setYogaLink" placeholder="https://meet.google.com/xxx-yyyy-zzz" class="w-full p-2 bg-slate-50 border rounded-xl font-mono text-[11px]">
+          </div>
+          <div>
+            <label class="font-bold text-slate-600 block mb-0.5">🌸 ગર્ભસંસ્કાર લિંક</label>
+            <input type="url" id="setGarbhLink" placeholder="https://meet.google.com/xxx-yyyy-zzz" class="w-full p-2 bg-slate-50 border rounded-xl font-mono text-[11px]">
+          </div>
+          <div>
+            <label class="font-bold text-slate-600 block mb-0.5">🧠 મેડિટેશન લિંક</label>
+            <input type="url" id="setMedLink" placeholder="https://meet.google.com/xxx-yyyy-zzz" class="w-full p-2 bg-slate-50 border rounded-xl font-mono text-[11px]">
+          </div>
+          <div>
+            <label class="font-bold text-slate-600 block mb-0.5">🎥 લેટેસ્ટ રેકોર્ડિંગ લિંક (YouTube Unlisted)</label>
+            <input type="url" id="setRecordLink" placeholder="https://youtu.be/..." class="w-full p-2 bg-slate-50 border rounded-xl font-mono text-[11px]">
+          </div>
         </div>
       </div>
 
@@ -191,6 +212,7 @@
     let loggedInCoach = null;
     let masterPinVal = '1234';
     let activeCoachPhone = "919081421028";
+    let liveSessionLinks = { yoga: '', garbh: '', med: '', record: '' };
 
     function formatWaPhone(phone) {
       let clean = String(phone || '').replace(/\D/g, '');
@@ -217,6 +239,11 @@
           if (d.masterPin) masterPinVal = String(d.masterPin);
         }
         document.getElementById('headerCoachDisplay').innerText = `Helpline: ${activeCoachPhone}`;
+
+        const liveDoc = await db.collection('settings').doc('live_sessions').get();
+        if (liveDoc.exists) {
+          liveSessionLinks = liveDoc.data();
+        }
       } catch(e) { console.error("Settings error:", e); }
     }
 
@@ -230,7 +257,7 @@
         document.getElementById('roleBadge').innerText = 'Owner (Full Access)';
         document.getElementById('roleBadge').className = 'px-2 py-0.5 bg-amber-400 text-slate-900 text-[9px] rounded-full font-black';
         document.getElementById('btnOwnerSettings').classList.remove('hidden');
-        document.getElementById('atab-coaches').classList.remove('hidden'); // Owner sees tab
+        document.getElementById('atab-coaches').classList.remove('hidden');
       } else {
         const coachSnap = await db.collection('coaches').where('pin', '==', inputPin).get();
         if (!coachSnap.empty) {
@@ -239,7 +266,7 @@
           document.getElementById('roleBadge').innerText = `Coach: ${loggedInCoach.name}`;
           document.getElementById('roleBadge').className = 'px-2 py-0.5 bg-teal-800 text-teal-200 text-[9px] rounded-full font-bold';
           document.getElementById('btnOwnerSettings').classList.add('hidden');
-          document.getElementById('atab-coaches').classList.add('hidden'); // COACH NEVER SEES COACH TAB
+          document.getElementById('atab-coaches').classList.add('hidden'); // Coach cannot manage coaches
         } else {
           return alert('ખોટો PIN છે!');
         }
@@ -254,10 +281,7 @@
     }
 
     function setAdminTab(tab) {
-      // Security guard: Coach cannot enter coaches view
-      if (tab === 'coaches' && currentUserRole !== 'owner') {
-        tab = 'nudge';
-      }
+      if (tab === 'coaches' && currentUserRole !== 'owner') tab = 'nudge';
 
       ['nudge', 'clients', 'coaches'].forEach(t => {
         const view = document.getElementById('aview-' + t);
@@ -368,6 +392,44 @@
       });
     }
 
+    async function toggleClientService(clientId, serviceKey, isChecked) {
+      const client = liveClients.find(c => c.id === clientId);
+      let services = client.services || [];
+      if (isChecked) {
+        if (!services.includes(serviceKey)) services.push(serviceKey);
+      } else {
+        services = services.filter(s => s !== serviceKey);
+      }
+      await db.collection('clients').doc(clientId).update({ services });
+    }
+
+    // Grant or revoke VIP
+    async function grantVipStatus(clientId, days) {
+      if (currentUserRole !== 'owner') return alert('માત્ર ઓનર VIP બદલી શકે છે.');
+      
+      const now = new Date();
+      const expiry = new Date();
+      expiry.setDate(now.getDate() + days);
+      const expiryStr = `${expiry.getFullYear()}-${String(expiry.getMonth() + 1).padStart(2, '0')}-${String(expiry.getDate()).padStart(2, '0')}`;
+
+      await db.collection('clients').doc(clientId).update({
+        isVip: days > 0,
+        vipExpiryDate: days > 0 ? expiryStr : null,
+        trialDays: days > 0 ? days : 30
+      });
+      alert(`✅ VIP એક્સેસ ${days} દિવસ માટે સફળતાપૂર્વક અપડેટ થયો!`);
+    }
+
+    function isClientVip(cl) {
+      if (!cl) return false;
+      if (cl.isVip === true) {
+        if (!cl.vipExpiryDate) return true;
+        const exp = new Date(cl.vipExpiryDate);
+        return exp >= new Date();
+      }
+      return (Number(cl.trialDays) >= 900);
+    }
+
     function getDaysActive(joiningDateStr) {
       if(!joiningDateStr) return 0;
       const jDate = new Date(joiningDateStr);
@@ -384,12 +446,12 @@
       });
 
       accessibleClients.forEach(c => {
-        const isVIP = (Number(c.trialDays) >= 900);
+        const vip = isClientVip(c);
         const days = getDaysActive(c.joiningDate);
-        const isExpired = !isVIP && (days > (Number(c.trialDays) || 30));
+        const isExpired = !vip && (days > (Number(c.trialDays) || 30));
 
         if (!c.whatsappVerified) cPending++;
-        else if (isVIP) cVip++;
+        else if (vip) cVip++;
         else if (isExpired) cExpired++;
         else cTrial++;
       });
@@ -439,26 +501,22 @@
       renderQueue();
     }
 
-    // --- RENDER QUEUE WITH ASSIGNMENT DROPDOWN ON HOME SCREEN ---
     function renderQueue() {
       const container = document.getElementById('queueClientsContainer');
       container.innerHTML = '';
       const mealType = document.getElementById('selNudgeMealType').value;
 
       const filtered = liveClients.filter(c => {
-        // Coach sees strictly assigned patients
-        if (currentUserRole !== 'owner' && c.assignedCoachId !== loggedInCoach?.id) {
-          return false;
-        }
+        if (currentUserRole !== 'owner' && c.assignedCoachId !== loggedInCoach?.id) return false;
 
-        const isVIP = (Number(c.trialDays) >= 900);
+        const vip = isClientVip(c);
         const days = getDaysActive(c.joiningDate);
-        const isExpired = !isVIP && (days > (Number(c.trialDays) || 30));
+        const isExpired = !vip && (days > (Number(c.trialDays) || 30));
 
         if (currentPool === 'pending') return !c.whatsappVerified;
-        if (currentPool === 'vip') return isVIP && c.whatsappVerified;
+        if (currentPool === 'vip') return vip && c.whatsappVerified;
         if (currentPool === 'expired') return isExpired && c.whatsappVerified;
-        return !isVIP && !isExpired && c.whatsappVerified;
+        return !vip && !isExpired && c.whatsappVerified;
       });
 
       if (filtered.length === 0) {
@@ -470,8 +528,9 @@
         const isSent = sentTracker[`${cl.id}_${mealType}`];
         const conditions = (cl.conditions || []).join(' • ');
         const displayPhone = maskPhoneNumber(cl.phone);
+        const services = cl.services || [];
+        const vip = isClientVip(cl);
 
-        // Build Coach options for dropdown
         let coachOptions = `<option value="">-- સોંપણી બાકી છે --</option>`;
         liveCoaches.forEach(ch => {
           coachOptions += `<option value="${ch.id}" ${cl.assignedCoachId === ch.id ? 'selected' : ''}>${esc(ch.name)}</option>`;
@@ -483,7 +542,10 @@
           <div class="card-clean p-3.5 rounded-2xl border space-y-2">
             <div class="flex items-center justify-between">
               <div>
-                <div class="font-extrabold text-slate-900 text-xs">${esc(cl.name)} <span class="text-slate-500 font-semibold font-mono">(${displayPhone})</span></div>
+                <div class="font-extrabold text-slate-900 text-xs flex items-center gap-1.5">
+                  ${esc(cl.name)} <span class="text-slate-500 font-semibold font-mono">(${displayPhone})</span>
+                  ${vip ? '<span class="px-1.5 py-0.2 bg-amber-100 text-amber-900 text-[9px] font-black rounded">👑 VIP</span>' : ''}
+                </div>
                 <div class="text-[10px] text-teal-700 font-bold mt-0.5">${esc(conditions)}</div>
               </div>
 
@@ -500,19 +562,41 @@
               </div>
             </div>
 
-            <!-- DIRECT ASSIGNMENT ON HOME QUEUE (OWNER ONLY) -->
+            <!-- OWNER PRIVILEGES (VIP CONTROL & SERVICES) -->
             ${currentUserRole === 'owner' ? `
-              <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                <span class="text-slate-500 font-bold flex items-center gap-1">
-                  <i class="fa-solid fa-user-tag text-teal-600"></i> કોચ સોંપો:
-                </span>
-                <select onchange="assignClientToCoach('${cl.id}', this.value)" class="p-1.5 bg-slate-50 border border-slate-300 rounded-xl text-teal-950 font-bold text-[11px] focus:ring-1 focus:ring-teal-500">
-                  ${coachOptions}
-                </select>
+              <div class="pt-1.5 border-t border-slate-100 flex flex-wrap items-center justify-between text-[11px] gap-1">
+                <span class="font-bold text-slate-600">સર્વિસ લાઈવ:</span>
+                <div class="flex items-center gap-2">
+                  <label class="flex items-center gap-1 font-bold text-teal-800 text-[10px]">
+                    <input type="checkbox" onchange="toggleClientService('${cl.id}', 'yoga', this.checked)" ${services.includes('yoga')?'checked':''} class="rounded text-teal-600"> યોગા
+                  </label>
+                  <label class="flex items-center gap-1 font-bold text-teal-800 text-[10px]">
+                    <input type="checkbox" onchange="toggleClientService('${cl.id}', 'garbh', this.checked)" ${services.includes('garbh')?'checked':''} class="rounded text-teal-600"> ગર્ભસંસ્કાર
+                  </label>
+                  <label class="flex items-center gap-1 font-bold text-teal-800 text-[10px]">
+                    <input type="checkbox" onchange="toggleClientService('${cl.id}', 'med', this.checked)" ${services.includes('med')?'checked':''} class="rounded text-teal-600"> ધ્યાન
+                  </label>
+                </div>
+              </div>
+
+              <div class="pt-1 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                <div class="flex items-center gap-1">
+                  ${vip ? `
+                    <button onclick="grantVipStatus('${cl.id}', 0)" class="px-2 py-1 bg-rose-50 text-rose-700 text-[10px] font-bold rounded-lg border border-rose-200">Revoke VIP ❌</button>
+                  ` : `
+                    <button onclick="grantVipStatus('${cl.id}', 30)" class="px-2 py-1 bg-amber-400 hover:bg-amber-500 text-slate-900 text-[10px] font-black rounded-lg shadow-xs">👑 30-Day VIP Grant</button>
+                  `}
+                </div>
+                <div class="flex items-center gap-1">
+                  <span class="text-slate-400 font-bold text-[10px]">કોચ:</span>
+                  <select onchange="assignClientToCoach('${cl.id}', this.value)" class="p-1 bg-slate-50 border border-slate-300 rounded-lg text-teal-950 font-bold text-[10px]">
+                    ${coachOptions}
+                  </select>
+                </div>
               </div>
             ` : `
-              <div class="pt-1.5 border-t border-slate-100 text-[10px] text-slate-400 font-bold">
-                તમારા હસ્તક દર્દી • Coach: ${esc(assignedCoachName)}
+              <div class="pt-1 border-t border-slate-100 text-[10px] text-slate-400 font-bold">
+                પ્લાન: ${vip ? '👑 VIP Paid' : '⏳ Free Trial'} • Coach: ${esc(assignedCoachName)}
               </div>
             `}
           </div>
@@ -558,8 +642,7 @@
       accessibleClients.forEach(cl => {
         const safeId = esc(cl.id);
         const safeName = esc(cl.name);
-        const trialDays = Number(cl.trialDays) || 0;
-        const isVIP = trialDays >= 900;
+        const vip = isClientVip(cl);
         const displayPhone = maskPhoneNumber(cl.phone);
 
         c.innerHTML += `
@@ -570,11 +653,11 @@
             </div>
             <div class="flex items-center gap-1.5">
               ${currentUserRole === 'owner' ? `
-                <button onclick="updateTrial('${safeId}', ${isVIP ? 30 : 999})" class="px-2.5 py-1 ${isVIP ? 'bg-amber-100 text-amber-900' : 'bg-slate-900 text-white'} text-[10px] font-bold rounded-lg">
-                  ${isVIP ? 'Revoke VIP' : 'Make VIP 👑'}
+                <button onclick="grantVipStatus('${safeId}', ${vip ? 0 : 30})" class="px-2.5 py-1 ${vip ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-slate-900 text-white'} text-[10px] font-black rounded-lg">
+                  ${vip ? 'VIP Active (Revoke)' : '+ 30-Day VIP 👑'}
                 </button>
               ` : `
-                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] font-bold">${isVIP ? 'VIP' : 'Trial'}</span>
+                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] font-bold">${vip ? '👑 VIP' : 'Free'}</span>
               `}
             </div>
           </div>
@@ -582,15 +665,14 @@
       });
     }
 
-    async function updateTrial(id, days) {
-      if (currentUserRole !== 'owner') return alert('માત્ર ઓનર પ્લાન બદલી શકે છે.');
-      await db.collection('clients').doc(id).update({ trialDays: days });
-    }
-
     function openCoachSettingsModal() {
       if (currentUserRole !== 'owner') return alert('માત્ર ઓનર સેટિંગ્સ બદલી શકે છે.');
       document.getElementById('setCoachPhone').value = activeCoachPhone.replace(/^91/, '');
       document.getElementById('setMasterPin').value = masterPinVal;
+      document.getElementById('setYogaLink').value = liveSessionLinks.yoga || '';
+      document.getElementById('setGarbhLink').value = liveSessionLinks.garbh || '';
+      document.getElementById('setMedLink').value = liveSessionLinks.med || '';
+      document.getElementById('setRecordLink').value = liveSessionLinks.record || '';
       document.getElementById('modalCoachSettings').classList.remove('hidden');
     }
 
@@ -603,6 +685,11 @@
       const mPin = document.getElementById('setMasterPin').value.trim();
       const cleanPhone = formatWaPhone(phoneRaw);
 
+      const yoga = document.getElementById('setYogaLink').value.trim();
+      const garbh = document.getElementById('setGarbhLink').value.trim();
+      const med = document.getElementById('setMedLink').value.trim();
+      const record = document.getElementById('setRecordLink').value.trim();
+
       if (cleanPhone.length < 12) return alert('સાચો ૧૦-અંકનો નંબર દાખલ કરો.');
       if (!mPin) return alert('Master PIN ખાલી ન હોઈ શકે.');
 
@@ -612,11 +699,18 @@
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
 
+      await db.collection('settings').doc('live_sessions').set({
+        yoga, garbh, med, record,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
       activeCoachPhone = cleanPhone;
       masterPinVal = mPin;
+      liveSessionLinks = { yoga, garbh, med, record };
+
       document.getElementById('headerCoachDisplay').innerText = `Helpline: ${activeCoachPhone}`;
       closeCoachSettingsModal();
-      alert('✅ ઓનર સેટિંગ્સ સફળતાપૂર્વક સાચવવામાં આવી છે!');
+      alert('✅ તમામ સેટિંગ્સ & લાઈવ ક્લાસ લિંક્સ સાચવવામાં આવી છે!');
     }
 
     function logoutAdmin() { location.reload(); }
