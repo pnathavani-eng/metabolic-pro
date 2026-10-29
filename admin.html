@@ -45,9 +45,15 @@
     <header class="p-3.5 bg-slate-900 text-white sticky top-0 z-40 flex justify-between items-center shadow-md">
       <div class="flex items-center gap-2">
         <div class="w-8 h-8 rounded-xl bg-teal-500 text-slate-900 font-black flex items-center justify-center text-sm">MP</div>
-        <h1 class="font-extrabold text-white text-sm">Admin CRM & WhatsApp Nudge Center</h1>
+        <div>
+          <h1 class="font-extrabold text-white text-sm leading-tight">Admin CRM & Nudge Center</h1>
+          <p class="text-[10px] text-teal-300" id="headerCoachDisplay">Coach: Loading...</p>
+        </div>
       </div>
-      <button onclick="logoutAdmin()" class="px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs">Logout</button>
+      <div class="flex items-center gap-2">
+        <button onclick="openCoachSettingsModal()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-teal-300 rounded-lg text-xs font-bold border border-slate-700">⚙️ સેટિંગ્સ</button>
+        <button onclick="logoutAdmin()" class="px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs">Logout</button>
+      </div>
     </header>
 
     <div class="flex p-2 gap-1.5 bg-white border-b text-xs overflow-x-auto">
@@ -69,7 +75,6 @@
               <p class="text-[11px] text-slate-500 mt-0.5">ઘડિયાળના સમય મુજબ ભોજનનો રિમાઇન્ડર આપોઆપ પસંદ થશે.</p>
             </div>
             
-            <!-- Dynamic Auto-Selected Dropdown -->
             <select id="selNudgeMealType" onchange="handleManualSlotChange()" class="p-2 bg-slate-100 border border-slate-300 rounded-xl text-xs font-bold text-teal-900">
               <option value="breakfast">🥗 સવારનો નાસ્તો (Breakfast)</option>
               <option value="lunch">🍲 બપોરનું ભોજન (Lunch)</option>
@@ -98,6 +103,33 @@
     </main>
   </div>
 
+  <!-- COACH SETTINGS MODAL -->
+  <div id="modalCoachSettings" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm p-5 rounded-3xl space-y-3.5 text-xs shadow-2xl border">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-extrabold text-slate-900 text-sm">કોચ પ્રોફાઇલ & WhatsApp નંબર</h3>
+        <button onclick="closeCoachSettingsModal()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
+      </div>
+
+      <div class="space-y-2.5">
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">કોચનું પૂરું નામ</label>
+          <input type="text" id="setCoachName" placeholder="દા.ત. Piyush Nathavani" class="w-full p-2.5 bg-slate-50 border rounded-xl font-bold">
+        </div>
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">કોચનો WhatsApp નંબર (૧૦ અંક)</label>
+          <input type="tel" id="setCoachPhone" placeholder="દા.ત. 9925879138" class="w-full p-2.5 bg-slate-50 border rounded-xl font-bold">
+          <p class="text-[10px] text-teal-700 mt-1">બધા ક્લાયન્ટ્સના મેસેજ અને 'Hi' આ નંબર પર આપમેળે જશે.</p>
+        </div>
+      </div>
+
+      <div class="pt-2 flex gap-2">
+        <button onclick="closeCoachSettingsModal()" class="flex-1 bg-slate-100 py-2.5 rounded-xl font-bold">રદ કરો</button>
+        <button onclick="saveCoachSettingsToCloud()" class="flex-1 bg-teal-600 text-white font-extrabold py-2.5 rounded-xl shadow">નંબર અપડેટ કરો 💾</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyC7HLpZIEayOfmUuHVK_8Fm34Un73i33KE",
@@ -121,54 +153,84 @@
     let currentPool = 'trial';
     let sentTracker = {};
     let isManualOverride = false;
+    let activeCoachPhone = "919081421028";
+    let activeCoachName = "Metabolic Pro Coach";
 
-    // --- AUTOMATIC TIME SLOT RESOLVER ---
+    // Format phone to guarantee pure digits with 91 country code
+    function formatWaPhone(phone) {
+      let clean = String(phone || '').replace(/\D/g, '');
+      if (clean.length === 10) clean = '91' + clean;
+      if (clean.startsWith('0') && clean.length === 11) clean = '91' + clean.substring(1);
+      return clean;
+    }
+
+    // Load Coach Info from Firestore Cloud Settings
+    async function loadCoachSettings() {
+      try {
+        const doc = await db.collection('settings').doc('coach').get();
+        if (doc.exists) {
+          const d = doc.data();
+          activeCoachPhone = formatWaPhone(d.phone || "9081421028");
+          activeCoachName = d.name || "Metabolic Pro Coach";
+        }
+        document.getElementById('headerCoachDisplay').innerText = `Coach: ${activeCoachName} (${activeCoachPhone})`;
+      } catch(e) { console.error("Error loading coach:", e); }
+    }
+
+    function openCoachSettingsModal() {
+      document.getElementById('setCoachName').value = activeCoachName;
+      document.getElementById('setCoachPhone').value = activeCoachPhone.replace(/^91/, '');
+      document.getElementById('modalCoachSettings').classList.remove('hidden');
+    }
+
+    function closeCoachSettingsModal() {
+      document.getElementById('modalCoachSettings').classList.add('hidden');
+    }
+
+    async function saveCoachSettingsToCloud() {
+      const name = document.getElementById('setCoachName').value.trim();
+      const phoneRaw = document.getElementById('setCoachPhone').value.trim();
+      const cleanPhone = formatWaPhone(phoneRaw);
+
+      if(!name || cleanPhone.length < 12) return alert('સાચું નામ અને ૧૦-અંકનો મોબાઈલ નંબર દાખલ કરો.');
+
+      await db.collection('settings').doc('coach').set({
+        name: name,
+        phone: cleanPhone,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+
+      activeCoachName = name;
+      activeCoachPhone = cleanPhone;
+      document.getElementById('headerCoachDisplay').innerText = `Coach: ${activeCoachName} (${activeCoachPhone})`;
+      closeCoachSettingsModal();
+      alert(`✅ કોચ નંબર સફળતાપૂર્વક અપડેટ થયો: ${activeCoachPhone}`);
+    }
+
     function resolveCurrentTimeSlot() {
       const now = new Date();
-      const hour = now.getHours();
-      const minutes = now.getMinutes();
-      const totalMinutes = (hour * 60) + minutes;
+      const totalMinutes = (now.getHours() * 60) + now.getMinutes();
 
-      // 06:00 AM to 11:00 AM -> Breakfast
-      if (totalMinutes >= 360 && totalMinutes < 660) {
-        return { slot: 'breakfast', label: '🌅 નાસ્તો સ્લોટ' };
-      }
-      // 11:00 AM to 02:00 PM -> Lunch
-      else if (totalMinutes >= 660 && totalMinutes < 840) {
-        return { slot: 'lunch', label: '🍲 લંચ સ્લોટ' };
-      }
-      // 02:00 PM to 05:00 PM -> Post-Meal Walk
-      else if (totalMinutes >= 840 && totalMinutes < 1020) {
-        return { slot: 'walk', label: '🚶‍♂️ વોક સ્લોટ' };
-      }
-      // 05:00 PM to 07:30 PM -> Evening Snack
-      else if (totalMinutes >= 1020 && totalMinutes < 1170) {
-        return { slot: 'snack', label: '🥜 સ્નેક સ્લોટ' };
-      }
-      // 07:30 PM onwards -> Dinner
-      else {
-        return { slot: 'dinner', label: '🥣 ડિનર સ્લોટ' };
-      }
+      if (totalMinutes >= 360 && totalMinutes < 660) return { slot: 'breakfast', label: '🌅 નાસ્તો સ્લોટ' };
+      else if (totalMinutes >= 660 && totalMinutes < 840) return { slot: 'lunch', label: '🍲 લંચ સ્લોટ' };
+      else if (totalMinutes >= 840 && totalMinutes < 1020) return { slot: 'walk', label: '🚶‍♂️ વોક સ્લોટ' };
+      else if (totalMinutes >= 1020 && totalMinutes < 1170) return { slot: 'snack', label: '🥜 સ્નેક સ્લોટ' };
+      else return { slot: 'dinner', label: '🥣 ડિનર સ્લોટ' };
     }
 
     function autoApplyTimeSlot() {
       if (isManualOverride) return;
       const detected = resolveCurrentTimeSlot();
       const sel = document.getElementById('selNudgeMealType');
-      if (sel) {
-        sel.value = detected.slot;
-      }
+      if (sel) sel.value = detected.slot;
       const badge = document.getElementById('activeTimeSlotBadge');
-      if (badge) {
-        badge.innerText = `🕒 ${detected.label} (ઓટો-સેટ)`;
-      }
+      if (badge) badge.innerText = `🕒 ${detected.label} (ઓટો-સેટ)`;
     }
 
     function handleManualSlotChange() {
       isManualOverride = true;
-      const sel = document.getElementById('selNudgeMealType');
       const badge = document.getElementById('activeTimeSlotBadge');
-      if (badge && sel) {
+      if (badge) {
         badge.innerText = `⚙️ મેન્યુઅલ સિલેક્શન`;
         badge.className = "px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[9px] font-black";
       }
@@ -180,6 +242,7 @@
       if(pin === '1234') {
         document.getElementById('adminAuthView').classList.add('hidden');
         document.getElementById('adminMainView').classList.remove('hidden');
+        loadCoachSettings();
         autoApplyTimeSlot();
         listenToClients();
       } else {
@@ -212,13 +275,11 @@
       if(!joiningDateStr) return 0;
       const jDate = new Date(joiningDateStr);
       const now = new Date();
-      const diffTime = Math.abs(now - jDate);
-      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return Math.ceil(Math.abs(now - jDate) / (1000 * 60 * 60 * 24));
     }
 
     function updatePoolCounters() {
       let cTrial = 0, cVip = 0, cPending = 0, cExpired = 0;
-
       liveClients.forEach(c => {
         const isVIP = (Number(c.trialDays) >= 900);
         const days = getDaysActive(c.joiningDate);
@@ -297,6 +358,8 @@
       const cl = liveClients.find(c => c.id === clientId);
       if(!cl) return;
 
+      const validPhone = formatWaPhone(cl.phone);
+
       let msg = "";
       if (mealType === 'breakfast') {
         msg = `નમસ્તે ${cl.name}! 🌅 સવારના નાસ્તાનો સમય થયો છે.\nપ્રોટીન અને ફાઈબરથી ભરપૂર નાસ્તો લઈ લેજો. જમ્યા પછી પોર્ટલમાં 'લીધું' ટીક કરી લેજો 📲`;
@@ -313,7 +376,7 @@
       sentTracker[`${cl.id}_${mealType}`] = true;
       renderQueue();
 
-      window.open(`https://wa.me/${cl.phone}?text=${encodeURIComponent(msg)}`, '_blank');
+      window.open(`https://api.whatsapp.com/send?phone=${validPhone}&text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     function renderClientsList() {
@@ -345,7 +408,6 @@
       await db.collection('clients').doc(id).update({ trialDays: days });
     }
 
-    // Periodically re-check time slot every 2 minutes
     setInterval(autoApplyTimeSlot, 120000);
   </script>
 </body>
