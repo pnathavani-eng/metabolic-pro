@@ -53,7 +53,7 @@
 
     <div class="flex p-2 gap-1.5 bg-white border-b text-xs overflow-x-auto">
       <button onclick="setAdminTab('clients')" id="atab-clients" class="tab-active px-3 py-2 rounded-xl whitespace-nowrap"><i class="fa-solid fa-users"></i> ક્લાયન્ટ્સ (Clients)</button>
-      <button onclick="setAdminTab('grocery')" id="atab-grocery" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-solid fa-carrot"></i> ક્લિનિકલ ફૂડ & રૂલ્સ DB</button>
+      <button onclick="setAdminTab('grocery')" id="atab-grocery" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-solid fa-carrot"></i> ૩૦-દિવસ માસ્ટર ફૂડ & ગ્રોસરી DB</button>
     </div>
 
     <main class="p-3.5 max-w-lg mx-auto space-y-3.5">
@@ -63,11 +63,16 @@
         <div id="admClientsList" class="space-y-3"></div>
       </section>
 
-      <!-- Food Database Tab -->
+      <!-- 30-Day Master Food & Grocery Tab -->
       <section id="aview-grocery" class="hidden space-y-3 text-xs">
         <div class="card-clean p-4 rounded-2xl space-y-3">
-          <h2 class="font-bold text-slate-800 text-sm">માસ્ટર ક્લિનિકલ ફૂડ, પ્રોટીન & GL ડેટાબેઝ</h2>
-          <p class="text-[11px] text-slate-500">ક્લાયન્ટ પોર્ટલના રૂલ-એન્જિન સાથે જોડાયેલી સત્તાવાર વાનગીઓ.</p>
+          <div class="flex justify-between items-center">
+            <div>
+              <h2 class="font-bold text-slate-800 text-sm">૩૦ દિવસ માસ્ટર કેટેગરી પૂલ ડેટાબેઝ</h2>
+              <p class="text-[11px] text-slate-500">ક્લાયન્ટ પોર્ટલના રોટેશન, પોર્શન અને સ્માર્ટ ગ્રોસરી સાથે સિંક થયેલું ડેટાબેઝ.</p>
+            </div>
+            <span class="px-2.5 py-1 bg-teal-50 text-teal-800 font-bold rounded-lg text-[10px] border border-teal-200" id="totalFoodCount">25 વાનગીઓ</span>
+          </div>
           <div id="groceryItemsList" class="space-y-2"></div>
         </div>
       </section>
@@ -146,31 +151,55 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // XSS Escape Function
     function esc(s) {
       return String(s ?? '').replace(/[&<>"']/g, c => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
       }[c]));
     }
 
-    // Master Clinical Food Database (Synced with Client Portal)
+    // Fully Synced 30-Day Master Clinical Food & Grocery Database
     const CLINICAL_FOOD_DB = [
-      { name: "પેઠાનો રસ (Ash Gourd) + કાચી હળદર", slot: "Morning", cal: 25, p: 0.6, gl: 1, tags: "detox, low_gi" },
-      { name: "દૂધીનો રસ + આદું + ફુદીનો", slot: "Morning", cal: 30, p: 1.0, gl: 1, tags: "detox, liver_friendly" },
-      { name: "આમળા જ્યુસ + જીરાવાળું નવશેકું પાણી", slot: "Morning", cal: 20, p: 0.4, gl: 1, tags: "detox, low_gi" },
-      { name: "૧ નાનું કેળું + ૨૦g શેકેલા ચણા", slot: "Pre-Workout", cal: 150, p: 5.0, gl: 9, tags: "workout_friendly" },
-      { name: "મગની દાળનો ચીલો + ૪૦g તાજું પનીર", slot: "Breakfast", cal: 230, p: 14.0, gl: 6, tags: "high_protein, low_gi, gujarati" },
-      { name: "ફણગાવેલા બાફેલા મઠની ચાટ + કાકડી-ટામેટાં", slot: "Breakfast", cal: 160, p: 10.0, gl: 5, tags: "high_fiber, liver_friendly, gujarati" },
-      { name: "બેસન ચીલો + ગ્રીલ્ડ પનીર ક્યુબ્સ", slot: "Breakfast", cal: 240, p: 15.0, gl: 7, tags: "high_protein, gujarati" },
-      { name: "દૂધીના બાફેલા મુઠીયા (ઓછા તેલમાં)", slot: "Breakfast", cal: 150, p: 5.5, gl: 7, tags: "low_fat, gujarati" },
-      { name: "સલાડ પ્લેટ + ૧ જુવાર રોટલો + પાલક પનીર + છાશ", slot: "Lunch", cal: 360, p: 18.0, gl: 9, tags: "barrier_plate, high_protein" },
-      { name: "કાકડી સલાડ + ૧ બાજરી રોટલો + મેથી ભાજી + દાળ + છાશ", slot: "Lunch", cal: 350, p: 15.0, gl: 10, tags: "barrier_plate, high_fiber" },
-      { name: "સોયા ચંક્સ કરી + ૨ મલ્ટી-મિલેટ રોટલી + સલાડ + છાશ", slot: "Lunch", cal: 380, p: 26.0, gl: 8, tags: "high_protein, workout_friendly" },
-      { name: "સિંધવ મીઠાવાળા શેકેલા મખાના (૨૫g)", slot: "Snack", cal: 110, p: 3.5, gl: 5, tags: "low_gi, liver_friendly" },
-      { name: "શેકેલા ચણા (૩૦g) + જીરા છાશ", slot: "Snack", cal: 150, p: 9.0, gl: 4, tags: "high_protein, gujarati" },
-      { name: "ગરમ દૂધી-કોળાનો સૂપ + ૬૦g ગ્રીલ્ડ પનીર", slot: "Dinner", cal: 220, p: 14.0, gl: 3, tags: "light_dinner, high_protein" },
-      { name: "પાલક-આદું સૂપ + બાફેલા ફણગાવેલા મગ", slot: "Dinner", cal: 190, p: 12.0, gl: 4, tags: "light_dinner, high_fiber" },
-      { name: "ટોફૂ અને બ્રોકોલી-શિમલા મિર્ચ સૌતે", slot: "Dinner", cal: 210, p: 16.0, gl: 2, tags: "high_protein, liver_friendly" }
+      // Morning
+      { id: "morn_ash_gourd", name: "પેઠાનો તાજો રસ (Ash Gourd) + કાચી હળદર", slot: "Morning", cal: 25, p: 0.6, gl: 1, portion: "૨૫૦ ml", vegItem: "પેઠું (Ash Gourd)", proteinItem: "-" },
+      { id: "morn_bottle_gourd", name: "દૂધીનો રસ + આદું + લીંબુ + ફુદીનો", slot: "Morning", cal: 30, p: 1.0, gl: 1, portion: "૨૫૦ ml", vegItem: "દૂધી, આદું", proteinItem: "-" },
+      { id: "morn_amla_cumin", name: "આમળા રસ + જીરાવાળું નવશેકું પાણી", slot: "Morning", cal: 20, p: 0.4, gl: 1, portion: "૨૫૦ ml", vegItem: "આમળાં", proteinItem: "-" },
+      { id: "morn_cucumber_mint", name: "કાકડી + ફુદીનો + ચિયા સીડ્સ ઇન્ફ્યુઝન", slot: "Morning", cal: 28, p: 0.8, gl: 1, portion: "૨૫૦ ml", vegItem: "કાકડી", proteinItem: "-" },
+
+      // Pre-Workout
+      { id: "pre_banana_chana", name: "૧ નાનું કેળું + શેકેલા ચણા", slot: "Pre-Workout", cal: 150, p: 5.0, gl: 9, portion: "૧ કેળું + ૨૫g ચણા", vegItem: "-", proteinItem: "શેકેલા ચણા" },
+      { id: "pre_makhana_apple", name: "શેકેલા મખાના + અડધું સફરજન", slot: "Pre-Workout", cal: 130, p: 3.0, gl: 6, portion: "૨૫g મખાના", vegItem: "-", proteinItem: "મખાના" },
+
+      // Breakfast
+      { id: "bf_moong_chila", name: "મગની દાળનો ચીલો + તાજું પનીર", slot: "Breakfast", cal: 240, p: 15.0, gl: 6, portion: "૨ ચીલા + ૫૦g પનીર", vegItem: "-", proteinItem: "મગની દાળ, પનીર" },
+      { id: "bf_moth_salad", name: "ફણગાવેલા બાફેલા મઠની ચાટ + કાકડી-ટામેટાં", slot: "Breakfast", cal: 170, p: 11.0, gl: 5, portion: "૧૫૦g બાઉલ", vegItem: "કાકડી, ટામેટાં", proteinItem: "ફણગાવેલા મઠ" },
+      { id: "bf_besan_methi_chila", name: "બેસન-મેથી ચીલો + ગ્રીલ્ડ પનીર ક્યુબ્સ", slot: "Breakfast", cal: 250, p: 16.0, gl: 7, portion: "૨ ચીલા + ૫૦g પનીર", vegItem: "મેથી", proteinItem: "બેસન, પનીર" },
+      { id: "bf_sprout_chana", name: "ફણગાવેલા ચણા + લીંબુ મરી અને ધાણા", slot: "Breakfast", cal: 180, p: 10.0, gl: 6, portion: "૧૫૦g બાઉલ", vegItem: "ધાણા, લીંબુ", proteinItem: "દેશી ચણા" },
+      { id: "bf_muthiya_steam", name: "દૂધી-મેથીના સ્ટીમ્ડ મુઠીયા (ઓછા તેલમાં)", slot: "Breakfast", cal: 160, p: 6.0, gl: 7, portion: "૫ પીસ", vegItem: "દૂધી, મેથી", proteinItem: "-" },
+      { id: "bf_oats_chila_paneer", name: "ઓટ્સ-પાલક ચીલો + ગ્રીલ્ડ પનીર", slot: "Breakfast", cal: 230, p: 14.5, gl: 6, portion: "૨ ચીલા + ૪૦g પનીર", vegItem: "પાલક", proteinItem: "ઓટ્સ, પનીર" },
+      { id: "bf_tofu_bhurji", name: "ટોફૂ શાકભાજી ભુરજી + સલાડ", slot: "Breakfast", cal: 210, p: 16.0, gl: 4, portion: "૧૨૦g ભુરજી", vegItem: "શિમલા મિર્ચ, કાકડી", proteinItem: "ટોફૂ" },
+
+      // Lunch
+      { id: "ln_jowar_palak_paneer", name: "સલાડ પ્લેટ + જુવાર રોટલો + પાલક પનીર + છાશ", slot: "Lunch", cal: 370, p: 19.0, gl: 9, portion: "૧ રોટલો + ૧૫૦g શાક + છાશ", vegItem: "પાલક, કાકડી", proteinItem: "પનીર, મોળી છાશ" },
+      { id: "ln_bajra_methi_dal", name: "કાકડી-બીટ સલાડ + બાજરી રોટલો + મેથી ભાજી + મગ દાળ + છાશ", slot: "Lunch", cal: 360, p: 16.0, gl: 10, portion: "૧ રોટલો + વાટકી દાળ + શાક", vegItem: "મેથી, બીટ, કાકડી", proteinItem: "મગની દાળ, છાશ" },
+      { id: "ln_soya_curry_roti", name: "સોયા ચંક્સ કરી + મલ્ટી-મિલેટ રોટલી + સલાડ + છાશ", slot: "Lunch", cal: 390, p: 27.0, gl: 8, portion: "૨ રોટલી + ૬૦g સોયા + છાશ", vegItem: "કાકડી, ટામેટાં", proteinItem: "સોયા ચંક્સ, છાશ" },
+      { id: "ln_tofu_tindora_roti", name: "ટોફૂ ટીંડોળા શાક + ૧ જુવાર રોટલો + સલાડ + છાશ", slot: "Lunch", cal: 340, p: 18.0, gl: 8, portion: "૧ રોટલો + ૧૫૦g શાક + છાશ", vegItem: "ટીંડોળા", proteinItem: "ટોફૂ, છાશ" },
+      { id: "ln_drumstick_curry_roti", name: "સરગવાની કરી (Drumstick) + જવની રોટલી + સલાડ + છાશ", slot: "Lunch", cal: 330, p: 14.0, gl: 7, portion: "૨ રોટલી + શાક + છાશ", vegItem: "સરગવો (Drumstick)", proteinItem: "મોળી છાશ" },
+      { id: "ln_bhindi_moong_dal", name: "ઓછા તેલમાં ભીંડાનું શાક + બાજરી રોટલો + મગની દાળ", slot: "Lunch", cal: 350, p: 15.0, gl: 9, portion: "૧ રોટલો + દાળ + શાક", vegItem: "ભીંડા", proteinItem: "મગની દાળ" },
+      { id: "ln_choli_sabzi_roti", name: "લીલી ચોળીનું શાક + ૧ જુવાર રોટલો + કાકડી-ગાજર સલાડ + છાશ", slot: "Lunch", cal: 345, p: 15.5, gl: 8, portion: "૧ રોટલો + શાક + છાશ", vegItem: "લીલી ચોળી, ગાજર", proteinItem: "મોળી છાશ" },
+
+      // Snack
+      { id: "sn_roasted_makhana", name: "સિંધવ મીઠાવાળા શેકેલા મખાના", slot: "Snack", cal: 110, p: 3.5, gl: 5, portion: "૨૫g", vegItem: "-", proteinItem: "મખાના" },
+      { id: "sn_chana_chaas", name: "શેકેલા ચણા + જીરા છાશ", slot: "Snack", cal: 150, p: 9.0, gl: 4, portion: "૩૦g ચણા + ૧ છાશ", vegItem: "-", proteinItem: "ચણા, છાશ" },
+      { id: "sn_guava_fruit", name: "તાજો જામફળ + સિંધવ મીઠું", slot: "Snack", cal: 68, p: 2.5, gl: 3, portion: "૧૦૦g", vegItem: "જામફળ", proteinItem: "-" },
+      { id: "sn_papaya_slices", name: "તાજા પપૈયાના પીસ + લીંબુનો રસ", slot: "Snack", cal: 60, p: 1.0, gl: 5, portion: "૧૨૦g", vegItem: "પપૈયું", proteinItem: "-" },
+      { id: "sn_cucumber_peanut", name: "કાકડી-ટામેટાં કચુંબર + બાફેલી સીંગદાણા", slot: "Snack", cal: 130, p: 5.5, gl: 2, portion: "૧ બાઉલ + ૨૦g સીંગ", vegItem: "કાકડી, ટામેટાં", proteinItem: "સીંગદાણા" },
+
+      // Dinner
+      { id: "dn_pumpkin_soup_paneer", name: "ગરમ દૂધી-કોળાનો સૂપ + ગ્રીલ્ડ પનીર ક્યુબ્સ", slot: "Dinner", cal: 230, p: 15.0, gl: 3, portion: "સૂપ + ૬૦g પનીર", vegItem: "કોળું, દૂધી", proteinItem: "પનીર" },
+      { id: "dn_spinach_soup_sprouts", name: "પાલક-આદું સૂપ + બાફેલા ફણગાવેલા મગ", slot: "Dinner", cal: 195, p: 12.5, gl: 4, portion: "સૂપ + ૧૦૦g મગ", vegItem: "પાલક, આદું", proteinItem: "ફણગાવેલા મગ" },
+      { id: "dn_tofu_broccoli_stirfry", name: "ટોફૂ અને બ્રોકોલી-શિમલા મિર્ચ સૌતે", slot: "Dinner", cal: 215, p: 16.5, gl: 2, portion: "૧૨૦g ટોફૂ + ૧૦૦g શાક", vegItem: "બ્રોકોલી, શિમલા મિર્ચ", proteinItem: "ટોફૂ" },
+      { id: "dn_bottle_gourd_soup_chana", name: "દૂધી-ટામેટાં સૂપ + બાફેલા કાબુલી ચણા ચાટ", slot: "Dinner", cal: 200, p: 11.0, gl: 5, portion: "સૂપ + ૮૦g ચણા", vegItem: "દૂધી, ટામેટાં", proteinItem: "કાબુલી ચણા" },
+      { id: "dn_moong_soup_veggies", name: "મગનું ઓસામણ/સૂપ + સૌતે શાકભાજી + પનીર", slot: "Dinner", cal: 225, p: 14.0, gl: 4, portion: "સૂપ + ૫૦g પનીર", vegItem: "મિક્સ શાકભાજી", proteinItem: "પનીર" }
     ];
 
     let liveClients = [];
@@ -266,18 +295,24 @@
     function renderMasterGrocery() {
       const c = document.getElementById('groceryItemsList');
       c.innerHTML = '';
+      document.getElementById('totalFoodCount').innerText = `${CLINICAL_FOOD_DB.length} વાનગીઓ`;
+
       CLINICAL_FOOD_DB.forEach(item => {
         c.innerHTML += `
-          <div class="p-2.5 bg-slate-50 rounded-xl border text-xs space-y-1">
+          <div class="p-2.5 bg-slate-50 rounded-2xl border text-xs space-y-1.5">
             <div class="flex justify-between items-center">
-              <span class="font-bold text-slate-800">${esc(item.name)}</span>
+              <span class="font-bold text-slate-900">${esc(item.name)}</span>
               <span class="text-[10px] px-2 py-0.5 bg-slate-200 text-slate-700 rounded-full font-bold">${item.slot}</span>
             </div>
-            <div class="flex items-center gap-2 text-[11px]">
+            <div class="flex items-center gap-2 text-[11px] flex-wrap">
               <span class="text-teal-800 font-semibold">🔥 ${item.cal} kcal</span>
               <span class="text-emerald-800 font-semibold">💪 ${item.p}g Pro</span>
               <span class="text-sky-800 font-semibold">📊 GL: ${item.gl}</span>
-              <span class="text-slate-400 ml-auto text-[9px]">${item.tags}</span>
+              <span class="text-slate-500 font-medium">⚖️ ${item.portion}</span>
+            </div>
+            <div class="flex items-center gap-2 pt-1 border-t text-[10px] text-slate-600">
+              ${item.vegItem !== '-' ? `<span class="bg-emerald-50 text-emerald-800 px-1.5 py-0.5 rounded border border-emerald-200">🥦 ${esc(item.vegItem)}</span>` : ''}
+              ${item.proteinItem !== '-' ? `<span class="bg-amber-50 text-amber-800 px-1.5 py-0.5 rounded border border-amber-200">🫘 ${esc(item.proteinItem)}</span>` : ''}
             </div>
           </div>`;
       });
