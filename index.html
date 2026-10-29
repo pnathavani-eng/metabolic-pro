@@ -237,7 +237,7 @@
       </div>
     </header>
 
-    <!-- MAIN TWO NAVIGATION TABS (ORIGINAL RESTORED) -->
+    <!-- MAIN TWO NAVIGATION TABS -->
     <div class="p-2 bg-white border-b grid grid-cols-2 gap-2 max-w-lg mx-auto text-xs sticky top-[61px] z-30 shadow-xs">
       <button onclick="switchPortalTab('today')" id="tabBtnToday" class="py-2.5 rounded-2xl main-tab-active flex items-center justify-center gap-1.5">
         <i class="fa-solid fa-utensils"></i> આજનું ડાયેટ (Today)
@@ -252,7 +252,7 @@
       <!-- TAB 1: TODAY'S DIET VIEW -->
       <section id="portalTabToday" class="space-y-3.5">
 
-        <!-- VIP EXCLUSIVE LIVE SESSIONS BOX -->
+        <!-- VIP EXCLUSIVE LIVE SESSIONS BOX (DIRECT CLICKABLE A-TAG - NO POPUP BLOCK) -->
         <div id="cpLiveSessionBox" class="card-clean p-4 rounded-3xl space-y-2.5 border border-teal-200 bg-gradient-to-r from-teal-50 to-emerald-50">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -262,9 +262,10 @@
             <span class="px-2 py-0.5 bg-rose-100 text-rose-800 font-black text-[9px] rounded-full">VIP LIVE NOW</span>
           </div>
           <p class="text-[11px] text-slate-600" id="cpLiveSessionDesc">તમારો સ્પેશિયલ ક્લાસ શરૂ થઈ ગયો છે. નીચે ક્લિક કરી સીધા જોડાઈ જાઓ:</p>
-          <button id="btnJoinLiveClass" onclick="joinLiveClass()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5 transition active:scale-95">
+          
+          <a id="btnJoinLiveClass" href="https://meet.google.com" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5 transition active:scale-95 text-center">
             <i class="fa-solid fa-video"></i> લાઈવ ક્લાસમાં જોડાઓ 📲
-          </button>
+          </a>
         </div>
 
         <!-- FREE TRIAL USER UPGRADE CARD -->
@@ -280,7 +281,7 @@
           </button>
         </div>
 
-        <!-- MISSED SESSION RECORDING CARD -->
+        <!-- MISSED SESSION RECORDING CARD (DIRECT CLICKABLE A-TAG) -->
         <div id="cpRecordingBox" class="card-clean p-3 rounded-2xl border border-teal-200 bg-teal-50/50 flex items-center justify-between text-xs">
           <div>
             <div class="font-extrabold text-teal-950 text-xs flex items-center gap-1">
@@ -288,9 +289,9 @@
             </div>
             <p class="text-[10px] text-teal-800 mt-0.5">મિસ થયેલ યોગા/ગર્ભસંસ્કાર સેશનનો વિડીયો અહીંથી જુઓ.</p>
           </div>
-          <button onclick="watchClassRecording()" class="px-3 py-1.5 bg-teal-700 hover:bg-teal-800 text-white font-extrabold text-[10px] rounded-xl shadow-xs">
+          <a id="btnWatchRecord" href="#" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-teal-700 hover:bg-teal-800 text-white font-extrabold text-[10px] rounded-xl shadow-xs text-center">
             વિડીયો જુઓ 🎥
-          </button>
+          </a>
         </div>
 
         <!-- MACRO TARGET CARD -->
@@ -337,7 +338,7 @@
           </div>
         </div>
 
-        <!-- WEEKLY CALENDAR STRIP (ORIGINAL RESTORED) -->
+        <!-- WEEKLY CALENDAR STRIP -->
         <div class="card-clean p-3.5 rounded-3xl border space-y-2.5">
           <div class="flex justify-between items-center text-xs">
             <div class="flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-xl font-bold text-slate-700">
@@ -358,10 +359,10 @@
           </div>
         </div>
 
-        <!-- DYNAMIC DETAILED MEAL CARDS CONTAINER (ORIGINAL RESTORED) -->
+        <!-- DYNAMIC DETAILED MEAL CARDS CONTAINER (WITH EXACT BADGES & SWAP) -->
         <div class="space-y-3" id="cpTodayMealCards"></div>
 
-        <!-- DAILY VITALS & BLOOD SUGAR (ORIGINAL RESTORED) -->
+        <!-- DAILY VITALS & BLOOD SUGAR -->
         <div class="card-clean p-4 rounded-3xl border space-y-3">
           <div class="flex items-center gap-2 text-teal-800 font-extrabold text-xs">
             <i class="fa-solid fa-notes-medical text-sm"></i> Daily Vitals & Blood Sugar
@@ -388,7 +389,7 @@
 
       </section>
 
-      <!-- TAB 2: UPCOMING MENU & REPORTS (ORIGINAL RESTORED) -->
+      <!-- TAB 2: UPCOMING MENU & REPORTS -->
       <section id="portalTabUpcoming" class="hidden space-y-3">
         <div class="p-3 bg-teal-50/60 border border-teal-200 rounded-2xl text-xs text-teal-900 font-semibold flex items-center gap-2">
           <i class="fa-solid fa-calendar-check text-teal-600 text-base"></i>
@@ -422,8 +423,6 @@
     let COACH_PHONE = "919081421028";
     let selectedDateKey = getTodayDateKey();
     let currentClient = null;
-    let currentLiveMeetingUrl = "";
-    let currentRecordingUrl = "";
     let weekOffsetDays = 0;
 
     function getTodayDateKey() {
@@ -697,7 +696,6 @@
       return { targetCal, targetPro };
     }
 
-    // BUILD 7-DAY WEEKLY CALENDAR STRIP
     function renderWeeklyDayStrip() {
       const strip = document.getElementById('cpWeekDaysStrip');
       strip.innerHTML = '';
@@ -705,8 +703,7 @@
       const baseDate = new Date();
       baseDate.setDate(baseDate.getDate() + weekOffsetDays);
 
-      const dayOfWeek = baseDate.getDay(); // 0 is Sun, 1 is Mon...
-      // Shift to Monday
+      const dayOfWeek = baseDate.getDay();
       const monday = new Date(baseDate);
       const diffToMon = (dayOfWeek === 0 ? -6 : 1) - dayOfWeek;
       monday.setDate(baseDate.getDate() + diffToMon);
@@ -785,41 +782,56 @@
       updateWaterDisplay();
     }
 
+    // DIRECT HREF BINDING (WORKS IN SAFARI/IOS WITHOUT BLOCKS)
     async function checkVipAndLiveSessionAccess() {
       const isVip = isCurrentClientVip();
       const liveBox = document.getElementById('cpLiveSessionBox');
       const bannerBox = document.getElementById('cpFreeTrialVipBanner');
       const recBox = document.getElementById('cpRecordingBox');
+      const joinBtn = document.getElementById('btnJoinLiveClass');
+      const recBtn = document.getElementById('btnWatchRecord');
 
       if (!isVip) {
-        liveBox.classList.add('hidden');
-        recBox.classList.add('hidden');
-        bannerBox.classList.remove('hidden');
+        if (liveBox) liveBox.classList.add('hidden');
+        if (recBox) recBox.classList.add('hidden');
+        if (bannerBox) bannerBox.classList.remove('hidden');
         return;
       }
 
-      bannerBox.classList.add('hidden');
-      liveBox.classList.remove('hidden');
-      recBox.classList.remove('hidden');
+      if (bannerBox) bannerBox.classList.add('hidden');
 
       try {
         const doc = await db.collection('settings').doc('live_sessions').get();
         if (doc.exists) {
           const data = doc.data();
-          currentLiveMeetingUrl = data.yoga || data.garbh || data.med || "https://meet.google.com";
-          currentRecordingUrl = data.record || "";
+          let targetUrl = data.yoga || data.garbh || data.med || "";
+
+          if (targetUrl && !targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+            targetUrl = 'https://' + targetUrl;
+          }
+
+          if (targetUrl) {
+            joinBtn.href = targetUrl;
+            if (liveBox) liveBox.classList.remove('hidden');
+          } else {
+            joinBtn.href = "https://meet.google.com";
+            if (liveBox) liveBox.classList.remove('hidden');
+          }
+
+          let recUrl = data.record || "";
+          if (recUrl && !recUrl.startsWith('http://') && !recUrl.startsWith('https://')) {
+            recUrl = 'https://' + recUrl;
+          }
+          if (recUrl && recBtn) {
+            recBtn.href = recUrl;
+            if (recBox) recBox.classList.remove('hidden');
+          } else if (recBox) {
+            recBox.classList.add('hidden');
+          }
         }
-      } catch(e) { console.error("Live sessions error:", e); }
-    }
-
-    function joinLiveClass() {
-      if (currentLiveMeetingUrl) window.open(currentLiveMeetingUrl, '_blank');
-      else alert('હાલ કોઈ લાઈવ સેશન લિંક સેટ નથી.');
-    }
-
-    function watchClassRecording() {
-      if (currentRecordingUrl) window.open(currentRecordingUrl, '_blank');
-      else alert('હાલ કોઈ રેકોર્ડિંગ લિંક સેટ નથી.');
+      } catch(e) {
+        console.error("Live sessions load error:", e);
+      }
     }
 
     function requestVipUpgrade() {
@@ -827,7 +839,6 @@
       window.open(`https://api.whatsapp.com/send?phone=${COACH_PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
     }
 
-    // --- SWAP MEAL LOGIC ---
     async function toggleMealSwap(mealKey) {
       if (!currentClient.swaps) currentClient.swaps = {};
       if (!currentClient.swaps[selectedDateKey]) currentClient.swaps[selectedDateKey] = {};
@@ -855,7 +866,6 @@
       return { ...baseDay[mealKey], isSwapped: false };
     }
 
-    // RENDER MEAL CARDS (WITH ORIGINAL CLOUD BADGES & DESIGN)
     function renderTodayMealCards() {
       const container = document.getElementById('cpTodayMealCards');
       container.innerHTML = '';
@@ -880,7 +890,6 @@
               </div>
             </div>
 
-            <!-- Description & Portion Badge -->
             <div class="p-2.5 bg-slate-50/70 rounded-2xl border border-slate-100 space-y-1 text-xs">
               <div class="font-bold text-slate-800">${mealData.desc}</div>
               <div class="flex justify-between items-center pt-1">
@@ -894,7 +903,6 @@
               </div>
             </div>
 
-            <!-- 100% લીધું, 50%, બાકી Buttons -->
             <div class="grid grid-cols-3 gap-2 pt-1 text-xs">
               <button onclick="setMealCompliance('${k}', 1.0)" class="py-2.5 rounded-xl font-bold flex items-center justify-center gap-1 transition ${val === 1.0 ? 'btn-done-active' : 'btn-idle'}">
                 <i class="fa-solid fa-check"></i> લીધું
@@ -924,7 +932,6 @@
       });
     }
 
-    // RENDER TAB 2: UPCOMING MENU
     function renderUpcomingCards() {
       const c = document.getElementById('upcomingCardsList');
       c.innerHTML = '';
@@ -962,7 +969,6 @@
       }
     }
 
-    // DAILY VITALS SAVING & LOADING
     async function saveVitalsData() {
       const steps = document.getElementById('vitalSteps').value;
       const workout = document.getElementById('vitalWorkout').value;
