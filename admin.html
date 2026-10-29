@@ -34,7 +34,7 @@
         <p class="text-xs text-slate-500 mt-0.5">Metabolic Pro Cloud CRM</p>
       </div>
       <div class="space-y-3 text-left">
-        <input type="password" maxlength="8" id="inAdminPin" placeholder="Admin PIN (1234)" class="w-full p-3 bg-slate-50 border rounded-xl text-center text-xl font-black">
+        <input type="password" maxlength="8" id="inAdminPin" placeholder="Enter Admin PIN" class="w-full p-3 bg-slate-50 border rounded-xl text-center text-xl font-black">
         <button onclick="verifyAdminPin()" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-extrabold text-xs shadow">Access Master CRM 🔐</button>
       </div>
     </div>
@@ -79,7 +79,7 @@
       <input type="text" id="mPhone" placeholder="WhatsApp Number" class="w-full p-2 border rounded-lg">
       <select id="mGoal" class="w-full p-2 border rounded-lg">
         <option value="Fatty Liver Detox">🥒 Fatty Liver Detox</option>
-        <option value="Type 2 Diabetes Reversal">🩺 Type 2 Diabetes Reversal</option>
+        <option value="Type 2 Diabetes Remission">🩺 Type 2 Diabetes Remission</option>
       </select>
       <select id="mDiet" class="w-full p-2 border rounded-lg"><option value="veg">Vegetarian</option><option value="nonveg">Non-Vegetarian</option></select>
       <input type="number" id="mDays" value="30" placeholder="Trial Days (999 for Lifetime VIP)" class="w-full p-2 border rounded-lg">
@@ -99,6 +99,13 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
+    // Patch 3: XSS Protection Escape Function
+    function esc(s) {
+      return String(s ?? '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
 
     // FULL MASTER DATABASE IN ADMIN
     const MASTER_GROCERY_DB = {
@@ -136,18 +143,28 @@
       "Sweet Lime": { cal: 47, gi: 43 },
       "Watermelon": { cal: 30, gi: 72 },
       "Mango": { cal: 60, gi: 51 },
-      "Banana": { cal: 89, gi: 51 }
+      "Banana": { cal: 89, gi: 51 },
+      "Sweet": { cal: 400, gi: 75 },
+      "Mithai": { cal: 400, gi: 75 },
+      "Gulab Jamun": { cal: 380, gi: 75 },
+      "Jalebi": { cal: 450, gi: 80 },
+      "Kaju Katli": { cal: 420, gi: 70 },
+      "Ladoo": { cal: 410, gi: 75 },
+      "Peda": { cal: 390, gi: 70 }
     };
 
     let liveClients = [];
 
     function verifyAdminPin() {
-      if(document.getElementById('inAdminPin').value.trim() === '1234') {
+      const pin = document.getElementById('inAdminPin').value.trim();
+      if(pin === '1234') {
         document.getElementById('adminAuthView').classList.add('hidden');
         document.getElementById('adminMainView').classList.remove('hidden');
         listenToClients();
         renderMasterGrocery();
-      } else alert('Invalid PIN');
+      } else {
+        alert('Invalid PIN');
+      }
     }
 
     function logoutAdmin() { location.reload(); }
@@ -172,18 +189,30 @@
     function renderClients() {
       const c = document.getElementById('admClientsList');
       c.innerHTML = '';
-      if(liveClients.length === 0) { c.innerHTML = '<div class="text-center py-6 text-slate-400">No clients yet.</div>'; return; }
+      if(liveClients.length === 0) { 
+        c.innerHTML = '<div class="text-center py-6 text-slate-400">No clients yet.</div>'; 
+        return; 
+      }
       liveClients.forEach(cl => {
+        const safeName = esc(cl.name);
+        const safePhone = esc(cl.phone);
+        const safeId = esc(cl.id);
+        const trialDays = Number(cl.trialDays) || 0;
+
         c.innerHTML += `
           <div class="card-clean p-3.5 rounded-2xl space-y-2 border">
             <div class="flex justify-between items-center">
-              <span class="text-xs font-bold">${cl.name} (${cl.phone})</span>
-              <span class="text-[10px] font-extrabold px-2 py-0.5 bg-teal-50 text-teal-800 rounded">${cl.trialDays>=900 ? 'Lifetime VIP' : cl.trialDays+' Days Trial'}</span>
+              <span class="text-xs font-bold text-slate-800">${safeName} (${safePhone})</span>
+              <span class="text-[10px] font-extrabold px-2 py-0.5 bg-teal-50 text-teal-800 rounded">
+                ${trialDays >= 900 ? 'Lifetime VIP' : trialDays + ' Days Trial'}
+              </span>
             </div>
-            <div class="flex gap-1.5 pt-1">
-              <button onclick="updateTrial('${cl.id}', 30)" class="px-2 py-1 bg-slate-100 text-[10px] rounded">30 Days</button>
-              <button onclick="updateTrial('${cl.id}', 999)" class="px-2 py-1 bg-slate-900 text-white text-[10px] rounded font-bold">Make Lifetime VIP</button>
-              <button onclick="db.collection('clients').doc('${cl.id}').delete()" class="text-rose-600 text-[10px] ml-auto">Delete</button>
+            <div class="flex items-center gap-1.5 pt-1">
+              <button onclick="updateTrial('${safeId}', 30)" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-[10px] font-semibold rounded-lg transition">30 Days</button>
+              <button onclick="updateTrial('${safeId}', 999)" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] rounded-lg font-bold transition">Make Lifetime VIP</button>
+              <button onclick="deleteClient('${safeId}', '${safeName}')" class="text-rose-600 hover:text-rose-700 font-bold text-[10px] ml-auto px-2 py-1 bg-rose-50 rounded-lg transition">
+                <i class="fa-solid fa-trash-can"></i> Delete
+              </button>
             </div>
           </div>
         `;
@@ -191,8 +220,24 @@
     }
 
     async function updateTrial(id, days) {
-      await db.collection('clients').doc(id).update({ trialDays: days });
-      alert('Updated access successfully!');
+      try {
+        await db.collection('clients').doc(id).update({ trialDays: days });
+        alert('Updated access successfully!');
+      } catch (e) {
+        alert('Error updating trial: ' + e.message);
+      }
+    }
+
+    // Patch 7: Delete Confirmation Safety
+    async function deleteClient(id, name) {
+      if(!confirm(`Are you sure you want to permanently delete ${name}? This cannot be undone.`)) {
+        return;
+      }
+      try {
+        await db.collection('clients').doc(id).delete();
+      } catch (e) {
+        alert('Error deleting client: ' + e.message);
+      }
     }
 
     function renderMasterGrocery() {
@@ -200,9 +245,10 @@
       c.innerHTML = '';
       for(let item in MASTER_GROCERY_DB) {
         const isHighGi = MASTER_GROCERY_DB[item].gi >= 70;
+        const safeItem = esc(item);
         c.innerHTML += `
           <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl border text-xs">
-            <span class="font-bold text-slate-800">${item}</span>
+            <span class="font-bold text-slate-800">${safeItem}</span>
             <div class="flex items-center gap-2">
               ${isHighGi ? '<span class="px-1.5 py-0.5 bg-rose-100 text-rose-800 text-[9px] font-black rounded">Red Zone</span>' : ''}
               <span class="text-teal-800 font-semibold">🔥 ${MASTER_GROCERY_DB[item].cal} kcal</span>
@@ -223,14 +269,27 @@
       const days = parseInt(document.getElementById('mDays').value) || 30;
       if(!n || p.length < 10) return alert('Enter valid name and number');
 
-      await db.collection('clients').doc(p).set({
-        name: n, phone: p, pin: p.slice(-4), goal: g, diet: d, trialDays: days,
-        joiningDate: new Date().toISOString().split('T')[0],
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        compliance: {}, weeklyPlan: {}
-      });
-      closeModal();
-      alert('Client added successfully!');
+      try {
+        const existing = await db.collection('clients').doc(p).get();
+        if(existing.exists) {
+          if(!confirm('A client with this phone number already exists. Overwrite?')) {
+            return;
+          }
+        }
+
+        await db.collection('clients').doc(p).set({
+          name: n, phone: p, pin: p.slice(-4), goal: g, diet: d, trialDays: days,
+          joiningDate: new Date().toISOString().split('T')[0],
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          compliance: existing.exists && existing.data().compliance ? existing.data().compliance : {},
+          weeklyPlan: existing.exists && existing.data().weeklyPlan ? existing.data().weeklyPlan : {}
+        }, { merge: true });
+
+        closeModal();
+        alert('Client saved successfully!');
+      } catch (e) {
+        alert('Error saving client: ' + e.message);
+      }
     }
   </script>
 </body>
