@@ -44,46 +44,73 @@
     <header class="p-3.5 bg-slate-900 text-white sticky top-0 z-40 flex justify-between items-center shadow-md">
       <div class="flex items-center gap-2">
         <div class="w-8 h-8 rounded-xl bg-teal-500 text-slate-900 font-black flex items-center justify-center text-sm">MP</div>
-        <h1 class="font-extrabold text-white text-sm">Admin CRM & Master Grocery</h1>
+        <h1 class="font-extrabold text-white text-sm">Admin CRM & Master Nutrition Engine</h1>
       </div>
       <button onclick="logoutAdmin()" class="px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs">Logout</button>
     </header>
 
     <div class="flex p-2 gap-1.5 bg-white border-b text-xs overflow-x-auto">
       <button onclick="setAdminTab('clients')" id="atab-clients" class="tab-active px-3 py-2 rounded-xl whitespace-nowrap"><i class="fa-solid fa-users"></i> Clients</button>
-      <button onclick="setAdminTab('grocery')" id="atab-grocery" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-solid fa-carrot"></i> Master Grocery & GI</button>
+      <button onclick="setAdminTab('grocery')" id="atab-grocery" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-solid fa-carrot"></i> Master Nutrition & Macro DB</button>
     </div>
 
     <main class="p-3.5 max-w-lg mx-auto space-y-3.5">
       <!-- Clients Tab -->
       <section id="aview-clients" class="space-y-3">
-        <button onclick="openModal()" class="w-full bg-teal-600 text-white font-bold py-3 rounded-xl text-xs shadow-sm">+ Add New Client to Cloud</button>
+        <button onclick="openModal()" class="w-full bg-teal-600 text-white font-bold py-3 rounded-xl text-xs shadow-sm">+ Add New Client with Protocol</button>
         <div id="admClientsList" class="space-y-3"></div>
       </section>
 
       <!-- Master Grocery Tab -->
       <section id="aview-grocery" class="hidden space-y-3 text-xs">
         <div class="card-clean p-4 rounded-2xl space-y-3">
-          <h2 class="font-bold text-slate-800 text-sm">Master Grocery, Calories & GI Database</h2>
-          <p class="text-[11px] text-slate-500">Complete list of vegetables, fruits, dairy, grains and farsan available in the system.</p>
+          <h2 class="font-bold text-slate-800 text-sm">Master Food, Calories, Protein & GI Database</h2>
+          <p class="text-[11px] text-slate-500">Clinical macro database synced with Client Portal.</p>
           <div id="groceryItemsList" class="space-y-2"></div>
         </div>
       </section>
     </main>
   </div>
 
+  <!-- Client Add Modal -->
   <div id="admModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-sm p-4 rounded-3xl space-y-2.5 text-xs shadow-xl">
-      <div class="flex justify-between items-center"><h3 class="font-bold">Add Client</h3><button onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button></div>
+      <div class="flex justify-between items-center"><h3 class="font-bold">Add Client to Protocol</h3><button onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button></div>
       <input type="text" id="mName" placeholder="Full Name" class="w-full p-2 border rounded-lg">
-      <input type="text" id="mPhone" placeholder="WhatsApp Number" class="w-full p-2 border rounded-lg">
-      <select id="mGoal" class="w-full p-2 border rounded-lg">
-        <option value="Fatty Liver Detox">🥒 Fatty Liver Detox</option>
-        <option value="Type 2 Diabetes Remission">🩺 Type 2 Diabetes Remission</option>
+      <input type="text" id="mPhone" placeholder="WhatsApp Number (10 Digits)" class="w-full p-2 border rounded-lg">
+      
+      <div class="grid grid-cols-3 gap-1.5">
+        <input type="number" id="mAge" placeholder="Age (e.g. 38)" value="38" class="p-2 border rounded-lg">
+        <input type="number" id="mHeight" placeholder="Height cm" value="170" class="p-2 border rounded-lg">
+        <input type="number" id="mWeight" placeholder="Weight kg" value="75" class="p-2 border rounded-lg">
+      </div>
+
+      <div class="grid grid-cols-2 gap-1.5">
+        <select id="mGender" class="p-2 border rounded-lg font-semibold">
+          <option value="male">Male (પુરુષ)</option>
+          <option value="female">Female (મહિલા)</option>
+        </select>
+        <select id="mActivity" class="p-2 border rounded-lg font-semibold">
+          <option value="sedentary">Sedentary</option>
+          <option value="light" selected>Light Walk/Yoga</option>
+          <option value="moderate">Gym (3-5 days)</option>
+          <option value="active">Heavy Workout</option>
+        </select>
+      </div>
+
+      <select id="mGoalKey" class="w-full p-2 border rounded-lg font-semibold">
+        <option value="diabetes_reversal" selected>🩺 Type 2 Diabetes Remission</option>
+        <option value="fat_loss">⚖️ Fat Loss & Calorie Deficit</option>
+        <option value="muscle_gym">💪 Gym & Lean Muscle Gain</option>
+        <option value="fatty_liver_bp">🥒 Fatty Liver & BP Detox</option>
       </select>
-      <select id="mDiet" class="w-full p-2 border rounded-lg"><option value="veg">Vegetarian</option><option value="nonveg">Non-Vegetarian</option></select>
-      <input type="number" id="mDays" value="30" placeholder="Trial Days (999 for Lifetime VIP)" class="w-full p-2 border rounded-lg">
-      <button onclick="addNewClientToCloud()" class="w-full bg-teal-600 text-white font-bold py-2 rounded-xl">Save to Cloud</button>
+
+      <div class="grid grid-cols-2 gap-1.5">
+        <select id="mDiet" class="p-2 border rounded-lg"><option value="veg">Vegetarian</option><option value="nonveg">Non-Vegetarian</option></select>
+        <input type="number" id="mDays" value="30" placeholder="Trial Days (999 for VIP)" class="p-2 border rounded-lg">
+      </div>
+
+      <button onclick="addNewClientToCloud()" class="w-full bg-teal-600 text-white font-bold py-2.5 rounded-xl mt-1">Save Client to Cloud 🚀</button>
     </div>
   </div>
 
@@ -100,57 +127,58 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Patch 3: XSS Protection Escape Function
     function esc(s) {
       return String(s ?? '').replace(/[&<>"']/g, c => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
       }[c]));
     }
 
-    // FULL MASTER DATABASE IN ADMIN
+    // FULL SYNCED MASTER DATABASE (CALORIES, PROTEIN, GI)
     const MASTER_GROCERY_DB = {
-      "Ash Gourd": { cal: 13, gi: 15 },
-      "Bottle Gourd": { cal: 21, gi: 15 },
-      "Coriander": { cal: 23, gi: 15 },
-      "Raw Turmeric": { cal: 35, gi: 20 },
-      "Fresh Ginger": { cal: 80, gi: 15 },
-      "Moong Dal Chila": { cal: 220, gi: 38 },
-      "Fresh Paneer": { cal: 265, gi: 15 },
-      "Salad Barrier": { cal: 25, gi: 15 },
-      "Multi-Millet Roti": { cal: 110, gi: 35 },
-      "Chaas": { cal: 40, gi: 15 },
-      "Roasted Makhana": { cal: 347, gi: 45 },
-      "Pumpkin Puree": { cal: 40, gi: 30 },
-      "Steamed Moong": { cal: 105, gi: 25 },
-      "Sprouted Chana": { cal: 120, gi: 28 },
-      "Ragi Cheela": { cal: 240, gi: 50 },
-      "Palak Paneer": { cal: 180, gi: 20 },
-      "Sev Usal": { cal: 310, gi: 55 },
-      "Poha": { cal: 180, gi: 65 },
-      "Ganthiya": { cal: 480, gi: 75 },
-      "Bhajiya": { cal: 420, gi: 70 },
-      "Puri": { cal: 500, gi: 80 },
-      "Fafda": { cal: 430, gi: 72 },
-      "Sev": { cal: 520, gi: 78 },
-      "Kachori": { cal: 450, gi: 75 },
-      "Samosa": { cal: 310, gi: 72 },
-      "Kiwi": { cal: 61, gi: 52 },
-      "Dragon Fruit": { cal: 60, gi: 48 },
-      "Pomegranate": { cal: 83, gi: 53 },
-      "Apple": { cal: 52, gi: 36 },
-      "Guava": { cal: 68, gi: 24 },
-      "Papaya": { cal: 43, gi: 60 },
-      "Sweet Lime": { cal: 47, gi: 43 },
-      "Watermelon": { cal: 30, gi: 72 },
-      "Mango": { cal: 60, gi: 51 },
-      "Banana": { cal: 89, gi: 51 },
-      "Sweet": { cal: 400, gi: 75 },
-      "Mithai": { cal: 400, gi: 75 },
-      "Gulab Jamun": { cal: 380, gi: 75 },
-      "Jalebi": { cal: 450, gi: 80 },
-      "Kaju Katli": { cal: 420, gi: 70 },
-      "Ladoo": { cal: 410, gi: 75 },
-      "Peda": { cal: 390, gi: 70 }
+      "Sweet Lime": { cal: 47, p: 0.8, gi: 43 },
+      "Ash Gourd": { cal: 13, p: 0.4, gi: 15 },
+      "Bottle Gourd": { cal: 21, p: 1.1, gi: 15 },
+      "Coriander": { cal: 23, p: 2.1, gi: 15 },
+      "Raw Turmeric": { cal: 35, p: 1.0, gi: 20 },
+      "Fresh Ginger": { cal: 80, p: 1.8, gi: 15 },
+      "Moong Dal Chila": { cal: 220, p: 12.0, gi: 38 },
+      "Fresh Paneer": { cal: 265, p: 18.0, gi: 15 },
+      "Grilled Paneer": { cal: 265, p: 18.0, gi: 15 },
+      "Paneer Tikka": { cal: 220, p: 16.0, gi: 20 },
+      "Tofu": { cal: 140, p: 15.0, gi: 15 },
+      "Soya Chunks Curry": { cal: 240, p: 26.0, gi: 25 },
+      "Whey Protein": { cal: 120, p: 24.0, gi: 10 },
+      "Salad Barrier": { cal: 25, p: 1.2, gi: 15 },
+      "Multi-Millet Roti": { cal: 110, p: 3.5, gi: 35 },
+      "Jowar Roti": { cal: 110, p: 3.2, gi: 40 },
+      "Bajra Roti": { cal: 115, p: 3.8, gi: 45 },
+      "Chaas": { cal: 40, p: 3.0, gi: 15 },
+      "Curd": { cal: 60, p: 4.0, gi: 28 },
+      "Roasted Makhana": { cal: 120, p: 4.0, gi: 45 },
+      "Pumpkin Puree": { cal: 40, p: 1.0, gi: 30 },
+      "Steamed Moong": { cal: 105, p: 7.0, gi: 25 },
+      "Sprouted Chana": { cal: 120, p: 8.0, gi: 28 },
+      "Boiled Chana": { cal: 130, p: 8.5, gi: 28 },
+      "Roasted Chana": { cal: 160, p: 10.0, gi: 28 },
+      "Ragi Cheela": { cal: 200, p: 6.0, gi: 50 },
+      "Besan Chila": { cal: 190, p: 9.0, gi: 40 },
+      "Palak Paneer": { cal: 180, p: 12.0, gi: 20 },
+      "Sev Usal": { cal: 310, p: 8.0, gi: 55 },
+      "Poha": { cal: 180, p: 3.0, gi: 65 },
+      "Ganthiya": { cal: 480, p: 10.0, gi: 75 },
+      "Bhajiya": { cal: 420, p: 6.0, gi: 70 },
+      "Puri": { cal: 500, p: 7.0, gi: 80 },
+      "Fafda": { cal: 430, p: 8.0, gi: 72 },
+      "Sev": { cal: 520, p: 9.0, gi: 78 },
+      "Kachori": { cal: 450, p: 7.0, gi: 75 },
+      "Samosa": { cal: 310, p: 5.0, gi: 72 },
+      "Sweet": { cal: 400, p: 4.0, gi: 75 },
+      "Mithai": { cal: 400, p: 4.0, gi: 75 },
+      "Gulab Jamun": { cal: 380, p: 4.0, gi: 75 },
+      "Jalebi": { cal: 450, p: 3.0, gi: 80 },
+      "Kaju Katli": { cal: 420, p: 6.0, gi: 70 },
+      "Ladoo": { cal: 410, p: 5.0, gi: 75 },
+      "Peda": { cal: 390, p: 6.0, gi: 70 }
     };
 
     let liveClients = [];
@@ -197,19 +225,24 @@
         const safeName = esc(cl.name);
         const safePhone = esc(cl.phone);
         const safeId = esc(cl.id);
+        const safeGoal = esc(cl.goal || 'General Health');
+        const weight = cl.weight ? `${cl.weight}kg` : '';
         const trialDays = Number(cl.trialDays) || 0;
 
         c.innerHTML += `
           <div class="card-clean p-3.5 rounded-2xl space-y-2 border">
-            <div class="flex justify-between items-center">
-              <span class="text-xs font-bold text-slate-800">${safeName} (${safePhone})</span>
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-xs font-bold text-slate-800">${safeName} (${safePhone})</span>
+                <div class="text-[10px] text-teal-700 font-bold mt-0.5">${safeGoal} ${weight ? '• ' + weight : ''}</div>
+              </div>
               <span class="text-[10px] font-extrabold px-2 py-0.5 bg-teal-50 text-teal-800 rounded">
-                ${trialDays >= 900 ? 'Lifetime VIP' : trialDays + ' Days Trial'}
+                ${trialDays >= 900 ? 'Lifetime VIP' : trialDays + ' Days'}
               </span>
             </div>
             <div class="flex items-center gap-1.5 pt-1">
               <button onclick="updateTrial('${safeId}', 30)" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-[10px] font-semibold rounded-lg transition">30 Days</button>
-              <button onclick="updateTrial('${safeId}', 999)" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] rounded-lg font-bold transition">Make Lifetime VIP</button>
+              <button onclick="updateTrial('${safeId}', 999)" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] rounded-lg font-bold transition">Make VIP</button>
               <button onclick="deleteClient('${safeId}', '${safeName}')" class="text-rose-600 hover:text-rose-700 font-bold text-[10px] ml-auto px-2 py-1 bg-rose-50 rounded-lg transition">
                 <i class="fa-solid fa-trash-can"></i> Delete
               </button>
@@ -224,19 +257,16 @@
         await db.collection('clients').doc(id).update({ trialDays: days });
         alert('Updated access successfully!');
       } catch (e) {
-        alert('Error updating trial: ' + e.message);
+        alert('Error: ' + e.message);
       }
     }
 
-    // Patch 7: Delete Confirmation Safety
     async function deleteClient(id, name) {
-      if(!confirm(`Are you sure you want to permanently delete ${name}? This cannot be undone.`)) {
-        return;
-      }
+      if(!confirm(`Are you sure you want to delete ${name}? This cannot be undone.`)) return;
       try {
         await db.collection('clients').doc(id).delete();
       } catch (e) {
-        alert('Error deleting client: ' + e.message);
+        alert('Error deleting: ' + e.message);
       }
     }
 
@@ -246,13 +276,15 @@
       for(let item in MASTER_GROCERY_DB) {
         const isHighGi = MASTER_GROCERY_DB[item].gi >= 70;
         const safeItem = esc(item);
+        const data = MASTER_GROCERY_DB[item];
         c.innerHTML += `
           <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl border text-xs">
             <span class="font-bold text-slate-800">${safeItem}</span>
             <div class="flex items-center gap-2">
               ${isHighGi ? '<span class="px-1.5 py-0.5 bg-rose-100 text-rose-800 text-[9px] font-black rounded">Red Zone</span>' : ''}
-              <span class="text-teal-800 font-semibold">🔥 ${MASTER_GROCERY_DB[item].cal} kcal</span>
-              <span class="text-sky-800 font-semibold">GI: ${MASTER_GROCERY_DB[item].gi}</span>
+              <span class="text-teal-800 font-semibold">🔥 ${data.cal} kcal</span>
+              <span class="text-emerald-800 font-semibold">💪 ${data.p}g Pro</span>
+              <span class="text-sky-800 font-semibold">GI: ${data.gi}</span>
             </div>
           </div>`;
       }
@@ -264,21 +296,34 @@
     async function addNewClientToCloud() {
       const n = document.getElementById('mName').value.trim();
       const p = document.getElementById('mPhone').value.trim().replace(/\D/g,'');
-      const g = document.getElementById('mGoal').value;
+      const age = Number(document.getElementById('mAge').value) || 38;
+      const height = Number(document.getElementById('mHeight').value) || 170;
+      const weight = Number(document.getElementById('mWeight').value) || 75;
+      const gender = document.getElementById('mGender').value;
+      const activity = document.getElementById('mActivity').value;
+      const goalKey = document.getElementById('mGoalKey').value;
       const d = document.getElementById('mDiet').value;
       const days = parseInt(document.getElementById('mDays').value) || 30;
-      if(!n || p.length < 10) return alert('Enter valid name and number');
+
+      if(!n || p.length < 10) return alert('Enter valid name and 10-digit number');
+
+      const goalsMap = {
+        diabetes_reversal: "Type 2 Diabetes Remission",
+        fat_loss: "Fat Loss & Deficit",
+        muscle_gym: "Gym & Muscle Fitness",
+        fatty_liver_bp: "Fatty Liver & BP Control"
+      };
 
       try {
         const existing = await db.collection('clients').doc(p).get();
         if(existing.exists) {
-          if(!confirm('A client with this phone number already exists. Overwrite?')) {
-            return;
-          }
+          if(!confirm('A client with this phone number already exists. Overwrite?')) return;
         }
 
         await db.collection('clients').doc(p).set({
-          name: n, phone: p, pin: p.slice(-4), goal: g, diet: d, trialDays: days,
+          name: n, phone: p, pin: p.slice(-4),
+          age, height, weight, gender, activity, goalKey,
+          goal: goalsMap[goalKey], diet: d, trialDays: days,
           joiningDate: new Date().toISOString().split('T')[0],
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           compliance: existing.exists && existing.data().compliance ? existing.data().compliance : {},
@@ -286,7 +331,7 @@
         }, { merge: true });
 
         closeModal();
-        alert('Client saved successfully!');
+        alert('Client added to Cloud successfully with Protocol!');
       } catch (e) {
         alert('Error saving client: ' + e.message);
       }
