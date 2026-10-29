@@ -42,7 +42,7 @@
         <h1 class="text-2xl font-black text-slate-900 tracking-tight">Metabolic Pro</h1>
         <p class="text-xs font-semibold text-teal-700 uppercase tracking-widest mt-0.5">Clinical Lifestyle Medicine</p>
       </div>
-      <p class="text-xs text-slate-500 max-w-xs mx-auto">Reversing Diabetes, Fatty Liver & Peak Vitality with Evidence-Based Nutrition.</p>
+      <p class="text-xs text-slate-500 max-w-xs mx-auto">Diabetes Remission Support, Fatty Liver Detox & Peak Vitality with Evidence-Based Nutrition.</p>
     </div>
 
     <div class="card-clean rounded-3xl p-5 shadow-sm space-y-4 border">
@@ -61,7 +61,7 @@
         <div class="space-y-1.5 pt-1">
           <label class="font-bold text-slate-700">Select Health Goals:</label>
           <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-2xl border">
-            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium"><input type="checkbox" name="regCondition" value="Type 2 Diabetes Reversal" class="w-4 h-4 text-teal-600 rounded"> 🩺 Diabetes</label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium"><input type="checkbox" name="regCondition" value="Type 2 Diabetes Remission" class="w-4 h-4 text-teal-600 rounded"> 🩺 Diabetes</label>
             <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium"><input type="checkbox" name="regCondition" value="Fatty Liver Detox" checked class="w-4 h-4 text-teal-600 rounded"> 🥒 Fatty Liver</label>
             <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium"><input type="checkbox" name="regCondition" value="High Blood Pressure (BP)" class="w-4 h-4 text-teal-600 rounded"> 🫀 High BP</label>
             <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium"><input type="checkbox" name="regCondition" value="Weight Loss" class="w-4 h-4 text-teal-600 rounded"> ⚖️ Weight Loss</label>
@@ -79,6 +79,11 @@
         <button onclick="handleClientLogin()" id="btnLoginSubmit" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-extrabold text-sm shadow">Open Portal 📲</button>
       </div>
     </div>
+
+    <!-- Safety Disclaimer -->
+    <p class="text-[10px] text-slate-400 text-center px-4 leading-relaxed">
+      ⚠️ સૂચના: આ એપ ફક્ત લાઈફસ્ટાઈલ માર્ગદર્શન માટે છે. ડૉક્ટરની સલાહ વગર કોઈ દવા બંધ કરવી નહીં.
+    </p>
   </div>
 
   <!-- CLIENT PORTAL VIEW -->
@@ -185,11 +190,15 @@
         <!-- MEAL CARDS (WITH BIG BOLD GUJARATI HEADINGS) -->
         <div class="space-y-3" id="cpTodayMealCards"></div>
 
-        <!-- VITALS -->
+        <!-- VITALS & SUGAR SAFETY ALERTS -->
         <div class="card-clean p-3.5 rounded-2xl space-y-2 text-xs">
           <div class="font-bold text-slate-700 text-xs flex items-center justify-between">
             <span class="flex items-center gap-1.5"><i class="fa-solid fa-notes-medical text-teal-600"></i> Daily Vitals & Blood Sugar</span>
           </div>
+          
+          <!-- Sugar Safety Dynamic Alert Container -->
+          <div id="sugarSafetyAlertBox" class="hidden"></div>
+
           <div id="cpDynamicInputs" class="space-y-2"></div>
         </div>
 
@@ -315,6 +324,13 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // Patch 3: XSS Protection Escape Function
+    function esc(s) {
+      return String(s ?? '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+
     const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const DAY_NAMES_GUJ = ['રવિવાર', 'સોમવાર', 'મંગળવાર', 'બુધવાર', 'ગુરુવાર', 'શુક્રવાર', 'શનિવાર'];
     let COACH_PHONE = "919081421028";
@@ -323,6 +339,7 @@
     let currentClient = null;
 
     const MASTER_GROCERY_DB = {
+      "Sweet Lime": { cal: 47, gi: 43 },
       "Ash Gourd": { cal: 13, gi: 15 },
       "Bottle Gourd": { cal: 21, gi: 15 },
       "Coriander": { cal: 23, gi: 15 },
@@ -332,11 +349,15 @@
       "Fresh Paneer": { cal: 265, gi: 15 },
       "Salad Barrier": { cal: 25, gi: 15 },
       "Multi-Millet Roti": { cal: 110, gi: 35 },
+      "Jowar Roti": { cal: 110, gi: 40 },
+      "Bajra Roti": { cal: 115, gi: 45 },
       "Chaas": { cal: 40, gi: 15 },
       "Roasted Makhana": { cal: 347, gi: 45 },
       "Pumpkin Puree": { cal: 40, gi: 30 },
       "Steamed Moong": { cal: 105, gi: 25 },
       "Sprouted Chana": { cal: 120, gi: 28 },
+      "Boiled Chana": { cal: 130, gi: 28 },
+      "Roasted Chana": { cal: 160, gi: 28 },
       "Ragi Cheela": { cal: 240, gi: 50 },
       "Palak Paneer": { cal: 180, gi: 20 },
       "Sev Usal": { cal: 310, gi: 55 },
@@ -361,20 +382,30 @@
       "Apple": { cal: 52, gi: 36 },
       "Guava": { cal: 68, gi: 24 },
       "Papaya": { cal: 43, gi: 60 },
-      "Sweet Lime": { cal: 47, gi: 43 },
       "Watermelon": { cal: 30, gi: 72 },
       "Mango": { cal: 60, gi: 51 },
       "Banana": { cal: 89, gi: 51 }
     };
 
+    // Patch 4: Exact & Longest Word Food Matching (Solves Sweet Lime bug & 120 default)
     function calculateItemNutrition(itemName) {
-      let clean = itemName.trim();
-      for (let key in MASTER_GROCERY_DB) {
-        if (clean.toLowerCase().includes(key.toLowerCase())) {
-          return MASTER_GROCERY_DB[key];
+      const clean = itemName.trim().toLowerCase();
+      let bestMatch = null;
+
+      for (const key in MASTER_GROCERY_DB) {
+        const k = key.toLowerCase();
+        const regex = new RegExp("(^|\\s)" + k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + "(\\s|$)", "i");
+        if (regex.test(clean)) {
+          if (!bestMatch || k.length > bestMatch.k.length) {
+            bestMatch = { k, data: MASTER_GROCERY_DB[key] };
+          }
         }
       }
-      return { cal: 120, gi: 30 };
+
+      if (bestMatch) {
+        return { ...bestMatch.data, known: true };
+      }
+      return { cal: 50, gi: 25, known: false };
     }
 
     function calculateDishNutrition(dishString) {
@@ -395,14 +426,14 @@
       { morning: "Bottle Gourd + Ginger", breakfast: "Steamed Moong + Lemon", lunch: "Salad Barrier + Multi-Millet Roti + Palak Paneer + Chaas", snack: "Pomegranate", dinner: "Pumpkin Puree + Paneer" },
       { morning: "Amla Juice + Cumin Water", breakfast: "Sprouted Chana Salad", lunch: "Salad Barrier + Multi-Millet Roti + Moong Dal + Chaas", snack: "Kiwi", dinner: "Pumpkin Puree + Sprouts" },
       { morning: "Cucumber + Mint Infusion", breakfast: "Ragi Cheela + Mint Chutney", lunch: "Salad Barrier + Multi-Millet Roti + Ridge Gourd Sabzi + Chaas", snack: "Roasted Chana", dinner: "Clear Veg Soup + Tofu" },
-      { morning: "Warm Lemon Water", breakfast: "Poha with Peanuts & Curry Leaves", lunch: "Salad Barrier + Jowar Roti + Stuffed Capsicum + Chaas", snack: "Guava", dinner: "Mixed Veg Soup + Paneer Tikka" },
+      { morning: "Warm Lemon Water", breakfast: "Sprouts Salad with Lemon & Coriander", lunch: "Salad Barrier + Jowar Roti + Stuffed Capsicum + Chaas", snack: "Guava", dinner: "Mixed Veg Soup + Paneer Tikka" },
       { morning: "Bottle Gourd Juice", breakfast: "Sprouts & Pomegranate Salad", lunch: "Salad Barrier + Multi-Millet Roti + Bhindi Masala + Chaas", snack: "Roasted Makhana", dinner: "Tomato Basil Soup + Sauteed Mushrooms" },
       { morning: "Raw Turmeric + Warm Water", breakfast: "Moong Dal Chila + Green Chutney", lunch: "Salad Barrier + Bajra Roti + Cabbage Matar + Chaas", snack: "Papaya Slices", dinner: "Spinach Soup + Boiled Chana" },
       { morning: "Ash Gourd Detox Juice", breakfast: "Steamed Moong with Coconut", lunch: "Salad Barrier + Multi-Millet Roti + French Beans Sabzi + Chaas", snack: "Sweet Lime", dinner: "Broccoli Soup + Paneer" },
-      { morning: "Cumin Water + Ginger", breakfast: "Ragi Cheela + Curd", lunch: "Salad Barrier + Multi-Millet Roti + Cauliflower Sabzi + Chaas", snack: "Pumpkin Seeds", dinner: "Clear Soup + Steamed Sprouts" },
+      { morning: "Cumin Water + Ginger", breakfast: "Ragi Cheela + Curd", lunch: "Salad Barrier + Multi-Millet Roti + Cauliflower Sabzi + Chaas", snack: "Roasted Chana", dinner: "Clear Soup + Steamed Sprouts" },
       { morning: "Amla & Aloe Juice", breakfast: "Sprouted Chana + Lemon", lunch: "Salad Barrier + Jowar Roti + Bitter Gourd Sabzi + Chaas", snack: "Apple Slices", dinner: "Zucchini Soup + Grilled Paneer" },
       { morning: "Mint & Lemon Infusion", breakfast: "Moong Dal Chila + Paneer Cubes", lunch: "Salad Barrier + Multi-Millet Roti + Tomato Curry + Chaas", snack: "Roasted Makhana", dinner: "Mixed Veg Soup + Tofu" },
-      { morning: "Bottle Gourd + Coriander", breakfast: "Steamed Moong + Pepper", lunch: "Salad Barrier + Multi-Millet Roti + Palak Paneer + Chaas", snack: "Dragon Fruit", dinner: "Pumpkin Puree + Sprouts" },
+      { morning: "Bottle Gourd + Coriander", breakfast: "Steamed Moong + Roasted Cumin", lunch: "Salad Barrier + Multi-Millet Roti + Palak Paneer + Chaas", snack: "Dragon Fruit", dinner: "Pumpkin Puree + Sprouts" },
       { morning: "Warm Ginger Water", breakfast: "Ragi Cheela + Tomato Chutney", lunch: "Salad Barrier + Multi-Millet Roti + Bottle Gourd + Chaas", snack: "Guava", dinner: "Tomato Soup + Sauteed Veggies" },
       { morning: "Ash Gourd Juice", breakfast: "Sprouted Chana Salad", lunch: "Salad Barrier + Multi-Millet Roti + Moong Dal + Chaas", snack: "Pomegranate", dinner: "Clear Soup + Paneer Tikka" },
       { morning: "Amla Juice", breakfast: "Moong Dal Chila + Curd", lunch: "Salad Barrier + Multi-Millet Roti + Ridge Gourd + Chaas", snack: "Kiwi", dinner: "Spinach Soup + Sprouts" }
@@ -410,8 +441,8 @@
 
     const SUBSTITUTES_POOL = [
       "Bottle Gourd", "Ash Gourd", "Cucumber", "Moong Dal Chila", "Fresh Paneer", 
-      "Salad Barrier", "Multi-Millet Roti", "Chaas", "Roasted Makhana", "Steamed Moong",
-      "Kiwi", "Dragon Fruit", "Pomegranate", "Apple", "Guava", "Papaya", "Sweet Lime"
+      "Salad Barrier", "Multi-Millet Roti", "Jowar Roti", "Bajra Roti", "Chaas", "Roasted Makhana", 
+      "Steamed Moong", "Kiwi", "Dragon Fruit", "Pomegranate", "Apple", "Guava", "Papaya", "Sweet Lime"
     ];
 
     function getTodayDateKey() {
@@ -485,6 +516,7 @@
       }
     }
 
+    // Patch 2: Register without overwriting existing client record
     async function handleClientRegister() {
       const name = document.getElementById('regName').value.trim();
       const phone = document.getElementById('regPhone').value.trim().replace(/\D/g, '');
@@ -494,8 +526,16 @@
       if (!name || phone.length < 10) return alert('Enter full name and 10-digit number.');
       if (conditions.length === 0) return alert('Select at least one goal.');
 
-      const pin = phone.slice(-4) || '1234';
       const clientRef = db.collection('clients').doc(phone);
+      const existing = await clientRef.get();
+      if (existing.exists) {
+        alert('આ નંબર પર એકાઉન્ટ પહેલેથી મોજૂદ છે! કૃપા કરીને Login ટેબમાં જઈને લોગિન કરો.');
+        setAuthTab('login');
+        document.getElementById('loginId').value = phone;
+        return;
+      }
+
+      const pin = phone.slice(-4) || '1234';
       const newClientData = {
         name, phone, pin, diet,
         goal: conditions.join(' + '),
@@ -512,19 +552,22 @@
       await clientRef.set(newClientData);
       currentClient = newClientData;
       localStorage.setItem('met_pro_session_phone', phone);
-      alert(`🎉 Welcome ${name}! Portal is live. (PIN: ${pin})`);
+      alert(`🎉 Welcome ${esc(name)}! Portal is live. (PIN: ${pin})`);
       openPortal();
     }
 
+    // Patch 1: Enforce PIN Validation (No empty PIN allowed)
     async function handleClientLogin() {
       const input = document.getElementById('loginId').value.trim().replace(/\D/g, '');
       const pin = document.getElementById('loginPin').value.trim();
       if (input.length < 10) return alert('Enter 10-digit number.');
+      if (!pin || pin.length !== 4) return alert('કૃપા કરીને તમારો ૪-અંકનો PIN દાખલ કરો.');
 
       const doc = await db.collection('clients').doc(input).get();
       if (!doc.exists) return alert('Account not found.');
       const data = doc.data();
-      if (pin && data.pin && pin !== data.pin) return alert('Incorrect PIN.');
+      
+      if (pin !== data.pin) return alert('ખોટો PIN છે. ફરી પ્રયત્ન કરો.');
 
       currentClient = data;
       localStorage.setItem('met_pro_session_phone', input);
@@ -534,11 +577,16 @@
     function logoutClient() { localStorage.removeItem('met_pro_session_phone'); currentClient = null; showAuth(); }
     function openClientForgotPinModal() { document.getElementById('inClientForgotPhone').value = document.getElementById('loginId').value.trim(); document.getElementById('modalClientForgotPin').classList.remove('hidden'); }
     function closeClientForgotPinModal() { document.getElementById('modalClientForgotPin').classList.add('hidden'); }
+    
     async function handleClientSelfResetPin() {
       const phone = document.getElementById('inClientForgotPhone').value.trim().replace(/\D/g, '');
+      if (phone.length < 10) return alert('Enter valid 10-digit phone number.');
+      const doc = await db.collection('clients').doc(phone).get();
+      if (!doc.exists) return alert('Phone number not registered.');
+
       const defaultPin = phone.slice(-4) || '1234';
       await db.collection('clients').doc(phone).update({ pin: defaultPin });
-      alert(`✅ PIN reset to: ${defaultPin}`);
+      alert(`✅ PIN reset to your phone last 4 digits: ${defaultPin}`);
       closeClientForgotPinModal();
     }
 
@@ -608,7 +656,6 @@
       const dayOfYear = Math.floor((dObj - new Date(dObj.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
       const plan = MASTER_30_DAY_MENU[dayOfYear % MASTER_30_DAY_MENU.length];
 
-      // BIG CLEAR GUJARATI TITLES FOR HIGH READABILITY
       const slots = [
         { key: 'morning', time: 'સવારે ખાલી પેટે (Early Morning)', label: '🌅 ૧. સવારે ભૂખ્યા પેટે (Detox Infusion)', text: comp.customMeals?.morning || plan.morning },
         { key: 'breakfast', time: 'સવારનો નાસ્તો (Breakfast)', label: '🥗 ૨. સવારનો પૌષ્ટિક નાસ્તો (Protein Charge)', text: comp.customMeals?.breakfast || plan.breakfast },
@@ -638,6 +685,8 @@
         const isRedZone = (nut.gi >= 70);
         const card = document.createElement('div');
         card.className = "card-clean p-4 rounded-3xl space-y-2.5 border border-slate-200 shadow-sm";
+        
+        const safeText = esc(s.text);
         card.innerHTML = `
           <div class="flex justify-between items-start">
             <div>
@@ -648,10 +697,10 @@
               ${isRedZone ? '<span class="px-2 py-0.5 rounded-md bg-rose-100 text-rose-800 text-[10px] font-black border border-rose-300">🔴 Red Zone</span>' : ''}
               <span class="px-2 py-0.5 rounded-md bg-teal-50 text-teal-800 text-[10px] font-black border border-teal-200">🔥 ${nut.totalCal} kcal</span>
               <span class="px-2 py-0.5 rounded-md bg-sky-50 text-sky-800 text-[10px] font-black border border-sky-200">📊 GI: ${nut.gi}</span>
-              <button onclick="openCustomizer('${s.key}', '${s.text.replace(/'/g, "\\\'")}')" class="text-[10px] text-teal-700 font-extrabold bg-teal-50 px-2.5 py-1 rounded-xl border border-teal-200">Customize</button>
+              <button onclick="openCustomizer('${s.key}', '${safeText.replace(/'/g, "\\\'")}')" class="text-[10px] text-teal-700 font-extrabold bg-teal-50 px-2.5 py-1 rounded-xl border border-teal-200">Customize</button>
             </div>
           </div>
-          <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-xs text-slate-800 font-semibold leading-relaxed">${s.text}</div>
+          <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-xs text-slate-800 font-semibold leading-relaxed">${safeText}</div>
           <div class="grid grid-cols-3 gap-2">
             <button onclick="setCheck('${s.key}', 'done')" class="py-2.5 rounded-xl text-xs ${currentCheck==='done'?'btn-done-active':'btn-idle'}">✅ પૂરું કર્યું</button>
             <button onclick="setCheck('${s.key}', 'half')" class="py-2.5 rounded-xl text-xs ${currentCheck==='half'?'btn-half-active':'btn-idle'}">⚡ 50%</button>
@@ -661,7 +710,6 @@
         container.appendChild(card);
       });
 
-      // SCORE & MOTIVATION CALCULATION INTEGRATED IN DASHBOARD
       const finalScore = markedCount > 0 ? Math.round(scorePoints / slots.length) : 0;
       document.getElementById('cpScoreBadge').innerText = finalScore + '%';
 
@@ -701,13 +749,47 @@
         document.getElementById('cpRemainingCal').innerText = remaining + ' kcal';
       }
 
+      // Check and render Sugar Alert if values exist
+      checkSugarAlertBox(comp.metric1, comp.metric2);
+
       document.getElementById('cpDynamicInputs').innerHTML = `
         <div class="grid grid-cols-2 gap-2">
-          <div><label class="text-[9px] text-slate-500 font-semibold">Fasting Sugar</label><input type="number" id="cpInM1" onchange="saveVitals()" value="${comp.metric1||''}" class="w-full bg-slate-50 border p-2 rounded-lg text-xs"></div>
-          <div><label class="text-[9px] text-slate-500 font-semibold">PP2BS Sugar</label><input type="number" id="cpInM2" onchange="saveVitals()" value="${comp.metric2||''}" class="w-full bg-slate-50 border p-2 rounded-lg text-xs"></div>
+          <div><label class="text-[9px] text-slate-500 font-semibold">Fasting Sugar (mg/dl)</label><input type="number" id="cpInM1" onchange="saveVitals()" value="${esc(comp.metric1||'')}" placeholder="e.g. 110" class="w-full bg-slate-50 border p-2 rounded-lg text-xs"></div>
+          <div><label class="text-[9px] text-slate-500 font-semibold">PP2BS Sugar (mg/dl)</label><input type="number" id="cpInM2" onchange="saveVitals()" value="${esc(comp.metric2||'')}" placeholder="e.g. 140" class="w-full bg-slate-50 border p-2 rounded-lg text-xs"></div>
         </div>
-        <input type="text" id="cpInNote" onchange="saveVitals()" value="${comp.note||''}" placeholder="Notes, local food eaten..." class="w-full bg-slate-50 border p-2 rounded-lg text-xs mt-1">
+        <input type="text" id="cpInNote" onchange="saveVitals()" value="${esc(comp.note||'')}" placeholder="Notes, local food eaten..." class="w-full bg-slate-50 border p-2 rounded-lg text-xs mt-1">
       `;
+    }
+
+    // Patch 5: Sugar Alerts (Hypoglycemia < 70, Extreme > 300)
+    function checkSugarAlertBox(m1, m2) {
+      const box = document.getElementById('sugarSafetyAlertBox');
+      const readings = [Number(m1), Number(m2)].filter(n => !isNaN(n) && n > 0);
+      
+      if (readings.some(n => n < 70)) {
+        box.className = "p-3 rounded-2xl bg-rose-50 border border-rose-300 text-rose-900 space-y-1 block";
+        box.innerHTML = `
+          <div class="font-black text-xs flex items-center gap-1.5 text-rose-700">
+            <i class="fa-solid fa-triangle-exclamation text-sm"></i> ⚠️ સુગર એલર્ટ: હાઈપોગ્લાયસેમિયા (< 70 mg/dl)
+          </div>
+          <p class="text-[11px] leading-tight">
+            તમારું સુગર જોખમી સ્તરે નીચું છે! તાત્કાલિક <b>૧૫ ગ્રામ ઝડપી ગ્લુકોઝ</b> (૩ ચમચી ખાંડ/ગ્લુકોઝ પાણી અથવા અડધો ગ્લાસ ફ્રૂટ જ્યુસ) લો. ૧૫ મિનિટ પછી ફરી સુગર માપો. જો તમે એલોપેથિક દવા કે ઇન્સ્યુલિન પર હોવ તો તરત જ ડૉક્ટરનો સંપર્ક કરો.
+          </p>
+        `;
+      } else if (readings.some(n => n > 300)) {
+        box.className = "p-3 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 space-y-1 block";
+        box.innerHTML = `
+          <div class="font-black text-xs flex items-center gap-1.5 text-amber-700">
+            <i class="fa-solid fa-circle-exclamation text-sm"></i> ⚠️ હાઈ સુગર એલર્ટ (> 300 mg/dl)
+          </div>
+          <p class="text-[11px] leading-tight">
+            બ્લડ સુગર ઘણું ઊંચું નોંધાયું છે. પૂરતું પાણી પીઓ અને તાત્કાલિક તમારા ડૉક્ટર અથવા ફિઝિશિયનનો સંપર્ક કરો.
+          </p>
+        `;
+      } else {
+        box.className = "hidden";
+        box.innerHTML = "";
+      }
     }
 
     // TAB 2: UPCOMING 7 DAYS PLANNER RENDERER
@@ -736,10 +818,10 @@
             ${isTomorrow ? '<span class="text-[9px] bg-teal-600 text-white px-2 py-0.5 rounded-full font-bold">Tomorrow</span>' : ''}
           </div>
           <div class="text-[11px] text-slate-700 space-y-0.5 leading-snug">
-            <div><span class="font-bold text-teal-800">• સવારે:</span> ${plan.morning}</div>
-            <div><span class="font-bold text-teal-800">• નાસ્તો:</span> ${plan.breakfast}</div>
-            <div><span class="font-bold text-teal-800">• બપોરે:</span> ${plan.lunch}</div>
-            <div><span class="font-bold text-teal-800">• સાંજે:</span> ${plan.snack}  |  <span class="font-bold text-teal-800">• રાત્રે:</span> ${plan.dinner}</div>
+            <div><span class="font-bold text-teal-800">• સવારે:</span> ${esc(plan.morning)}</div>
+            <div><span class="font-bold text-teal-800">• નાસ્તો:</span> ${esc(plan.breakfast)}</div>
+            <div><span class="font-bold text-teal-800">• બપોરે:</span> ${esc(plan.lunch)}</div>
+            <div><span class="font-bold text-teal-800">• સાંજે:</span> ${esc(plan.snack)}  |  <span class="font-bold text-teal-800">• રાત્રે:</span> ${esc(plan.dinner)}</div>
           </div>
         `;
         container.appendChild(card);
@@ -785,7 +867,7 @@
     async function addWater(amount) {
       if(!currentClient.compliance[selectedDateKey]) currentClient.compliance[selectedDateKey] = {};
       let cur = currentClient.compliance[selectedDateKey].water || 0;
-      cur += amount;
+      cur = Math.round((cur + amount) * 100) / 100;
       currentClient.compliance[selectedDateKey].water = cur;
       loadTodayClientView();
       await db.collection('clients').doc(currentClient.phone).update({ [`compliance.${selectedDateKey}.water`]: cur });
@@ -806,6 +888,9 @@
       currentClient.compliance[selectedDateKey].metric1 = m1;
       currentClient.compliance[selectedDateKey].metric2 = m2;
       currentClient.compliance[selectedDateKey].note = note;
+      
+      checkSugarAlertBox(m1, m2);
+
       await db.collection('clients').doc(currentClient.phone).update({
         [`compliance.${selectedDateKey}.metric1`]: m1,
         [`compliance.${selectedDateKey}.metric2`]: m2,
@@ -828,20 +913,26 @@
       const c = document.getElementById('cstActiveTags');
       c.innerHTML = '';
       cstActiveTags.forEach((t, idx) => {
-        c.innerHTML += `<span class="px-2.5 py-1 rounded-xl bg-teal-50 border text-teal-800 text-xs font-semibold flex items-center gap-1">${t} <button onclick="cstActiveTags.splice(${idx},1);renderCstTags()"><i class="fa-solid fa-xmark"></i></button></span>`;
+        const safeT = esc(t);
+        c.innerHTML += `<span class="px-2.5 py-1 rounded-xl bg-teal-50 border text-teal-800 text-xs font-semibold flex items-center gap-1">${safeT} <button onclick="cstActiveTags.splice(${idx},1);renderCstTags()"><i class="fa-solid fa-xmark"></i></button></span>`;
       });
     }
 
     function addCustomTypedFood() {
       const val = document.getElementById('cstCustomInput').value.trim();
-      if(val && !cstActiveTags.includes(val)) { cstActiveTags.push(val); renderCstTags(); document.getElementById('cstCustomInput').value=''; }
+      if(val && !cstActiveTags.includes(val)) { 
+        cstActiveTags.push(val); 
+        renderCstTags(); 
+        document.getElementById('cstCustomInput').value=''; 
+      }
     }
 
     function renderCstSubs() {
       const c = document.getElementById('cstSubstitutesContainer');
       c.innerHTML = '';
       SUBSTITUTES_POOL.forEach(item => {
-        c.innerHTML += `<button onclick="if(!cstActiveTags.includes('${item}')){cstActiveTags.push('${item}');renderCstTags();}" class="px-2 py-1 bg-slate-50 border text-[10px] rounded-xl">+ ${item}</button>`;
+        const safeItem = esc(item);
+        c.innerHTML += `<button onclick="if(!cstActiveTags.includes('${safeItem}')){cstActiveTags.push('${safeItem}');renderCstTags();}" class="px-2 py-1 bg-slate-50 border text-[10px] rounded-xl">+ ${safeItem}</button>`;
       });
     }
 
@@ -864,7 +955,35 @@
       closeFeedbackModal();
     }
 
+    // Patch 6: Real 7-day Summary Logic vs Daily Message
     function submitClientReport(type) {
+      if (!currentClient) return;
+
+      if (type === 'summary') {
+        const comp = currentClient.compliance || {};
+        const sortedDays = Object.keys(comp).sort().slice(-7);
+        
+        let reportLines = [`📊 *Metabolic Pro - 7-Day Performance Summary*`, `Client: *${currentClient.name}*`, `Goal: *${currentClient.goal || 'Metabolic Plan'}*`, ``];
+        
+        if (sortedDays.length === 0) {
+          reportLines.push("હજી સુધી કોઈ દૈનિક લોગ નોંધાયેલ નથી.");
+        } else {
+          sortedDays.forEach(dKey => {
+            const d = comp[dKey];
+            const fSugar = d.metric1 ? `${d.metric1} mg/dl` : '-';
+            const ppSugar = d.metric2 ? `${d.metric2} mg/dl` : '-';
+            const w = d.water ? `${d.water.toFixed(1)}L` : '0L';
+            reportLines.push(`• *${dKey}*: Fasting: ${fSugar} | PP: ${ppSugar} | Water: ${w}`);
+          });
+        }
+        
+        reportLines.push(``, `Generated via Metabolic Pro Portal 📲`);
+        const fullSummaryMsg = reportLines.join('\n');
+        window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent(fullSummaryMsg)}`, '_blank');
+        return;
+      }
+
+      // Default Daily Report
       const comp = currentClient.compliance[selectedDateKey] || {};
       const waterVal = comp.water || 0;
       const msg = `🩺 *Metabolic Pro - Daily Report*
