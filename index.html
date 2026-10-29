@@ -41,7 +41,7 @@
         <h1 class="text-2xl font-black text-slate-900 tracking-tight">Metabolic Pro</h1>
         <p class="text-xs font-semibold text-teal-700 uppercase tracking-widest mt-0.5">Clinical Lifestyle & Nutrition Engine</p>
       </div>
-      <p class="text-xs text-slate-500 max-w-xs mx-auto">ડાયાબિટીસ મુક્તિ, ફેટી લિવર ડિટોક્સ અને પર્સનલાઇઝ્ડ મેટાબોલિક હેલ્થ સિસ્ટમ.</p>
+      <p class="text-xs text-slate-500 max-w-xs mx-auto">ડાયાબિટીસ મુક્તિ, ફેટી લિવર ડિટોક્સ અને વ્યક્તિગત મેટાબોલિક હેલ્થ સિસ્ટમ.</p>
     </div>
 
     <div class="card-clean rounded-3xl p-5 shadow-sm space-y-4 border">
@@ -50,7 +50,6 @@
         <button onclick="setAuthTab('login')" id="tabLogin" class="flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold">🔑 લોગિન</button>
       </div>
 
-      <!-- Advanced Profile Registration Form -->
       <div id="formRegister" class="space-y-3 text-xs">
         <div>
           <label class="font-bold text-slate-700">પૂરું નામ</label>
@@ -61,7 +60,6 @@
           <input type="tel" id="regPhone" placeholder="દા.ત. 9925879138" class="w-full mt-1 p-2.5 bg-slate-50 border rounded-xl text-slate-800">
         </div>
 
-        <!-- Biometrics -->
         <div class="grid grid-cols-3 gap-2">
           <div>
             <label class="font-bold text-slate-700 text-[10px]">ઉંમર (વર્ષ)</label>
@@ -89,16 +87,15 @@
             <label class="font-bold text-slate-700 text-[10px]">પ્રવૃત્તિ સ્તર (Activity)</label>
             <select id="regActivity" class="w-full mt-1 p-2 bg-slate-50 border rounded-xl text-xs font-semibold">
               <option value="sedentary">ઓછી હિલચાલ (Desk Routine)</option>
-              <option value="light" selected>હળવી (20-30m Walk / Yoga)</option>
-              <option value="moderate">મધ્યમ (3-5 દિવસ Gym/Training)</option>
+              <option value="light" selected>હળવી (Walk / Yoga)</option>
+              <option value="moderate">મધ્યમ (3-5 દિવસ Gym)</option>
               <option value="active">ભારે (Intense Exercise)</option>
             </select>
           </div>
         </div>
 
-        <!-- Multi Goals Selection -->
         <div class="space-y-1.5 pt-1">
-          <label class="font-bold text-slate-700">સ્વાસ્થ્ય લક્ષ્યો પસંદ કરો (એકથી વધુ શક્ય):</label>
+          <label class="font-bold text-slate-700">સ્વાસ્થ્ય લક્ષ્યો પસંદ કરો:</label>
           <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-2xl border">
             <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
               <input type="checkbox" name="regCondition" value="diabetes" checked class="w-4 h-4 text-teal-600 rounded"> 🩺 ડાયાબિટીસ
@@ -110,15 +107,14 @@
               <input type="checkbox" name="regCondition" value="gym" class="w-4 h-4 text-teal-600 rounded"> 💪 જિમ / મસલ ગેઇન
             </label>
             <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
-              <input type="checkbox" name="regCondition" value="fat_loss" class="w-4 h-4 text-teal-600 rounded"> ⚖️ ફેટ લોસ & ઈંચ લોસ
+              <input type="checkbox" name="regCondition" value="fat_loss" class="w-4 h-4 text-teal-600 rounded"> ⚖️ ફેટ લોસ
             </label>
           </div>
         </div>
 
-        <!-- Preferences & Allergies -->
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="font-bold text-slate-700 text-[10px]">ભોજન શૈલી (Cuisine)</label>
+            <label class="font-bold text-slate-700 text-[10px]">ભોજન શૈલી</label>
             <select id="regCuisine" class="w-full mt-1 p-2 bg-slate-50 border rounded-xl text-xs font-semibold">
               <option value="gujarati" selected>ગુજરાતી (Kathiyawadi)</option>
               <option value="marathi">મરાઠી શૈલી</option>
@@ -127,7 +123,7 @@
             </select>
           </div>
           <div>
-            <label class="font-bold text-slate-700 text-[10px]">એલર્જી / ન ખાતા પદાર્થ</label>
+            <label class="font-bold text-slate-700 text-[10px]">એલર્જી / બાકાત વસ્તુ</label>
             <input type="text" id="regAllergies" placeholder="દા.ત. મશરૂમ, ગ્લુટેન" class="w-full mt-1 p-2 bg-slate-50 border rounded-xl text-xs">
           </div>
         </div>
@@ -135,7 +131,6 @@
         <button onclick="handleClientRegister()" id="btnRegisterSubmit" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-sm shadow-md mt-1">મારું ક્લિનિકલ પોર્ટલ શરૂ કરો 🚀</button>
       </div>
 
-      <!-- Login Form -->
       <div id="formLogin" class="hidden space-y-3.5 text-xs">
         <div>
           <label class="font-bold text-slate-700">વોટ્સએપ મોબાઈલ નંબર</label>
@@ -173,7 +168,6 @@
       </div>
     </header>
 
-    <!-- Top Two-Tab Switcher -->
     <div class="bg-white border-b px-3.5 py-2 sticky top-[61px] z-30 shadow-xs">
       <div class="flex p-1 bg-slate-100 rounded-2xl text-xs gap-1">
         <button onclick="switchPortalTab('today')" id="portalTabToday" class="flex-1 py-2 rounded-xl tab-active-btn transition text-center flex items-center justify-center gap-1.5"><i class="fa-solid fa-utensils"></i> 🍽️ આજનું ડાયેટ (Today)</button>
@@ -232,7 +226,8 @@
           </div>
         </div>
 
-        <!-- WORKOUT & CLINICAL SAFETY ALERT (IF GYM + DIABETES) -->
+        <!-- MEDICATION REVIEW & WORKOUT SUGAR GUARD ALERTS -->
+        <div id="cpMedicationReviewBox" class="hidden"></div>
         <div id="cpWorkoutSugarGuardBox" class="hidden"></div>
 
         <!-- WATER TRACKER -->
@@ -264,12 +259,12 @@
           </div>
           <div class="grid grid-cols-7 gap-1 text-center" id="cpDateGridButtons"></div>
           <div class="pt-1 flex justify-between items-center text-[11px]">
-            <span class="font-black text-slate-900" id="cpActiveDateFullHeading">Wednesday, 28 October 2026</span>
+            <span class="font-black text-slate-900" id="cpActiveDateFullHeading">Thursday, 29 October 2026</span>
             <span class="font-bold px-2 py-0.5 rounded-full text-[10px]" id="cpDateStatusBadge">Routine Logged</span>
           </div>
         </div>
 
-        <!-- DYNAMIC GENERATED MEAL CARDS WITH SWAP -->
+        <!-- DYNAMIC GENERATED MEAL CARDS WITH SCALED PORTIONS & SWAP -->
         <div class="space-y-3" id="cpTodayMealCards"></div>
 
         <!-- VITALS & SUGAR SAFETY ALERTS -->
@@ -288,8 +283,30 @@
         </div>
       </div>
 
-      <!-- TAB 2: REPORTS & ADVANCE UPCOMING MENU PLANNER -->
+      <!-- TAB 2: REPORTS & ADVANCE UPCOMING MENU PLANNER + AUTO GROCERY -->
       <div id="tabContentReports" class="hidden space-y-3.5 text-xs">
+        
+        <!-- AUTOMATED 7-DAY GROCERY BASKET -->
+        <div class="card-clean p-4 rounded-3xl space-y-3 border-teal-300 bg-teal-50/40">
+          <div class="flex items-center justify-between border-b border-teal-100 pb-2.5">
+            <div>
+              <h3 class="font-black text-teal-950 text-sm flex items-center gap-1.5"><i class="fa-solid fa-basket-shopping text-teal-600"></i> સ્માર્ટ સાપ્તાહિક ગ્રોસરી લિસ્ટ</h3>
+              <p class="text-[11px] text-teal-700">આગામી ૭ દિવસના મેનૂ આધારિત જરૂરી શાકભાજી અને કઠોળ</p>
+            </div>
+            <button onclick="generateWeeklyGroceryList()" class="px-2.5 py-1 bg-teal-600 text-white font-bold rounded-xl text-[10px] shadow">રીફ્રેશ 🔄</button>
+          </div>
+          <div id="weeklyGroceryDisplay" class="grid grid-cols-2 gap-2 text-[11px] text-slate-800">
+            <div class="bg-white p-2.5 rounded-2xl border border-teal-100">
+              <span class="font-bold text-teal-800 block mb-1">🥦 શાકભાજી:</span>
+              <ul id="groceryVegList" class="space-y-0.5 list-disc list-inside text-slate-600"></ul>
+            </div>
+            <div class="bg-white p-2.5 rounded-2xl border border-teal-100">
+              <span class="font-bold text-teal-800 block mb-1">🫘 કઠોળ / પ્રોટીન:</span>
+              <ul id="groceryProteinList" class="space-y-0.5 list-disc list-inside text-slate-600"></ul>
+            </div>
+          </div>
+        </div>
+
         <div class="card-clean p-4 rounded-3xl space-y-3 border-teal-200">
           <div class="flex items-center justify-between border-b pb-2.5">
             <div>
@@ -297,11 +314,6 @@
               <p class="text-[11px] text-slate-500">નિયમો અને સ્કોરિંગ આધારિત ૭-દિવસીય અગાઉથી આયોજન</p>
             </div>
             <span class="px-2 py-0.5 bg-teal-50 text-teal-800 text-[10px] font-extrabold rounded-lg border border-teal-200">Rule Planner</span>
-          </div>
-
-          <div class="bg-amber-50 p-3 rounded-2xl border border-amber-200 space-y-1">
-            <span class="font-extrabold text-amber-900 text-[11px] flex items-center gap-1"><i class="fa-solid fa-basket-shopping text-amber-600"></i> 🛒 જરૂરી ગ્રોસરી પ્લાનિંગ:</span>
-            <p class="text-[11px] text-amber-800 leading-snug">દૂધી, પેઠું (Ash Gourd), મખાના, ફણગાવેલા મગ-મઠ, તાજું પનીર, સોયા ચંક્સ અને છાશ ઘરમાં અગાઉથી લાવીને રાખો.</p>
           </div>
 
           <div id="upcomingForecastContainer" class="space-y-2 pt-1"></div>
@@ -384,42 +396,51 @@
     let currentClient = null;
     let debounceTimer = null;
 
-    // --- 1. CLINICAL DISHES DATABASE WITH TAGS & GL ---
+    // --- COMPREHENSIVE 30-DAY CATEGORY FOOD POOL ---
     const CLINICAL_FOOD_DB = [
-      // Morning
-      { id: "morn_ash_gourd", name: "પેઠાનો રસ (Ash Gourd Juice) + કાચી હળદર", slot: "morning", cal: 25, p: 0.6, gl: 1, tags: ["veg", "low_gi", "liver_friendly", "detox"] },
-      { id: "morn_bottle_gourd", name: "દૂધીનો રસ + આદું + ફુદીનો", slot: "morning", cal: 30, p: 1.0, gl: 1, tags: ["veg", "low_gi", "liver_friendly", "detox"] },
-      { id: "morn_amla_cumin", name: "આમળા જ્યુસ + જીરાવાળું નવશેકું પાણી", slot: "morning", cal: 20, p: 0.4, gl: 1, tags: ["veg", "low_gi", "liver_friendly", "detox"] },
+      // Morning Detox Infusions
+      { id: "morn_ash_gourd", name: "પેઠાનો તાજો રસ (Ash Gourd Juice) + કાચી હળદર", slot: "morning", baseCal: 25, baseP: 0.6, gl: 1, basePortion: "૨૫૦ ml", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "પેઠું (Ash Gourd)" },
+      { id: "morn_bottle_gourd", name: "દૂધીનો રસ + આદું + લીંબુ + ફુદીનો", slot: "morning", baseCal: 30, baseP: 1.0, gl: 1, basePortion: "૨૫૦ ml", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "દૂધી" },
+      { id: "morn_amla_cumin", name: "આમળા રસ + જીરાવાળું નવશેકું પાણી", slot: "morning", baseCal: 20, baseP: 0.4, gl: 1, basePortion: "૨૫૦ ml", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "આમળાં" },
+      { id: "morn_cucumber_mint", name: "કાકડી + ફુદીનો + ચિયા સીડ્સ ઇન્ફ્યુઝન", slot: "morning", baseCal: 28, baseP: 0.8, gl: 1, basePortion: "૨૫૦ ml", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "કાકડી" },
 
-      // Pre-workout
-      { id: "pre_banana_chana", name: "૧ નાનું કેળું + ૨૦g શેકેલા ચણા", slot: "pre_workout", cal: 150, p: 5.0, gl: 9, tags: ["workout_friendly", "energy_boost"] },
-      { id: "pre_makhana_apple", name: "શેકેલા મખાના + અડધું સફરજન", slot: "pre_workout", cal: 130, p: 3.0, gl: 6, tags: ["workout_friendly", "low_gi"] },
+      // Pre-Workout
+      { id: "pre_banana_chana", name: "૧ નાનું કેળું + શેકેલા ચણા", slot: "pre_workout", baseCal: 150, baseP: 5.0, gl: 9, basePortion: "૧ કેળું + ૨૫g ચણા", tags: ["workout_friendly", "energy_boost"], proteinItem: "શેકેલા ચણા" },
+      { id: "pre_makhana_apple", name: "શેકેલા મખાના + અડધું સફરજન", slot: "pre_workout", baseCal: 130, baseP: 3.0, gl: 6, basePortion: "૨૫g મખાના", tags: ["workout_friendly", "low_gi"], proteinItem: "મખાના" },
 
-      // Breakfast
-      { id: "bf_moong_chila", name: "મગની દાળનો ચીલો + ૪૦g તાજું પનીર", slot: "breakfast", cal: 230, p: 14.0, gl: 6, tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati"] },
-      { id: "bf_moth_salad", name: "ફણગાવેલા બાફેલા મઠની ચાટ + કાકડી-ટામેટાં", slot: "breakfast", cal: 160, p: 10.0, gl: 5, tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "gujarati"] },
-      { id: "bf_besan_chila", name: "બેસન ચીલો + ગ્રીલ્ડ પનીર ક્યુબ્સ", slot: "breakfast", cal: 240, p: 15.0, gl: 7, tags: ["veg", "high_protein", "low_gi", "gujarati", "workout_friendly"] },
-      { id: "bf_sprout_chana", name: "ફણગાવેલા ચણા + લીંબુ મરી અને ધાણા", slot: "breakfast", cal: 170, p: 9.5, gl: 6, tags: ["veg", "high_fiber", "low_gi", "liver_friendly"] },
-      { id: "bf_muthiya_steam", name: "દૂધીના બાફેલા મુઠીયા (ઓછા તેલમાં)", slot: "breakfast", cal: 150, p: 5.5, gl: 7, tags: ["veg", "low_fat", "liver_friendly", "gujarati"] },
+      // Breakfast Pool (High Protein & Fiber)
+      { id: "bf_moong_chila", name: "મગની દાળનો પોષક ચીલો + તાજું પનીર", slot: "breakfast", baseCal: 240, baseP: 15.0, gl: 6, basePortion: "૨ નંગ ચીલા + ૫૦g પનીર", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati"], proteinItem: "મગની દાળ, પનીર" },
+      { id: "bf_moth_salad", name: "ફણગાવેલા બાફેલા મઠની ચાટ + કાકડી-ટામેટાં", slot: "breakfast", baseCal: 170, baseP: 11.0, gl: 5, basePortion: "૧ મોટો બાઉલ (૧૫૦g)", tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "gujarati"], proteinItem: "ફણગાવેલા મઠ" },
+      { id: "bf_besan_methi_chila", name: "બેસન-મેથી ચીલો + ગ્રીલ્ડ પનીર ક્યુબ્સ", slot: "breakfast", baseCal: 250, baseP: 16.0, gl: 7, basePortion: "૨ નંગ + ૫૦g પનીર", tags: ["veg", "high_protein", "low_gi", "gujarati", "workout_friendly"], proteinItem: "બેસન, પનીર" },
+      { id: "bf_sprout_chana", name: "ફણગાવેલા ચણા + લીંબુ મરી અને ધાણા", slot: "breakfast", baseCal: 180, baseP: 10.0, gl: 6, basePortion: "૧ બાઉલ (૧૫૦g)", tags: ["veg", "high_fiber", "low_gi", "liver_friendly"], proteinItem: "દેશી ચણા" },
+      { id: "bf_muthiya_steam", name: "દૂધી-મેથીના સ્ટીમ્ડ મુઠીયા (ઓછા તેલમાં)", slot: "breakfast", baseCal: 160, baseP: 6.0, gl: 7, basePortion: "૫ પીસ", tags: ["veg", "low_fat", "liver_friendly", "gujarati"], vegItem: "દૂધી, મેથી" },
+      { id: "bf_oats_chila_paneer", name: "ઓટ્સ-પાલક ચીલો + ગ્રીલ્ડ પનીર", slot: "breakfast", baseCal: 230, baseP: 14.5, gl: 6, basePortion: "૨ નંગ + ૪૦g પનીર", tags: ["veg", "high_protein", "low_gi"], proteinItem: "ઓટ્સ, પનીર" },
+      { id: "bf_tofu_bhurji", name: "ટોફૂ શાકભાજી ભુરજી + સલાડ", slot: "breakfast", baseCal: 210, baseP: 16.0, gl: 4, basePortion: "૧૨૦g ભુરજી", tags: ["veg", "high_protein", "low_carb", "liver_friendly"], proteinItem: "ટોફૂ" },
 
-      // Lunch
-      { id: "ln_jowar_palak_paneer", name: "સલાડ પ્લેટ + ૧ જુવાર રોટલો + પાલક પનીર + ૧ ગ્લાસ છાશ", slot: "lunch", cal: 360, p: 18.0, gl: 9, tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati", "barrier_plate"] },
-      { id: "ln_bajra_methi_dal", name: "કાકડી-બીટ સલાડ + ૧ બાજરી રોટલો + મેથી ભાજી + મગની દાળ + છાશ", slot: "lunch", cal: 350, p: 15.0, gl: 10, tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "gujarati", "barrier_plate"] },
-      { id: "ln_soya_curry_roti", name: "સોયા ચંક્સ કરી + ૨ મલ્ટી-મિલેટ રોટલી + સલાડ + છાશ", slot: "lunch", cal: 380, p: 26.0, gl: 8, tags: ["veg", "high_protein", "workout_friendly", "barrier_plate"] },
-      { id: "ln_tofu_veggie_roti", name: "ટોફૂ શાકભાજી કરી + ૧ જુવાર રોટલો + સલાડ બેરિયર", slot: "lunch", cal: 330, p: 17.0, gl: 8, tags: ["veg", "high_protein", "low_gi", "liver_friendly"] },
+      // Lunch Pool (Glycemic Barrier Plate: Salad + Millet Roti + Protein/Sabzi)
+      { id: "ln_jowar_palak_paneer", name: "સલાડ પ્લેટ + જુવાર રોટલો + પાલક પનીર + મોળી છાશ", slot: "lunch", baseCal: 370, baseP: 19.0, gl: 9, basePortion: "૧ રોટલો + ૧૫૦g શાક + ૧ ગ્લાસ છાશ", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati", "barrier_plate"], vegItem: "પાલક", proteinItem: "પનીર, છાશ" },
+      { id: "ln_bajra_methi_dal", name: "કાકડી-બીટ સલાડ + બાજરી રોટલો + મેથી ભાજી + મગની દાળ + છાશ", slot: "lunch", baseCal: 360, baseP: 16.0, gl: 10, basePortion: "૧ રોટલો + વાટકી દાળ + શાક", tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "gujarati", "barrier_plate"], vegItem: "મેથી, કાકડી", proteinItem: "મગની દાળ, છાશ" },
+      { id: "ln_soya_curry_roti", name: "સોયા ચંક્સ કરી + મલ્ટી-મિલેટ રોટલી + કાકડી સલાડ + છાશ", slot: "lunch", baseCal: 390, baseP: 27.0, gl: 8, basePortion: "૨ રોટલી + ૬૦g સોયા + છાશ", tags: ["veg", "high_protein", "workout_friendly", "barrier_plate"], proteinItem: "સોયા ચંક્સ, છાશ" },
+      { id: "ln_tofu_tindora_roti", name: "ટોફૂ ટીંડોળા શાક + ૧ જુવાર રોટલો + ટામેટાં સલાડ + છાશ", slot: "lunch", baseCal: 340, baseP: 18.0, gl: 8, basePortion: "૧ રોટલો + ૧૫૦g શાક + છાશ", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati", "barrier_plate"], vegItem: "ટીંડોળા", proteinItem: "ટોફૂ, છાશ" },
+      { id: "ln_drumstick_curry_roti", name: "સરગવાની કરી (Drumstick) + જવની રોટલી + સલાડ + છાશ", slot: "lunch", baseCal: 330, baseP: 14.0, gl: 7, basePortion: "૨ રોટલી + વાટકી શાક + છાશ", tags: ["veg", "high_fiber", "liver_friendly", "low_gi", "gujarati", "barrier_plate"], vegItem: "સરગવો (Drumstick)", proteinItem: "છાશ" },
+      { id: "ln_bhindi_moong_dal", name: "ઓછા તેલમાં ભીંડાનું શાક + બાજરી રોટલો + મગની ફોતરાવાળી દાળ", slot: "lunch", baseCal: 350, baseP: 15.0, gl: 9, basePortion: "૧ રોટલો + વાટકી દાળ + શાક", tags: ["veg", "high_fiber", "low_gi", "gujarati", "barrier_plate"], vegItem: "ભીંડા", proteinItem: "મગની દાળ" },
+      { id: "ln_choli_sabzi_roti", name: "લીલી ચોળીનું શાક + ૧ જુવાર રોટલો + કાકડી-ગાજર સલાડ + છાશ", slot: "lunch", baseCal: 345, baseP: 15.5, gl: 8, basePortion: "૧ રોટલો + વાટકી શાક + છાશ", tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "gujarati"], vegItem: "ચોળી", proteinItem: "છાશ" },
 
-      // Snack
-      { id: "sn_roasted_makhana", name: "સિંધવ મીઠાવાળા શેકેલા મખાના (૨૫g)", slot: "snack", cal: 110, p: 3.5, gl: 5, tags: ["veg", "low_gi", "liver_friendly", "low_fat"] },
-      { id: "sn_chana_chaas", name: "શેકેલા ચણા (૩૦g) + જીરા છાશ", slot: "snack", cal: 150, p: 9.0, gl: 4, tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati"] },
-      { id: "sn_guava_fruit", name: "તાજો જામફળ (૧૦૦g) + સિંધવ મીઠું", slot: "snack", cal: 68, p: 2.5, gl: 3, tags: ["veg", "high_fiber", "low_gi", "liver_friendly"] },
+      // Snack Pool (Anti-Craving Fuel)
+      { id: "sn_roasted_makhana", name: "સિંધવ મીઠાવાળા શેકેલા મખાના", slot: "snack", baseCal: 110, baseP: 3.5, gl: 5, basePortion: "૨૫g", tags: ["veg", "low_gi", "liver_friendly", "low_fat"], proteinItem: "મખાના" },
+      { id: "sn_chana_chaas", name: "શેકેલા ચણા + જીરા છાશ", slot: "snack", baseCal: 150, baseP: 9.0, gl: 4, basePortion: "૩૦g ચણા + ૧ ગ્લાસ છાશ", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati"], proteinItem: "ચણા, છાશ" },
+      { id: "sn_guava_fruit", name: "તાજો જામફળ + સિંધવ મીઠું", slot: "snack", baseCal: 68, baseP: 2.5, gl: 3, basePortion: "૧ મધ્યમ જામફળ (૧૦૦g)", tags: ["veg", "high_fiber", "low_gi", "liver_friendly"], vegItem: "જામફળ" },
+      { id: "sn_papaya_slices", name: "તાજા પપૈયાના પીસ + લીંબુનો રસ", slot: "snack", baseCal: 60, baseP: 1.0, gl: 5, basePortion: "૧ નાની પ્લેટ (૧૨૦g)", tags: ["veg", "liver_friendly", "digestive"], vegItem: "પપૈયું" },
+      { id: "sn_cucumber_peanut", name: "કાકડી-ટામેટાં કચુંબર + બાફેલી સીંગદાણા", slot: "snack", baseCal: 130, baseP: 5.5, gl: 2, basePortion: "૧ બાઉલ + ૨૦g સીંગ", tags: ["veg", "healthy_fat", "low_gi"], proteinItem: "સીંગદાણા" },
 
-      // Dinner
-      { id: "dn_pumpkin_soup_paneer", name: "ગરમ દૂધી-કોળાનો સૂપ + ૬૦g ગ્રીલ્ડ પનીર", slot: "dinner", cal: 220, p: 14.0, gl: 3, tags: ["veg", "high_protein", "low_carb", "liver_friendly", "light_dinner"] },
-      { id: "dn_spinach_soup_sprouts", name: "પાલક-આદું સૂપ + બાફેલા ફણગાવેલા મગની વાટકી", slot: "dinner", cal: 190, p: 12.0, gl: 4, tags: ["veg", "high_fiber", "liver_friendly", "low_gi", "light_dinner"] },
-      { id: "dn_tofu_stirfry", name: "ટોફૂ અને બ્રોકોલી-શિમલા મિર્ચ સૌતે", slot: "dinner", cal: 210, p: 16.0, gl: 2, tags: ["veg", "high_protein", "workout_friendly", "liver_friendly"] }
+      // Dinner Pool (Restorative Light Dinner & Liver Recovery)
+      { id: "dn_pumpkin_soup_paneer", name: "ગરમ દૂધી-કોળાનો સૂપ + ગ્રીલ્ડ પનીર ક્યુબ્સ", slot: "dinner", baseCal: 230, baseP: 15.0, gl: 3, basePortion: "મોટો બાઉલ સૂપ + ૬૦g પનીર", tags: ["veg", "high_protein", "low_carb", "liver_friendly", "light_dinner"], vegItem: "કોળું, દૂધી", proteinItem: "પનીર" },
+      { id: "dn_spinach_soup_sprouts", name: "પાલક-આદું સૂપ + બાફેલા ફણગાવેલા મગ", slot: "dinner", baseCal: 195, baseP: 12.5, gl: 4, basePortion: "મોટો બાઉલ + ૧૦૦g મગ", tags: ["veg", "high_fiber", "liver_friendly", "low_gi", "light_dinner"], vegItem: "પાલક", proteinItem: "મગ" },
+      { id: "dn_tofu_broccoli_stirfry", name: "ટોફૂ અને બ્રોકોલી-શિમલા મિર્ચ સૌતે", slot: "dinner", baseCal: 215, baseP: 16.5, gl: 2, basePortion: "૧૨૦g ટોફૂ + ૧૦૦g શાક", tags: ["veg", "high_protein", "workout_friendly", "liver_friendly"], vegItem: "બ્રોકોલી", proteinItem: "ટોફૂ" },
+      { id: "dn_bottle_gourd_soup_chana", name: "દૂધી-ટામેટાં સૂપ + બાફેલા કાબુલી ચણા ચાટ", slot: "dinner", baseCal: 200, baseP: 11.0, gl: 5, basePortion: "બાઉલ સૂપ + ૮૦g ચણા", tags: ["veg", "high_fiber", "liver_friendly", "light_dinner"], vegItem: "દૂધી", proteinItem: "કાબુલી ચણા" },
+      { id: "dn_moong_soup_veggies", name: "મગનું ઓસામણ/સૂપ + સૌતે શાકભાજી + પનીર", slot: "dinner", baseCal: 225, baseP: 14.0, gl: 4, basePortion: "બાઉલ સૂપ + ૫૦g પનીર", tags: ["veg", "high_protein", "liver_friendly", "gujarati"], vegItem: "મિક્સ શાકભાજી", proteinItem: "પનીર" }
     ];
 
-    // --- 2. RULE CONSTRAINT ENGINE ---
     const PROTOCOL_RULES = {
       diabetes: {
         maxMealGL: 10,
@@ -443,81 +464,6 @@
       }
     };
 
-    function filterAndScoreFoods(slot, clientGoals, clientPrefs, history7Days = [], excludeId = null) {
-      const candidates = CLINICAL_FOOD_DB.filter(f => f.slot === slot);
-      const allergies = (clientPrefs?.allergies || []).map(a => a.toLowerCase().trim());
-      const swapScores = clientPrefs?.swapScores || {};
-
-      return candidates.filter(item => {
-        if (excludeId && item.id === excludeId) return false;
-
-        // Hard Allergy Check
-        if (allergies.some(a => a && item.name.toLowerCase().includes(a))) return false;
-
-        // Hard Diabetes GL & Forbidden Check
-        if (clientGoals.includes('diabetes')) {
-          if (item.gl > PROTOCOL_RULES.diabetes.maxMealGL) return false;
-          if (item.tags.some(t => PROTOCOL_RULES.diabetes.forbiddenTags.includes(t))) return false;
-        }
-
-        // Hard Fatty Liver Forbidden Check
-        if (clientGoals.includes('fatty_liver')) {
-          if (item.tags.some(t => PROTOCOL_RULES.fatty_liver.forbiddenTags.includes(t))) return false;
-        }
-
-        // Recency 7-Day Window
-        if (history7Days.includes(item.id)) return false;
-
-        return true;
-      }).map(item => {
-        let score = 10;
-        // Goal Match scoring
-        if (clientGoals.includes('gym') && item.tags.includes('high_protein')) score += 15;
-        if (clientGoals.includes('diabetes') && item.tags.includes('high_fiber')) score += 10;
-        if (clientGoals.includes('fatty_liver') && item.tags.includes('liver_friendly')) score += 8;
-
-        // Cuisine Preference
-        const cuisine = clientPrefs?.cuisine || 'gujarati';
-        if (item.tags.includes(cuisine)) score += 6;
-
-        // Incremental Learning Score from Swaps
-        if (swapScores[item.id]) score += (swapScores[item.id] * 3);
-
-        return { ...item, score };
-      }).sort((a, b) => b.score - a.score);
-    }
-
-    function generateDayMenu(dateKey, client) {
-      const goals = client.conditions || ['diabetes', 'fatty_liver'];
-      const prefs = client.preferences || { cuisine: client.cuisine || 'gujarati', allergies: [] };
-      const history = getPast7DaysIds(client, dateKey);
-
-      let slots = ['morning', 'breakfast', 'lunch', 'snack', 'dinner'];
-      if (goals.includes('gym')) slots.splice(1, 0, 'pre_workout');
-
-      const plan = {};
-      slots.forEach(slot => {
-        let candidates = filterAndScoreFoods(slot, goals, prefs, history);
-        if (candidates.length === 0) candidates = filterAndScoreFoods(slot, goals, prefs, []);
-        plan[slot] = candidates[0] || CLINICAL_FOOD_DB.find(f => f.slot === slot);
-      });
-      return plan;
-    }
-
-    function getPast7DaysIds(client, currentDateKey) {
-      if (!client.compliance) return [];
-      const keys = Object.keys(client.compliance).sort();
-      const idx = keys.indexOf(currentDateKey);
-      const pastKeys = idx > 0 ? keys.slice(Math.max(0, idx - 7), idx) : keys.slice(-7);
-      const usedIds = [];
-      pastKeys.forEach(k => {
-        const p = client.compliance[k]?.generatedPlan;
-        if (p) Object.values(p).forEach(item => { if (item?.id) usedIds.push(item.id); });
-      });
-      return usedIds;
-    }
-
-    // --- 3. TARGET CALCULATION (Mifflin-St Jeor) ---
     function calculateClientTargets(profile) {
       const weight = Number(profile.weight) || 75;
       const height = Number(profile.height) || 170;
@@ -534,7 +480,7 @@
 
       let targetCal = tdee;
       let proteinPerKg = 1.2;
-      let focusTag = "Metabolic Care";
+      let focusTag = "Metabolic Balance";
 
       if (goals.includes('gym')) {
         targetCal = tdee + 250;
@@ -546,15 +492,100 @@
         focusTag = "Fat Loss & Deficit";
       } else if (goals.includes('diabetes')) {
         targetCal = Math.max(gender === 'male' ? 1400 : 1200, tdee - 300);
-        proteinPerKg = 1.2;
+        proteinPerKg = 1.25;
         focusTag = "Low Glycemic Stability";
+      } else if (goals.includes('fatty_liver')) {
+        targetCal = Math.max(gender === 'male' ? 1400 : 1200, tdee - 350);
+        proteinPerKg = 1.2;
+        focusTag = "Liver Detox & Clean Fat";
       }
+
+      const scaleFactor = targetCal / 1500;
 
       return {
         targetCal: Math.round(targetCal),
         targetProtein: Math.round(weight * proteinPerKg),
-        focusTag
+        focusTag,
+        scaleFactor: Math.min(Math.max(scaleFactor, 0.8), 1.4)
       };
+    }
+
+    function scaleDishPortion(dish, scaleFactor) {
+      const cal = Math.round(dish.baseCal * scaleFactor);
+      const p = Math.round((dish.baseP * scaleFactor) * 10) / 10;
+      return {
+        ...dish,
+        cal,
+        p,
+        gl: Math.round(dish.gl * scaleFactor),
+        portion: dish.basePortion
+      };
+    }
+
+    function filterAndScoreFoods(slot, clientGoals, clientPrefs, history7Days = [], excludeId = null) {
+      const candidates = CLINICAL_FOOD_DB.filter(f => f.slot === slot);
+      const allergies = (clientPrefs?.allergies || []).map(a => a.toLowerCase().trim());
+      const swapScores = clientPrefs?.swapScores || {};
+
+      return candidates.filter(item => {
+        if (excludeId && item.id === excludeId) return false;
+        if (allergies.some(a => a && item.name.toLowerCase().includes(a))) return false;
+
+        if (clientGoals.includes('diabetes')) {
+          if (item.gl > PROTOCOL_RULES.diabetes.maxMealGL) return false;
+          if (item.tags.some(t => PROTOCOL_RULES.diabetes.forbiddenTags.includes(t))) return false;
+        }
+
+        if (clientGoals.includes('fatty_liver')) {
+          if (item.tags.some(t => PROTOCOL_RULES.fatty_liver.forbiddenTags.includes(t))) return false;
+        }
+
+        if (history7Days.includes(item.id)) return false;
+        return true;
+      }).map(item => {
+        let score = 10;
+        if (clientGoals.includes('gym') && item.tags.includes('high_protein')) score += 15;
+        if (clientGoals.includes('diabetes') && item.tags.includes('high_fiber')) score += 10;
+        if (clientGoals.includes('fatty_liver') && item.tags.includes('liver_friendly')) score += 8;
+
+        const cuisine = clientPrefs?.cuisine || 'gujarati';
+        if (item.tags.includes(cuisine)) score += 6;
+        if (swapScores[item.id]) score += (swapScores[item.id] * 3);
+
+        return { ...item, score };
+      }).sort((a, b) => b.score - a.score);
+    }
+
+    function generateDayMenu(dateKey, client) {
+      const goals = client.conditions || ['diabetes', 'fatty_liver'];
+      const prefs = client.preferences || { cuisine: client.cuisine || 'gujarati', allergies: [] };
+      const history = getPast7DaysIds(client, dateKey);
+      const targets = calculateClientTargets(client);
+
+      let slots = ['morning', 'breakfast', 'lunch', 'snack', 'dinner'];
+      if (goals.includes('gym')) slots.splice(1, 0, 'pre_workout');
+
+      const plan = {};
+      slots.forEach(slot => {
+        let candidates = filterAndScoreFoods(slot, goals, prefs, history);
+        if (candidates.length === 0) candidates = filterAndScoreFoods(slot, goals, prefs, []);
+        const rawDish = candidates[0] || CLINICAL_FOOD_DB.find(f => f.slot === slot);
+        plan[slot] = scaleDishPortion(rawDish, targets.scaleFactor);
+      });
+      return plan;
+    }
+
+    function getPast7DaysIds(client, currentDateKey) {
+      if (!client.compliance) return [];
+      const keys = Object.keys(client.compliance).sort();
+      const idx = keys.indexOf(currentDateKey);
+      const pastKeys = idx > 0 ? keys.slice(Math.max(0, idx - 7), idx) : keys.slice(-7);
+      const usedIds = [];
+      pastKeys.forEach(k => {
+        const p = client.compliance[k]?.generatedPlan;
+        if (p) Object.values(p).forEach(item => { if (item?.id) usedIds.push(item.id); });
+      });
+      return usedIds;
     }
 
     function getTodayDateKey() {
@@ -624,11 +655,11 @@
         document.getElementById('portalTabReports').className = "flex-1 py-2 rounded-xl tab-active-btn transition text-center flex items-center justify-center gap-1.5";
         document.getElementById('portalTabToday').className = "flex-1 py-2 rounded-xl tab-inactive-btn transition text-center flex items-center justify-center gap-1.5";
         renderUpcomingPlanner();
+        generateWeeklyGroceryList();
         calculateOverallReports();
       }
     }
 
-    // Register Logic
     async function handleClientRegister() {
       const name = document.getElementById('regName').value.trim();
       const phone = document.getElementById('regPhone').value.trim().replace(/\D/g, '');
@@ -640,7 +671,6 @@
       const cuisine = document.getElementById('regCuisine').value;
       const allergiesInput = document.getElementById('regAllergies').value.trim();
       const allergies = allergiesInput ? allergiesInput.split(',').map(s => s.trim().toLowerCase()) : [];
-
       const conditions = Array.from(document.querySelectorAll('input[name="regCondition"]:checked')).map(cb => cb.value);
 
       if (!name || phone.length < 10) return alert('પૂરું નામ અને ૧૦-અંકનો મોબાઈલ નંબર દાખલ કરો.');
@@ -764,7 +794,6 @@
       if (!currentClient) return;
       if (!currentClient.compliance) currentClient.compliance = {};
       
-      // Ensure daily generated menu exists in compliance
       if (!currentClient.compliance[selectedDateKey]) {
         currentClient.compliance[selectedDateKey] = {
           water: 0, metric1: '', metric2: '', note: '',
@@ -778,22 +807,17 @@
       const comp = currentClient.compliance[selectedDateKey];
       const plan = comp.generatedPlan;
 
-      // Water Hydration
       const waterVal = comp.water || 0;
       document.getElementById('cpWaterCount').innerText = waterVal.toFixed(2) + ' / 3.0 Liters';
       document.getElementById('cpWaterBar').style.width = Math.min((waterVal / 3.0) * 100, 100) + '%';
 
-      // Targets
       const targets = calculateClientTargets(currentClient);
       document.getElementById('cpFocusTag').innerText = targets.focusTag;
 
-      // Render "કેમ આ પ્લાન?" Chips
       renderPlanReasonChips();
-
-      // Render Gym + Diabetes Workout Sugar Guard
       renderWorkoutSugarGuard();
+      checkMedicationReviewTrigger();
 
-      // Render Meal Cards
       let totalDayCalories = 0;
       let totalDayProtein = 0;
       let totalDayGl = 0;
@@ -842,8 +866,11 @@
               <button onclick="swapCurrentDish('${slotKey}', '${dish.id}')" class="text-[10px] text-teal-700 font-extrabold bg-teal-50 px-2 py-1 rounded-xl border border-teal-200 hover:bg-teal-100 transition"><i class="fa-solid fa-rotate"></i> Swap</button>
             </div>
           </div>
-          <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-xs text-slate-800 font-semibold leading-relaxed">
-            ${esc(dish.name)}
+          <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-xs text-slate-800 space-y-1">
+            <div class="font-bold leading-relaxed">${esc(dish.name)}</div>
+            <div class="text-[11px] text-teal-800 font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-scale-balanced text-[10px]"></i> પ્રમાણ (Portion): <span class="bg-white px-2 py-0.5 rounded border border-slate-200">${dish.portion}</span>
+            </div>
           </div>
           <div class="grid grid-cols-3 gap-2">
             <button onclick="setCheck('${slotKey}', 'done')" class="py-2.5 rounded-xl text-xs ${currentCheck==='done'?'btn-done-active':'btn-idle'}">✅ લીધું</button>
@@ -854,7 +881,6 @@
         container.appendChild(card);
       });
 
-      // Score
       const finalScore = markedCount > 0 ? Math.round(scorePoints / planSlots.length) : 0;
       document.getElementById('cpScoreBadge').innerText = finalScore + '%';
 
@@ -868,7 +894,6 @@
       document.getElementById('cpMotivationText').innerText = motivationMsg;
       document.getElementById('cpMotiIcon').innerText = motiIcon;
 
-      // Stats
       const calPercent = Math.min(Math.round((totalDayCalories / targets.targetCal) * 100), 100);
       const proPercent = Math.min(Math.round((totalDayProtein / targets.targetProtein) * 100), 100);
 
@@ -880,10 +905,8 @@
       document.getElementById('cpCalProgressText').innerText = calPercent + '%';
       document.getElementById('cpProteinProgressText').innerText = proPercent + '%';
 
-      // Sugar & Hypoglycemia Check
       checkSugarAlertBox(comp.metric1, comp.metric2);
 
-      // Goal-based inputs
       const isDiabetes = (currentClient.conditions || []).includes('diabetes');
       document.getElementById('cpDynamicInputs').innerHTML = `
         <div class="grid grid-cols-2 gap-2">
@@ -900,7 +923,6 @@
       `;
     }
 
-    // Render "કેમ આ પ્લાન?" Chips
     function renderPlanReasonChips() {
       const container = document.getElementById('cpPlanReasonChips');
       container.innerHTML = '<span class="text-teal-900 font-black">🎯 પ્લાન નિયમ:</span>';
@@ -912,7 +934,6 @@
       });
     }
 
-    // Render Workout Sugar Guard Alert
     function renderWorkoutSugarGuard() {
       const box = document.getElementById('cpWorkoutSugarGuardBox');
       const goals = currentClient.conditions || [];
@@ -923,7 +944,7 @@
             <i class="fa-solid fa-shield-heart text-amber-600"></i> ⚠️ વર્કઆઉટ પૂર્વે શુગર સુરક્ષા નિયમ
           </div>
           <p class="text-[11px] leading-tight">
-            કસરત શરૂ કરતાં પહેલાં શુગર તપાસો. જો શુગર <b>૧૦૦ mg/dl થી ઓછી</b> હોય, તો હાઈપોગ્લાયસેમિયાથી બચવા ૧૫ ગ્રામ ઝડપી કાર્બ્સ (૧ કેળું અથવા શેકેલા ચણા) અચૂક લો અને સાથે ગ્લુકોઝ હંમેશા રાખો.
+            કસરત શરૂ કરતાં પહેલાં શુગર તપાસો. જો શુગર <b>૧૦૦ mg/dl થી ઓછી</b> હોય, તો ૧૫ ગ્રામ ઝડપી કાર્બ્સ (૧ કેળું અથવા શેકેલા ચણા) અચૂક લો અને સાથે ગ્લુકોઝ હંમેશા રાખો.
           </p>
         `;
       } else {
@@ -931,25 +952,70 @@
       }
     }
 
-    // Swap Dish Function (Rule-Preserving with Incremental Learning)
+    function checkMedicationReviewTrigger() {
+      const box = document.getElementById('cpMedicationReviewBox');
+      const comp = currentClient.compliance || {};
+      const dates = Object.keys(comp).sort().slice(-5);
+      if (dates.length < 5) { box.className = "hidden"; return; }
+
+      const fastings = dates.map(d => Number(comp[d]?.metric1)).filter(n => !isNaN(n) && n > 0);
+      if (fastings.length === 5 && fastings.every(v => v < 100)) {
+        box.className = "bg-emerald-50 border-2 border-emerald-300 p-3 rounded-2xl text-xs text-emerald-950 space-y-1 block";
+        box.innerHTML = `
+          <div class="font-extrabold flex items-center gap-1.5 text-emerald-900">
+            <i class="fa-solid fa-stethoscope text-emerald-600"></i> 🩺 મેડિકેશન રિવ્યુ એલર્ટ (શાનદાર સુધારો)
+          </div>
+          <p class="text-[11px] leading-tight">
+            તમારી ફાસ્ટિંગ શુગર છેલ્લા ૫ દિવસથી સતત ૧૦૦ થી નીચે નોંધાઈ રહી છે. જો તમે એલોપેથિક દવાઓ કે ઇન્સ્યુલિન લેતા હોવ, તો તાત્કાલિક તમારા ડૉક્ટરનો સંપર્ક કરી દવાનો ડોઝ ઓછો કરાવો જેથી હાઈપોગ્લાયસેમિયા ન થાય.
+          </p>
+        `;
+      } else {
+        box.className = "hidden";
+      }
+    }
+
+    // Weekly Smart Grocery List Generator
+    function generateWeeklyGroceryList() {
+      if (!currentClient) return;
+      const today = new Date();
+      const vegSet = new Set();
+      const proteinSet = new Set();
+
+      for (let i = 1; i <= 7; i++) {
+        const nextDate = new Date(today);
+        nextDate.setDate(today.getDate() + i);
+        const dKey = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`;
+        const dayPlan = generateDayMenu(dKey, currentClient);
+
+        Object.values(dayPlan).forEach(item => {
+          if (item.vegItem) vegSet.add(item.vegItem);
+          if (item.proteinItem) proteinSet.add(item.proteinItem);
+        });
+      }
+
+      const vegUl = document.getElementById('groceryVegList');
+      const proUl = document.getElementById('groceryProteinList');
+      vegUl.innerHTML = '';
+      proUl.innerHTML = '';
+
+      vegSet.forEach(v => { vegUl.innerHTML += `<li>${v}</li>`; });
+      proteinSet.forEach(p => { proUl.innerHTML += `<li>${p}</li>`; });
+    }
+
     async function swapCurrentDish(slotKey, currentDishId) {
       const goals = currentClient.conditions || ['diabetes'];
       const prefs = currentClient.preferences || {};
       const history = getPast7DaysIds(currentClient, selectedDateKey);
+      const targets = calculateClientTargets(currentClient);
 
-      // Find alternative candidates excluding currentDishId
       const alternatives = filterAndScoreFoods(slotKey, goals, prefs, history, currentDishId);
-      
       if (alternatives.length === 0) {
         return alert("આ ક્લિનિકલ નિયમો હેઠળ અન્ય કોઈ વૈકલ્પિક વાનગી ઉપલબ્ધ નથી.");
       }
 
-      const nextDish = alternatives[0];
-
-      // Update Local State
+      const nextDish = scaleDishPortion(alternatives[0], targets.scaleFactor);
       currentClient.compliance[selectedDateKey].generatedPlan[slotKey] = nextDish;
 
-      // Incremental Learning: Adjust swapScores
       if (!currentClient.preferences) currentClient.preferences = {};
       if (!currentClient.preferences.swapScores) currentClient.preferences.swapScores = {};
       
@@ -958,7 +1024,6 @@
 
       loadTodayClientView();
 
-      // Single-doc Firestore Update
       await db.collection('clients').doc(currentClient.phone).update({
         [`compliance.${selectedDateKey}.generatedPlan.${slotKey}`]: nextDish,
         [`preferences.swapScores.${currentDishId}`]: currentClient.preferences.swapScores[currentDishId],
@@ -992,7 +1057,6 @@
       await db.collection('clients').doc(currentClient.phone).update({ [`compliance.${selectedDateKey}.water`]: 0 });
     }
 
-    // Debounce to save writes on typing
     function debounceSaveVitals() {
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
@@ -1011,6 +1075,7 @@
       currentClient.compliance[selectedDateKey].note = note;
       
       checkSugarAlertBox(m1, m2);
+      checkMedicationReviewTrigger();
 
       await db.collection('clients').doc(currentClient.phone).update({
         [`compliance.${selectedDateKey}.metric1`]: m1,
@@ -1027,10 +1092,14 @@
       const readings = [Number(m1), Number(m2)].filter(n => !isNaN(n) && n > 0);
       if (readings.some(n => n < 70)) {
         box.className = "p-3 rounded-2xl bg-rose-50 border border-rose-300 text-rose-900 space-y-1 block";
-        box.innerHTML = `<div class="font-black text-xs flex items-center gap-1.5 text-rose-700"><i class="fa-solid fa-triangle-exclamation text-sm"></i> ⚠️ સુગર એલર્ટ: હાઈપોગ્લાયસેમિયા (< 70 mg/dl)</div><p class="text-[11px] leading-tight">શુગર જોખમી સ્તરે નીચું છે! તાત્કાલિક ૧૫ ગ્રામ ઝડપી ગ્લુકોઝ (૩ ચમચી ખાંડ/ગ્લુકોઝ પાણી અથવા જ્યુસ) લો અને ૧૫ મિનિટ પછી ફરી માપો[span_4](start_span)[span_4](end_span)[span_5](start_span)[span_5](end_span).</p>`;
+        box.innerHTML = `<div class="font-black text-xs flex items-center gap-1.5 text-rose-700"><i class="fa-solid fa-triangle-exclamation text-sm"></i> ⚠️ સુગર એલર્ટ: હાઈપોગ્લાયસેમિયા (< 70 mg/dl)</div><p class="text-[11px] leading-tight">શુગર જોખમી સ્તરે નીચું છે! તાત્કાલિક ૧૫ ગ્રામ ઝડપી ગ્લુકોઝ (૩ ચમચી ખાંડ/ગ્લુકોઝ પાણી અથવા જ્યુસ) લો અને ૧૫ મિનિટ પછી ફરી માપો[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span). કોચને જાણ કરવામાં આવી રહી છે.</p>`;
+        
+        // Auto SOS alert to Coach WhatsApp
+        const sosMsg = `🚨 *EMERGENCY HYPO ALERT* 🚨\nClient: *${currentClient.name}*\nPhone: *${currentClient.phone}*\nSugar dropped below 70 mg/dl: *${m1 || m2} mg/dl*\nPlease review medicine dosage!`;
+        window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent(sosMsg)}`, '_blank');
       } else if (readings.some(n => n > 300)) {
         box.className = "p-3 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 space-y-1 block";
-        box.innerHTML = `<div class="font-black text-xs flex items-center gap-1.5 text-amber-700"><i class="fa-solid fa-circle-exclamation text-sm"></i> ⚠️ હાઈ સુગર એલર્ટ (> 300 mg/dl)</div><p class="text-[11px] leading-tight">બ્લડ શુગર ઘણું ઊંચું નોંધાયું છે. પૂરતું પાણી પીઓ અને તાત્કાલિક ડૉક્ટરનો સંપર્ક કરો[span_6](start_span)[span_6](end_span)[span_7](start_span)[span_7](end_span).</p>`;
+        box.innerHTML = `<div class="font-black text-xs flex items-center gap-1.5 text-amber-700"><i class="fa-solid fa-circle-exclamation text-sm"></i> ⚠️ હાઈ સુગર એલર્ટ (> 300 mg/dl)</div><p class="text-[11px] leading-tight">બ્લડ શુગર ઘણું ઊંચું નોંધાયું છે. પૂરતું પાણી પીઓ અને તાત્કાલિક ડૉક્ટરનો સંપર્ક કરો[span_8](start_span)[span_8](end_span)[span_9](start_span)[span_9](end_span).</p>`;
       } else {
         box.className = "hidden";
       }
@@ -1063,7 +1132,7 @@
           <div class="text-[11px] text-slate-700 space-y-0.5 leading-snug">
             <div><span class="font-bold text-teal-800">• સવારે:</span> ${esc(forecastPlan.morning?.name || '-')}</div>
             ${forecastPlan.pre_workout ? `<div><span class="font-bold text-teal-800">• પ્રી-વર્કઆઉટ:</span> ${esc(forecastPlan.pre_workout?.name || '-')}</div>` : ''}
-            <div><span class="font-bold text-teal-800">• નાસ્તો:</span> ${esc(forecastPlan.breakfast?.name || '-')}</div>
+            <div><span class="font-bold text-teal-800">• નાસ્તો:</span> ${esc(forecastPlan.breakfast?.name || '-')} (${forecastPlan.breakfast?.portion || ''})</div>
             <div><span class="font-bold text-teal-800">• બપોરે:</span> ${esc(forecastPlan.lunch?.name || '-')}</div>
             <div><span class="font-bold text-teal-800">• સાંજે:</span> ${esc(forecastPlan.snack?.name || '-')}  |  <span class="font-bold text-teal-800">• રાત્રે:</span> ${esc(forecastPlan.dinner?.name || '-')}</div>
           </div>
@@ -1112,7 +1181,6 @@
       closeFeedbackModal();
     }
 
-    // 7-day summary or daily report
     function submitClientReport(type) {
       if (!currentClient) return;
 
