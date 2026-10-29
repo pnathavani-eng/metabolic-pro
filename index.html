@@ -31,6 +31,8 @@
       border: 1px solid #e2e8f0;
       box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
     }
+    .main-tab-active { background-color: #0f766e !important; color: #ffffff !important; font-weight: 800; }
+    .main-tab-inactive { background-color: #f1f5f9 !important; color: #475569 !important; font-weight: 700; }
     .btn-done-active { background-color: #059669 !important; color: #ffffff !important; font-weight: 800; border-color: #059669 !important; }
     .btn-half-active { background-color: #d97706 !important; color: #ffffff !important; font-weight: 800; border-color: #d97706 !important; }
     .btn-miss-active { background-color: #e11d48 !important; color: #ffffff !important; font-weight: 800; border-color: #e11d48 !important; }
@@ -73,7 +75,6 @@
           <input type="password" maxlength="4" id="regPin" placeholder="••••" class="w-full p-2 bg-white border border-teal-300 rounded-xl text-center text-sm font-black tracking-widest text-slate-900">
         </div>
 
-        <!-- REGIONAL CUISINE SELECTION -->
         <div class="p-2.5 bg-amber-50/60 border border-amber-200 rounded-2xl space-y-1">
           <label class="font-extrabold text-amber-950 block">તમારો ખોરાક પ્રદેશ પસંદ કરો (Regional Cuisine) *</label>
           <select id="regCuisine" class="w-full p-2 bg-white border border-amber-300 rounded-xl text-xs font-bold text-slate-800">
@@ -82,7 +83,6 @@
             <option value="south_indian">🥥 દક્ષિણ ભારતીય (South Indian) ડાયેટ</option>
             <option value="jain">🙏 શુદ્ધ જૈન ડાયેટ (કાંદા, લસણ, બટેટા વગર)</option>
           </select>
-          <span class="text-[9px] text-amber-800 block">તમારી પસંદગી મુજબ દરરોજ તમારા પ્રદેશની જ દેશી વાનગીઓ આવશે.</span>
         </div>
 
         <div class="grid grid-cols-3 gap-2">
@@ -228,146 +228,174 @@
           </div>
         </div>
       </div>
-      <div class="flex items-center gap-2">
-        <button onclick="openChangePinModal()" class="px-2 py-1 rounded-xl bg-slate-100 text-slate-700 text-[10px] font-bold">🔑 PIN</button>
-        <button onclick="logoutClient()" class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 text-[10px] font-bold">Logout</button>
+      <div class="flex items-center gap-1.5">
+        <button onclick="contactSupport()" class="px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-xs font-bold flex items-center gap-1">
+          <i class="fa-solid fa-headset text-teal-600"></i> Support
+        </button>
+        <button onclick="openChangePinModal()" class="px-2 py-1 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">🔑 PIN</button>
+        <button onclick="logoutClient()" class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold">Logout</button>
       </div>
     </header>
 
+    <!-- MAIN TWO NAVIGATION TABS (ORIGINAL RESTORED) -->
+    <div class="p-2 bg-white border-b grid grid-cols-2 gap-2 max-w-lg mx-auto text-xs sticky top-[61px] z-30 shadow-xs">
+      <button onclick="switchPortalTab('today')" id="tabBtnToday" class="py-2.5 rounded-2xl main-tab-active flex items-center justify-center gap-1.5">
+        <i class="fa-solid fa-utensils"></i> આજનું ડાયેટ (Today)
+      </button>
+      <button onclick="switchPortalTab('upcoming')" id="tabBtnUpcoming" class="py-2.5 rounded-2xl main-tab-inactive flex items-center justify-center gap-1.5">
+        <i class="fa-regular fa-calendar-days"></i> આગળનું મેનૂ & રિપોર્ટ્સ
+      </button>
+    </div>
+
     <main class="p-3.5 max-w-lg mx-auto space-y-3.5">
       
-      <!-- VIP EXCLUSIVE LIVE SESSIONS BOX -->
-      <div id="cpLiveSessionBox" class="card-clean p-4 rounded-3xl space-y-2.5 border border-teal-200 bg-gradient-to-r from-teal-50 to-emerald-50">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-rose-500 animate-ping"></span>
-            <h3 class="font-extrabold text-slate-900 text-xs" id="cpLiveSessionTitle">🔴 લાઈવ યોગા & ગર્ભસંસ્કાર ક્લાસ</h3>
-          </div>
-          <span class="px-2 py-0.5 bg-rose-100 text-rose-800 font-black text-[9px] rounded-full">VIP LIVE NOW</span>
-        </div>
-        <p class="text-[11px] text-slate-600" id="cpLiveSessionDesc">તમારો સ્પેશિયલ ક્લાસ શરૂ થઈ ગયો છે. નીચે ક્લિક કરી સીધા જોડાઈ જાઓ:</p>
-        <button id="btnJoinLiveClass" onclick="joinLiveClass()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5 transition active:scale-95">
-          <i class="fa-solid fa-video"></i> લાઈવ ક્લાસમાં જોડાઓ 📲
-        </button>
-      </div>
+      <!-- TAB 1: TODAY'S DIET VIEW -->
+      <section id="portalTabToday" class="space-y-3.5">
 
-      <!-- FREE TRIAL USER UPGRADE CARD -->
-      <div id="cpFreeTrialVipBanner" class="hidden card-clean p-3.5 rounded-2xl border border-amber-200 bg-amber-50/60 flex items-center justify-between text-xs">
-        <div>
-          <div class="font-black text-amber-950 text-xs flex items-center gap-1">
-            <span>👑 લાઈવ યોગા & ગર્ભસંસ્કાર ક્લાસ</span>
+        <!-- VIP EXCLUSIVE LIVE SESSIONS BOX -->
+        <div id="cpLiveSessionBox" class="card-clean p-4 rounded-3xl space-y-2.5 border border-teal-200 bg-gradient-to-r from-teal-50 to-emerald-50">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-rose-500 animate-ping"></span>
+              <h3 class="font-extrabold text-slate-900 text-xs" id="cpLiveSessionTitle">🔴 લાઈવ યોગા & ગર્ભસંસ્કાર ક્લાસ</h3>
+            </div>
+            <span class="px-2 py-0.5 bg-rose-100 text-rose-800 font-black text-[9px] rounded-full">VIP LIVE NOW</span>
           </div>
-          <p class="text-[10px] text-amber-800 mt-0.5">આ લાઈવ સેશન્સ માત્ર VIP સભ્યો માટે ઉપલબ્ધ છે.</p>
-        </div>
-        <button onclick="requestVipUpgrade()" class="px-2.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-900 font-black text-[10px] rounded-xl shadow-xs">
-          VIP મેળવો 📲
-        </button>
-      </div>
-
-      <!-- MISSED SESSION RECORDING CARD -->
-      <div id="cpRecordingBox" class="card-clean p-3 rounded-2xl border border-teal-200 bg-teal-50/50 flex items-center justify-between text-xs">
-        <div>
-          <div class="font-extrabold text-teal-950 text-xs flex items-center gap-1">
-            <i class="fa-solid fa-play-circle text-teal-600"></i> ક્લાસ રેકોર્ડિંગ લાઈબ્રેરી
-          </div>
-          <p class="text-[10px] text-teal-800 mt-0.5">મિસ થયેલ યોગા/ગર્ભસંસ્કાર સેશનનો વિડીયો અહીંથી જુઓ.</p>
-        </div>
-        <button onclick="watchClassRecording()" class="px-3 py-1.5 bg-teal-700 hover:bg-teal-800 text-white font-extrabold text-[10px] rounded-xl shadow-xs">
-          વિડીયો જુઓ 🎥
-        </button>
-      </div>
-
-      <!-- MACRO TARGET CARD -->
-      <div class="card-clean p-4 rounded-3xl space-y-3 bg-gradient-to-br from-slate-900 to-teal-950 text-white shadow-md border border-teal-800">
-        <div class="flex justify-between items-center">
-          <h3 class="font-extrabold text-xs flex items-center gap-1.5 text-teal-300"><i class="fa-solid fa-bolt text-amber-400"></i> Personalized Macro Targets</h3>
-          <span class="text-[10px] bg-teal-900/80 text-teal-200 px-2.5 py-0.5 rounded-full font-bold border border-teal-700" id="cpFocusTag">Clinical Target</span>
-        </div>
-
-        <div class="grid grid-cols-4 gap-1.5 text-center pt-1">
-          <div class="bg-white/10 p-2 rounded-xl border border-white/5">
-            <div class="text-[8px] text-teal-200 uppercase tracking-wider font-semibold">Calories</div>
-            <div class="text-xs font-black text-amber-300 mt-0.5" id="cpConsumedCal">0 / 1300</div>
-          </div>
-          <div class="bg-white/10 p-2 rounded-xl border border-white/5">
-            <div class="text-[8px] text-teal-200 uppercase tracking-wider font-semibold">Protein</div>
-            <div class="text-xs font-black text-emerald-300 mt-0.5" id="cpProteinStats">0 / 77g</div>
-          </div>
-          <div class="bg-white/10 p-2 rounded-xl border border-white/5">
-            <div class="text-[8px] text-teal-200 uppercase tracking-wider font-semibold">Day GL</div>
-            <div class="text-xs font-black text-sky-300 mt-0.5" id="cpDailyGi">GL: 0</div>
-          </div>
-          <div class="bg-teal-500/20 p-2 rounded-xl border border-teal-400/30">
-            <div class="text-[8px] text-teal-300 uppercase tracking-wider font-bold">Score</div>
-            <div class="text-xs font-black text-white mt-0.5" id="cpScoreBadge">0%</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- WATER TRACKER -->
-      <div class="card-clean p-3.5 rounded-2xl space-y-2 border">
-        <div class="flex justify-between items-center text-xs">
-          <span class="font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-droplet text-sky-500 text-sm"></i> Water Target</span>
-          <span class="font-black text-sky-600 text-xs" id="cpWaterCount">0.00 / 3.0 Liters</span>
-        </div>
-        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-          <div id="cpWaterBar" class="bg-sky-500 h-full w-0 transition-all"></div>
-        </div>
-        <div class="grid grid-cols-4 gap-1.5 pt-1">
-          <button onclick="addWater(0.25)" class="py-1.5 bg-sky-50 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 250ml</button>
-          <button onclick="addWater(0.5)" class="py-1.5 bg-sky-50 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 500ml</button>
-          <button onclick="addWater(1.0)" class="py-1.5 bg-sky-50 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 1 Liter</button>
-          <button onclick="resetWater()" class="py-1.5 bg-slate-100 text-slate-600 rounded-xl text-[11px] font-bold">Reset 🔄</button>
-        </div>
-      </div>
-
-      <!-- 7-DAY WEEKLY STRIP -->
-      <div class="card-clean p-3 rounded-2xl border space-y-2">
-        <div class="flex justify-between items-center text-xs">
-          <span class="font-extrabold text-slate-800 flex items-center gap-1.5">
-            <i class="fa-regular fa-calendar-days text-teal-600"></i> આ અઠવાડિયાનું શેડ્યુલ (Weekly Menu)
-          </span>
-          <span class="text-[10px] text-teal-700 font-bold" id="cpCurrentViewingDate">આજનું મેનૂ</span>
-        </div>
-        <div class="flex gap-1.5 overflow-x-auto pb-1" id="cpWeekDaysStrip"></div>
-      </div>
-
-      <!-- DYNAMIC REGIONAL MEAL CARDS CONTAINER (WITH SWAP BUTTON) -->
-      <div class="space-y-3" id="cpTodayMealCards"></div>
-
-      <!-- EXTRA FOOD / CUSTOM DISH LOGGER -->
-      <div class="card-clean p-4 rounded-3xl border space-y-3 bg-amber-50/30 border-amber-200">
-        <div class="flex justify-between items-center">
-          <h3 class="font-extrabold text-slate-900 text-xs flex items-center gap-1.5">
-            <i class="fa-solid fa-utensils text-amber-600"></i> વધારાનું ભોજન ઉમેરો (Extra Food Log)
-          </h3>
-          <span class="text-[9px] bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full font-bold">કસ્ટમ ડાયેટ</span>
-        </div>
-        <p class="text-[11px] text-slate-500">મેનૂ સિવાય જો કાંઈ વધારાનું ખાધું હોય (દા.ત. ૧ રોટલી, દાળ, ફ્રૂટ્સ કે નાસ્તો) તો અહીં ઉમેરો:</p>
-        
-        <div class="grid grid-cols-3 gap-2 text-xs">
-          <div class="col-span-2">
-            <input type="text" id="inExtraFoodName" placeholder="વાનગીનું નામ (દા.ત. ૧ વાટકી મગ)" class="w-full p-2 bg-white border border-slate-300 rounded-xl">
-          </div>
-          <div>
-            <input type="number" id="inExtraFoodCal" placeholder="કેલરી (kcal)" class="w-full p-2 bg-white border border-slate-300 rounded-xl">
-          </div>
-        </div>
-
-        <div class="flex gap-2">
-          <button onclick="addCustomExtraFood()" class="flex-1 py-2 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl shadow-xs transition">
-            + વાનગી ઉમેરો & કેલરી ગણો
+          <p class="text-[11px] text-slate-600" id="cpLiveSessionDesc">તમારો સ્પેશિયલ ક્લાસ શરૂ થઈ ગયો છે. નીચે ક્લિક કરી સીધા જોડાઈ જાઓ:</p>
+          <button id="btnJoinLiveClass" onclick="joinLiveClass()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5 transition active:scale-95">
+            <i class="fa-solid fa-video"></i> લાઈવ ક્લાસમાં જોડાઓ 📲
           </button>
         </div>
 
-        <!-- Logged Extra Items List -->
-        <div id="cpExtraFoodsContainer" class="space-y-1.5 pt-1"></div>
-      </div>
+        <!-- FREE TRIAL USER UPGRADE CARD -->
+        <div id="cpFreeTrialVipBanner" class="hidden card-clean p-3.5 rounded-2xl border border-amber-200 bg-amber-50/60 flex items-center justify-between text-xs">
+          <div>
+            <div class="font-black text-amber-950 text-xs flex items-center gap-1">
+              <span>👑 લાઈવ યોગા & ગર્ભસંસ્કાર ક્લાસ</span>
+            </div>
+            <p class="text-[10px] text-amber-800 mt-0.5">આ લાઈવ સેશન્સ માત્ર VIP સભ્યો માટે ઉપલબ્ધ છે.</p>
+          </div>
+          <button onclick="requestVipUpgrade()" class="px-2.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-900 font-black text-[10px] rounded-xl shadow-xs">
+            VIP મેળવો 📲
+          </button>
+        </div>
 
-      <!-- SUBMIT DAILY REPORT -->
-      <button onclick="submitClientReport()" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md">
-        <i class="fa-brands fa-whatsapp text-lg"></i> આજના દિવસનો રિપોર્ટ કોચને મોકલો 📲
-      </button>
+        <!-- MISSED SESSION RECORDING CARD -->
+        <div id="cpRecordingBox" class="card-clean p-3 rounded-2xl border border-teal-200 bg-teal-50/50 flex items-center justify-between text-xs">
+          <div>
+            <div class="font-extrabold text-teal-950 text-xs flex items-center gap-1">
+              <i class="fa-solid fa-play-circle text-teal-600"></i> ક્લાસ રેકોર્ડિંગ લાઈબ્રેરી
+            </div>
+            <p class="text-[10px] text-teal-800 mt-0.5">મિસ થયેલ યોગા/ગર્ભસંસ્કાર સેશનનો વિડીયો અહીંથી જુઓ.</p>
+          </div>
+          <button onclick="watchClassRecording()" class="px-3 py-1.5 bg-teal-700 hover:bg-teal-800 text-white font-extrabold text-[10px] rounded-xl shadow-xs">
+            વિડીયો જુઓ 🎥
+          </button>
+        </div>
+
+        <!-- MACRO TARGET CARD -->
+        <div class="card-clean p-4 rounded-3xl space-y-3 bg-gradient-to-br from-slate-900 to-teal-950 text-white shadow-md border border-teal-800">
+          <div class="flex justify-between items-center">
+            <h3 class="font-extrabold text-xs flex items-center gap-1.5 text-teal-300"><i class="fa-solid fa-bolt text-amber-400"></i> Personalized Macro Targets</h3>
+            <span class="text-[10px] bg-teal-900/80 text-teal-200 px-2.5 py-0.5 rounded-full font-bold border border-teal-700" id="cpFocusTag">Clinical Target</span>
+          </div>
+
+          <div class="grid grid-cols-4 gap-1.5 text-center pt-1">
+            <div class="bg-white/10 p-2 rounded-xl border border-white/5">
+              <div class="text-[8px] text-teal-200 uppercase tracking-wider font-semibold">Calories</div>
+              <div class="text-xs font-black text-amber-300 mt-0.5" id="cpConsumedCal">0 / 1300</div>
+            </div>
+            <div class="bg-white/10 p-2 rounded-xl border border-white/5">
+              <div class="text-[8px] text-teal-200 uppercase tracking-wider font-semibold">Protein</div>
+              <div class="text-xs font-black text-emerald-300 mt-0.5" id="cpProteinStats">0 / 77g</div>
+            </div>
+            <div class="bg-white/10 p-2 rounded-xl border border-white/5">
+              <div class="text-[8px] text-teal-200 uppercase tracking-wider font-semibold">Day GL</div>
+              <div class="text-xs font-black text-sky-300 mt-0.5" id="cpDailyGi">GL: 0</div>
+            </div>
+            <div class="bg-teal-500/20 p-2 rounded-xl border border-teal-400/30">
+              <div class="text-[8px] text-teal-300 uppercase tracking-wider font-bold">Score</div>
+              <div class="text-xs font-black text-white mt-0.5" id="cpScoreBadge">0%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- WATER TRACKER -->
+        <div class="card-clean p-3.5 rounded-2xl space-y-2 border">
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-droplet text-sky-500 text-sm"></i> Water Target</span>
+            <span class="font-black text-sky-600 text-xs" id="cpWaterCount">0.00 / 3.0 Liters</span>
+          </div>
+          <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+            <div id="cpWaterBar" class="bg-sky-500 h-full w-0 transition-all"></div>
+          </div>
+          <div class="grid grid-cols-4 gap-1.5 pt-1">
+            <button onclick="addWater(0.25)" class="py-1.5 bg-sky-50 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 250ml</button>
+            <button onclick="addWater(0.5)" class="py-1.5 bg-sky-50 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 500ml</button>
+            <button onclick="addWater(1.0)" class="py-1.5 bg-sky-50 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 1 Liter</button>
+            <button onclick="resetWater()" class="py-1.5 bg-slate-100 text-slate-600 rounded-xl text-[11px] font-bold">Reset 🔄</button>
+          </div>
+        </div>
+
+        <!-- WEEKLY CALENDAR STRIP (ORIGINAL RESTORED) -->
+        <div class="card-clean p-3.5 rounded-3xl border space-y-2.5">
+          <div class="flex justify-between items-center text-xs">
+            <div class="flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-xl font-bold text-slate-700">
+              <button onclick="shiftWeek(-7)"><i class="fa-solid fa-chevron-left text-[10px]"></i></button>
+              <span class="px-1 text-[11px]">This Week</span>
+              <button onclick="shiftWeek(7)"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>
+            </div>
+            <button onclick="selectToday()" class="px-2.5 py-1 bg-teal-50 text-teal-800 border border-teal-200 rounded-xl text-[11px] font-bold">
+              Today (આજે) 📍
+            </button>
+          </div>
+          
+          <div class="grid grid-cols-7 gap-1 text-center" id="cpWeekDaysStrip"></div>
+
+          <div class="flex justify-between items-center pt-1 border-t border-slate-100 text-[11px]">
+            <span class="font-bold text-slate-800" id="cpSelectedDateText">Thursday, 29 Oct 2026</span>
+            <span class="font-bold text-teal-700 text-[10px]" id="cpRoutineLoggedBadge">Routine Logged</span>
+          </div>
+        </div>
+
+        <!-- DYNAMIC DETAILED MEAL CARDS CONTAINER (ORIGINAL RESTORED) -->
+        <div class="space-y-3" id="cpTodayMealCards"></div>
+
+        <!-- DAILY VITALS & BLOOD SUGAR (ORIGINAL RESTORED) -->
+        <div class="card-clean p-4 rounded-3xl border space-y-3">
+          <div class="flex items-center gap-2 text-teal-800 font-extrabold text-xs">
+            <i class="fa-solid fa-notes-medical text-sm"></i> Daily Vitals & Blood Sugar
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div>
+              <label class="font-bold text-slate-600 block mb-1 text-[11px]">Daily Steps Walked</label>
+              <input type="number" id="vitalSteps" placeholder="e.g. 8000" onchange="saveVitalsData()" class="w-full p-2 bg-slate-50 border rounded-xl font-bold text-slate-800">
+            </div>
+            <div>
+              <label class="font-bold text-slate-600 block mb-1 text-[11px]">Workout (Mins)</label>
+              <input type="number" id="vitalWorkout" placeholder="e.g. 30" onchange="saveVitalsData()" class="w-full p-2 bg-slate-50 border rounded-xl font-bold text-slate-800">
+            </div>
+          </div>
+          <div>
+            <textarea id="vitalNotes" rows="2" placeholder="શરીરમાં અનુભવાતી હળવાશ, નોંધ કે વિગત..." onchange="saveVitalsData()" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold text-slate-800"></textarea>
+          </div>
+        </div>
+
+        <!-- SUBMIT DAILY REPORT -->
+        <button onclick="submitClientReport()" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md">
+          <i class="fa-brands fa-whatsapp text-lg"></i> આજના દિવસનો રિપોર્ટ કોચને મોકલો 📲
+        </button>
+
+      </section>
+
+      <!-- TAB 2: UPCOMING MENU & REPORTS (ORIGINAL RESTORED) -->
+      <section id="portalTabUpcoming" class="hidden space-y-3">
+        <div class="p-3 bg-teal-50/60 border border-teal-200 rounded-2xl text-xs text-teal-900 font-semibold flex items-center gap-2">
+          <i class="fa-solid fa-calendar-check text-teal-600 text-base"></i>
+          <span>આગામી દિવસોનું સંપૂર્ણ ડાયેટ રોટેશન ચાર્ટ નીચે મુજબ છે:</span>
+        </div>
+        <div id="upcomingCardsList" class="space-y-3"></div>
+      </section>
 
     </main>
   </div>
@@ -396,6 +424,7 @@
     let currentClient = null;
     let currentLiveMeetingUrl = "";
     let currentRecordingUrl = "";
+    let weekOffsetDays = 0;
 
     function getTodayDateKey() {
       const now = new Date();
@@ -490,7 +519,7 @@
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         compliance: {},
         swaps: {},
-        extraFoods: {},
+        vitals: {},
         services: []
       };
 
@@ -570,103 +599,81 @@
       return (Number(currentClient.trialDays) >= 900);
     }
 
+    function contactSupport() {
+      const msg = `નમસ્તે કોચ! મને Metabolic Pro એપ્લિકેશન વાપરવામાં મદદની જરૂર છે.\nક્લાયન્ટ: *${currentClient.name}*`;
+      window.open(`https://api.whatsapp.com/send?phone=${COACH_PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function switchPortalTab(tab) {
+      if (tab === 'today') {
+        document.getElementById('portalTabToday').classList.remove('hidden');
+        document.getElementById('portalTabUpcoming').classList.add('hidden');
+        document.getElementById('tabBtnToday').className = "py-2.5 rounded-2xl main-tab-active flex items-center justify-center gap-1.5";
+        document.getElementById('tabBtnUpcoming').className = "py-2.5 rounded-2xl main-tab-inactive flex items-center justify-center gap-1.5";
+      } else {
+        document.getElementById('portalTabToday').classList.add('hidden');
+        document.getElementById('portalTabUpcoming').classList.remove('hidden');
+        document.getElementById('tabBtnUpcoming').className = "py-2.5 rounded-2xl main-tab-active flex items-center justify-center gap-1.5";
+        document.getElementById('tabBtnToday').className = "py-2.5 rounded-2xl main-tab-inactive flex items-center justify-center gap-1.5";
+        renderUpcomingCards();
+      }
+    }
+
     // ==========================================
-    // 🌍 MULTI-REGIONAL CLINICAL CUISINE DATABASE
-    // (ગુજરાતી, પંજાબી, સાઉથ ઇન્ડિયન અને જૈન)
+    // 🌍 MULTI-MEAL TIME CLINICAL DATABASE (4 MEALS)
     // ==========================================
     const regionalMealDatabase = {
       gujarati: [
         {
+          dtox: {
+            time: "સવારે ખાલી પેટે", title: "૧. મોર્નિંગ ડિટોક્સ ઇન્ફ્યુઝન",
+            desc: "દૂધીનો રસ + આદું + લીંબુ + ફુદીનો", portion: "૨૫૦ ml",
+            cal: 42, pro: 1.4, gl: 1,
+            alt: { title: "મેથી-અજમો નવશેકું પાણી", desc: "આખી રાત પલાળેલી મેથી અને અજમો", portion: "૨૫૦ ml", cal: 35, pro: 1.1, gl: 1 }
+          },
           b: { 
-            title: "ફણગાવેલા મગ-મઠ ચાટ + લીંબુ & કાકડી", desc: "હાઈ ફાઈબર, એન્ઝાઇમ રીચ કાઠિયાવાડી સવાર.", cal: 220, pro: 14, gl: 8,
-            alt: { title: "પનીર-કાકડી સ્ટીક્સ + અળસી મુખવાસ", desc: "ઓમેગા-૩ અને હાઈ પ્રોટીન બ્રેકફાસ્ટ.", cal: 250, pro: 18, gl: 4 }
+            time: "સવારનો નાસ્તો (08:30 AM)", title: "૨. પૌષ્ટિક બ્રેકફાસ્ટ બાઉલ",
+            desc: "ફણગાવેલા મગ-મઠ ચાટ + લીંબુ & કાકડી", portion: "૧ મોટો બાઉલ",
+            cal: 220, pro: 14, gl: 8,
+            alt: { title: "પનીર-કાકડી સ્ટીક્સ + અળસી મુખવાસ", desc: "ઓમેગા-૩ અને હાઈ પ્રોટીન પનીર", portion: "૧૦૦g પનીર", cal: 250, pro: 18, gl: 4 }
           },
           l: { 
-            title: "૧ જુવારનો રોટલો + ભીંડાનું શાક + કાચું સલાડ + છાશ", desc: "દેશી જુવાર લો-જીઆઈ અને પાચક છાશ.", cal: 420, pro: 16, gl: 18,
-            alt: { title: "દૂધી-ચણા દાળ શાક + ૧ રોટલો + સલાડ", desc: "લિવર સેલ્સ ડીટોક્સ માટે સોફ્ટ ખોરાક.", cal: 410, pro: 15, gl: 16 }
+            time: "બપોરનું ભોજન (01:00 PM)", title: "૩. મેટાબોલિક કાઠિયાવાડી થાળી",
+            desc: "સલાડ પ્લેટ + ૧ જુવારનો રોટલો + પાલક પનીર + મોળી છાશ", portion: "૧ રોટલો + શાક + છાશ",
+            cal: 420, pro: 16, gl: 18,
+            alt: { title: "ભીંડાનું શાક + ૧ બાજરી રોટલો + સલાડ + છાશ", desc: "આયર્ન અને ફાઈબરથી ભરપૂર", portion: "૧ રોટલો + શાક", cal: 410, pro: 15, gl: 19 }
           },
           d: { 
-            title: "દૂધી-ટામેટાનો પૌષ્ટિક સૂપ + શેકેલું પનીર (૧૦૦g)", desc: "લાઈટ ડિનર, ફેટી લિવર ડિટોક્સ.", cal: 240, pro: 18, gl: 6,
-            alt: { title: "મિક્સ વેજ પનીર શાક (ઓછા તેલમાં)", desc: "ઝીરો ગ્લાયસેમિક લોડ.", cal: 260, pro: 19, gl: 5 }
+            time: "રાત્રિ ભોજન (07:30 PM)", title: "૪. લાઈટ લિવર ડિટોક્સ ડિનર",
+            desc: "દૂધી-ટામેટાનો પૌષ્ટિક સૂપ + શેકેલું પનીર (૧૦૦g)", portion: "૧ બાઉલ સૂપ + પનીર",
+            cal: 240, pro: 18, gl: 6,
+            alt: { title: "મિક્સ વેજ પનીર સ્ટીર-ફ્રાય (ઓછા તેલમાં)", desc: "ઝીરો ગ્લાયસેમિક લોડ", portion: "૧૫૦g", cal: 260, pro: 19, gl: 5 }
           }
         },
         {
+          dtox: {
+            time: "સવારે ખાલી પેટે", title: "૧. આમળા & જીરા અર્ક",
+            desc: "આમળા રસ + જીરાવાળું નવશેકું પાણી", portion: "૨૦૦ ml",
+            cal: 38, pro: 0.8, gl: 1,
+            alt: { title: "તુલસી-હળદર ડિટોક્સ ટી", desc: "ગરમ પાણીમાં લીલી હળદર અને તુલસી", portion: "૨૦૦ ml", cal: 25, pro: 0.5, gl: 0 }
+          },
           b: { 
-            title: "મગ દાળ ચીલા (પુડલો) + લીલી ચટણી + ૧ ગ્લાસ છાશ", desc: "કાર્બ-ફ્રી પ્રોટીન પાવર પુડલો.", cal: 240, pro: 15, gl: 9,
-            alt: { title: "બાફેલા દેશી ચણા ચાટ + કાકડી-ટમેટા", desc: "ધીમું પાચન અને સ્ટેબલ શુગર.", cal: 230, pro: 13, gl: 10 }
+            time: "સવારનો નાસ્તો (08:30 AM)", title: "૨. પ્રોટીન ચીલા નાસ્તો",
+            desc: "મગની દાળનો પોષક ચીલો + તાજું પનીર (૨ નંગ ચીલા + ૫૦g પનીર)", portion: "૨ નંગ + પનીર",
+            cal: 240, pro: 15, gl: 9,
+            alt: { title: "બાફેલા દેશી ચણા ચાટ + કાકડી-ટમેટા", desc: "ધીમું પાચન અને સ્ટેબલ શુગર", portion: "૧ બાઉલ", cal: 230, pro: 13, gl: 10 }
           },
           l: { 
-            title: "૧ બાજરીનો રોટલો + રીંગણનો ઓળો (ઓછા તેલ) + સલાડ + છાશ", desc: "કાઠિયાવાડી પાવર મીલ, આયર્નથી ભરપૂર.", cal: 440, pro: 15, gl: 20,
-            alt: { title: "મેથી-પાલકનું શાક + ૧ જુવાર રોટલો + છાશ", desc: "ઇન્સ્યુલિન સેન્સિટિવિટી વધારે છે.", cal: 420, pro: 16, gl: 17 }
+            time: "બપોરનું ભોજન (01:00 PM)", title: "૩. હાઈ-ફાઈબર દેશી લંચ",
+            desc: "કાકડી સલાડ + ૧ બાજરીનો રોટલો + રીંગણનો ઓળો + છાશ", portion: "૧ રોટલો + ઓળો",
+            cal: 440, pro: 15, gl: 20,
+            alt: { title: "દૂધી-ચણા દાળ શાક + ૧ જુવાર રોટલો + છાશ", desc: "સોફ્ટ સુપાચ્ય લંચ", portion: "૧ રોટલો + શાક", cal: 410, pro: 15, gl: 16 }
           },
           d: { 
-            title: "મિક્સ દાળ-શાકભાજીનો સૂપ + શેકેલા મખાના", desc: "લિવર સેલ્સ રીપેર અને ઊંઘ દરમિયાન ડીટોક્સ.", cal: 230, pro: 13, gl: 7,
-            alt: { title: "પાલક-દૂધીનો ગ્રીન ડીટોક્સ સૂપ", desc: "એસિડિટી અને સોજા દૂર કરે છે.", cal: 210, pro: 10, gl: 4 }
-          }
-        }
-      ],
-
-      punjabi: [
-        {
-          b: { 
-            title: "પનીર ભુરજી (ઓછા ઘીમાં) + કાકડી-ટમેટા સલાડ", desc: "હાઈ પ્રોટીન પંજાબી શુગર-ફ્રી નાસ્તો.", cal: 260, pro: 20, gl: 4,
-            alt: { title: "બેસન ચીલા + મોળી દહીં", desc: "કોમ્પ્લેક્સ કાર્બ્સ અને પ્રોટીન.", cal: 240, pro: 14, gl: 9 }
-          },
-          l: { 
-            title: "રાજમા મસાલા (લાઇટ ગ્રેવી) + ૧ મલ્ટીગ્રેન રોટી + સલાડ બાઉલ", desc: "પંજાબી ફેવરિટ પણ લો-ગ્લાયસેમિક રીતે બનાવેલ.", cal: 440, pro: 19, gl: 22,
-            alt: { title: "દાળ મખની લાઈટ (વગર ક્રીમ) + ૧ રોટી + રાયતું", desc: "મેટાબોલિક હેલ્ધી ટ્વિસ્ટ.", cal: 420, pro: 17, gl: 19 }
-          },
-          d: { 
-            title: "પાલક પનીર (હોમમેડ લાઈટ) + સલાડ", desc: "ઝીરો કાર્બ્સ, નાઈટ શુગર સ્પાઇક ફ્રી.", cal: 270, pro: 19, gl: 5,
-            alt: { title: "તંદૂરી પનીર ટિક્કા + મિક્સ વેજ સૂપ", desc: "ટેસ્ટી એન્ડ ક્લિનિકલ ડિનર.", cal: 250, pro: 18, gl: 5 }
-          }
-        },
-        {
-          b: { 
-            title: "સ્ટીમ સોયા ચંક્સ ચાટ + ચાટ મસાલા & લીંબુ", desc: "મેગા પ્રોટીન શાકાહારી બ્રેકફાસ્ટ.", cal: 230, pro: 22, gl: 5,
-            alt: { title: "મગ દાળ પનીર ચીલા + ફુદીના ચટણી", desc: "લાઈટ અને સ્વાદિષ્ટ.", cal: 250, pro: 16, gl: 8 }
-          },
-          l: { 
-            title: "કાબુલી ચણા (છોલે લાઈટ) + ૧ મિસ રોટી + કાકડી-ડુંગળી", desc: "ધીમું પાચન અને દિવસભર સ્થિર એનર્જી.", cal: 450, pro: 18, gl: 21,
-            alt: { title: "મિક્સ વેજ પનીર કરી + ૧ રોટી + છાશ", desc: "હાઈ ફાઈબર પંજાબી થાળી.", cal: 430, pro: 17, gl: 18 }
-          },
-          d: { 
-            title: "મિક્સ વેજીટેબલ ક્લિયર સૂપ + ૧૦૦g સોયા/પનીર", desc: "લિવર ડિટોક્સ રાત્રિ ભોજન.", cal: 230, pro: 18, gl: 4,
-            alt: { title: "મશરૂમ મટર સૂપ + કાચું સલાડ", desc: "વિટામિન-ડી અને એન્ટી-ઓક્સિડન્ટ્સ.", cal: 210, pro: 12, gl: 6 }
-          }
-        }
-      ],
-
-      south_indian: [
-        {
-          b: { 
-            title: "ઓટ્સ વેજિટેબલ ઈડલી (૨ નંગ) + સાંભાર (વગર બટેટા)", desc: "ઓટ્સ ફાઈબર શુગર અને કોલેસ્ટ્રોલ બંને ઘટાડે છે.", cal: 210, pro: 10, gl: 11,
-            alt: { title: "પેસરત્તુ (આખા મગનો ઢોંસા) + ટામેટા ચટણી", desc: "ઓરિજિનલ આંધ્ર હાઈ-પ્રોટીન નાસ્તો.", cal: 230, pro: 14, gl: 9 }
-          },
-          l: { 
-            title: "૧ રાગી રોટલો + સાઉથ ઇન્ડિયન કુટુ (દાળ-શાક) + કાકડી કોસંબરી", desc: "રાગીથી ભરપૂર કેલ્શિયમ અને ફાઈબર.", cal: 420, pro: 15, gl: 18,
-            alt: { title: "બ્રાઉન રાઇસ (અડધી વાટકી) + સાંભાર + કોબી પોરિયાલ", desc: "પરફેક્ટ સાઉથ ઇન્ડિયન બેલેન્સ.", cal: 410, pro: 14, gl: 20 }
-          },
-          d: { 
-            title: "ટામેટા-મરીનું રસમ + શેકેલું પનીર / ટોફુ", desc: "પાચન વધારતું ઔષધીય રસમ અને પ્રોટીન.", cal: 220, pro: 16, gl: 5,
-            alt: { title: "વેજિટેબલ કુરમા લાઈટ + કાકડી સલાડ", desc: "શાંત ઊંઘ માટે હળવો આહાર.", cal: 230, pro: 12, gl: 7 }
-          }
-        }
-      ],
-
-      jain: [
-        {
-          b: { 
-            title: "કાકડી-પનીર સ્ટીક્સ + અળસી-તલ મુખવાસ", desc: "જમીનકંદ મુક્ત શુદ્ધ જૈન મેટાબોલિક બ્રેકફાસ્ટ.", cal: 240, pro: 18, gl: 3,
-            alt: { title: "ફણગાવેલા મગ ચાટ (વગર કાંદા/લસણ) + લીંબુ", desc: "પાચક અને સાત્વિક શક્તિ.", cal: 220, pro: 14, gl: 7 }
-          },
-          l: { 
-            title: "૧ જુવારનો રોટલો + ગિલોડાનું શાક + કાકડી સલાડ + મોળી છાશ", desc: "જૈન વિધિ અનુસાર શુદ્ધ સાત્વિક આહાર.", cal: 410, pro: 15, gl: 17,
-            alt: { title: "તુવેર દાળ + ૧ રાગી રોટલો + કાકડી રાયતું", desc: "હાડકાંની મજબૂતી અને શુગર બેલેન્સ.", cal: 420, pro: 16, gl: 18 }
-          },
-          d: { 
-            title: "દૂધી-ટામેટાનો પૌષ્ટિક સૂપ + શેકેલું પનીર", desc: "ચોવિહાર પછી લાઈટ અને સોફ્ટ પાચન.", cal: 230, pro: 17, gl: 5,
-            alt: { title: "મગની ફોતરાવાળી દાળનું પાતળું પાણી + શેકેલા મખાના", desc: "લિવર સેલ્સ રીપેર ડિનર.", cal: 200, pro: 12, gl: 4 }
+            time: "રાત્રિ ભોજન (07:30 PM)", title: "૪. મગનું ઓસામણ & સૌતે વેજીસ",
+            desc: "મગનું ઓસામણ/સૂપ + સૌતે શાકભાજી + પનીર", portion: "૧ બાઉલ સૂપ + શાક",
+            cal: 230, pro: 15, gl: 6,
+            alt: { title: "પાલક-દૂધીનો ગ્રીન ડીટોક્સ સૂપ", desc: "એસિડિટી અને સોજા મુક્તિ", portion: "૧ બાઉલ", cal: 210, pro: 10, gl: 4 }
           }
         }
       ]
@@ -690,37 +697,61 @@
       return { targetCal, targetPro };
     }
 
+    // BUILD 7-DAY WEEKLY CALENDAR STRIP
     function renderWeeklyDayStrip() {
       const strip = document.getElementById('cpWeekDaysStrip');
       strip.innerHTML = '';
 
-      const today = new Date();
-      const gujDays = ['રવિ', 'સોમ', 'મંગળ', 'બુધ', 'ગુરુ', 'શુક્ર', 'શનિ'];
+      const baseDate = new Date();
+      baseDate.setDate(baseDate.getDate() + weekOffsetDays);
 
-      for (let i = -3; i <= 3; i++) {
-        const d = new Date();
-        d.setDate(today.getDate() + i);
+      const dayOfWeek = baseDate.getDay(); // 0 is Sun, 1 is Mon...
+      // Shift to Monday
+      const monday = new Date(baseDate);
+      const diffToMon = (dayOfWeek === 0 ? -6 : 1) - dayOfWeek;
+      monday.setDate(baseDate.getDate() + diffToMon);
+
+      const dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
         const dKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         const isSelected = (dKey === selectedDateKey);
 
         strip.innerHTML += `
-          <button onclick="selectDayFromStrip('${dKey}')" class="px-3 py-2 rounded-2xl border text-center whitespace-nowrap transition flex flex-col items-center min-w-[58px] ${isSelected ? 'day-pill-active shadow-sm' : 'bg-slate-50 text-slate-700 border-slate-200'}">
-            <span class="text-[9px] uppercase font-bold opacity-80">${gujDays[d.getDay()]}</span>
+          <button onclick="selectDayFromStrip('${dKey}')" class="p-2 rounded-2xl border text-center transition flex flex-col items-center justify-center ${isSelected ? 'day-pill-active shadow-sm' : 'bg-slate-50 text-slate-700 border-slate-200'}">
+            <span class="text-[9px] uppercase font-bold opacity-80">${dayNames[i]}</span>
             <span class="text-xs font-black mt-0.5">${d.getDate()}</span>
           </button>
         `;
       }
 
-      document.getElementById('cpCurrentViewingDate').innerText = (selectedDateKey === getTodayDateKey()) 
-        ? "આજનું મેનૂ" 
-        : `તારીખ: ${selectedDateKey}`;
+      const selD = new Date(selectedDateKey);
+      const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+      document.getElementById('cpSelectedDateText').innerText = selD.toLocaleDateString('gu-IN', options);
+    }
+
+    function shiftWeek(days) {
+      weekOffsetDays += days;
+      renderWeeklyDayStrip();
+    }
+
+    function selectToday() {
+      weekOffsetDays = 0;
+      selectedDateKey = getTodayDateKey();
+      renderWeeklyDayStrip();
+      renderTodayMealCards();
+      loadVitalsData();
+      updateMacroDisplay();
+      updateWaterDisplay();
     }
 
     function selectDayFromStrip(dateKey) {
       selectedDateKey = dateKey;
       renderWeeklyDayStrip();
       renderTodayMealCards();
-      renderExtraFoodsList();
+      loadVitalsData();
       updateMacroDisplay();
       updateWaterDisplay();
     }
@@ -734,13 +765,7 @@
       document.getElementById('cpClientTitle').innerText = currentClient.name;
       document.getElementById('cpClientSub').innerText = (currentClient.conditions || []).join(' • ') || 'Metabolic Plan';
       
-      // Show cuisine badge
-      const cuisineMap = {
-        gujarati: '🌱 ગુજરાતી',
-        punjabi: '🥘 પંજાબી',
-        south_indian: '🥥 સાઉથ ઇન્ડિયન',
-        jain: '🙏 જૈન ડાયેટ'
-      };
+      const cuisineMap = { gujarati: '🌱 ગુજરાતી', punjabi: '🥘 પંજાબી', south_indian: '🥥 સાઉથ ઇન્ડિયન', jain: '🙏 જૈન ડાયેટ' };
       document.getElementById('cpCuisineBadge').innerText = cuisineMap[currentClient.cuisine] || '🌱 ગુજરાતી';
 
       const badge = document.getElementById('cpStatusBadge');
@@ -755,7 +780,7 @@
       checkVipAndLiveSessionAccess();
       renderWeeklyDayStrip();
       renderTodayMealCards();
-      renderExtraFoodsList();
+      loadVitalsData();
       updateMacroDisplay();
       updateWaterDisplay();
     }
@@ -825,56 +850,60 @@
 
       const isSwapped = currentClient.swaps?.[selectedDateKey]?.[mealKey];
       if (isSwapped && baseDay[mealKey].alt) {
-        return { ...baseDay[mealKey].alt, isSwapped: true };
+        return { ...baseDay[mealKey].alt, isSwapped: true, time: baseDay[mealKey].time };
       }
       return { ...baseDay[mealKey], isSwapped: false };
     }
 
+    // RENDER MEAL CARDS (WITH ORIGINAL CLOUD BADGES & DESIGN)
     function renderTodayMealCards() {
       const container = document.getElementById('cpTodayMealCards');
       container.innerHTML = '';
       const comp = (currentClient.compliance && currentClient.compliance[selectedDateKey]) || {};
 
-      const meals = [
-        { key: 'b', label: '🥗 સવારનો નાસ્તો (08:30 AM)' },
-        { key: 'l', label: '🍲 બપોરનું ભોજન (01:00 PM)' },
-        { key: 'd', label: '🥣 રાત્રિ ભોજન (07:30 PM)' }
-      ];
+      const mealKeys = ['dtox', 'b', 'l', 'd'];
 
-      meals.forEach(m => {
-        const mealData = getActiveMealData(m.key);
-        const val = comp[m.key] !== undefined ? comp[m.key] : null;
+      mealKeys.forEach(k => {
+        const mealData = getActiveMealData(k);
+        const val = comp[k] !== undefined ? comp[k] : null;
 
         container.innerHTML += `
-          <div class="card-clean p-4 rounded-3xl border space-y-2.5">
+          <div class="card-clean p-4 rounded-3xl border space-y-3">
             <div class="flex justify-between items-start">
               <div>
-                <div class="flex items-center gap-1.5">
-                  <span class="font-extrabold text-teal-800 text-xs">${m.label}</span>
-                  ${mealData.isSwapped ? '<span class="px-1.5 py-0.2 bg-teal-100 text-teal-800 text-[9px] font-bold rounded">વિકલ્પ પસંદ કરેલ</span>' : ''}
-                </div>
-                <h4 class="font-bold text-slate-900 text-xs mt-0.5">${mealData.title}</h4>
-                <p class="text-[11px] text-slate-500 mt-0.5 leading-relaxed">${mealData.desc}</p>
+                <span class="text-[11px] font-extrabold text-teal-800 block">${mealData.time}</span>
+                <h4 class="font-black text-slate-900 text-sm mt-0.5">${mealData.title}</h4>
               </div>
-              <span class="px-2 py-0.5 bg-slate-100 rounded-lg text-[10px] font-black text-slate-600 font-mono">${mealData.cal} kcal</span>
+              <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                <span class="px-2 py-0.5 bg-amber-50 border border-amber-200 text-amber-900 rounded-lg text-[10px] font-black">🔥 ${mealData.cal} kcal</span>
+                <span class="px-2 py-0.5 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-lg text-[10px] font-black">💪 ${mealData.pro}g Pro</span>
+              </div>
             </div>
 
-            <!-- SWAP BUTTON -->
-            <div class="flex justify-between items-center pt-1 border-t border-slate-100 text-xs">
-              <button onclick="toggleMealSwap('${m.key}')" class="text-[11px] text-teal-700 font-bold hover:text-teal-900 flex items-center gap-1">
-                <i class="fa-solid fa-arrows-rotate text-teal-600"></i> ${mealData.isSwapped ? 'ઓરિજિનલ મેનૂ પાછું લાવો' : 'બીજો વિકલ્પ પસંદ કરો (Swap)'}
-              </button>
+            <!-- Description & Portion Badge -->
+            <div class="p-2.5 bg-slate-50/70 rounded-2xl border border-slate-100 space-y-1 text-xs">
+              <div class="font-bold text-slate-800">${mealData.desc}</div>
+              <div class="flex justify-between items-center pt-1">
+                <span class="px-2 py-0.5 bg-white border rounded-lg text-[10px] font-bold text-teal-900">⚖️ પ્રમાણ (Portion): ${mealData.portion}</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-bold text-sky-700">📊 GL: ${mealData.gl}</span>
+                  <button onclick="toggleMealSwap('${k}')" class="px-2 py-0.5 bg-teal-50 border border-teal-200 text-teal-800 rounded-lg text-[10px] font-bold flex items-center gap-1">
+                    <i class="fa-solid fa-arrows-rotate text-[9px]"></i> Swap
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-1.5 pt-1">
-              <button onclick="setMealCompliance('${m.key}', 1.0)" class="py-2 rounded-xl text-xs flex items-center justify-center gap-1 transition ${val === 1.0 ? 'btn-done-active' : 'btn-idle'}">
-                <i class="fa-solid fa-check"></i> ૧૦૦% લીધું
+            <!-- 100% લીધું, 50%, બાકી Buttons -->
+            <div class="grid grid-cols-3 gap-2 pt-1 text-xs">
+              <button onclick="setMealCompliance('${k}', 1.0)" class="py-2.5 rounded-xl font-bold flex items-center justify-center gap-1 transition ${val === 1.0 ? 'btn-done-active' : 'btn-idle'}">
+                <i class="fa-solid fa-check"></i> લીધું
               </button>
-              <button onclick="setMealCompliance('${m.key}', 0.5)" class="py-2 rounded-xl text-xs flex items-center justify-center gap-1 transition ${val === 0.5 ? 'btn-half-active' : 'btn-idle'}">
-                <i class="fa-solid fa-adjust"></i> ૫૦% અડધું
+              <button onclick="setMealCompliance('${k}', 0.5)" class="py-2.5 rounded-xl font-bold flex items-center justify-center gap-1 transition ${val === 0.5 ? 'btn-half-active' : 'btn-idle'}">
+                ⚡ 50%
               </button>
-              <button onclick="setMealCompliance('${m.key}', 0.0)" class="py-2 rounded-xl text-xs flex items-center justify-center gap-1 transition ${val === 0.0 ? 'btn-miss-active' : 'btn-idle'}">
-                <i class="fa-solid fa-xmark"></i> બાકી / ચૂક્યા
+              <button onclick="setMealCompliance('${k}', 0.0)" class="py-2.5 rounded-xl font-bold flex items-center justify-center gap-1 transition ${val === 0.0 ? 'btn-miss-active' : 'btn-idle'}">
+                <i class="fa-solid fa-xmark"></i> બાકી
               </button>
             </div>
           </div>
@@ -895,64 +924,63 @@
       });
     }
 
-    // --- CUSTOM EXTRA FOOD LOGGER ---
-    async function addCustomExtraFood() {
-      const name = document.getElementById('inExtraFoodName').value.trim();
-      const cal = Number(document.getElementById('inExtraFoodCal').value);
-
-      if (!name || isNaN(cal) || cal <= 0) return alert('વાનગીનું નામ અને સાચી કેલરી દાખલ કરો.');
-
-      if (!currentClient.extraFoods) currentClient.extraFoods = {};
-      if (!currentClient.extraFoods[selectedDateKey]) currentClient.extraFoods[selectedDateKey] = [];
-
-      const newItem = { id: Date.now(), name, cal };
-      currentClient.extraFoods[selectedDateKey].push(newItem);
-
-      document.getElementById('inExtraFoodName').value = '';
-      document.getElementById('inExtraFoodCal').value = '';
-
-      renderExtraFoodsList();
-      updateMacroDisplay();
-
-      await db.collection('clients').doc(currentClient.id).update({
-        [`extraFoods.${selectedDateKey}`]: currentClient.extraFoods[selectedDateKey]
-      });
-    }
-
-    async function removeExtraFood(itemId) {
-      if (!currentClient.extraFoods?.[selectedDateKey]) return;
-      currentClient.extraFoods[selectedDateKey] = currentClient.extraFoods[selectedDateKey].filter(x => x.id !== itemId);
-      renderExtraFoodsList();
-      updateMacroDisplay();
-
-      await db.collection('clients').doc(currentClient.id).update({
-        [`extraFoods.${selectedDateKey}`]: currentClient.extraFoods[selectedDateKey]
-      });
-    }
-
-    function renderExtraFoodsList() {
-      const c = document.getElementById('cpExtraFoodsContainer');
+    // RENDER TAB 2: UPCOMING MENU
+    function renderUpcomingCards() {
+      const c = document.getElementById('upcomingCardsList');
       c.innerHTML = '';
-      const list = currentClient.extraFoods?.[selectedDateKey] || [];
 
-      if (list.length === 0) {
-        c.innerHTML = `<span class="text-[10px] text-slate-400">આજે કોઈ વધારાની વાનગી ઉમેરેલી નથી.</span>`;
-        return;
-      }
+      const cuisine = currentClient.cuisine || 'gujarati';
+      const menuList = regionalMealDatabase[cuisine] || regionalMealDatabase['gujarati'];
 
-      list.forEach(item => {
+      const today = new Date();
+      const gujDays = ['રવિવાર', 'સોમવાર', 'મંગળવાર', 'બુધવાર', 'ગુરુવાર', 'શુક્રવાર', 'શનિવાર'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+      for (let i = 1; i <= 6; i++) {
+        const nextD = new Date();
+        nextD.setDate(today.getDate() + i);
+        const dayIdx = (getDayIndex() + i) % menuList.length;
+        const dayData = menuList[dayIdx];
+
+        const dayName = gujDays[nextD.getDay()];
+        const dateStr = `${nextD.getDate()} ${months[nextD.getMonth()]}`;
+
         c.innerHTML += `
-          <div class="p-2 bg-white rounded-xl border flex items-center justify-between text-xs">
-            <div>
-              <span class="font-bold text-slate-800">${esc(item.name)}</span>
-              <span class="text-[10px] text-amber-700 font-bold ml-1.5">+${item.cal} kcal</span>
+          <div class="card-clean p-4 rounded-3xl border space-y-2 text-xs">
+            <div class="flex justify-between items-center border-b pb-2">
+              <span class="font-extrabold text-slate-900">${i === 1 ? '🌟 આવતીકાલ (' + dayName + ', ' + dateStr + ')' : '🗓️ ' + dayName + ', ' + dateStr}</span>
+              ${i === 1 ? '<span class="px-2 py-0.5 bg-teal-100 text-teal-800 text-[9px] font-black rounded-full">Tomorrow</span>' : ''}
             </div>
-            <button onclick="removeExtraFood(${item.id})" class="text-rose-500 hover:text-rose-700 font-bold text-xs px-1.5">
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
+            <div class="space-y-1.5 text-slate-700">
+              <div>• <b>સવારે:</b> ${dayData.dtox.desc}</div>
+              <div>• <b>નાસ્તો:</b> ${dayData.b.desc}</div>
+              <div>• <b>બપોરે:</b> ${dayData.l.desc}</div>
+              <div>• <b>રાત્રે:</b> ${dayData.d.desc}</div>
+            </div>
           </div>
         `;
+      }
+    }
+
+    // DAILY VITALS SAVING & LOADING
+    async function saveVitalsData() {
+      const steps = document.getElementById('vitalSteps').value;
+      const workout = document.getElementById('vitalWorkout').value;
+      const notes = document.getElementById('vitalNotes').value;
+
+      if (!currentClient.vitals) currentClient.vitals = {};
+      currentClient.vitals[selectedDateKey] = { steps, workout, notes };
+
+      await db.collection('clients').doc(currentClient.id).update({
+        [`vitals.${selectedDateKey}`]: { steps, workout, notes }
       });
+    }
+
+    function loadVitalsData() {
+      const data = currentClient.vitals?.[selectedDateKey] || {};
+      document.getElementById('vitalSteps').value = data.steps || '';
+      document.getElementById('vitalWorkout').value = data.workout || '';
+      document.getElementById('vitalNotes').value = data.notes || '';
     }
 
     function updateMacroDisplay() {
@@ -963,7 +991,7 @@
       let totalMealsAnswered = 0;
       let scoreSum = 0;
 
-      ['b', 'l', 'd'].forEach(k => {
+      ['dtox', 'b', 'l', 'd'].forEach(k => {
         const mealData = getActiveMealData(k);
         const ratio = comp[k];
         if (ratio !== undefined && ratio !== null) {
@@ -973,12 +1001,6 @@
           eatenPro += Math.round(mealData.pro * ratio);
           eatenGl += Math.round(mealData.gl * ratio);
         }
-      });
-
-      // Add extra custom food calories
-      const extraList = currentClient.extraFoods?.[selectedDateKey] || [];
-      extraList.forEach(ex => {
-        eatenCal += (Number(ex.cal) || 0);
       });
 
       const score = totalMealsAnswered > 0 ? Math.round((scoreSum / totalMealsAnswered) * 100) : 0;
@@ -1047,24 +1069,18 @@
 
     function submitClientReport() {
       const comp = currentClient.compliance?.[selectedDateKey] || {};
+      const vit = currentClient.vitals?.[selectedDateKey] || {};
       const targets = calculateTargets();
 
       let eatenCal = 0, eatenPro = 0;
-      ['b', 'l', 'd'].forEach(k => {
+      ['dtox', 'b', 'l', 'd'].forEach(k => {
         const mealData = getActiveMealData(k);
         const ratio = comp[k] || 0;
         eatenCal += Math.round(mealData.cal * ratio);
         eatenPro += Math.round(mealData.pro * ratio);
       });
 
-      const extraList = currentClient.extraFoods?.[selectedDateKey] || [];
-      let extraSummary = "";
-      if (extraList.length > 0) {
-        extraSummary = `\n\n🍽️ *વધારાનું ભોજન:* ` + extraList.map(x => `${x.name} (+${x.cal}kcal)`).join(', ');
-        extraList.forEach(x => eatenCal += (Number(x.cal) || 0));
-      }
-
-      const msg = `🩺 *Metabolic Pro - ડેઈલી કમ્પ્લાયન્સ રિપોર્ટ*\n👤 દર્દી: *${currentClient.name}*\n📅 તારીખ: *${selectedDateKey}*\n\n🥗 નાસ્તો: *${comp.b === 1.0 ? '૧૦૦% લીધો' : comp.b === 0.5 ? '૫૦% લીધો' : 'બાકી'}*\n🍲 લંચ: *${comp.l === 1.0 ? '૧૦૦% લીધો' : comp.l === 0.5 ? '૫૦% લીધો' : 'બાકી'}*\n🥣 ડિનર: *${comp.d === 1.0 ? '૧૦૦% લીધો' : comp.d === 0.5 ? '૫૦% લીધો' : 'બાકી'}*${extraSummary}\n\n💧 પાણી: *${(comp.water || 0).toFixed(2)} / 3.0 L*\n🔥 કેલરી: *${eatenCal} / ${targets.targetCal} kcal*\n💪 પ્રોટીન: *${eatenPro} / ${targets.targetPro} g*`;
+      const msg = `🩺 *Metabolic Pro - ડેઈલી કમ્પ્લાયન્સ રિપોર્ટ*\n👤 દર્દી: *${currentClient.name}*\n📅 તારીખ: *${selectedDateKey}*\n\n🌿 ડિટોક્સ: *${comp.dtox === 1.0 ? '૧૦૦% લીધો' : comp.dtox === 0.5 ? '૫૦% લીધો' : 'બાકી'}*\n🥗 નાસ્તો: *${comp.b === 1.0 ? '૧૦૦% લીધો' : comp.b === 0.5 ? '૫૦% લીધો' : 'બાકી'}*\n🍲 લંચ: *${comp.l === 1.0 ? '૧૦૦% લીધો' : comp.l === 0.5 ? '૫૦% લીધો' : 'બાકી'}*\n🥣 ડિનર: *${comp.d === 1.0 ? '૧૦૦% લીધો' : comp.d === 0.5 ? '૫૦% લીધો' : 'બાકી'}*\n\n💧 પાણી: *${(comp.water || 0).toFixed(2)} / 3.0 L*\n🔥 કેલરી: *${eatenCal} / ${targets.targetCal} kcal*\n💪 પ્રોટીન: *${eatenPro} / ${targets.targetPro} g*\n🚶‍♂️ સ્ટેપ્સ: *${vit.steps || 0}* | વર્કઆઉટ: *${vit.workout || 0}m*`;
       window.open(`https://api.whatsapp.com/send?phone=${COACH_PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
     }
   </script>
