@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Metabolic Pro - Clinical Nutrition Engine</title>
 
-  <!-- PWA & Mobile Web App Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Metabolic Pro">
@@ -69,8 +68,8 @@
         </div>
 
         <div class="p-2.5 bg-teal-50/70 border border-teal-200 rounded-2xl space-y-1">
-          <label class="font-bold text-teal-900 block">તમારો મનપસંદ ૪-અંકનો સિક્રેટ PIN બનાવો *</label>
-          <input type="password" maxlength="4" id="regPin" placeholder="•••• (દા.ત. 1988 કે 5624)" class="w-full p-2 bg-white border border-teal-300 rounded-xl text-center text-sm font-black tracking-widest text-slate-900">
+          <label class="font-bold text-teal-900 block">૪-અંકનો સિક્રેટ PIN બનાવો *</label>
+          <input type="password" maxlength="4" id="regPin" placeholder="••••" class="w-full p-2 bg-white border border-teal-300 rounded-xl text-center text-sm font-black tracking-widest text-slate-900">
         </div>
 
         <div class="grid grid-cols-3 gap-2">
@@ -145,7 +144,7 @@
         <button onclick="handleClientRegister()" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-sm shadow-md mt-1">મારું ક્લિનિકલ પોર્ટલ શરૂ કરો 🚀</button>
       </div>
 
-      <!-- Login Form (Default View) -->
+      <!-- Login Form -->
       <div id="formLogin" class="space-y-3.5 text-xs">
         <div>
           <label class="font-bold text-slate-700">વોટ્સએપ મોબાઈલ નંબર</label>
@@ -220,22 +219,22 @@
 
     <main class="p-3.5 max-w-lg mx-auto space-y-3.5">
       
-      <!-- VIP EXCLUSIVE LIVE SESSIONS BOX -->
-      <div id="cpLiveSessionBox" class="hidden card-clean p-4 rounded-3xl space-y-2.5 border border-teal-200 bg-gradient-to-r from-teal-50 to-emerald-50">
+      <!-- VIP EXCLUSIVE LIVE SESSIONS BOX (Always visible for VIP members) -->
+      <div id="cpLiveSessionBox" class="card-clean p-4 rounded-3xl space-y-2.5 border border-teal-200 bg-gradient-to-r from-teal-50 to-emerald-50">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-rose-500 animate-ping"></span>
-            <h3 class="font-extrabold text-slate-900 text-xs" id="cpLiveSessionTitle">🔴 લાઈવ સેશન</h3>
+            <h3 class="font-extrabold text-slate-900 text-xs" id="cpLiveSessionTitle">🔴 લાઈવ યોગા & ગર્ભસંસ્કાર ક્લાસ</h3>
           </div>
           <span class="px-2 py-0.5 bg-rose-100 text-rose-800 font-black text-[9px] rounded-full">VIP LIVE NOW</span>
         </div>
         <p class="text-[11px] text-slate-600" id="cpLiveSessionDesc">તમારો સ્પેશિયલ ક્લાસ શરૂ થઈ ગયો છે. નીચે ક્લિક કરી સીધા જોડાઈ જાઓ:</p>
-        <button id="btnJoinLiveClass" onclick="joinLiveClass()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5">
+        <button id="btnJoinLiveClass" onclick="joinLiveClass()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5 transition active:scale-95">
           <i class="fa-solid fa-video"></i> લાઈવ ક્લાસમાં જોડાઓ 📲
         </button>
       </div>
 
-      <!-- FREE TRIAL USER UPGRADE CARD (IF NOT VIP) -->
+      <!-- FREE TRIAL USER UPGRADE CARD -->
       <div id="cpFreeTrialVipBanner" class="hidden card-clean p-3.5 rounded-2xl border border-amber-200 bg-amber-50/60 flex items-center justify-between text-xs">
         <div>
           <div class="font-black text-amber-950 text-xs flex items-center gap-1">
@@ -248,8 +247,8 @@
         </button>
       </div>
 
-      <!-- MISSED SESSION RECORDING CARD (VIP ONLY) -->
-      <div id="cpRecordingBox" class="hidden card-clean p-3 rounded-2xl border border-teal-200 bg-teal-50/50 flex items-center justify-between text-xs">
+      <!-- MISSED SESSION RECORDING CARD -->
+      <div id="cpRecordingBox" class="card-clean p-3 rounded-2xl border border-teal-200 bg-teal-50/50 flex items-center justify-between text-xs">
         <div>
           <div class="font-extrabold text-teal-950 text-xs flex items-center gap-1">
             <i class="fa-solid fa-play-circle text-teal-600"></i> ક્લાસ રેકોર્ડિંગ લાઈબ્રેરી
@@ -271,11 +270,11 @@
         <div class="grid grid-cols-4 gap-1.5 text-center pt-1">
           <div class="bg-white/10 p-2 rounded-xl border border-white/5">
             <div class="text-[8px] text-teal-200 uppercase tracking-wider font-semibold">Calories</div>
-            <div class="text-xs font-black text-amber-300 mt-0.5" id="cpConsumedCal">0 / 1200</div>
+            <div class="text-xs font-black text-amber-300 mt-0.5" id="cpConsumedCal">0 / 1300</div>
           </div>
           <div class="bg-white/10 p-2 rounded-xl border border-white/5">
             <div class="text-[8px] text-teal-200 uppercase tracking-wider font-semibold">Protein</div>
-            <div class="text-xs font-black text-emerald-300 mt-0.5" id="cpProteinStats">0 / 80g</div>
+            <div class="text-xs font-black text-emerald-300 mt-0.5" id="cpProteinStats">0 / 77g</div>
           </div>
           <div class="bg-white/10 p-2 rounded-xl border border-white/5">
             <div class="text-[8px] text-teal-200 uppercase tracking-wider font-semibold">Day GL</div>
@@ -292,7 +291,7 @@
       <div class="card-clean p-3.5 rounded-2xl space-y-2 border">
         <div class="flex justify-between items-center text-xs">
           <span class="font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-droplet text-sky-500 text-sm"></i> Water Target</span>
-          <span class="font-black text-sky-600 text-xs" id="cpWaterCount">0.0 / 3.0 Liters</span>
+          <span class="font-black text-sky-600 text-xs" id="cpWaterCount">0.00 / 3.0 Liters</span>
         </div>
         <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
           <div id="cpWaterBar" class="bg-sky-500 h-full w-0 transition-all"></div>
@@ -305,7 +304,7 @@
         </div>
       </div>
 
-      <!-- DYNAMIC 15-DAY MEAL CARDS CONTAINER WITH 100% / 50% / 0% BUTTONS -->
+      <!-- DYNAMIC 15-DAY MEAL CARDS CONTAINER -->
       <div class="space-y-3" id="cpTodayMealCards"></div>
 
       <!-- SUBMIT DAILY REPORT -->
@@ -442,7 +441,6 @@
       document.getElementById('modalActivationGate').classList.remove('hidden');
     }
 
-    // DUAL-LOOKUP LOGIN FUNCTION (FIXES "એકાઉન્ટ મળ્યું નથી" ERROR)
     async function handleClientLogin() {
       let rawInput = document.getElementById('loginId').value.trim().replace(/\D/g, '');
       const pin = document.getElementById('loginPin').value.trim();
@@ -511,22 +509,16 @@
       return (Number(currentClient.trialDays) >= 900);
     }
 
-    // 15-DAY ROTATIONAL CLINICAL MENU DATABASE
     const menuCycle15Days = [
-      {
-        b: { title: "ફણગાવેલા મગ-મઠ ચાટ + લીંબુ & કાકડી", desc: "હાઈ ફાઈબર, એન્ઝાઇમ રીચ અને બ્લડ શુગર સ્થિર રાખે છે.", cal: 220, pro: 14, gl: 8 },
-        l: { title: "૧ જુવારનો રોટલો + ભીંડાનું શાક + કાચું સલાડ + છાશ", desc: "પહેલાં સલાડ અને શાક લેવું, પછી જ રોટલો ખાવો.", cal: 420, pro: 16, gl: 18 },
-        d: { title: "દૂધી-ટામેટાનો પૌષ્ટિક સૂપ + શેકેલું પનીર (૧૦૦g)", desc: "લાઈટ ડિનર, ફેટી લિવર ડિટોક્સ અને રાત્રે મેટાબોલિઝમ સુધારે છે.", cal: 280, pro: 18, gl: 6 }
-      },
-      {
-        b: { title: "મગ દાળ ચીલા (પુડલો) + લીલી ચટણી + ૧ ગ્લાસ છાશ", desc: "કાર્બ-ફ્રી પ્રોટીન પાવર, સવારની ભૂખ શાંત રાખે છે.", cal: 240, pro: 15, gl: 9 },
-        l: { title: "૧ બાજરીનો રોટલો + મેથી-પાલકનું શાક + કાકડી-ટમેટા + છાશ", desc: "આયર્ન અને ફાઈબરથી ભરપૂર, ઇન્સ્યુલિન સેન્સિટિવિટી વધારે છે.", cal: 440, pro: 15, gl: 20 },
-        d: { title: "મિક્સ વેજ પનીર સ્ટીર-ફ્રાય (ઓછા તેલમાં)", desc: "ઝીરો ગ્લાયસેમિક લોડ, રાત્રે શુગર સ્પાઇક સંપૂર્ણ અટકાવે છે.", cal: 260, pro: 19, gl: 5 }
-      },
       {
         b: { title: "પનીર-કાકડી સ્ટીક્સ + અળસી (Flaxseed) મુખવાસ", desc: "ઓમેગા-૩ અને હાઈ પ્રોટીન બ્રેકફાસ્ટ.", cal: 250, pro: 18, gl: 4 },
         l: { title: "બાફેલા દેશી ચણાનું શાક + કાકડી સલાડ + ૧ જુવાર રોટલો", desc: "ધીમું પાચન અને દિવસભર સ્થિર ઉર્જા આપે છે.", cal: 450, pro: 18, gl: 22 },
-        d: { title: "મિક્સ દાળ-શાકભાજીનો સૂપ + કાકડી-ગાજર", desc: "લિવર સેલ્સ રીપેર અને ઊંઘ દરમિયાન ડીટોક્સિફિકેશન.", cal: 240, pro: 14, gl: 8 }
+        d: { title: "દૂધી-ટામેટાનો પૌષ્ટિક સૂપ + શેકેલું પનીર (૧૦૦g)", desc: "લાઈટ ડિનર, ફેટી લિવર ડિટોક્સ અને રાત્રે મેટાબોલિઝમ સુધારે છે.", cal: 240, pro: 18, gl: 6 }
+      },
+      {
+        b: { title: "ફણગાવેલા મગ-મઠ ચાટ + લીંબુ & કાકડી", desc: "હાઈ ફાઈબર, એન્ઝાઇમ રીચ અને બ્લડ શુગર સ્થિર રાખે છે.", cal: 220, pro: 14, gl: 8 },
+        l: { title: "૧ જુવારનો રોટલો + ભીંડાનું શાક + કાચું સલાડ + છાશ", desc: "પહેલાં સલાડ અને શાક લેવું, પછી જ રોટલો ખાવો.", cal: 420, pro: 16, gl: 18 },
+        d: { title: "મિક્સ વેજ પનીર સ્ટીર-ફ્રાય (ઓછા તેલમાં)", desc: "ઝીરો ગ્લાયસેમિક લોડ, રાત્રે શુગર સ્પાઇક સંપૂર્ણ અટકાવે છે.", cal: 260, pro: 19, gl: 5 }
       }
     ];
 
@@ -570,7 +562,6 @@
       updateWaterDisplay();
     }
 
-    // CHECK VIP LIVE PERMISSIONS & SHOW CARD
     async function checkVipAndLiveSessionAccess() {
       const isVip = isCurrentClientVip();
       const liveBox = document.getElementById('cpLiveSessionBox');
@@ -585,62 +576,34 @@
       }
 
       bannerBox.classList.add('hidden');
-      const services = currentClient.services && currentClient.services.length > 0 
-        ? currentClient.services 
-        : ['yoga', 'garbh', 'med'];
+      liveBox.classList.remove('hidden');
+      recBox.classList.remove('hidden');
 
       try {
         const doc = await db.collection('settings').doc('live_sessions').get();
         if (doc.exists) {
           const data = doc.data();
-          let eligibleUrl = "";
-          let title = "";
-
-          if (services.includes('yoga') && data.yoga) {
-            eligibleUrl = data.yoga;
-            title = "🧘‍♀️ મોર્નિંગ યોગા & પ્રાણાયામ (VIP Live)";
-          } else if (services.includes('garbh') && data.garbh) {
-            eligibleUrl = data.garbh;
-            title = "🌸 ગર્ભસંસ્કાર & પ્રિ-નેટલ લાઈવ ક્લાસ (VIP Live)";
-          } else if (services.includes('med') && data.med) {
-            eligibleUrl = data.med;
-            title = "🧠 ઈવનિંગ મેડિટેશન & ધ્યાન (VIP Live)";
-          }
-
-          if (eligibleUrl) {
-            currentLiveMeetingUrl = eligibleUrl;
-            document.getElementById('cpLiveSessionTitle').innerText = title;
-            liveBox.classList.remove('hidden');
-          } else {
-            liveBox.classList.add('hidden');
-          }
-
-          if (data.record) {
-            currentRecordingUrl = data.record;
-            recBox.classList.remove('hidden');
-          } else {
-            recBox.classList.add('hidden');
-          }
+          currentLiveMeetingUrl = data.yoga || data.garbh || data.med || "https://meet.google.com";
+          currentRecordingUrl = data.record || "";
         }
       } catch(e) { console.error("Live sessions error:", e); }
     }
 
     function joinLiveClass() {
       if (currentLiveMeetingUrl) window.open(currentLiveMeetingUrl, '_blank');
-      else alert('હાલ કોઈ લાઈવ સેશન ચાલુ નથી.');
+      else alert('હાલ કોઈ લાઈવ સેશન લિંક સેટ નથી.');
     }
 
     function watchClassRecording() {
       if (currentRecordingUrl) window.open(currentRecordingUrl, '_blank');
-      else alert('હાલ કોઈ રેકોર્ડિંગ ઉપલબ્ધ નથી.');
+      else alert('હાલ કોઈ રેકોર્ડિંગ લિંક સેટ નથી.');
     }
 
     function requestVipUpgrade() {
-      const msg = `નમસ્તે કોચ! હું Metabolic Pro માં VIP મેમ્બરશિપ મેળવવા અને લાઈવ યોગા/ગર્ભસંસ્કાર ક્લાસ શરૂ કરવા માંગુ છું. વિગત જણાવશો.`;
+      const msg = `નમસ્તે કોચ! હું Metabolic Pro માં VIP મેમ્બરશિપ મેળવવા અને લાઈવ યોગા/ગર્ભસંસ્કાર ક્લાસ શરૂ કરવા માંગુ છું.`;
       window.open(`https://api.whatsapp.com/send?phone=${COACH_PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
     }
 
-    // 100% / 50% / 0% BUTTONS RENDERING
     function renderTodayMealCards() {
       const container = document.getElementById('cpTodayMealCards');
       container.innerHTML = '';
@@ -667,7 +630,6 @@
               <span class="px-2 py-0.5 bg-slate-100 rounded-lg text-[10px] font-black text-slate-600 font-mono">${m.data.cal} kcal</span>
             </div>
 
-            <!-- 100% પૂર્ણ, 50% અડધું, 0% બાકી બટનો -->
             <div class="grid grid-cols-3 gap-1.5 pt-1">
               <button onclick="setMealCompliance('${m.key}', 1.0)" class="py-2 rounded-xl text-xs flex items-center justify-center gap-1 transition ${val === 1.0 ? 'btn-done-active' : 'btn-idle'}">
                 <i class="fa-solid fa-check"></i> ૧૦૦% લીધું
