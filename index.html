@@ -3,7 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Metabolic Pro - Master Admin CRM</title>
+  <title>Metabolic Pro - Clinical Nutrition Engine</title>
+
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Metabolic Pro">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0d9488">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2966/2966486.png">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -17,117 +26,309 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
-    .card-clean { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
-    .tab-active { background: #0f766e; color: #ffffff !important; font-weight: 700; }
+    .brand-gradient { background: linear-gradient(135deg, #0d9488, #0284c7); }
+    .card-clean {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    }
+    .btn-done-active { background-color: #059669; color: #ffffff; font-weight: 700; }
+    .btn-half-active { background-color: #d97706; color: #ffffff; font-weight: 700; }
+    .btn-miss-active { background-color: #e11d48; color: #ffffff; font-weight: 700; }
+    .btn-idle { background-color: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+    .tab-active-btn { background: #0f766e; color: #ffffff !important; font-weight: 800; box-shadow: 0 2px 5px rgba(13,148,136,0.3); }
+    .tab-inactive-btn { background: #f1f5f9; color: #475569; font-weight: 600; }
   </style>
 </head>
 <body class="pb-24 antialiased">
 
-  <!-- Admin Login View -->
-  <div id="adminAuthView" class="min-h-screen flex flex-col justify-center p-4 max-w-sm mx-auto space-y-4">
-    <div class="card-clean rounded-3xl p-6 shadow-xl border text-center space-y-4">
-      <div class="w-14 h-14 rounded-2xl bg-slate-900 text-teal-400 flex items-center justify-center text-2xl font-black mx-auto">
-        <i class="fa-solid fa-shield-halved"></i>
-      </div>
+  <!-- PWA INSTALL BANNER -->
+  <div id="pwaInstallBanner" class="hidden p-3 bg-teal-900 text-white text-xs flex justify-between items-center sticky top-0 z-50 shadow-md">
+    <div class="flex items-center gap-2">
+      <span class="text-base">📲</span>
+      <span>ઝડપી ઉપયોગ માટે સ્ક્રીન પર એપ ઉમેરો <b>(Add to Home Screen)</b></span>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <button onclick="dismissPwaBanner()" class="px-2 py-1 bg-teal-800 rounded-lg text-[10px]">બંધ કરો</button>
+      <button onclick="showPwaInstructions()" class="px-2.5 py-1 bg-amber-400 text-slate-900 font-extrabold rounded-lg text-[10px]">કેવી રીતે?</button>
+    </div>
+  </div>
+
+  <!-- AUTH VIEW -->
+  <div id="authView" class="min-h-screen flex flex-col justify-between p-4 max-w-md mx-auto space-y-4">
+    <div class="text-center pt-5 space-y-2">
+      <div class="w-16 h-16 rounded-2xl brand-gradient flex items-center justify-center text-white text-3xl font-black shadow-lg mx-auto">🩺</div>
       <div>
-        <h2 class="text-xl font-black text-slate-900">Coach Master Admin</h2>
-        <p class="text-xs text-slate-500 mt-0.5">Metabolic Pro Cloud CRM v4</p>
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight">Metabolic Pro</h1>
+        <p class="text-xs font-semibold text-teal-700 uppercase tracking-widest mt-0.5">Clinical Lifestyle & Nutrition Engine</p>
       </div>
-      <div class="space-y-3 text-left">
-        <input type="password" maxlength="8" id="inAdminPin" placeholder="Admin PIN દાખલ કરો" class="w-full p-3 bg-slate-50 border rounded-xl text-center text-xl font-black">
-        <button onclick="verifyAdminPin()" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-extrabold text-xs shadow">CRM એક્સેસ કરો 🔐</button>
+      <p class="text-xs text-slate-500 max-w-xs mx-auto">ડાયાબિટીસ મુક્તિ, ફેટી લિવર ડિટોક્સ અને પર્સનલાઇઝ્ડ મેટાબોલિક હેલ્થ પોર્ટલ.</p>
+    </div>
+
+    <div class="card-clean rounded-3xl p-5 shadow-sm space-y-4 border">
+      <div class="flex p-1 bg-slate-100 rounded-2xl text-xs font-bold text-slate-600">
+        <button onclick="setAuthTab('register')" id="tabRegister" class="flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold">✨ નવું રજીસ્ટ્રેશન</button>
+        <button onclick="setAuthTab('login')" id="tabLogin" class="flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold">🔑 લોગિન</button>
+      </div>
+
+      <!-- Registration Form -->
+      <div id="formRegister" class="space-y-3 text-xs">
+        <div>
+          <label class="font-bold text-slate-700">પૂરું નામ *</label>
+          <input type="text" id="regName" placeholder="દા.ત. પિયુષ નથવાણી" class="w-full mt-1 p-2.5 bg-slate-50 border rounded-xl text-slate-800">
+        </div>
+        <div>
+          <label class="font-bold text-slate-700">WhatsApp મોબાઈલ નંબર *</label>
+          <input type="tel" id="regPhone" placeholder="દા.ત. 9925879138" class="w-full mt-1 p-2.5 bg-slate-50 border rounded-xl text-slate-800">
+        </div>
+
+        <div class="p-2.5 bg-teal-50/70 border border-teal-200 rounded-2xl space-y-1">
+          <label class="font-bold text-teal-900 block">તમારો મનપસંદ ૪-અંકનો સિક્રેટ PIN બનાવો *</label>
+          <input type="password" maxlength="4" id="regPin" placeholder="•••• (દા.ત. 1988 કે 5624)" class="w-full p-2 bg-white border border-teal-300 rounded-xl text-center text-sm font-black tracking-widest text-slate-900">
+          <span class="text-[9px] text-teal-700 block">⚠️ સુરક્ષા માટે 1234, 0000 કે 1111 જેવા નબળા પિન રાખવા નહીં.</span>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="font-bold text-slate-700 text-[10px]">ઉંમર (વર્ષ) *</label>
+            <input type="number" id="regAge" placeholder="વર્ષ" class="w-full mt-1 p-2 bg-slate-50 border rounded-xl text-xs">
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 text-[10px]">ઊંચાઈ (cm) *</label>
+            <input type="number" id="regHeight" placeholder="સેમી" class="w-full mt-1 p-2 bg-slate-50 border rounded-xl text-xs">
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 text-[10px]">વજન (kg) *</label>
+            <input type="number" id="regWeight" placeholder="કિલો" class="w-full mt-1 p-2 bg-slate-50 border rounded-xl text-xs">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold text-slate-700 text-[10px]">જાતિ (Gender)</label>
+            <select id="regGender" class="w-full mt-1 p-2 bg-slate-50 border rounded-xl text-xs font-semibold">
+              <option value="male">પુરુષ (Male)</option>
+              <option value="female">મહિલા (Female)</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 text-[10px]">પ્રવૃત્તિ સ્તર (Activity)</label>
+            <select id="regActivity" class="w-full mt-1 p-2 bg-slate-50 border rounded-xl text-xs font-semibold">
+              <option value="sedentary">ઓછી હિલચાલ (Desk Routine)</option>
+              <option value="light" selected>હળવી (20-30m Walk / Yoga)</option>
+              <option value="moderate">મધ્યમ (3-5 દિવસ Gym)</option>
+              <option value="active">ભારે કસરત</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold text-slate-700 text-[10px]">આહાર મોડ (Diet)</label>
+            <select id="regDietMode" class="w-full mt-1 p-2 bg-slate-50 border rounded-xl text-xs font-semibold">
+              <option value="veg" selected>🌱 શુદ્ધ શાકાહારી</option>
+              <option value="egg">🥚 એગિટેરિયન</option>
+              <option value="nonveg">🍗 નોન-વેજિટેરિયન</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 text-[10px]">કિડની સાવચેતી</label>
+            <label class="flex items-center gap-1.5 p-2 bg-slate-50 border rounded-xl mt-1 text-[11px] font-semibold">
+              <input type="checkbox" id="regKidneyIssue" class="w-4 h-4 text-teal-600 rounded"> કિડની તકલીફ છે?
+            </label>
+          </div>
+        </div>
+
+        <div class="space-y-1.5 pt-1">
+          <label class="font-bold text-slate-700">સ્વાસ્થ્ય લક્ષ્યો પસંદ કરો *:</label>
+          <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-2xl border">
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
+              <input type="checkbox" name="regCondition" value="diabetes" checked class="w-4 h-4 text-teal-600 rounded"> 🩺 ડાયાબિટીસ
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
+              <input type="checkbox" name="regCondition" value="fatty_liver" checked class="w-4 h-4 text-teal-600 rounded"> 🥒 ફેટી લિવર
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
+              <input type="checkbox" name="regCondition" value="menopause" class="w-4 h-4 text-teal-600 rounded"> 🌸 મેનોપોઝ / હોર્મોન્સ
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
+              <input type="checkbox" name="regCondition" value="gym" class="w-4 h-4 text-teal-600 rounded"> 💪 જિમ / ફિટનેસ
+            </label>
+          </div>
+        </div>
+
+        <button onclick="handleClientRegister()" id="btnRegisterSubmit" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-sm shadow-md mt-1">મારું ક્લિનિકલ પોર્ટલ શરૂ કરો 🚀</button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="formLogin" class="hidden space-y-3.5 text-xs">
+        <div>
+          <label class="font-bold text-slate-700">વોટ્સએપ મોબાઈલ નંબર</label>
+          <input type="text" id="loginId" placeholder="દા.ત. 9925879138" class="w-full mt-1 p-3 bg-slate-50 border rounded-xl text-slate-800">
+        </div>
+        <div>
+          <label class="font-bold text-slate-700">૪-અંકનો PIN</label>
+          <input type="password" maxlength="4" id="loginPin" placeholder="••••" class="w-full mt-1 p-3 bg-slate-50 border rounded-xl text-center text-base tracking-widest">
+        </div>
+        <button onclick="handleClientLogin()" id="btnLoginSubmit" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-extrabold text-sm shadow">પોર્ટલ ખોલો 📲</button>
       </div>
     </div>
   </div>
 
-  <!-- Main Admin View -->
-  <div id="adminMainView" class="hidden min-h-screen">
-    <header class="p-3.5 bg-slate-900 text-white sticky top-0 z-40 flex justify-between items-center shadow-md">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-xl bg-teal-500 text-slate-900 font-black flex items-center justify-center text-sm">MP</div>
+  <!-- WHATSAPP GATE MODAL -->
+  <div id="modalActivationGate" class="hidden fixed inset-0 bg-slate-950/85 z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm p-5 rounded-3xl space-y-4 text-xs shadow-2xl border text-center">
+      <div class="w-14 h-14 rounded-2xl bg-teal-50 border border-teal-200 text-teal-700 flex items-center justify-center text-2xl mx-auto shadow-sm">
+        <i class="fa-brands fa-whatsapp"></i>
+      </div>
+      <div>
+        <h3 class="font-black text-slate-900 text-base">WhatsApp એક્ટિવેશન ફરજિયાત</h3>
+        <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">ડેઈલી મીલ રિમાઇન્ડર્સ શરૂ કરવા નીચેના ૨ સ્ટેપ્સ પૂર્ણ કરો:</p>
+      </div>
+
+      <div class="space-y-2.5 text-left pt-1">
+        <div class="p-3 bg-slate-50 rounded-2xl border flex items-center justify-between">
+          <div>
+            <div class="font-extrabold text-slate-900 text-xs">સ્ટેપ ૧: હેલ્પલાઇન સેવ કરો</div>
+            <div class="text-[10px] text-slate-500">Metabolic Pro Coach (.vcf)</div>
+          </div>
+          <button onclick="downloadCoachVCard()" class="px-3 py-1.5 bg-slate-900 text-white rounded-xl font-bold text-[10px] flex items-center gap-1 shadow-xs">
+            <i class="fa-solid fa-address-book"></i> સેવ કરો
+          </button>
+        </div>
+
+        <div class="p-3 bg-teal-50/70 border border-teal-200 rounded-2xl flex items-center justify-between">
+          <div>
+            <div class="font-extrabold text-teal-950 text-xs">સ્ટેપ ૨: WhatsApp પર 'Hi' મોકલો</div>
+            <div class="text-[10px] text-teal-700">સિક્યોર એક્ટિવેશન મેસેજ</div>
+          </div>
+          <button onclick="sendActivationHi()" class="px-3 py-1.5 bg-teal-600 text-white rounded-xl font-extrabold text-[10px] flex items-center gap-1 shadow-xs">
+            <i class="fa-brands fa-whatsapp text-sm"></i> 'Hi' મોકલો
+          </button>
+        </div>
+      </div>
+
+      <button onclick="verifyActivationDone()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-2xl shadow-md transition">
+        મેં બંને સ્ટેપ પૂરા કર્યા, પોર્ટલ ખોલો 🚀
+      </button>
+    </div>
+  </div>
+
+  <!-- CLIENT PORTAL VIEW -->
+  <div id="clientPortalView" class="hidden min-h-screen">
+    <header class="p-3.5 bg-white border-b sticky top-0 z-40 flex justify-between items-center shadow-xs">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl brand-gradient flex items-center justify-center text-white font-bold text-sm">🩺</div>
         <div>
-          <h1 class="font-extrabold text-white text-sm leading-tight">Admin CRM & Nudge Center</h1>
-          <p class="text-[10px] text-teal-300" id="headerCoachDisplay">Coach: Loading...</p>
+          <div class="flex items-center gap-1.5">
+            <h1 class="font-extrabold text-slate-900 text-sm leading-tight" id="cpClientTitle">Welcome</h1>
+            <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[9px] font-black" id="cpStatusBadge">Free Trial</span>
+          </div>
+          <p class="text-[10px] font-bold text-teal-700" id="cpClientSub">Metabolic Plan</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="openCoachSettingsModal()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-teal-300 rounded-lg text-xs font-bold border border-slate-700">⚙️ સેટિંગ્સ</button>
-        <button onclick="logoutAdmin()" class="px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs">Logout</button>
+        <button onclick="openChangePinModal()" class="px-2 py-1 rounded-xl bg-slate-100 text-slate-700 text-[10px] font-bold">🔑 PIN</button>
+        <button onclick="logoutClient()" class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 text-[10px] font-bold">Logout</button>
       </div>
     </header>
 
-    <div class="flex p-2 gap-1.5 bg-white border-b text-xs overflow-x-auto">
-      <button onclick="setAdminTab('nudge')" id="atab-nudge" class="tab-active px-3 py-2 rounded-xl whitespace-nowrap"><i class="fa-brands fa-whatsapp text-emerald-400"></i> WhatsApp નજ ક્યૂ (Queue)</button>
-      <button onclick="setAdminTab('clients')" id="atab-clients" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-solid fa-users"></i> તમામ ક્લાયન્ટ્સ</button>
-    </div>
-
-    <main class="p-3.5 max-w-xl mx-auto space-y-3.5">
+    <main class="p-3.5 max-w-lg mx-auto space-y-3.5">
       
-      <!-- TAB 1: WHATSAPP NUDGE QUEUE RUNNER -->
-      <section id="aview-nudge" class="space-y-3">
-        <div class="card-clean p-4 rounded-2xl space-y-3">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-2.5">
-            <div>
-              <div class="flex items-center gap-2">
-                <h2 class="font-bold text-slate-900 text-sm">સ્માર્ટ વોટ્સએપ નજ ક્યૂ રનર</h2>
-                <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[9px] font-black" id="activeTimeSlotBadge">🕒 Auto-Detecting...</span>
-              </div>
-              <p class="text-[11px] text-slate-500 mt-0.5">ઘડિયાળના સમય મુજબ ભોજનનો રિમાઇન્ડર આપોઆપ પસંદ થશે.</p>
-            </div>
-            
-            <select id="selNudgeMealType" onchange="handleManualSlotChange()" class="p-2 bg-slate-100 border border-slate-300 rounded-xl text-xs font-bold text-teal-900">
-              <option value="breakfast">🥗 સવારનો નાસ્તો (Breakfast)</option>
-              <option value="lunch">🍲 બપોરનું ભોજન (Lunch)</option>
-              <option value="walk">🚶‍♂️ પોસ્ટ-મીલ વોક (Post-Meal Walk)</option>
-              <option value="snack">🥜 સાંજનો નાસ્તો (Snack / Water)</option>
-              <option value="dinner">🥣 રાત્રિ ભોજન (Dinner)</option>
-            </select>
+      <!-- VIP EXCLUSIVE LIVE SESSIONS BOX -->
+      <div id="cpLiveSessionBox" class="hidden card-clean p-4 rounded-3xl space-y-2.5 border border-teal-200 bg-gradient-to-r from-teal-50 to-emerald-50">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-rose-500 animate-ping"></span>
+            <h3 class="font-extrabold text-slate-900 text-xs" id="cpLiveSessionTitle">🔴 લાઈવ સેશન</h3>
           </div>
+          <span class="px-2 py-0.5 bg-rose-100 text-rose-800 font-black text-[9px] rounded-full">VIP LIVE NOW</span>
+        </div>
+        <p class="text-[11px] text-slate-600" id="cpLiveSessionDesc">તમારો સ્પેશિયલ ક્લાસ શરૂ થઈ ગયો છે. નીચે ક્લિક કરી જોડાઈ જાઓ:</p>
+        <button id="btnJoinLiveClass" onclick="joinLiveClass()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-video"></i> લાઈવ ક્લાસમાં જોડાઓ 📲
+        </button>
+      </div>
 
-          <!-- Pool Filter Chips -->
-          <div class="flex gap-1.5 text-[11px] overflow-x-auto pb-1">
-            <button onclick="setPoolFilter('trial')" id="pfilter-trial" class="px-3 py-1.5 rounded-xl bg-teal-600 text-white font-bold whitespace-nowrap">⏳ 30-Day Trial (<span id="cntTrial">0</span>)</button>
-            <button onclick="setPoolFilter('vip')" id="pfilter-vip" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 font-bold whitespace-nowrap">👑 VIP Paid (<span id="cntVip">0</span>)</button>
-            <button onclick="setPoolFilter('pending')" id="pfilter-pending" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 font-bold whitespace-nowrap">⚠️ Pending WA (<span id="cntPending">0</span>)</button>
-            <button onclick="setPoolFilter('expired')" id="pfilter-expired" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 font-bold whitespace-nowrap">🔒 Expired (<span id="cntExpired">0</span>)</button>
+      <!-- FREE TRIAL USER UPGRADE CARD (IF NOT VIP) -->
+      <div id="cpFreeTrialVipBanner" class="hidden card-clean p-3.5 rounded-2xl border border-amber-200 bg-amber-50/60 flex items-center justify-between text-xs">
+        <div>
+          <div class="font-black text-amber-950 text-xs flex items-center gap-1">
+            <span>👑 લાઈવ યોગા & ગર્ભસંસ્કાર ક્લાસ</span>
           </div>
+          <p class="text-[10px] text-amber-800 mt-0.5">આ લાઈવ સેશન્સ માત્ર VIP સભ્યો માટે ઉપલબ્ધ છે.</p>
+        </div>
+        <button onclick="requestVipUpgrade()" class="px-2.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-900 font-black text-[10px] rounded-xl shadow-xs">
+          VIP મેળવો 📲
+        </button>
+      </div>
+
+      <!-- MISSED SESSION RECORDING CARD (VIP ONLY) -->
+      <div id="cpRecordingBox" class="hidden card-clean p-3 rounded-2xl border border-teal-200 bg-teal-50/50 flex items-center justify-between text-xs">
+        <div>
+          <div class="font-extrabold text-teal-950 text-xs flex items-center gap-1">
+            <i class="fa-solid fa-play-circle text-teal-600"></i> ક્લાસ રેકોર્ડિંગ લાઈબ્રેરી
+          </div>
+          <p class="text-[10px] text-teal-800 mt-0.5">મિસ થયેલ યોગા/ગર્ભસંસ્કાર સેશન અહીંથી જુઓ.</p>
+        </div>
+        <button onclick="watchClassRecording()" class="px-3 py-1.5 bg-teal-700 hover:bg-teal-800 text-white font-extrabold text-[10px] rounded-xl shadow-xs">
+          વિડીયો જુઓ 🎥
+        </button>
+      </div>
+
+      <!-- MACRO TARGET CARD -->
+      <div class="card-clean p-4 rounded-3xl space-y-3 bg-gradient-to-br from-slate-900 to-teal-950 text-white shadow-md border border-teal-800">
+        <div class="flex justify-between items-center">
+          <h3 class="font-extrabold text-xs flex items-center gap-1.5 text-teal-300"><i class="fa-solid fa-bolt text-amber-400"></i> Personalized Macro Targets</h3>
+          <span class="text-[10px] bg-teal-900/80 text-teal-200 px-2.5 py-0.5 rounded-full font-bold border border-teal-700" id="cpFocusTag">Clinical Target</span>
         </div>
 
-        <div id="queueClientsContainer" class="space-y-2"></div>
-      </section>
+        <div class="grid grid-cols-4 gap-1.5 text-center pt-1">
+          <div class="bg-white/10 p-2 rounded-xl border border-white/5">
+            <div class="text-[8px] text-teal-200 uppercase tracking-wider font-semibold">Calories</div>
+            <div class="text-xs font-black text-amber-300 mt-0.5" id="cpConsumedCal">0 / 1200</div>
+          </div>
+          <div class="bg-white/10 p-2 rounded-xl border border-white/5">
+            <div class="text-[8px] text-teal-200 uppercase tracking-wider font-semibold">Protein</div>
+            <div class="text-xs font-black text-emerald-300 mt-0.5" id="cpProteinStats">0 / 80g</div>
+          </div>
+          <div class="bg-white/10 p-2 rounded-xl border border-white/5">
+            <div class="text-[8px] text-teal-200 uppercase tracking-wider font-semibold">Day GL</div>
+            <div class="text-xs font-black text-sky-300 mt-0.5" id="cpDailyGi">GL: 0</div>
+          </div>
+          <div class="bg-teal-500/20 p-2 rounded-xl border border-teal-400/30">
+            <div class="text-[8px] text-teal-300 uppercase tracking-wider font-bold">Score</div>
+            <div class="text-xs font-black text-white mt-0.5" id="cpScoreBadge">0%</div>
+          </div>
+        </div>
+      </div>
 
-      <!-- TAB 2: ALL CLIENTS & ACCESS -->
-      <section id="aview-clients" class="hidden space-y-3">
-        <div id="admClientsList" class="space-y-3"></div>
-      </section>
+      <!-- WATER TRACKER -->
+      <div class="card-clean p-3.5 rounded-2xl space-y-2 border">
+        <div class="flex justify-between items-center text-xs">
+          <span class="font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-droplet text-sky-500 text-sm"></i> Water Target</span>
+          <span class="font-black text-sky-600 text-xs" id="cpWaterCount">0.0 / 3.0 Liters</span>
+        </div>
+        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+          <div id="cpWaterBar" class="bg-sky-500 h-full w-0 transition-all"></div>
+        </div>
+        <div class="grid grid-cols-4 gap-1.5 pt-1">
+          <button onclick="addWater(0.25)" class="py-1.5 bg-sky-50 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 250ml</button>
+          <button onclick="addWater(0.5)" class="py-1.5 bg-sky-50 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 500ml</button>
+          <button onclick="addWater(1.0)" class="py-1.5 bg-sky-50 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 1 Liter</button>
+          <button onclick="resetWater()" class="py-1.5 bg-slate-100 text-slate-600 rounded-xl text-[11px] font-bold">Reset 🔄</button>
+        </div>
+      </div>
+
+      <!-- MEAL CARDS CONTAINER -->
+      <div class="space-y-3" id="cpTodayMealCards"></div>
+
+      <!-- SUBMIT DAILY REPORT -->
+      <button onclick="submitClientReport()" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md">
+        <i class="fa-brands fa-whatsapp text-lg"></i> આજના દિવસનો રિપોર્ટ કોચને મોકલો 📲
+      </button>
+
     </main>
-  </div>
-
-  <!-- COACH SETTINGS MODAL -->
-  <div id="modalCoachSettings" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm p-5 rounded-3xl space-y-3.5 text-xs shadow-2xl border">
-      <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-extrabold text-slate-900 text-sm">કોચ પ્રોફાઇલ & WhatsApp નંબર</h3>
-        <button onclick="closeCoachSettingsModal()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
-      </div>
-
-      <div class="space-y-2.5">
-        <div>
-          <label class="font-bold text-slate-700 block mb-1">કોચનું પૂરું નામ</label>
-          <input type="text" id="setCoachName" placeholder="દા.ત. Piyush Nathavani" class="w-full p-2.5 bg-slate-50 border rounded-xl font-bold">
-        </div>
-        <div>
-          <label class="font-bold text-slate-700 block mb-1">કોચનો WhatsApp નંબર (૧૦ અંક)</label>
-          <input type="tel" id="setCoachPhone" placeholder="દા.ત. 9925879138" class="w-full p-2.5 bg-slate-50 border rounded-xl font-bold">
-          <p class="text-[10px] text-teal-700 mt-1">બધા ક્લાયન્ટ્સના મેસેજ અને 'Hi' આ નંબર પર આપમેળે જશે.</p>
-        </div>
-      </div>
-
-      <div class="pt-2 flex gap-2">
-        <button onclick="closeCoachSettingsModal()" class="flex-1 bg-slate-100 py-2.5 rounded-xl font-bold">રદ કરો</button>
-        <button onclick="saveCoachSettingsToCloud()" class="flex-1 bg-teal-600 text-white font-extrabold py-2.5 rounded-xl shadow">નંબર અપડેટ કરો 💾</button>
-      </div>
-    </div>
   </div>
 
   <script>
@@ -149,266 +350,312 @@
       }[c]));
     }
 
-    let liveClients = [];
-    let currentPool = 'trial';
-    let sentTracker = {};
-    let isManualOverride = false;
-    let activeCoachPhone = "919081421028";
-    let activeCoachName = "Metabolic Pro Coach";
+    let COACH_PHONE = "919081421028";
+    let selectedDateKey = getTodayDateKey();
+    let currentClient = null;
+    let currentLiveMeetingUrl = "";
+    let currentRecordingUrl = "";
 
-    // Format phone to guarantee pure digits with 91 country code
-    function formatWaPhone(phone) {
-      let clean = String(phone || '').replace(/\D/g, '');
-      if (clean.length === 10) clean = '91' + clean;
-      if (clean.startsWith('0') && clean.length === 11) clean = '91' + clean.substring(1);
-      return clean;
+    function getTodayDateKey() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     }
 
-    // Load Coach Info from Firestore Cloud Settings
-    async function loadCoachSettings() {
+    async function syncCoachInfo() {
       try {
         const doc = await db.collection('settings').doc('coach').get();
-        if (doc.exists) {
-          const d = doc.data();
-          activeCoachPhone = formatWaPhone(d.phone || "9081421028");
-          activeCoachName = d.name || "Metabolic Pro Coach";
+        if (doc.exists && doc.data().phone) {
+          COACH_PHONE = doc.data().phone;
         }
-        document.getElementById('headerCoachDisplay').innerText = `Coach: ${activeCoachName} (${activeCoachPhone})`;
-      } catch(e) { console.error("Error loading coach:", e); }
+      } catch(e) { console.error(e); }
     }
+    syncCoachInfo();
 
-    function openCoachSettingsModal() {
-      document.getElementById('setCoachName').value = activeCoachName;
-      document.getElementById('setCoachPhone').value = activeCoachPhone.replace(/^91/, '');
-      document.getElementById('modalCoachSettings').classList.remove('hidden');
-    }
-
-    function closeCoachSettingsModal() {
-      document.getElementById('modalCoachSettings').classList.add('hidden');
-    }
-
-    async function saveCoachSettingsToCloud() {
-      const name = document.getElementById('setCoachName').value.trim();
-      const phoneRaw = document.getElementById('setCoachPhone').value.trim();
-      const cleanPhone = formatWaPhone(phoneRaw);
-
-      if(!name || cleanPhone.length < 12) return alert('સાચું નામ અને ૧૦-અંકનો મોબાઈલ નંબર દાખલ કરો.');
-
-      await db.collection('settings').doc('coach').set({
-        name: name,
-        phone: cleanPhone,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
-
-      activeCoachName = name;
-      activeCoachPhone = cleanPhone;
-      document.getElementById('headerCoachDisplay').innerText = `Coach: ${activeCoachName} (${activeCoachPhone})`;
-      closeCoachSettingsModal();
-      alert(`✅ કોચ નંબર સફળતાપૂર્વક અપડેટ થયો: ${activeCoachPhone}`);
-    }
-
-    function resolveCurrentTimeSlot() {
-      const now = new Date();
-      const totalMinutes = (now.getHours() * 60) + now.getMinutes();
-
-      if (totalMinutes >= 360 && totalMinutes < 660) return { slot: 'breakfast', label: '🌅 નાસ્તો સ્લોટ' };
-      else if (totalMinutes >= 660 && totalMinutes < 840) return { slot: 'lunch', label: '🍲 લંચ સ્લોટ' };
-      else if (totalMinutes >= 840 && totalMinutes < 1020) return { slot: 'walk', label: '🚶‍♂️ વોક સ્લોટ' };
-      else if (totalMinutes >= 1020 && totalMinutes < 1170) return { slot: 'snack', label: '🥜 સ્નેક સ્લોટ' };
-      else return { slot: 'dinner', label: '🥣 ડિનર સ્લોટ' };
-    }
-
-    function autoApplyTimeSlot() {
-      if (isManualOverride) return;
-      const detected = resolveCurrentTimeSlot();
-      const sel = document.getElementById('selNudgeMealType');
-      if (sel) sel.value = detected.slot;
-      const badge = document.getElementById('activeTimeSlotBadge');
-      if (badge) badge.innerText = `🕒 ${detected.label} (ઓટો-સેટ)`;
-    }
-
-    function handleManualSlotChange() {
-      isManualOverride = true;
-      const badge = document.getElementById('activeTimeSlotBadge');
-      if (badge) {
-        badge.innerText = `⚙️ મેન્યુઅલ સિલેક્શન`;
-        badge.className = "px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[9px] font-black";
+    window.addEventListener('DOMContentLoaded', async () => {
+      const savedPhone = localStorage.getItem('met_pro_session_phone');
+      if (savedPhone) {
+        try {
+          const doc = await db.collection('clients').doc(savedPhone).get();
+          if (doc.exists) { 
+            currentClient = doc.data(); 
+            if (!currentClient.whatsappVerified) {
+              document.getElementById('modalActivationGate').classList.remove('hidden');
+            } else {
+              openPortal(); 
+            }
+            return; 
+          }
+        } catch(e) { console.error(e); }
       }
-      renderQueue();
+      showAuth();
+    });
+
+    function showAuth() {
+      document.getElementById('authView').classList.remove('hidden');
+      document.getElementById('clientPortalView').classList.add('hidden');
     }
 
-    function verifyAdminPin() {
-      const pin = document.getElementById('inAdminPin').value.trim();
-      if(pin === '1234') {
-        document.getElementById('adminAuthView').classList.add('hidden');
-        document.getElementById('adminMainView').classList.remove('hidden');
-        loadCoachSettings();
-        autoApplyTimeSlot();
-        listenToClients();
+    function setAuthTab(tab) {
+      if (tab === 'register') {
+        document.getElementById('formRegister').classList.remove('hidden');
+        document.getElementById('formLogin').classList.add('hidden');
+        document.getElementById('tabRegister').className = "flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold";
+        document.getElementById('tabLogin').className = "flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold";
       } else {
-        alert('ખોટો PIN છે.');
+        document.getElementById('formLogin').classList.remove('hidden');
+        document.getElementById('formRegister').classList.add('hidden');
+        document.getElementById('tabLogin').className = "flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold";
+        document.getElementById('tabRegister').className = "flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold";
       }
     }
 
-    function logoutAdmin() { location.reload(); }
+    async function handleClientRegister() {
+      const name = document.getElementById('regName').value.trim();
+      const phoneRaw = document.getElementById('regPhone').value.trim().replace(/\D/g, '');
+      const pin = document.getElementById('regPin').value.trim();
+      const age = Number(document.getElementById('regAge').value);
+      const height = Number(document.getElementById('regHeight').value);
+      const weight = Number(document.getElementById('regWeight').value);
+      const gender = document.getElementById('regGender').value;
+      const activity = document.getElementById('regActivity').value;
+      const diet = document.getElementById('regDietMode').value;
+      const kidneyIssue = document.getElementById('regKidneyIssue').checked;
+      const conditions = Array.from(document.querySelectorAll('input[name="regCondition"]:checked')).map(cb => cb.value);
 
-    function setAdminTab(tab) {
-      ['nudge', 'clients'].forEach(t => {
-        document.getElementById('aview-' + t).classList.add('hidden');
-        document.getElementById('atab-' + t).className = "px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap";
-      });
-      document.getElementById('aview-' + tab).classList.remove('hidden');
-      document.getElementById('atab-' + tab).className = "tab-active px-3 py-2 rounded-xl whitespace-nowrap";
-    }
+      if (!name || phoneRaw.length < 10) return alert('પૂરું નામ અને ૧૦-અંકનો નંબર દાખલ કરો.');
+      if (!pin || pin.length !== 4) return alert('૪-અંકનો PIN બનાવો.');
+      if (['1234', '0000', '1111'].includes(pin)) return alert('કોઈ મજબૂત PIN પસંદ કરો.');
+      if (!age || !height || !weight) return alert('ઉંમર, ઊંચાઈ અને વજન દાખલ કરો.');
 
-    function listenToClients() {
-      db.collection('clients').orderBy('createdAt', 'desc').onSnapshot(snap => {
-        liveClients = [];
-        snap.forEach(d => liveClients.push({ id: d.id, ...d.data() }));
-        updatePoolCounters();
-        renderQueue();
-        renderClientsList();
-      });
-    }
-
-    function getDaysActive(joiningDateStr) {
-      if(!joiningDateStr) return 0;
-      const jDate = new Date(joiningDateStr);
-      const now = new Date();
-      return Math.ceil(Math.abs(now - jDate) / (1000 * 60 * 60 * 24));
-    }
-
-    function updatePoolCounters() {
-      let cTrial = 0, cVip = 0, cPending = 0, cExpired = 0;
-      liveClients.forEach(c => {
-        const isVIP = (Number(c.trialDays) >= 900);
-        const days = getDaysActive(c.joiningDate);
-        const isExpired = !isVIP && (days > (Number(c.trialDays) || 30));
-
-        if (!c.whatsappVerified) cPending++;
-        else if (isVIP) cVip++;
-        else if (isExpired) cExpired++;
-        else cTrial++;
-      });
-
-      document.getElementById('cntTrial').innerText = cTrial;
-      document.getElementById('cntVip').innerText = cVip;
-      document.getElementById('cntPending').innerText = cPending;
-      document.getElementById('cntExpired').innerText = cExpired;
-    }
-
-    function setPoolFilter(pool) {
-      currentPool = pool;
-      ['trial', 'vip', 'pending', 'expired'].forEach(p => {
-        document.getElementById('pfilter-' + p).className = "px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 font-bold whitespace-nowrap";
-      });
-      document.getElementById('pfilter-' + pool).className = "px-3 py-1.5 rounded-xl bg-teal-600 text-white font-bold whitespace-nowrap";
-      renderQueue();
-    }
-
-    function renderQueue() {
-      const container = document.getElementById('queueClientsContainer');
-      container.innerHTML = '';
-      const mealType = document.getElementById('selNudgeMealType').value;
-
-      const filtered = liveClients.filter(c => {
-        const isVIP = (Number(c.trialDays) >= 900);
-        const days = getDaysActive(c.joiningDate);
-        const isExpired = !isVIP && (days > (Number(c.trialDays) || 30));
-
-        if (currentPool === 'pending') return !c.whatsappVerified;
-        if (currentPool === 'vip') return isVIP && c.whatsappVerified;
-        if (currentPool === 'expired') return isExpired && c.whatsappVerified;
-        return !isVIP && !isExpired && c.whatsappVerified;
-      });
-
-      if (filtered.length === 0) {
-        container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">આ પૂલમાં કોઈ ક્લાયન્ટ નથી.</div>`;
+      const phone = phoneRaw.length === 10 ? '91' + phoneRaw : phoneRaw;
+      const clientRef = db.collection('clients').doc(phone);
+      const existing = await clientRef.get();
+      if (existing.exists) {
+        alert('આ એકાઉન્ટ મોજૂદ છે! લોગિન કરો.');
+        setAuthTab('login');
         return;
       }
 
-      filtered.forEach(cl => {
-        const isSent = sentTracker[`${cl.id}_${mealType}`];
-        const conditions = (cl.conditions || []).join(' • ');
+      const newClientData = {
+        name, phone, pin, age, height, weight, gender, activity, diet,
+        kidneyIssue, conditions,
+        goal: conditions.join(' + '),
+        trialDays: 30,
+        isVip: false, // Default is FREE TRIAL
+        whatsappVerified: false,
+        joiningDate: getTodayDateKey(),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        compliance: {},
+        services: []
+      };
 
-        container.innerHTML += `
-          <div class="card-clean p-3 rounded-2xl flex items-center justify-between border">
-            <div>
-              <div class="font-extrabold text-slate-900 text-xs">${esc(cl.name)} (${esc(cl.phone)})</div>
-              <div class="text-[10px] text-teal-700 font-bold mt-0.5">${esc(conditions)}</div>
-            </div>
-
-            <div class="flex items-center gap-1.5">
-              ${isSent ? `
-                <span class="px-2 py-1 bg-emerald-100 text-emerald-900 font-extrabold text-[10px] rounded-lg">
-                  <i class="fa-solid fa-check-double"></i> Sent
-                </span>
-              ` : `
-                <button onclick="sendNudgeWhatsApp('${cl.id}', '${mealType}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl flex items-center gap-1 shadow-xs transition">
-                  <i class="fa-brands fa-whatsapp text-sm"></i> Send
-                </button>
-              `}
-            </div>
-          </div>
-        `;
-      });
+      await clientRef.set(newClientData);
+      currentClient = newClientData;
+      localStorage.setItem('met_pro_session_phone', phone);
+      
+      document.getElementById('authView').classList.add('hidden');
+      document.getElementById('modalActivationGate').classList.remove('hidden');
     }
 
-    function sendNudgeWhatsApp(clientId, mealType) {
-      const cl = liveClients.find(c => c.id === clientId);
-      if(!cl) return;
+    async function handleClientLogin() {
+      let input = document.getElementById('loginId').value.trim().replace(/\D/g, '');
+      const pin = document.getElementById('loginPin').value.trim();
+      if (input.length < 10 || pin.length !== 4) return alert('સાચો નંબર અને ૪-અંકનો PIN નાખો.');
+      if (input.length === 10) input = '91' + input;
 
-      const validPhone = formatWaPhone(cl.phone);
+      const doc = await db.collection('clients').doc(input).get();
+      if (!doc.exists) return alert('એકાઉન્ટ મળ્યું નથી.');
+      const data = doc.data();
+      if (pin !== data.pin) return alert('ખોટો PIN છે.');
 
-      let msg = "";
-      if (mealType === 'breakfast') {
-        msg = `નમસ્તે ${cl.name}! 🌅 સવારના નાસ્તાનો સમય થયો છે.\nપ્રોટીન અને ફાઈબરથી ભરપૂર નાસ્તો લઈ લેજો. જમ્યા પછી પોર્ટલમાં 'લીધું' ટીક કરી લેજો 📲`;
-      } else if (mealType === 'lunch') {
-        msg = `નમસ્તે ${cl.name}! 🍲 બપોરના ભોજનનો સમય થયો છે.\nયાદ રાખજો: પહેલાં સલાડ પૂરું કરવાનું છે, પછી જ રોટલો અને શાક લેવું જેથી બ્લડ શુગર સ્થિર રહે.\nજમ્યા પછી પોર્ટલમાં 'લીધું' ટીક કરી લેજો 📲`;
-      } else if (mealType === 'walk') {
-        msg = `નમસ્તે ${cl.name}! 🚶‍♂️ પોસ્ટ-મીલ ૧૫ મિનિટ વૉકનો સમય!\nજમ્યા પછી તરત હળવું ચાલવાથી શુગર સ્પાઇક અટકે છે અને પાચન ઝડપી બને છે.`;
-      } else if (mealType === 'snack') {
-        msg = `નમસ્તે ${cl.name}! 🥜 સાંજનો નાસ્તો & વોટર ચેક!\n૧ ગ્લાસ જીરા છાશ અથવા શેકેલા મખાના લઈ લેજો અને દિવસનું પાણીનું લક્ષ્ય પૂરું કરજો.`;
+      currentClient = data;
+      localStorage.setItem('met_pro_session_phone', input);
+
+      if (!currentClient.whatsappVerified) {
+        document.getElementById('authView').classList.add('hidden');
+        document.getElementById('modalActivationGate').classList.remove('hidden');
       } else {
-        msg = `નમસ્તે ${cl.name}! 🥣 રાત્રિ ભોજન (Light Dinner) નો સમય થયો છે.\n૮:૩૦ પહેલાં હળવો સૂપ કે બાફેલા કઠોળ લઈ લેજો જેથી લિવર ડિટોક્સ રાત્રે વ્યવસ્થિત થાય.`;
+        openPortal();
+      }
+    }
+
+    function logoutClient() { localStorage.removeItem('met_pro_session_phone'); currentClient = null; showAuth(); }
+
+    function isCurrentClientVip() {
+      if (!currentClient) return false;
+      if (currentClient.isVip === true) {
+        if (!currentClient.vipExpiryDate) return true;
+        const exp = new Date(currentClient.vipExpiryDate);
+        return exp >= new Date();
+      }
+      return (Number(currentClient.trialDays) >= 900);
+    }
+
+    function openPortal() {
+      document.getElementById('authView').classList.add('hidden');
+      document.getElementById('modalActivationGate').classList.add('hidden');
+      document.getElementById('clientPortalView').classList.remove('hidden');
+
+      const isVip = isCurrentClientVip();
+      document.getElementById('cpClientTitle').innerText = currentClient.name;
+      document.getElementById('cpClientSub').innerText = (currentClient.conditions || []).join(' • ') || 'Metabolic Plan';
+      
+      const badge = document.getElementById('cpStatusBadge');
+      if (isVip) {
+        badge.innerText = '👑 VIP Paid Member';
+        badge.className = 'px-2 py-0.5 rounded-full bg-amber-200 text-amber-950 text-[9px] font-black';
+      } else {
+        badge.innerText = '⏳ 30-Day Free Trial';
+        badge.className = 'px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[9px] font-bold';
       }
 
-      sentTracker[`${cl.id}_${mealType}`] = true;
-      renderQueue();
-
-      window.open(`https://api.whatsapp.com/send?phone=${validPhone}&text=${encodeURIComponent(msg)}`, '_blank');
+      checkVipAndLiveSessionAccess();
+      loadMealView();
     }
 
-    function renderClientsList() {
-      const c = document.getElementById('admClientsList');
-      c.innerHTML = '';
-      liveClients.forEach(cl => {
-        const safeId = esc(cl.id);
-        const safeName = esc(cl.name);
-        const trialDays = Number(cl.trialDays) || 0;
-        const isVIP = trialDays >= 900;
+    // CHECK VIP LIVE PERMISSIONS
+    async function checkVipAndLiveSessionAccess() {
+      const isVip = isCurrentClientVip();
+      const liveBox = document.getElementById('cpLiveSessionBox');
+      const bannerBox = document.getElementById('cpFreeTrialVipBanner');
+      const recBox = document.getElementById('cpRecordingBox');
 
-        c.innerHTML += `
-          <div class="card-clean p-3 rounded-2xl border flex justify-between items-center text-xs">
-            <div>
-              <div class="font-bold text-slate-800">${safeName} (${cl.phone})</div>
-              <div class="text-[10px] text-teal-700 font-semibold">${(cl.conditions||[]).join(', ')} • PIN: ${cl.pin}</div>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <button onclick="updateTrial('${safeId}', ${isVIP ? 30 : 999})" class="px-2.5 py-1 ${isVIP ? 'bg-amber-100 text-amber-900' : 'bg-slate-900 text-white'} text-[10px] font-bold rounded-lg">
-                ${isVIP ? 'Revoke VIP' : 'Make VIP 👑'}
-              </button>
-            </div>
-          </div>
-        `;
-      });
+      // If user is FREE trial, NEVER show live links
+      if (!isVip) {
+        liveBox.classList.add('hidden');
+        recBox.classList.add('hidden');
+        bannerBox.classList.remove('hidden'); // Show upgrade teaser
+        return;
+      }
+
+      // If VIP, check active links
+      bannerBox.classList.add('hidden');
+      const services = currentClient.services || [];
+
+      try {
+        const doc = await db.collection('settings').doc('live_sessions').get();
+        if (doc.exists) {
+          const data = doc.data();
+          let eligibleUrl = "";
+          let title = "";
+
+          if (services.includes('yoga') && data.yoga) {
+            eligibleUrl = data.yoga;
+            title = "🧘‍♀️ મોર્નિંગ યોગા & પ્રાણાયામ (VIP Live)";
+          } else if (services.includes('garbh') && data.garbh) {
+            eligibleUrl = data.garbh;
+            title = "🌸 ગર્ભસંસ્કાર & પ્રિ-નેટલ લાઈવ ક્લાસ (VIP Live)";
+          } else if (services.includes('med') && data.med) {
+            eligibleUrl = data.med;
+            title = "🧠 ઈવનિંગ મેડિટેશન & ધ્યાન (VIP Live)";
+          }
+
+          if (eligibleUrl) {
+            currentLiveMeetingUrl = eligibleUrl;
+            document.getElementById('cpLiveSessionTitle').innerText = title;
+            liveBox.classList.remove('hidden');
+          } else {
+            liveBox.classList.add('hidden');
+          }
+
+          if (data.record && (services.includes('yoga') || services.includes('garbh') || services.includes('med'))) {
+            currentRecordingUrl = data.record;
+            recBox.classList.remove('hidden');
+          } else {
+            recBox.classList.add('hidden');
+          }
+        }
+      } catch(e) { console.error("Live sessions error:", e); }
     }
 
-    async function updateTrial(id, days) {
-      await db.collection('clients').doc(id).update({ trialDays: days });
+    function joinLiveClass() {
+      if (currentLiveMeetingUrl) window.open(currentLiveMeetingUrl, '_blank');
     }
 
-    setInterval(autoApplyTimeSlot, 120000);
+    function watchClassRecording() {
+      if (currentRecordingUrl) window.open(currentRecordingUrl, '_blank');
+    }
+
+    function requestVipUpgrade() {
+      const msg = `નમસ્તે કોચ! હું Metabolic Pro માં VIP મેમ્બરશિપ મેળવવા અને લાઈવ યોગા/ગર્ભસંસ્કાર ક્લાસ શરૂ કરવા માંગુ છું. વિગત જણાવશો.`;
+      window.open(`https://api.whatsapp.com/send?phone=${COACH_PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    async function openChangePinModal() {
+      const newPin = prompt("તમારો નવો ૪-અંકનો સિક્રેટ PIN દાખલ કરો:");
+      if (!newPin || newPin.length !== 4 || isNaN(newPin)) return alert("⚠️ ૪ આંકડાનો સાચો PIN નાખો.");
+      currentClient.pin = newPin;
+      await db.collection('clients').doc(currentClient.phone).update({ pin: newPin });
+      alert("✅ તમારો નવો PIN સેવ થઈ ગયો: " + newPin);
+    }
+
+    function downloadCoachVCard() {
+      const vcardData = `BEGIN:VCARD\nVERSION:3.0\nFN:Metabolic Pro Helpline\nTEL;TYPE=CELL,VOICE:+${COACH_PHONE}\nEND:VCARD`;
+      const blob = new Blob([vcardData], { type: 'text/vcard;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', 'Metabolic_Pro_Helpline.vcf');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function sendActivationHi() {
+      const msg = `Hi Coach! I have registered on Metabolic Pro.\nName: *${currentClient.name}*\nPlease activate my account!`;
+      window.open(`https://api.whatsapp.com/send?phone=${COACH_PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    async function verifyActivationDone() {
+      if (!currentClient) return;
+      currentClient.whatsappVerified = true;
+      await db.collection('clients').doc(currentClient.phone).update({ whatsappVerified: true });
+      document.getElementById('modalActivationGate').classList.add('hidden');
+      openPortal();
+    }
+
+    // MEAL RENDERING
+    function loadMealView() {
+      const container = document.getElementById('cpTodayMealCards');
+      container.innerHTML = `
+        <div class="card-clean p-4 rounded-3xl border text-xs space-y-2">
+          <div class="font-extrabold text-teal-800">🥗 સવારનો નાસ્તો (08:30 AM)</div>
+          <p class="text-slate-700">ફણગાવેલા મગ-મઠની ચાટ અથવા મગ દાળનો પુડલો + કાકડી સલાડ</p>
+        </div>
+        <div class="card-clean p-4 rounded-3xl border text-xs space-y-2">
+          <div class="font-extrabold text-teal-800">🍲 બપોરનું ભોજન (01:00 PM)</div>
+          <p class="text-slate-700">મોટો બાઉલ કાચું સલાડ + ૧ જુવારનો રોટલો + લીલી શાકભાજી + મોળી છાશ</p>
+        </div>
+        <div class="card-clean p-4 rounded-3xl border text-xs space-y-2">
+          <div class="font-extrabold text-teal-800">🥣 રાત્રિ ભોજન (07:30 PM)</div>
+          <p class="text-slate-700">દૂધી-કોળાનો સૂપ અથવા બાફેલું પનીર સલાડ (હળવું ભોજન)</p>
+        </div>
+      `;
+    }
+
+    async function addWater(amt) {
+      if (!currentClient.compliance) currentClient.compliance = {};
+      if (!currentClient.compliance[selectedDateKey]) currentClient.compliance[selectedDateKey] = {};
+      let cur = Math.round(((currentClient.compliance[selectedDateKey].water || 0) + amt) * 100) / 100;
+      currentClient.compliance[selectedDateKey].water = cur;
+      document.getElementById('cpWaterCount').innerText = `${cur.toFixed(2)} / 3.0 Liters`;
+      document.getElementById('cpWaterBar').style.width = Math.min((cur / 3.0) * 100, 100) + '%';
+      await db.collection('clients').doc(currentClient.phone).update({ [`compliance.${selectedDateKey}.water`]: cur });
+    }
+
+    async function resetWater() {
+      if (!currentClient.compliance) currentClient.compliance = {};
+      if (!currentClient.compliance[selectedDateKey]) currentClient.compliance[selectedDateKey] = {};
+      currentClient.compliance[selectedDateKey].water = 0;
+      document.getElementById('cpWaterCount').innerText = `0.0 / 3.0 Liters`;
+      document.getElementById('cpWaterBar').style.width = '0%';
+      await db.collection('clients').doc(currentClient.phone).update({ [`compliance.${selectedDateKey}.water`]: 0 });
+    }
+
+    function submitClientReport() {
+      const comp = currentClient.compliance?.[selectedDateKey] || {};
+      const msg = `🩺 *Metabolic Pro - Daily Check*\nClient: *${currentClient.name}*\nWater: *${(comp.water || 0).toFixed(2)} L*\nStatus: All healthy and following meal plan.`;
+      window.open(`https://api.whatsapp.com/send?phone=${COACH_PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
+    }
   </script>
 </body>
 </html>
