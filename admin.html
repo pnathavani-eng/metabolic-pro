@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Metabolic Pro - Master Admin CRM v3</title>
+  <title>Metabolic Pro - Master Admin CRM v4</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -17,7 +17,6 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
-    .brand-gradient { background: linear-gradient(135deg, #0d9488, #0284c7); }
     .card-clean { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
     .tab-active { background: #0f766e; color: #ffffff !important; font-weight: 700; }
   </style>
@@ -32,7 +31,7 @@
       </div>
       <div>
         <h2 class="text-xl font-black text-slate-900">Coach Master Admin</h2>
-        <p class="text-xs text-slate-500 mt-0.5">Metabolic Pro Cloud CRM v3</p>
+        <p class="text-xs text-slate-500 mt-0.5">Metabolic Pro Cloud CRM v4</p>
       </div>
       <div class="space-y-3 text-left">
         <input type="password" maxlength="8" id="inAdminPin" placeholder="Admin PIN દાખલ કરો" class="w-full p-3 bg-slate-50 border rounded-xl text-center text-xl font-black">
@@ -46,125 +45,50 @@
     <header class="p-3.5 bg-slate-900 text-white sticky top-0 z-40 flex justify-between items-center shadow-md">
       <div class="flex items-center gap-2">
         <div class="w-8 h-8 rounded-xl bg-teal-500 text-slate-900 font-black flex items-center justify-center text-sm">MP</div>
-        <h1 class="font-extrabold text-white text-sm">Admin CRM & Nutrition Engine v3</h1>
+        <h1 class="font-extrabold text-white text-sm">Admin CRM & WhatsApp Nudge Center</h1>
       </div>
       <button onclick="logoutAdmin()" class="px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs">Logout</button>
     </header>
 
     <div class="flex p-2 gap-1.5 bg-white border-b text-xs overflow-x-auto">
-      <button onclick="setAdminTab('clients')" id="atab-clients" class="tab-active px-3 py-2 rounded-xl whitespace-nowrap"><i class="fa-solid fa-users"></i> ક્લાયન્ટ્સ & લોગ્સ</button>
-      <button onclick="setAdminTab('grocery')" id="atab-grocery" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-solid fa-carrot"></i> ક્લિનિકલ પૂલ DB (50+ Dishes)</button>
+      <button onclick="setAdminTab('nudge')" id="atab-nudge" class="tab-active px-3 py-2 rounded-xl whitespace-nowrap"><i class="fa-brands fa-whatsapp text-emerald-400"></i> WhatsApp નજ ક્યૂ (Queue)</button>
+      <button onclick="setAdminTab('clients')" id="atab-clients" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-solid fa-users"></i> તમામ ક્લાયન્ટ્સ</button>
     </div>
 
     <main class="p-3.5 max-w-xl mx-auto space-y-3.5">
-      <!-- Clients Tab -->
-      <section id="aview-clients" class="space-y-3">
-        <button onclick="openModal()" class="w-full bg-teal-600 text-white font-bold py-3 rounded-xl text-xs shadow-sm">+ નવો ક્લાયન્ટ પ્રોટોકોલ સાથે ઉમેરો</button>
-        <div id="admClientsList" class="space-y-3"></div>
-      </section>
-
-      <!-- Clinical Food Pool Tab -->
-      <section id="aview-grocery" class="hidden space-y-3 text-xs">
+      
+      <!-- TAB 1: WHATSAPP NUDGE QUEUE RUNNER -->
+      <section id="aview-nudge" class="space-y-3">
         <div class="card-clean p-4 rounded-2xl space-y-3">
           <div class="flex justify-between items-center">
             <div>
-              <h2 class="font-bold text-slate-800 text-sm">માસ્ટર કેટેગરી પૂલ ડેટાબેઝ</h2>
-              <p class="text-[11px] text-slate-500">પ્રી/પોસ્ટ વર્કઆઉટ અને ૭-દિવસ નો-રિપીટ ક્લિનિકલ પૂલ.</p>
+              <h2 class="font-bold text-slate-900 text-sm">સ્માર્ટ વોટ્સએપ નજ ક્યૂ રનર</h2>
+              <p class="text-[11px] text-slate-500">૧-ક્લિકથી દર્દીને તેના પોતાના ભોજનનો રિમાઇન્ડર મોકલો.</p>
             </div>
-            <span class="px-2.5 py-1 bg-teal-50 text-teal-800 font-bold rounded-lg text-[10px] border border-teal-200" id="totalFoodCount">50+ વાનગીઓ</span>
+            <select id="selNudgeMealType" class="p-1.5 bg-slate-100 border rounded-xl text-xs font-bold text-teal-800">
+              <option value="lunch" selected>🍲 બપોરનું ભોજન (Lunch)</option>
+              <option value="walk">🚶‍♂️ પોસ્ટ-મીલ વોક (Walk)</option>
+              <option value="dinner">🥣 રાત્રિ ભોજન (Dinner)</option>
+            </select>
           </div>
-          <div id="groceryItemsList" class="space-y-2"></div>
+
+          <!-- Pool Filter Chips -->
+          <div class="flex gap-1.5 text-[11px] overflow-x-auto pb-1">
+            <button onclick="setPoolFilter('trial')" id="pfilter-trial" class="px-3 py-1.5 rounded-xl bg-teal-600 text-white font-bold whitespace-nowrap">⏳ 30-Day Trial (<span id="cntTrial">0</span>)</button>
+            <button onclick="setPoolFilter('vip')" id="pfilter-vip" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 font-bold whitespace-nowrap">👑 VIP Paid (<span id="cntVip">0</span>)</button>
+            <button onclick="setPoolFilter('pending')" id="pfilter-pending" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 font-bold whitespace-nowrap">⚠️ Pending WA (<span id="cntPending">0</span>)</button>
+            <button onclick="setPoolFilter('expired')" id="pfilter-expired" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 font-bold whitespace-nowrap">🔒 Expired (<span id="cntExpired">0</span>)</button>
+          </div>
         </div>
+
+        <div id="queueClientsContainer" class="space-y-2"></div>
+      </section>
+
+      <!-- TAB 2: ALL CLIENTS & ACCESS -->
+      <section id="aview-clients" class="hidden space-y-3">
+        <div id="admClientsList" class="space-y-3"></div>
       </section>
     </main>
-  </div>
-
-  <!-- Add Client Modal -->
-  <div id="admModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm p-4 rounded-3xl space-y-2.5 text-xs shadow-xl max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-bold text-sm">નવો ક્લાયન્ટ પ્રોટોકોલ ઉમેરો</h3>
-        <button onclick="closeModal()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
-      </div>
-
-      <input type="text" id="mName" placeholder="પૂરું નામ *" class="w-full p-2 border rounded-lg">
-      <input type="text" id="mPhone" placeholder="WhatsApp નંબર (૧૦ અંક) *" class="w-full p-2 border rounded-lg">
-      
-      <!-- Biometrics (Empty defaults, required) -->
-      <div class="grid grid-cols-3 gap-1.5">
-        <input type="number" id="mAge" placeholder="ઉંમર *" class="p-2 border rounded-lg">
-        <input type="number" id="mHeight" placeholder="ઊંચાઈ cm *" class="p-2 border rounded-lg">
-        <input type="number" id="mWeight" placeholder="વજન kg *" class="p-2 border rounded-lg">
-      </div>
-
-      <div class="grid grid-cols-2 gap-1.5">
-        <select id="mGender" class="p-2 border rounded-lg font-semibold">
-          <option value="male">પુરુષ (Male)</option>
-          <option value="female">મહિલા (Female)</option>
-        </select>
-        <select id="mActivity" class="p-2 border rounded-lg font-semibold">
-          <option value="sedentary">Sedentary (ઓછી હિલચાલ)</option>
-          <option value="light" selected>હળવી (Walk/Yoga)</option>
-          <option value="moderate">મધ્યમ (3-5d Gym)</option>
-          <option value="active">ભારે કસરત</option>
-        </select>
-      </div>
-
-      <div class="grid grid-cols-2 gap-1.5">
-        <select id="mDietMode" class="p-2 border rounded-lg font-semibold">
-          <option value="veg" selected>🌱 શુદ્ધ શાકાહારી</option>
-          <option value="egg">🥚 એગિટેરિયન</option>
-          <option value="nonveg">🍗 નોન-વેજિટેરિયન</option>
-        </select>
-        <label class="flex items-center gap-1.5 p-2 border rounded-lg bg-slate-50 font-medium">
-          <input type="checkbox" id="mKidneyIssue" class="w-3.5 h-3.5 text-teal-600 rounded">
-          <span class="text-[10px] text-rose-800 font-bold">કિડની સાવચેતી</span>
-        </label>
-      </div>
-
-      <!-- Health Goals -->
-      <div class="space-y-1 pt-1">
-        <label class="font-bold text-slate-700">સ્વાસ્થ્ય લક્ષ્યો (Multi-Select):</label>
-        <div class="grid grid-cols-2 gap-1.5 bg-slate-50 p-2 rounded-xl border">
-          <label class="flex items-center gap-1.5 cursor-pointer font-medium"><input type="checkbox" name="mGoalCheck" value="diabetes" checked class="w-3.5 h-3.5 text-teal-600 rounded"> 🩺 ડાયાબિટીસ</label>
-          <label class="flex items-center gap-1.5 cursor-pointer font-medium"><input type="checkbox" name="mGoalCheck" value="fatty_liver" checked class="w-3.5 h-3.5 text-teal-600 rounded"> 🥒 ફેટી લિવર</label>
-          <label class="flex items-center gap-1.5 cursor-pointer font-medium"><input type="checkbox" name="mGoalCheck" value="gym" class="w-3.5 h-3.5 text-teal-600 rounded"> 💪 જિમ / ફિટનેસ</label>
-          <label class="flex items-center gap-1.5 cursor-pointer font-medium"><input type="checkbox" name="mGoalCheck" value="fat_loss" class="w-3.5 h-3.5 text-teal-600 rounded"> ⚖️ ફેટ લોસ</label>
-        </div>
-      </div>
-
-      <!-- Cuisine & Trial Days -->
-      <div class="grid grid-cols-2 gap-1.5">
-        <select id="mCuisine" class="p-2 border rounded-lg font-semibold">
-          <option value="gujarati" selected>ગુજરાતી શૈલી</option>
-          <option value="marathi">મરાઠી શૈલી</option>
-          <option value="punjabi">નોર્થ ઇન્ડિયન</option>
-          <option value="general">સામાન્ય ઇન્ડિયન</option>
-        </select>
-        <input type="number" id="mDays" value="30" placeholder="ટ્રાયલ દિવસ (999=VIP)" class="p-2 border rounded-lg">
-      </div>
-
-      <input type="text" id="mAllergies" placeholder="એલર્જી / બાકાત (દા.ત. soy, mushroom, દૂધ)" class="w-full p-2 border rounded-lg">
-
-      <button onclick="addNewClientToCloud()" class="w-full bg-teal-600 text-white font-bold py-2.5 rounded-xl mt-1 shadow">ક્લાઉડમાં સેવ કરો 🚀</button>
-    </div>
-  </div>
-
-  <!-- Client Details / Logs Modal -->
-  <div id="modalClientLogs" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-lg p-5 rounded-3xl space-y-3 text-xs shadow-xl max-h-[85vh] overflow-y-auto">
-      <div class="flex justify-between items-center border-b pb-2">
-        <div>
-          <h3 class="font-extrabold text-sm text-slate-900" id="logModalTitle">Client Insights</h3>
-          <p class="text-[10px] text-teal-700" id="logModalSub">Recent Compliance & Swaps</p>
-        </div>
-        <button onclick="closeClientLogsModal()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
-      </div>
-
-      <div id="logModalContent" class="space-y-2"></div>
-
-      <button onclick="closeClientLogsModal()" class="w-full bg-slate-100 font-bold py-2 rounded-xl text-slate-600">બંધ કરો</button>
-    </div>
   </div>
 
   <script>
@@ -187,6 +111,8 @@
     }
 
     let liveClients = [];
+    let currentPool = 'trial';
+    let sentTracker = {}; // Tracks sent messages during active session
 
     function verifyAdminPin() {
       const pin = document.getElementById('inAdminPin').value.trim();
@@ -194,7 +120,6 @@
         document.getElementById('adminAuthView').classList.add('hidden');
         document.getElementById('adminMainView').classList.remove('hidden');
         listenToClients();
-        renderMasterPool();
       } else {
         alert('ખોટો PIN છે.');
       }
@@ -203,7 +128,7 @@
     function logoutAdmin() { location.reload(); }
 
     function setAdminTab(tab) {
-      ['clients', 'grocery'].forEach(t => {
+      ['nudge', 'clients'].forEach(t => {
         document.getElementById('aview-' + t).classList.add('hidden');
         document.getElementById('atab-' + t).className = "px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap";
       });
@@ -215,60 +140,134 @@
       db.collection('clients').orderBy('createdAt', 'desc').onSnapshot(snap => {
         liveClients = [];
         snap.forEach(d => liveClients.push({ id: d.id, ...d.data() }));
-        renderClients();
+        updatePoolCounters();
+        renderQueue();
+        renderClientsList();
       });
     }
 
-    function renderClients() {
-      const c = document.getElementById('admClientsList');
-      c.innerHTML = '';
-      if(liveClients.length === 0) { 
-        c.innerHTML = '<div class="text-center py-6 text-slate-400">કોઈ ક્લાયન્ટ મળ્યા નથી.</div>'; 
-        return; 
+    function getDaysActive(joiningDateStr) {
+      if(!joiningDateStr) return 0;
+      const jDate = new Date(joiningDateStr);
+      const now = new Date();
+      const diffTime = Math.abs(now - jDate);
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+
+    function updatePoolCounters() {
+      let cTrial = 0, cVip = 0, cPending = 0, cExpired = 0;
+
+      liveClients.forEach(c => {
+        const isVIP = (Number(c.trialDays) >= 900);
+        const days = getDaysActive(c.joiningDate);
+        const isExpired = !isVIP && (days > (Number(c.trialDays) || 30));
+
+        if (!c.whatsappVerified) cPending++;
+        else if (isVIP) cVip++;
+        else if (isExpired) cExpired++;
+        else cTrial++;
+      });
+
+      document.getElementById('cntTrial').innerText = cTrial;
+      document.getElementById('cntVip').innerText = cVip;
+      document.getElementById('cntPending').innerText = cPending;
+      document.getElementById('cntExpired').innerText = cExpired;
+    }
+
+    function setPoolFilter(pool) {
+      currentPool = pool;
+      ['trial', 'vip', 'pending', 'expired'].forEach(p => {
+        document.getElementById('pfilter-' + p).className = "px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 font-bold whitespace-nowrap";
+      });
+      document.getElementById('pfilter-' + pool).className = "px-3 py-1.5 rounded-xl bg-teal-600 text-white font-bold whitespace-nowrap";
+      renderQueue();
+    }
+
+    function renderQueue() {
+      const container = document.getElementById('queueClientsContainer');
+      container.innerHTML = '';
+      const mealType = document.getElementById('selNudgeMealType').value;
+
+      const filtered = liveClients.filter(c => {
+        const isVIP = (Number(c.trialDays) >= 900);
+        const days = getDaysActive(c.joiningDate);
+        const isExpired = !isVIP && (days > (Number(c.trialDays) || 30));
+
+        if (currentPool === 'pending') return !c.whatsappVerified;
+        if (currentPool === 'vip') return isVIP && c.whatsappVerified;
+        if (currentPool === 'expired') return isExpired && c.whatsappVerified;
+        return !isVIP && !isExpired && c.whatsappVerified; // Active Trial
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">આ પૂલમાં કોઈ ક્લાયન્ટ નથી.</div>`;
+        return;
       }
 
-      liveClients.forEach(cl => {
-        const safeName = esc(cl.name);
-        const safePhone = esc(cl.phone);
-        const safeId = esc(cl.id);
-        const conditions = (cl.conditions || []).join(' • ') || 'General Protocol';
-        const weight = cl.weight ? `${cl.weight}kg` : '';
-        const diet = cl.diet ? `[${cl.diet}]` : '';
-        const trialDays = Number(cl.trialDays) || 0;
+      filtered.forEach(cl => {
+        const isSent = sentTracker[`${cl.id}_${mealType}`];
+        const conditions = (cl.conditions || []).join(' • ');
 
-        // Check if client has extras or sugar logs in latest compliance
-        const comp = cl.compliance || {};
-        const recentDates = Object.keys(comp).sort().slice(-3);
-        let recentExtrasCount = 0;
-        recentDates.forEach(d => {
-          if (comp[d]?.extras && comp[d].extras.length > 0) recentExtrasCount++;
-        });
-
-        c.innerHTML += `
-          <div class="card-clean p-3.5 rounded-2xl space-y-2 border">
-            <div class="flex justify-between items-start">
-              <div>
-                <span class="text-xs font-bold text-slate-800">${safeName} (${safePhone})</span>
-                <div class="text-[10px] text-teal-700 font-bold mt-0.5">${esc(conditions)} ${weight ? '• ' + weight : ''} ${diet}</div>
-              </div>
-              <span class="text-[10px] font-extrabold px-2 py-0.5 bg-teal-50 text-teal-800 rounded">
-                ${trialDays >= 900 ? 'Lifetime VIP' : trialDays + ' Days'}
-              </span>
+        container.innerHTML += `
+          <div class="card-clean p-3 rounded-2xl flex items-center justify-between border">
+            <div>
+              <div class="font-extrabold text-slate-900 text-xs">${esc(cl.name)} (${esc(cl.phone)})</div>
+              <div class="text-[10px] text-teal-700 font-bold mt-0.5">${esc(conditions)}</div>
             </div>
 
-            ${recentExtrasCount > 0 ? `
-              <div class="p-1.5 bg-amber-50 rounded-lg border border-amber-200 text-[10px] text-amber-900 font-semibold flex items-center gap-1">
-                <i class="fa-solid fa-cookie-bite text-amber-600"></i> તાજેતરમાં પ્લાન બહારનું ફૂડ (Extras) નોંધેલું છે.
-              </div>` : ''}
+            <div class="flex items-center gap-1.5">
+              ${isSent ? `
+                <span class="px-2 py-1 bg-emerald-100 text-emerald-900 font-extrabold text-[10px] rounded-lg">
+                  <i class="fa-solid fa-check-double"></i> Sent
+                </span>
+              ` : `
+                <button onclick="sendNudgeWhatsApp('${cl.id}', '${mealType}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl flex items-center gap-1 shadow-xs transition">
+                  <i class="fa-brands fa-whatsapp text-sm"></i> Send
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      });
+    }
 
-            <div class="flex items-center gap-1.5 pt-1">
-              <button onclick="openClientLogs('${safeId}')" class="px-2.5 py-1 bg-teal-50 text-teal-800 hover:bg-teal-100 text-[10px] font-bold rounded-lg transition border border-teal-200">
-                <i class="fa-solid fa-chart-simple"></i> લોગ્સ & Swaps
-              </button>
-              <button onclick="updateTrial('${safeId}', 30)" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-[10px] font-semibold rounded-lg transition">30 Days</button>
-              <button onclick="updateTrial('${safeId}', 999)" class="px-2 py-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] rounded-lg font-bold transition">VIP</button>
-              <button onclick="deleteClient('${safeId}', '${safeName}')" class="text-rose-600 hover:text-rose-700 font-bold text-[10px] ml-auto px-2 py-1 bg-rose-50 rounded-lg transition">
-                <i class="fa-solid fa-trash-can"></i> ડિલીટ
+    function sendNudgeWhatsApp(clientId, mealType) {
+      const cl = liveClients.find(c => c.id === clientId);
+      if(!cl) return;
+
+      let msg = "";
+      if (mealType === 'lunch') {
+        msg = `નમસ્તે ${cl.name}! 🍲 બપોરના ભોજનનો સમય થયો છે.\nયાદ રાખજો: પહેલાં સલાડ પૂરું કરવાનું છે, પછી જ રોટલો અને શાક લેવું જેથી બ્લડ શુગર સ્થિર રહે.\nજમ્યા પછી પોર્ટલમાં 'લીધું' ટીક કરી લેજો 📲`;
+      } else if (mealType === 'walk') {
+        msg = `નમસ્તે ${cl.name}! 🚶‍♂️ પોસ્ટ-મીલ ૧૫ મિનિટ વૉકનો સમય!\nજમ્યા પછી તરત હળવું ચાલવાથી શુગર સ્પાઇક અટકે છે અને પાચન ઝડપી બને છે.`;
+      } else {
+        msg = `નમસ્તે ${cl.name}! 🥣 રાત્રિ ભોજન (Light Dinner) નો સમય થયો છે.\n૮:૩૦ પહેલાં હળવો સૂપ કે બાફેલા કઠોળ લઈ લેજો જેથી લિવર ડિટોક્સ રાત્રે વ્યવસ્થિત થાય.`;
+      }
+
+      sentTracker[`${cl.id}_${mealType}`] = true;
+      renderQueue();
+
+      window.open(`https://wa.me/${cl.phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function renderClientsList() {
+      const c = document.getElementById('admClientsList');
+      c.innerHTML = '';
+      liveClients.forEach(cl => {
+        const safeId = esc(cl.id);
+        const safeName = esc(cl.name);
+        const trialDays = Number(cl.trialDays) || 0;
+        const isVIP = trialDays >= 900;
+
+        c.innerHTML += `
+          <div class="card-clean p-3 rounded-2xl border flex justify-between items-center text-xs">
+            <div>
+              <div class="font-bold text-slate-800">${safeName} (${cl.phone})</div>
+              <div class="text-[10px] text-teal-700 font-semibold">${(cl.conditions||[]).join(', ')} • PIN: ${cl.pin}</div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="updateTrial('${safeId}', ${isVIP ? 30 : 999})" class="px-2.5 py-1 ${isVIP ? 'bg-amber-100 text-amber-900' : 'bg-slate-900 text-white'} text-[10px] font-bold rounded-lg">
+                ${isVIP ? 'Revoke VIP' : 'Make VIP 👑'}
               </button>
             </div>
           </div>
@@ -276,126 +275,8 @@
       });
     }
 
-    function openClientLogs(clientId) {
-      const cl = liveClients.find(c => c.id === clientId);
-      if(!cl) return;
-
-      document.getElementById('logModalTitle').innerText = `${cl.name} (${cl.phone})`;
-      document.getElementById('logModalSub').innerText = `લક્ષ્ય: ${(cl.conditions || []).join(', ')} | પ્રારંભિક વજન: ${cl.weight || '-'} kg`;
-
-      const comp = cl.compliance || {};
-      const dates = Object.keys(comp).sort().reverse().slice(0, 7);
-      const container = document.getElementById('logModalContent');
-      container.innerHTML = '';
-
-      if (dates.length === 0) {
-        container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">કોઈ લોગ મળ્યા નથી.</div>';
-      } else {
-        dates.forEach(dKey => {
-          const d = comp[dKey];
-          const swaps = d.swaps ? Object.keys(d.swaps).map(s => `${s}: ${d.swaps[s]}`).join(', ') : 'નથી';
-          const extras = d.extras && d.extras.length > 0 ? d.extras.join(', ') : 'નથી';
-          const sugar = `Fasting: ${d.metric1 || '-'} | PP: ${d.metric2 || '-'}`;
-          const currentWeight = d.weight ? `${d.weight} kg` : '-';
-
-          container.innerHTML += `
-            <div class="p-2.5 bg-slate-50 rounded-xl border space-y-1">
-              <div class="flex justify-between font-bold text-slate-900">
-                <span>🗓️ ${dKey}</span>
-                <span class="text-teal-700">વજન: ${currentWeight}</span>
-              </div>
-              <div class="text-[11px] text-slate-600">🩸 શુગર: <b>${sugar}</b> | 💧 પાણી: <b>${(d.water || 0).toFixed(1)}L</b></div>
-              <div class="text-[11px] text-amber-900">🍪 પ્લાન બહારનું (Extras): <b>${esc(extras)}</b></div>
-              <div class="text-[10px] text-slate-500">🔁 Swaps: ${esc(swaps)}</div>
-            </div>
-          `;
-        });
-      }
-
-      document.getElementById('modalClientLogs').classList.remove('hidden');
-    }
-
-    function closeClientLogsModal() {
-      document.getElementById('modalClientLogs').classList.add('hidden');
-    }
-
     async function updateTrial(id, days) {
-      try {
-        await db.collection('clients').doc(id).update({ trialDays: days });
-        alert('ટ્રાયલ અપડેટ સફળ!');
-      } catch (e) {
-        alert('Error: ' + e.message);
-      }
-    }
-
-    async function deleteClient(id, name) {
-      if(!confirm(`શું તમે ખરેખર ${name} નો ડેટા કાયમ માટે ડિલીટ કરવા માંગો છો? આ પાછું નહીં મળે.`)) return;
-      try {
-        await db.collection('clients').doc(id).delete();
-      } catch (e) {
-        alert('Error: ' + e.message);
-      }
-    }
-
-    function renderMasterPool() {
-      const c = document.getElementById('groceryItemsList');
-      c.innerHTML = `
-        <div class="p-3 bg-teal-50 border border-teal-200 rounded-xl space-y-1 text-teal-900">
-          <div class="font-bold">✅ પૂલ આર્કિટેક્ચર સિંક થયેલું છે</div>
-          <p class="text-[11px] leading-relaxed">
-            હવે પોર્ટલમાં વાનગીઓ સંપૂર્ણપણે ક્લાયન્ટ સાઇડથી કેટેગરી-વાઇઝ ડાયનામિક કન્સ્ટ્રેઇન્ટ એન્જિન વડે બને છે. Firestore માં આખો પ્લાન સેવ થતો નથી, ફક્ત સ્વેપ આઈડી અને યુઝર લોગ્સ સેવ થાય છે, જેથી કોઈ કાર્ડ ગાયબ થવાનો પ્રશ્ન રહેતો નથી.
-          </p>
-        </div>
-      `;
-    }
-
-    function openModal() { document.getElementById('admModal').classList.remove('hidden'); }
-    function closeModal() { document.getElementById('admModal').classList.add('hidden'); }
-
-    async function addNewClientToCloud() {
-      const n = document.getElementById('mName').value.trim();
-      const p = document.getElementById('mPhone').value.trim().replace(/\D/g,'');
-      const age = Number(document.getElementById('mAge').value);
-      const height = Number(document.getElementById('mHeight').value);
-      const weight = Number(document.getElementById('mWeight').value);
-      const gender = document.getElementById('mGender').value;
-      const activity = document.getElementById('mActivity').value;
-      const diet = document.getElementById('mDietMode').value;
-      const kidneyIssue = document.getElementById('mKidneyIssue').checked;
-      const cuisine = document.getElementById('mCuisine').value;
-      const days = parseInt(document.getElementById('mDays').value) || 30;
-      const allergiesInput = document.getElementById('mAllergies').value.trim();
-      const allergies = allergiesInput ? allergiesInput.split(',').map(s => s.trim().toLowerCase()) : [];
-
-      const conditions = Array.from(document.querySelectorAll('input[name="mGoalCheck"]:checked')).map(cb => cb.value);
-
-      if(!n || p.length < 10) return alert('પૂરું નામ અને ૧૦-અંકનો નંબર ફરજિયાત છે.');
-      if(!age || !height || !weight) return alert('ઉંમર, ઊંચાઈ અને વજનના સાચા આંકડા દાખલ કરો.');
-      if(conditions.length === 0) return alert('ઓછામાં ઓછું એક લક્ષ્ય પસંદ કરો.');
-
-      try {
-        const existing = await db.collection('clients').doc(p).get();
-        if(existing.exists) {
-          if(!confirm('આ નંબર પર ક્લાયન્ટ પહેલેથી મોજૂદ છે. શું ઓવરરાઇટ કરવું છે?')) return;
-        }
-
-        await db.collection('clients').doc(p).set({
-          name: n, phone: p, pin: p.slice(-4),
-          age, height, weight, gender, activity, diet,
-          kidneyIssue, conditions,
-          preferences: { cuisine, allergies, swapScores: {} },
-          goal: conditions.join(' + '),
-          trialDays: days,
-          joiningDate: new Date().toISOString().split('T')[0],
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          compliance: existing.exists && existing.data().compliance ? existing.data().compliance : {}
-        }, { merge: true });
-
-        closeModal();
-        alert('ક્લાયન્ટ v3 સ્કીમા સાથે સફળતાપૂર્વક ઉમેરાઈ ગયો!');
-      } catch (e) {
-        alert('Error: ' + e.message);
-      }
+      await db.collection('clients').doc(id).update({ trialDays: days });
     }
   </script>
 </body>
