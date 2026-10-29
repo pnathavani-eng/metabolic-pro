@@ -1,1 +1,769 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Metabolic Pro - Clinical Nutrition Engine</title>
+
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Metabolic Pro">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0d9488">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2966/2966486.png">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .brand-gradient { background: linear-gradient(135deg, #0d9488, #0284c7); }
+    .card-clean {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    }
+    .btn-done-active { background-color: #059669 !important; color: #ffffff !important; font-weight: 800; border-color: #059669 !important; }
+    .btn-half-active { background-color: #d97706 !important; color: #ffffff !important; font-weight: 800; border-color: #d97706 !important; }
+    .btn-miss-active { background-color: #e11d48 !important; color: #ffffff !important; font-weight: 800; border-color: #e11d48 !important; }
+    .btn-idle { background-color: #f8fafc; color: #475569; border: 1px solid #cbd5e1; }
+  </style>
+</head>
+<body class="pb-24 antialiased">
+
+  <!-- AUTH VIEW -->
+  <div id="authView" class="min-h-screen flex flex-col justify-between p-4 max-w-md mx-auto space-y-4">
+    <div class="text-center pt-5 space-y-2">
+      <div class="w-16 h-16 rounded-2xl brand-gradient flex items-center justify-center text-white text-3xl font-black shadow-lg mx-auto">🩺</div>
+      <div>
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight">Metabolic Pro</h1>
+        <p class="text-xs font-semibold text-teal-700 uppercase tracking-widest mt-0.5">Clinical Lifestyle & Nutrition Engine</p>
+      </div>
+      <p class="text-xs text-slate-500 max-w-xs mx-auto">ડાયાબિટીસ મુક્તિ, ફેટી લિવર ડિટોક્સ અને પર્સનલાઇઝ્ડ મેટાબોલિક હેલ્થ પોર્ટલ.</p>
+    </div>
+
+    <div class="card-clean rounded-3xl p-5 shadow-sm space-y-4 border">
+      <div class="flex p-1 bg-slate-100 rounded-2xl text-xs font-bold text-slate-600">
+        <button onclick="setAuthTab('register')" id="tabRegister" class="flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold">✨ નવું રજીસ્ટ્રેશન</button>
+        <button onclick="setAuthTab('login')" id="tabLogin" class="flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold">🔑 લોગિન</button>
+      </div>
+
+      <!-- Registration Form -->
+      <div id="formRegister" class="space-y-3 text-xs">
+        <div>
+          <label class="font-bold text-slate-700">પૂરું નામ *</label>
+          <input type="text" id="regName" placeholder="દા.ત. પિયુષ નથવાણી" class="w-full mt-1 p-2.5 bg-slate-50 border rounded-xl text-slate-800 font-bold">
+        </div>
+        <div>
+          <label class="font-bold text-slate-700">WhatsApp મોબાઈલ નંબર *</label>
+          <input type="tel" id="regPhone" placeholder="દા.ત. 9925879138" class="w-full mt-1 p-2.5 bg-slate-50 border rounded-xl text-slate-800 font-bold">
+        </div>
+
+        <div class="p-2.5 bg-teal-50/70 border border-teal-200 rounded-2xl space-y-1">
+          <label class="font-bold text-teal-900 block">તમારો મનપસંદ ૪-અંકનો સિક્રેટ PIN બનાવો *</label>
+          <input type="password" maxlength="4" id="regPin" placeholder="•••• (દા.ત. 1988 કે 5624)" class="w-full p-2 bg-white border border-teal-300 rounded-xl text-center text-sm font-black tracking-widest text-slate-900">
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="font-bold text-slate-700 text-[10px]">ઉંમર (વર્ષ) *</label>
+            <input type="number" id="regAge" placeholder="વર્ષ" class="w-full mt-1 p-2 bg-slate-50 border rounded-xl text-xs font-bold">
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 text-[10px]">ઊંચાઈ (cm) *</label>
+            <input type="number" id="regHeight" placeholder="સેમી" class="w-full mt-1 p-2 bg-slate-50 border rounded-xl text-xs font-bold">
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 text-[10px]">વજન (kg) *</label>
+            <input type="number" id="regWeight" placeholder="કિલો" class="w-full mt-1 p-2 bg-slate-50 border rounded-xl text-xs font-bold">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold text-slate-700 text-[10px]">જાતિ (Gender)</label>
+            <select id="regGender" class="w-full mt-1 p-2 bg-slate-50 border rounded-xl text-xs font-semibold">
+              <option value="male">પુરુષ (Male)</option>
+              <option value="female">મહિલા (Female)</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 text-[10px]">પ્રવૃત્તિ સ્તર (Activity)</label>
+            <select id="regActivity" class="w-full mt-1 p-2 bg-slate-50 border rounded-xl text-xs font-semibold">
+              <option value="sedentary">ઓછી હિલચાલ (Desk)</option>
+              <option value="light" selected>હળવી (20-30m Walk)</option>
+              <option value="moderate">મધ્યમ (Gym / Yoga)</option>
+              <option value="active">ભારે કસરત</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold text-slate-700 text-[10px]">આહાર મોડ (Diet)</label>
+            <select id="regDietMode" class="w-full mt-1 p-2 bg-slate-50 border rounded-xl text-xs font-semibold">
+              <option value="veg" selected>🌱 શુદ્ધ શાકાહારી</option>
+              <option value="egg">🥚 એગિટેરિયન</option>
+              <option value="nonveg">🍗 નોન-વેજિટેરિયન</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 text-[10px]">કિડની સાવચેતી</label>
+            <label class="flex items-center gap-1.5 p-2 bg-slate-50 border rounded-xl mt-1 text-[11px] font-semibold">
+              <input type="checkbox" id="regKidneyIssue" class="w-4 h-4 text-teal-600 rounded"> કિડની તકલીફ છે?
+            </label>
+          </div>
+        </div>
+
+        <div class="space-y-1.5 pt-1">
+          <label class="font-bold text-slate-700">સ્વાસ્થ્ય લક્ષ્યો પસંદ કરો *:</label>
+          <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-2xl border">
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
+              <input type="checkbox" name="regCondition" value="diabetes" checked class="w-4 h-4 text-teal-600 rounded"> 🩺 ડાયાબિટીસ
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
+              <input type="checkbox" name="regCondition" value="fatty_liver" checked class="w-4 h-4 text-teal-600 rounded"> 🥒 ફેટી લિવર
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
+              <input type="checkbox" name="regCondition" value="menopause" class="w-4 h-4 text-teal-600 rounded"> 🌸 મેનોપોઝ / હોર્મોન્સ
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
+              <input type="checkbox" name="regCondition" value="gym" class="w-4 h-4 text-teal-600 rounded"> 💪 જિમ / ફિટનેસ
+            </label>
+          </div>
+        </div>
+
+        <button onclick="handleClientRegister()" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-sm shadow-md mt-1">મારું ક્લિનિકલ પોર્ટલ શરૂ કરો 🚀</button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="formLogin" class="hidden space-y-3.5 text-xs">
+        <div>
+          <label class="font-bold text-slate-700">વોટ્સએપ મોબાઈલ નંબર</label>
+          <input type="tel" id="loginId" placeholder="દા.ત. 9925879138" class="w-full mt-1 p-3 bg-slate-50 border rounded-xl text-slate-800 font-bold">
+        </div>
+        <div>
+          <label class="font-bold text-slate-700">૪-અંકનો PIN</label>
+          <input type="password" maxlength="4" id="loginPin" placeholder="••••" class="w-full mt-1 p-3 bg-slate-50 border rounded-xl text-center text-base font-black tracking-widest">
+        </div>
+        <button onclick="handleClientLogin()" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-extrabold text-sm shadow">પોર્ટલ ખોલો 📲</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHATSAPP GATE MODAL -->
+  <div id="modalActivationGate" class="hidden fixed inset-0 bg-slate-950/85 z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm p-5 rounded-3xl space-y-4 text-xs shadow-2xl border text-center">
+      <div class="w-14 h-14 rounded-2xl bg-teal-50 border border-teal-200 text-teal-700 flex items-center justify-center text-2xl mx-auto shadow-sm">
+        <i class="fa-brands fa-whatsapp"></i>
+      </div>
+      <div>
+        <h3 class="font-black text-slate-900 text-base">WhatsApp એક્ટિવેશન ફરજિયાત</h3>
+        <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">ડેઈલી મીલ રિમાઇન્ડર્સ શરૂ કરવા નીચેના ૨ સ્ટેપ્સ પૂર્ણ કરો:</p>
+      </div>
+
+      <div class="space-y-2.5 text-left pt-1">
+        <div class="p-3 bg-slate-50 rounded-2xl border flex items-center justify-between">
+          <div>
+            <div class="font-extrabold text-slate-900 text-xs">સ્ટેપ ૧: હેલ્પલાઇન સેવ કરો</div>
+            <div class="text-[10px] text-slate-500">Metabolic Pro Coach (.vcf)</div>
+          </div>
+          <button onclick="downloadCoachVCard()" class="px-3 py-1.5 bg-slate-900 text-white rounded-xl font-bold text-[10px] flex items-center gap-1 shadow-xs">
+            <i class="fa-solid fa-address-book"></i> સેવ કરો
+          </button>
+        </div>
+
+        <div class="p-3 bg-teal-50/70 border border-teal-200 rounded-2xl flex items-center justify-between">
+          <div>
+            <div class="font-extrabold text-teal-950 text-xs">સ્ટેપ ૨: WhatsApp પર 'Hi' મોકલો</div>
+            <div class="text-[10px] text-teal-700">સિક્યોર એક્ટિવેશન મેસેજ</div>
+          </div>
+          <button onclick="sendActivationHi()" class="px-3 py-1.5 bg-teal-600 text-white rounded-xl font-extrabold text-[10px] flex items-center gap-1 shadow-xs">
+            <i class="fa-brands fa-whatsapp text-sm"></i> 'Hi' મોકલો
+          </button>
+        </div>
+      </div>
+
+      <button onclick="verifyActivationDone()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-2xl shadow-md transition">
+        મેં બંને સ્ટેપ પૂરા કર્યા, પોર્ટલ ખોલો 🚀
+      </button>
+    </div>
+  </div>
+
+  <!-- CLIENT PORTAL VIEW -->
+  <div id="clientPortalView" class="hidden min-h-screen">
+    <header class="p-3.5 bg-white border-b sticky top-0 z-40 flex justify-between items-center shadow-xs">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl brand-gradient flex items-center justify-center text-white font-bold text-sm">🩺</div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <h1 class="font-extrabold text-slate-900 text-sm leading-tight" id="cpClientTitle">Welcome</h1>
+            <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[9px] font-black" id="cpStatusBadge">Free Trial</span>
+          </div>
+          <p class="text-[10px] font-bold text-teal-700" id="cpClientSub">Metabolic Plan</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="openChangePinModal()" class="px-2 py-1 rounded-xl bg-slate-100 text-slate-700 text-[10px] font-bold">🔑 PIN</button>
+        <button onclick="logoutClient()" class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 text-[10px] font-bold">Logout</button>
+      </div>
+    </header>
+
+    <main class="p-3.5 max-w-lg mx-auto space-y-3.5">
+      
+      <!-- VIP EXCLUSIVE LIVE SESSIONS BOX -->
+      <div id="cpLiveSessionBox" class="hidden card-clean p-4 rounded-3xl space-y-2.5 border border-teal-200 bg-gradient-to-r from-teal-50 to-emerald-50">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-rose-500 animate-ping"></span>
+            <h3 class="font-extrabold text-slate-900 text-xs" id="cpLiveSessionTitle">🔴 લાઈવ સેશન</h3>
+          </div>
+          <span class="px-2 py-0.5 bg-rose-100 text-rose-800 font-black text-[9px] rounded-full">VIP LIVE NOW</span>
+        </div>
+        <p class="text-[11px] text-slate-600" id="cpLiveSessionDesc">તમારો સ્પેશિયલ ક્લાસ શરૂ થઈ ગયો છે. નીચે ક્લિક કરી સીધા જોડાઈ જાઓ:</p>
+        <button id="btnJoinLiveClass" onclick="joinLiveClass()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-video"></i> લાઈવ ક્લાસમાં જોડાઓ 📲
+        </button>
+      </div>
+
+      <!-- FREE TRIAL USER UPGRADE CARD (IF NOT VIP) -->
+      <div id="cpFreeTrialVipBanner" class="hidden card-clean p-3.5 rounded-2xl border border-amber-200 bg-amber-50/60 flex items-center justify-between text-xs">
+        <div>
+          <div class="font-black text-amber-950 text-xs flex items-center gap-1">
+            <span>👑 લાઈવ યોગા & ગર્ભસંસ્કાર ક્લાસ</span>
+          </div>
+          <p class="text-[10px] text-amber-800 mt-0.5">આ લાઈવ સેશન્સ માત્ર VIP સભ્યો માટે ઉપલબ્ધ છે.</p>
+        </div>
+        <button onclick="requestVipUpgrade()" class="px-2.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-900 font-black text-[10px] rounded-xl shadow-xs">
+          VIP મેળવો 📲
+        </button>
+      </div>
+
+      <!-- MISSED SESSION RECORDING CARD (VIP ONLY) -->
+      <div id="cpRecordingBox" class="hidden card-clean p-3 rounded-2xl border border-teal-200 bg-teal-50/50 flex items-center justify-between text-xs">
+        <div>
+          <div class="font-extrabold text-teal-950 text-xs flex items-center gap-1">
+            <i class="fa-solid fa-play-circle text-teal-600"></i> ક્લાસ રેકોર્ડિંગ લાઈબ્રેરી
+          </div>
+          <p class="text-[10px] text-teal-800 mt-0.5">મિસ થયેલ યોગા/ગર્ભસંસ્કાર સેશનનો વિડીયો અહીંથી જુઓ.</p>
+        </div>
+        <button onclick="watchClassRecording()" class="px-3 py-1.5 bg-teal-700 hover:bg-teal-800 text-white font-extrabold text-[10px] rounded-xl shadow-xs">
+          વિડીયો જુઓ 🎥
+        </button>
+      </div>
+
+      <!-- MACRO TARGET CARD -->
+      <div class="card-clean p-4 rounded-3xl space-y-3 bg-gradient-to-br from-slate-900 to-teal-950 text-white shadow-md border border-teal-800">
+        <div class="flex justify-between items-center">
+          <h3 class="font-extrabold text-xs flex items-center gap-1.5 text-teal-300"><i class="fa-solid fa-bolt text-amber-400"></i> Personalized Macro Targets</h3>
+          <span class="text-[10px] bg-teal-900/80 text-teal-200 px-2.5 py-0.5 rounded-full font-bold border border-teal-700" id="cpFocusTag">Clinical Target</span>
+        </div>
+
+        <div class="grid grid-cols-4 gap-1.5 text-center pt-1">
+          <div class="bg-white/10 p-2 rounded-xl border border-white/5">
+            <div class="text-[8px] text-teal-200 uppercase tracking-wider font-semibold">Calories</div>
+            <div class="text-xs font-black text-amber-300 mt-0.5" id="cpConsumedCal">0 / 1200</div>
+          </div>
+          <div class="bg-white/10 p-2 rounded-xl border border-white/5">
+            <div class="text-[8px] text-teal-200 uppercase tracking-wider font-semibold">Protein</div>
+            <div class="text-xs font-black text-emerald-300 mt-0.5" id="cpProteinStats">0 / 80g</div>
+          </div>
+          <div class="bg-white/10 p-2 rounded-xl border border-white/5">
+            <div class="text-[8px] text-teal-200 uppercase tracking-wider font-semibold">Day GL</div>
+            <div class="text-xs font-black text-sky-300 mt-0.5" id="cpDailyGi">GL: 0</div>
+          </div>
+          <div class="bg-teal-500/20 p-2 rounded-xl border border-teal-400/30">
+            <div class="text-[8px] text-teal-300 uppercase tracking-wider font-bold">Score</div>
+            <div class="text-xs font-black text-white mt-0.5" id="cpScoreBadge">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WATER TRACKER -->
+      <div class="card-clean p-3.5 rounded-2xl space-y-2 border">
+        <div class="flex justify-between items-center text-xs">
+          <span class="font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-droplet text-sky-500 text-sm"></i> Water Target</span>
+          <span class="font-black text-sky-600 text-xs" id="cpWaterCount">0.0 / 3.0 Liters</span>
+        </div>
+        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+          <div id="cpWaterBar" class="bg-sky-500 h-full w-0 transition-all"></div>
+        </div>
+        <div class="grid grid-cols-4 gap-1.5 pt-1">
+          <button onclick="addWater(0.25)" class="py-1.5 bg-sky-50 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 250ml</button>
+          <button onclick="addWater(0.5)" class="py-1.5 bg-sky-50 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 500ml</button>
+          <button onclick="addWater(1.0)" class="py-1.5 bg-sky-50 text-sky-800 border border-sky-200 rounded-xl text-[11px] font-bold">+ 1 Liter</button>
+          <button onclick="resetWater()" class="py-1.5 bg-slate-100 text-slate-600 rounded-xl text-[11px] font-bold">Reset 🔄</button>
+        </div>
+      </div>
+
+      <!-- DYNAMIC 15-DAY MEAL CARDS CONTAINER WITH 100% / 50% / 0% BUTTONS -->
+      <div class="space-y-3" id="cpTodayMealCards"></div>
+
+      <!-- SUBMIT DAILY REPORT -->
+      <button onclick="submitClientReport()" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md">
+        <i class="fa-brands fa-whatsapp text-lg"></i> આજના દિવસનો રિપોર્ટ કોચને મોકલો 📲
+      </button>
+
+    </main>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC7HLpZIEayOfmUuHVK_8Fm34Un73i33KE",
+      authDomain: "metabolic-pro-bd3a2.firebaseapp.com",
+      projectId: "metabolic-pro-bd3a2",
+      storageBucket: "metabolic-pro-bd3a2.firebasestorage.app",
+      messagingSenderId: "462945165017",
+      appId: "1:462945165017:web:4e4727c725eb643a29a8c8"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function esc(s) {
+      return String(s ?? '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+
+    let COACH_PHONE = "919081421028";
+    let selectedDateKey = getTodayDateKey();
+    let currentClient = null;
+    let currentLiveMeetingUrl = "";
+    let currentRecordingUrl = "";
+
+    function getTodayDateKey() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    }
+
+    async function syncCoachInfo() {
+      try {
+        const doc = await db.collection('settings').doc('coach').get();
+        if (doc.exists && doc.data().phone) {
+          COACH_PHONE = doc.data().phone;
+        }
+      } catch(e) { console.error(e); }
+    }
+    syncCoachInfo();
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      const savedPhone = localStorage.getItem('met_pro_session_phone');
+      if (savedPhone) {
+        try {
+          const doc = await db.collection('clients').doc(savedPhone).get();
+          if (doc.exists) { 
+            currentClient = doc.data(); 
+            if (!currentClient.whatsappVerified) {
+              document.getElementById('modalActivationGate').classList.remove('hidden');
+            } else {
+              openPortal(); 
+            }
+            return; 
+          }
+        } catch(e) { console.error(e); }
+      }
+      showAuth();
+    });
+
+    function showAuth() {
+      document.getElementById('authView').classList.remove('hidden');
+      document.getElementById('clientPortalView').classList.add('hidden');
+    }
+
+    function setAuthTab(tab) {
+      if (tab === 'register') {
+        document.getElementById('formRegister').classList.remove('hidden');
+        document.getElementById('formLogin').classList.add('hidden');
+        document.getElementById('tabRegister').className = "flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold";
+        document.getElementById('tabLogin').className = "flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold";
+      } else {
+        document.getElementById('formLogin').classList.remove('hidden');
+        document.getElementById('formRegister').classList.add('hidden');
+        document.getElementById('tabLogin').className = "flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold";
+        document.getElementById('tabRegister').className = "flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold";
+      }
+    }
+
+    async function handleClientRegister() {
+      const name = document.getElementById('regName').value.trim();
+      const phoneRaw = document.getElementById('regPhone').value.trim().replace(/\D/g, '');
+      const pin = document.getElementById('regPin').value.trim();
+      const age = Number(document.getElementById('regAge').value);
+      const height = Number(document.getElementById('regHeight').value);
+      const weight = Number(document.getElementById('regWeight').value);
+      const gender = document.getElementById('regGender').value;
+      const activity = document.getElementById('regActivity').value;
+      const diet = document.getElementById('regDietMode').value;
+      const kidneyIssue = document.getElementById('regKidneyIssue').checked;
+      const conditions = Array.from(document.querySelectorAll('input[name="regCondition"]:checked')).map(cb => cb.value);
+
+      if (!name || phoneRaw.length < 10) return alert('પૂરું નામ અને ૧૦-અંકનો નંબર દાખલ કરો.');
+      if (!pin || pin.length !== 4) return alert('૪-અંકનો PIN બનાવો.');
+      if (['1234', '0000', '1111'].includes(pin)) return alert('કોઈ મજબૂત PIN પસંદ કરો.');
+      if (!age || !height || !weight) return alert('ઉંમર, ઊંચાઈ અને વજન દાખલ કરો.');
+
+      const phone = phoneRaw.length === 10 ? '91' + phoneRaw : phoneRaw;
+      const clientRef = db.collection('clients').doc(phone);
+      const existing = await clientRef.get();
+      if (existing.exists) {
+        alert('આ એકાઉન્ટ મોજૂદ છે! લોગિન કરો.');
+        setAuthTab('login');
+        return;
+      }
+
+      const newClientData = {
+        name, phone, pin, age, height, weight, gender, activity, diet,
+        kidneyIssue, conditions,
+        goal: conditions.join(' + '),
+        trialDays: 30,
+        isVip: false,
+        whatsappVerified: false,
+        joiningDate: getTodayDateKey(),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        compliance: {},
+        services: []
+      };
+
+      await clientRef.set(newClientData);
+      currentClient = newClientData;
+      localStorage.setItem('met_pro_session_phone', phone);
+      
+      document.getElementById('authView').classList.add('hidden');
+      document.getElementById('modalActivationGate').classList.remove('hidden');
+    }
+
+    async function handleClientLogin() {
+      let input = document.getElementById('loginId').value.trim().replace(/\D/g, '');
+      const pin = document.getElementById('loginPin').value.trim();
+      if (input.length < 10 || pin.length !== 4) return alert('સાચો નંબર અને ૪-અંકનો PIN નાખો.');
+      if (input.length === 10) input = '91' + input;
+
+      const doc = await db.collection('clients').doc(input).get();
+      if (!doc.exists) return alert('એકાઉન્ટ મળ્યું નથી.');
+      const data = doc.data();
+      if (pin !== data.pin) return alert('ખોટો PIN છે.');
+
+      currentClient = data;
+      localStorage.setItem('met_pro_session_phone', input);
+
+      if (!currentClient.whatsappVerified) {
+        document.getElementById('authView').classList.add('hidden');
+        document.getElementById('modalActivationGate').classList.remove('hidden');
+      } else {
+        openPortal();
+      }
+    }
+
+    function logoutClient() { 
+      localStorage.removeItem('met_pro_session_phone'); 
+      currentClient = null; 
+      showAuth(); 
+    }
+
+    function isCurrentClientVip() {
+      if (!currentClient) return false;
+      if (currentClient.isVip === true) {
+        if (!currentClient.vipExpiryDate) return true;
+        const exp = new Date(currentClient.vipExpiryDate);
+        return exp >= new Date();
+      }
+      return (Number(currentClient.trialDays) >= 900);
+    }
+
+    // 15-DAY ROTATIONAL CLINICAL MENU DATABASE
+    const menuCycle15Days = [
+      {
+        b: { title: "ફણગાવેલા મગ-મઠ ચાટ + લીંબુ & કાકડી", desc: "હાઈ ફાઈબર, એન્ઝાઇમ રીચ અને બ્લડ શુગર સ્થિર રાખે છે.", cal: 220, pro: 14, gl: 8 },
+        l: { title: "૧ જુવારનો રોટલો + ભીંડાનું શાક + કાચું સલાડ + છાશ", desc: "પહેલાં સલાડ અને શાક લેવું, પછી જ રોટલો ખાવો.", cal: 420, pro: 16, gl: 18 },
+        d: { title: "દૂધી-ટામેટાનો પૌષ્ટિક સૂપ + શેકેલું પનીર (૧૦૦g)", desc: "લાઈટ ડિનર, ફેટી લિવર ડિટોક્સ અને રાત્રે મેટાબોલિઝમ સુધારે છે.", cal: 280, pro: 18, gl: 6 }
+      },
+      {
+        b: { title: "મગ દાળ ચીલા (પુડલો) + લીલી ચટણી + ૧ ગ્લાસ છાશ", desc: "કાર્બ-ફ્રી પ્રોટીન પાવર, સવારની ભૂખ શાંત રાખે છે.", cal: 240, pro: 15, gl: 9 },
+        l: { title: "૧ બાજરીનો રોટલો + મેથી-પાલકનું શાક + કાકડી-ટમેટા + છાશ", desc: "આયર્ન અને ફાઈબરથી ભરપૂર, ઇન્સ્યુલિન સેન્સિટિવિટી વધારે છે.", cal: 440, pro: 15, gl: 20 },
+        d: { title: "મિક્સ વેજ પનીર સ્ટીર-ફ્રાય (ઓછા તેલમાં)", desc: "ઝીરો ગ્લાયસેમિક લોડ, રાત્રે શુગર સ્પાઇક સંપૂર્ણ અટકાવે છે.", cal: 260, pro: 19, gl: 5 }
+      },
+      {
+        b: { title: "પનીર-કાકડી સ્ટીક્સ + અળસી (Flaxseed) મુખવાસ", desc: "ઓમેગા-૩ અને હાઈ પ્રોટીન બ્રેકફાસ્ટ.", cal: 250, pro: 18, gl: 4 },
+        l: { title: "બાફેલા દેશી ચણાનું શાક + કાકડી સલાડ + ૧ જુવાર રોટલો", desc: "ધીમું પાચન અને દિવસભર સ્થિર ઉર્જા આપે છે.", cal: 450, pro: 18, gl: 22 },
+        d: { title: "મિક્સ દાળ-શાકભાજીનો સૂપ + કાકડી-ગાજર", desc: "લિવર સેલ્સ રીપેર અને ઊંઘ દરમિયાન ડીટોક્સિફિકેશન.", cal: 240, pro: 14, gl: 8 }
+      }
+    ];
+
+    function getDayIndex() {
+      const start = new Date(currentClient.joiningDate || getTodayDateKey());
+      const now = new Date(selectedDateKey);
+      const diff = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+      return Math.max(0, diff) % menuCycle15Days.length;
+    }
+
+    function calculateTargets() {
+      const w = Number(currentClient.weight) || 70;
+      let targetCal = 1300;
+      let targetPro = Math.round(w * 1.1);
+      if ((currentClient.conditions || []).includes('gym')) targetPro = Math.round(w * 1.4);
+      if (currentClient.kidneyIssue) targetPro = Math.round(w * 0.8);
+      return { targetCal, targetPro };
+    }
+
+    function openPortal() {
+      document.getElementById('authView').classList.add('hidden');
+      document.getElementById('modalActivationGate').classList.add('hidden');
+      document.getElementById('clientPortalView').classList.remove('hidden');
+
+      const isVip = isCurrentClientVip();
+      document.getElementById('cpClientTitle').innerText = currentClient.name;
+      document.getElementById('cpClientSub').innerText = (currentClient.conditions || []).join(' • ') || 'Metabolic Plan';
+      
+      const badge = document.getElementById('cpStatusBadge');
+      if (isVip) {
+        badge.innerText = '👑 VIP Paid Member';
+        badge.className = 'px-2 py-0.5 rounded-full bg-amber-200 text-amber-950 text-[9px] font-black';
+      } else {
+        badge.innerText = '⏳ 30-Day Free Trial';
+        badge.className = 'px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[9px] font-bold';
+      }
+
+      checkVipAndLiveSessionAccess();
+      renderTodayMealCards();
+      updateMacroDisplay();
+      updateWaterDisplay();
+    }
+
+    // CHECK VIP LIVE PERMISSIONS & SHOW CARD
+    async function checkVipAndLiveSessionAccess() {
+      const isVip = isCurrentClientVip();
+      const liveBox = document.getElementById('cpLiveSessionBox');
+      const bannerBox = document.getElementById('cpFreeTrialVipBanner');
+      const recBox = document.getElementById('cpRecordingBox');
+
+      if (!isVip) {
+        liveBox.classList.add('hidden');
+        recBox.classList.add('hidden');
+        bannerBox.classList.remove('hidden');
+        return;
+      }
+
+      bannerBox.classList.add('hidden');
+      const services = currentClient.services || ['yoga', 'garbh', 'med']; // Default all services if VIP
+
+      try {
+        const doc = await db.collection('settings').doc('live_sessions').get();
+        if (doc.exists) {
+          const data = doc.data();
+          let eligibleUrl = "";
+          let title = "";
+
+          if (services.includes('yoga') && data.yoga) {
+            eligibleUrl = data.yoga;
+            title = "🧘‍♀️ મોર્નિંગ યોગા & પ્રાણાયામ (VIP Live)";
+          } else if (services.includes('garbh') && data.garbh) {
+            eligibleUrl = data.garbh;
+            title = "🌸 ગર્ભસંસ્કાર & પ્રિ-નેટલ લાઈવ ક્લાસ (VIP Live)";
+          } else if (services.includes('med') && data.med) {
+            eligibleUrl = data.med;
+            title = "🧠 ઈવનિંગ મેડિટેશન & ધ્યાન (VIP Live)";
+          }
+
+          if (eligibleUrl) {
+            currentLiveMeetingUrl = eligibleUrl;
+            document.getElementById('cpLiveSessionTitle').innerText = title;
+            liveBox.classList.remove('hidden');
+          } else {
+            liveBox.classList.add('hidden');
+          }
+
+          if (data.record) {
+            currentRecordingUrl = data.record;
+            recBox.classList.remove('hidden');
+          } else {
+            recBox.classList.add('hidden');
+          }
+        }
+      } catch(e) { console.error("Live sessions error:", e); }
+    }
+
+    function joinLiveClass() {
+      if (currentLiveMeetingUrl) window.open(currentLiveMeetingUrl, '_blank');
+      else alert('હાલ કોઈ લાઈવ સેશન ચાલુ નથી.');
+    }
+
+    function watchClassRecording() {
+      if (currentRecordingUrl) window.open(currentRecordingUrl, '_blank');
+      else alert('હાલ કોઈ રેકોર્ડિંગ ઉપલબ્ધ નથી.');
+    }
+
+    function requestVipUpgrade() {
+      const msg = `નમસ્તે કોચ! હું Metabolic Pro માં VIP મેમ્બરશિપ મેળવવા અને લાઈવ યોગા/ગર્ભસંસ્કાર ક્લાસ શરૂ કરવા માંગુ છું. વિગત જણાવશો.`;
+      window.open(`https://api.whatsapp.com/send?phone=${COACH_PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    // 100% / 50% / 0% BUTTONS RENDERING
+    function renderTodayMealCards() {
+      const container = document.getElementById('cpTodayMealCards');
+      container.innerHTML = '';
+      const dayData = menuCycle15Days[getDayIndex()];
+      const comp = (currentClient.compliance && currentClient.compliance[selectedDateKey]) || {};
+
+      const meals = [
+        { key: 'b', label: '🥗 સવારનો નાસ્તો (08:30 AM)', data: dayData.b },
+        { key: 'l', label: '🍲 બપોરનું ભોજન (01:00 PM)', data: dayData.l },
+        { key: 'd', label: '🥣 રાત્રિ ભોજન (07:30 PM)', data: dayData.d }
+      ];
+
+      meals.forEach(m => {
+        const val = comp[m.key] !== undefined ? comp[m.key] : null;
+
+        container.innerHTML += `
+          <div class="card-clean p-4 rounded-3xl border space-y-2.5">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="font-extrabold text-teal-800 text-xs">${m.label}</span>
+                <h4 class="font-bold text-slate-900 text-xs mt-0.5">${m.data.title}</h4>
+                <p class="text-[11px] text-slate-500 mt-0.5 leading-relaxed">${m.data.desc}</p>
+              </div>
+              <span class="px-2 py-0.5 bg-slate-100 rounded-lg text-[10px] font-black text-slate-600 font-mono">${m.data.cal} kcal</span>
+            </div>
+
+            <!-- 100% પૂર્ણ, 50% અડધું, 0% બાકી બટનો -->
+            <div class="grid grid-cols-3 gap-1.5 pt-1">
+              <button onclick="setMealCompliance('${m.key}', 1.0)" class="py-2 rounded-xl text-xs flex items-center justify-center gap-1 transition ${val === 1.0 ? 'btn-done-active' : 'btn-idle'}">
+                <i class="fa-solid fa-check"></i> ૧૦૦% લીધું
+              </button>
+              <button onclick="setMealCompliance('${m.key}', 0.5)" class="py-2 rounded-xl text-xs flex items-center justify-center gap-1 transition ${val === 0.5 ? 'btn-half-active' : 'btn-idle'}">
+                <i class="fa-solid fa-adjust"></i> ૫૦% અડધું
+              </button>
+              <button onclick="setMealCompliance('${m.key}', 0.0)" class="py-2 rounded-xl text-xs flex items-center justify-center gap-1 transition ${val === 0.0 ? 'btn-miss-active' : 'btn-idle'}">
+                <i class="fa-solid fa-xmark"></i> બાકી / ચૂકી ગયા
+              </button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    async function setMealCompliance(mealKey, ratio) {
+      if (!currentClient.compliance) currentClient.compliance = {};
+      if (!currentClient.compliance[selectedDateKey]) currentClient.compliance[selectedDateKey] = {};
+
+      currentClient.compliance[selectedDateKey][mealKey] = ratio;
+      renderTodayMealCards();
+      updateMacroDisplay();
+
+      await db.collection('clients').doc(currentClient.phone).update({
+        [`compliance.${selectedDateKey}.${mealKey}`]: ratio
+      });
+    }
+
+    function updateMacroDisplay() {
+      const dayData = menuCycle15Days[getDayIndex()];
+      const comp = (currentClient.compliance && currentClient.compliance[selectedDateKey]) || {};
+      const targets = calculateTargets();
+
+      let eatenCal = 0, eatenPro = 0, eatenGl = 0;
+      let totalMealsAnswered = 0;
+      let scoreSum = 0;
+
+      ['b', 'l', 'd'].forEach(k => {
+        const ratio = comp[k];
+        if (ratio !== undefined && ratio !== null) {
+          totalMealsAnswered++;
+          scoreSum += ratio;
+          eatenCal += Math.round(dayData[k].cal * ratio);
+          eatenPro += Math.round(dayData[k].pro * ratio);
+          eatenGl += Math.round(dayData[k].gl * ratio);
+        }
+      });
+
+      const score = totalMealsAnswered > 0 ? Math.round((scoreSum / totalMealsAnswered) * 100) : 0;
+
+      document.getElementById('cpConsumedCal').innerText = `${eatenCal} / ${targets.targetCal}`;
+      document.getElementById('cpProteinStats').innerText = `${eatenPro} / ${targets.targetPro}g`;
+      document.getElementById('cpDailyGi').innerText = `GL: ${eatenGl}`;
+      document.getElementById('cpScoreBadge').innerText = `${score}%`;
+    }
+
+    function updateWaterDisplay() {
+      const comp = (currentClient.compliance && currentClient.compliance[selectedDateKey]) || {};
+      const water = comp.water || 0.0;
+      document.getElementById('cpWaterCount').innerText = `${water.toFixed(2)} / 3.0 Liters`;
+      document.getElementById('cpWaterBar').style.width = Math.min((water / 3.0) * 100, 100) + '%';
+    }
+
+    async function addWater(amt) {
+      if (!currentClient.compliance) currentClient.compliance = {};
+      if (!currentClient.compliance[selectedDateKey]) currentClient.compliance[selectedDateKey] = {};
+      let cur = Math.round(((currentClient.compliance[selectedDateKey].water || 0) + amt) * 100) / 100;
+      currentClient.compliance[selectedDateKey].water = cur;
+      updateWaterDisplay();
+      await db.collection('clients').doc(currentClient.phone).update({ [`compliance.${selectedDateKey}.water`]: cur });
+    }
+
+    async function resetWater() {
+      if (!currentClient.compliance) currentClient.compliance = {};
+      if (!currentClient.compliance[selectedDateKey]) currentClient.compliance[selectedDateKey] = {};
+      currentClient.compliance[selectedDateKey].water = 0;
+      updateWaterDisplay();
+      await db.collection('clients').doc(currentClient.phone).update({ [`compliance.${selectedDateKey}.water`]: 0 });
+    }
+
+    async function openChangePinModal() {
+      const newPin = prompt("તમારો નવો ૪-અંકનો સિક્રેટ PIN દાખલ કરો:");
+      if (!newPin || newPin.length !== 4 || isNaN(newPin)) return alert("⚠️ ૪ આંકડાનો સાચો PIN નાખો.");
+      currentClient.pin = newPin;
+      await db.collection('clients').doc(currentClient.phone).update({ pin: newPin });
+      alert("✅ તમારો નવો PIN સેવ થઈ ગયો: " + newPin);
+    }
+
+    function downloadCoachVCard() {
+      const vcardData = `BEGIN:VCARD\nVERSION:3.0\nFN:Metabolic Pro Helpline\nTEL;TYPE=CELL,VOICE:+${COACH_PHONE}\nEND:VCARD`;
+      const blob = new Blob([vcardData], { type: 'text/vcard;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', 'Metabolic_Pro_Helpline.vcf');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function sendActivationHi() {
+      const msg = `Hi Coach! I have registered on Metabolic Pro.\nName: *${currentClient.name}*\nPlease activate my account!`;
+      window.open(`https://api.whatsapp.com/send?phone=${COACH_PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    async function verifyActivationDone() {
+      if (!currentClient) return;
+      currentClient.whatsappVerified = true;
+      await db.collection('clients').doc(currentClient.phone).update({ whatsappVerified: true });
+      document.getElementById('modalActivationGate').classList.add('hidden');
+      openPortal();
+    }
+
+    function submitClientReport() {
+      const comp = currentClient.compliance?.[selectedDateKey] || {};
+      const dayData = menuCycle15Days[getDayIndex()];
+      const targets = calculateTargets();
+
+      let eatenCal = 0, eatenPro = 0;
+      ['b', 'l', 'd'].forEach(k => {
+        const ratio = comp[k] || 0;
+        eatenCal += Math.round(dayData[k].cal * ratio);
+        eatenPro += Math.round(dayData[k].pro * ratio);
+      });
+
+      const msg = `🩺 *Metabolic Pro - ડેઈલી કમ્પ્લાયન્સ રિપોર્ટ*\n👤 દર્દી: *${currentClient.name}*\n📅 તારીખ: *${selectedDateKey}*\n\n🥗 નાસ્તો: *${comp.b === 1.0 ? '૧૦૦% લીધો' : comp.b === 0.5 ? '૫૦% લીધો' : 'બાકી'}*\n🍲 લંચ: *${comp.l === 1.0 ? '૧૦૦% લીધો' : comp.l === 0.5 ? '૫૦% લીધો' : 'બાકી'}*\n🥣 ડિનર: *${comp.d === 1.0 ? '૧૦૦% લીધો' : comp.d === 0.5 ? '૫૦% લીધો' : 'બાકી'}*\n\n💧 પાણી: *${(comp.water || 0).toFixed(2)} / 3.0 L*\n🔥 કેલરી: *${eatenCal} / ${targets.targetCal} kcal*\n💪 પ્રોટીન: *${eatenPro} / ${targets.targetPro} g*`;
+      window.open(`https://api.whatsapp.com/send?phone=${COACH_PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
+    }
+  </script>
+</body>
+</html>
 
