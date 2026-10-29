@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Metabolic Pro - Client Portal v3</title>
+  <title>Metabolic Pro - Clinical Nutrition Engine v4</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -39,7 +39,7 @@
       <div class="w-16 h-16 rounded-2xl brand-gradient flex items-center justify-center text-white text-3xl font-black shadow-lg mx-auto">🩺</div>
       <div>
         <h1 class="text-2xl font-black text-slate-900 tracking-tight">Metabolic Pro</h1>
-        <p class="text-xs font-semibold text-teal-700 uppercase tracking-widest mt-0.5">Clinical Lifestyle & Nutrition Engine v3</p>
+        <p class="text-xs font-semibold text-teal-700 uppercase tracking-widest mt-0.5">Clinical Lifestyle & Nutrition Engine v4</p>
       </div>
       <p class="text-xs text-slate-500 max-w-xs mx-auto">ડાયાબિટીસ મુક્તિ, ફેટી લિવર ડિટોક્સ અને પર્સનલાઇઝ્ડ મેટાબોલિક હેલ્થ સિસ્ટમ.</p>
     </div>
@@ -50,7 +50,6 @@
         <button onclick="setAuthTab('login')" id="tabLogin" class="flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold">🔑 લોગિન</button>
       </div>
 
-      <!-- Registration Form (No fake pre-filled numbers) -->
       <div id="formRegister" class="space-y-3 text-xs">
         <div>
           <label class="font-bold text-slate-700">પૂરું નામ *</label>
@@ -61,7 +60,6 @@
           <input type="tel" id="regPhone" placeholder="દા.ત. 9925879138" class="w-full mt-1 p-2.5 bg-slate-50 border rounded-xl text-slate-800">
         </div>
 
-        <!-- Biometrics (Empty defaults) -->
         <div class="grid grid-cols-3 gap-2">
           <div>
             <label class="font-bold text-slate-700 text-[10px]">ઉંમર (વર્ષ) *</label>
@@ -123,7 +121,7 @@
               <input type="checkbox" name="regCondition" value="fatty_liver" checked class="w-4 h-4 text-teal-600 rounded"> 🥒 ફેટી લિવર
             </label>
             <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
-              <input type="checkbox" name="regCondition" value="gym" class="w-4 h-4 text-teal-600 rounded"> 💪 જિમ / મસલ ગેઇન
+              <input type="checkbox" name="regCondition" value="gym" class="w-4 h-4 text-teal-600 rounded"> 💪 જિમ / ફિટનેસ
             </label>
             <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
               <input type="checkbox" name="regCondition" value="fat_loss" class="w-4 h-4 text-teal-600 rounded"> ⚖️ ફેટ લોસ
@@ -142,7 +140,7 @@
             </select>
           </div>
           <div>
-            <label class="font-bold text-slate-700 text-[10px]">એલર્જી / બાકાત (Allergies)</label>
+            <label class="font-bold text-slate-700 text-[10px]">એલર્જી / બાકાત</label>
             <input type="text" id="regAllergies" placeholder="દા.ત. soy, mushroom, દૂધ" class="w-full mt-1 p-2 bg-slate-50 border rounded-xl text-xs">
           </div>
         </div>
@@ -157,7 +155,6 @@
         <button onclick="handleClientRegister()" id="btnRegisterSubmit" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-sm shadow-md mt-1">મારું ક્લિનિકલ પોર્ટલ શરૂ કરો 🚀</button>
       </div>
 
-      <!-- Login Form -->
       <div id="formLogin" class="hidden space-y-3.5 text-xs">
         <div>
           <label class="font-bold text-slate-700">વોટ્સએપ મોબાઈલ નંબર</label>
@@ -196,8 +193,8 @@
 
     <div class="bg-white border-b px-3.5 py-2 sticky top-[61px] z-30 shadow-xs">
       <div class="flex p-1 bg-slate-100 rounded-2xl text-xs gap-1">
-        <button onclick="switchPortalTab('today')" id="portalTabToday" class="flex-1 py-2 rounded-xl tab-active-btn transition text-center flex items-center justify-center gap-1.5"><i class="fa-solid fa-utensils"></i> 🍽️ આજનું ડાયેટ (Today)</button>
-        <button onclick="switchPortalTab('reports')" id="portalTabReports" class="flex-1 py-2 rounded-xl tab-inactive-btn transition text-center flex items-center justify-center gap-1.5"><i class="fa-solid fa-calendar-days"></i> 📅 આગળનું મેનૂ & રિપોર્ટ્સ</button>
+        <button onclick="switchPortalTab('today')" id="portalTabToday" class="flex-1 py-2 rounded-xl tab-active-btn transition text-center flex items-center justify-center gap-1.5"><i class="fa-solid fa-utensils"></i> 🍽️ આજનું ડાયેટ</button>
+        <button onclick="switchPortalTab('reports')" id="portalTabReports" class="flex-1 py-2 rounded-xl tab-inactive-btn transition text-center flex items-center justify-center gap-1.5"><i class="fa-solid fa-calendar-days"></i> 📅 મેનૂ & લેબ રિપોર્ટ્સ</button>
       </div>
     </div>
 
@@ -253,6 +250,9 @@
           </div>
         </div>
 
+        <!-- C: METABOLIC RESET / REFEED ALERT -->
+        <div id="cpMetabolicResetBox" class="hidden"></div>
+
         <div id="cpMedicationReviewBox" class="hidden"></div>
         <div id="cpWorkoutSugarGuardBox" class="hidden"></div>
 
@@ -290,10 +290,10 @@
           </div>
         </div>
 
-        <!-- MEAL CARDS (ALL SLOTS GUARANTEED RENDERED) -->
+        <!-- MEAL CARDS (WITH D: KITCHEN RECIPE TIPS) -->
         <div class="space-y-3" id="cpTodayMealCards"></div>
 
-        <!-- EXTRAS / CHEAT LOGGING BOX (NEW UI) -->
+        <!-- EXTRAS / CHEAT FOOD LOGGING -->
         <div class="card-clean p-3.5 rounded-2xl space-y-2 border text-xs">
           <span class="font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-cookie-bite text-amber-500"></i> પ્લાન બહારનું કંઈ ખાધું હોય તો નોંધો (Extras / Cheat Food)</span>
           <div class="flex gap-1.5">
@@ -303,13 +303,32 @@
           <div id="cpActiveExtrasContainer" class="flex flex-wrap gap-1 pt-1"></div>
         </div>
 
-        <!-- VITALS & DAILY WEIGHT INPUT -->
+        <!-- B: VITALS, DAILY WEIGHT & INCH LOSS TRACKER -->
         <div class="card-clean p-3.5 rounded-2xl space-y-2 text-xs">
           <div class="font-bold text-slate-700 text-xs flex items-center justify-between">
-            <span class="flex items-center gap-1.5"><i class="fa-solid fa-notes-medical text-teal-600"></i> Daily Vitals & Blood Sugar</span>
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-notes-medical text-teal-600"></i> Daily Vitals, Weight & Inches</span>
           </div>
           <div id="sugarSafetyAlertBox" class="hidden"></div>
-          <div id="cpDynamicInputs" class="space-y-2"></div>
+          
+          <div class="grid grid-cols-4 gap-1.5 pt-1">
+            <div>
+              <label class="text-[9px] text-slate-500 font-semibold">Fasting Sugar</label>
+              <input type="number" id="cpInM1" oninput="debounceSaveVitals()" placeholder="mg/dl" class="w-full bg-slate-50 border p-2 rounded-lg text-xs">
+            </div>
+            <div>
+              <label class="text-[9px] text-slate-500 font-semibold">PP2BS Sugar</label>
+              <input type="number" id="cpInM2" oninput="debounceSaveVitals()" placeholder="mg/dl" class="w-full bg-slate-50 border p-2 rounded-lg text-xs">
+            </div>
+            <div>
+              <label class="text-[9px] text-slate-500 font-semibold">વજન (kg)</label>
+              <input type="number" step="0.1" id="cpInWeight" oninput="debounceSaveVitals()" placeholder="કિલો" class="w-full bg-slate-50 border p-2 rounded-lg text-xs">
+            </div>
+            <div>
+              <label class="text-[9px] text-slate-500 font-semibold text-teal-800 font-bold">કમર (Inches)</label>
+              <input type="number" step="0.5" id="cpInWaist" oninput="debounceSaveVitals()" placeholder="ઈંચ" class="w-full bg-teal-50 border border-teal-200 p-2 rounded-lg text-xs font-bold text-teal-900">
+            </div>
+          </div>
+          <input type="text" id="cpInNote" oninput="debounceSaveVitals()" placeholder="શરીરમાં અનુભવાતી હળવાશ, નોંધ કે ઊર્જા સ્તર..." class="w-full bg-slate-50 border p-2 rounded-lg text-xs mt-1">
         </div>
 
         <div class="space-y-2 pt-1">
@@ -319,9 +338,23 @@
         </div>
       </div>
 
-      <!-- TAB 2: REPORTS & ADVANCE UPCOMING MENU PLANNER + AUTO GROCERY -->
+      <!-- TAB 2: REPORTS & ADVANCE UPCOMING MENU PLANNER + LAB TRACKER -->
       <div id="tabContentReports" class="hidden space-y-3.5 text-xs">
         
+        <!-- A: CLINICAL LAB REPORT TRACKER (HbA1c, HOMA-IR, Liver SGPT) -->
+        <div class="card-clean p-4 rounded-3xl space-y-3 border-teal-300">
+          <div class="flex items-center justify-between border-b pb-2">
+            <div>
+              <h3 class="font-black text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-vial-circle-check text-teal-600"></i> ક્લિનિકલ લેબ રિપોર્ટ્સ (Lab Tracker)</h3>
+              <p class="text-[10px] text-slate-500">HbA1c, લિવર SGPT અને Fasting Insulin રેકોર્ડ</p>
+            </div>
+            <button onclick="saveLabReportModal()" class="px-2.5 py-1 bg-teal-600 text-white font-bold rounded-xl text-[10px] shadow">+ નવો રિપોર્ટ</button>
+          </div>
+
+          <div id="cpLabReportsList" class="space-y-1.5"></div>
+        </div>
+
+        <!-- AUTOMATED 7-DAY GROCERY BASKET -->
         <div class="card-clean p-4 rounded-3xl space-y-3 border-teal-300 bg-teal-50/40">
           <div class="flex items-center justify-between border-b border-teal-100 pb-2.5">
             <div>
@@ -342,18 +375,20 @@
           </div>
         </div>
 
+        <!-- 7-DAY NON-REPEAT UPCOMING PLANNER -->
         <div class="card-clean p-4 rounded-3xl space-y-3 border-teal-200">
           <div class="flex items-center justify-between border-b pb-2.5">
             <div>
               <h3 class="font-black text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-calendar-check text-teal-600"></i> આગામી ૭ દિવસનું એડવાન્સ મેનૂ</h3>
               <p class="text-[11px] text-slate-500">દરરોજ સંપૂર્ણ અલગ અને બિન-રિપીટ ભોજન</p>
             </div>
-            <span class="px-2.5 py-0.5 bg-teal-50 text-teal-800 text-[10px] font-extrabold rounded-lg border border-teal-200">Non-Repeat Planner</span>
+            <span class="px-2 py-0.5 bg-teal-50 text-teal-800 text-[10px] font-extrabold rounded-lg border border-teal-200">Non-Repeat Planner</span>
           </div>
 
           <div id="upcomingForecastContainer" class="space-y-2 pt-1"></div>
         </div>
 
+        <!-- OVERALL PERFORMANCE SUMMARY -->
         <div class="card-clean p-4 rounded-3xl space-y-3">
           <div class="flex items-center gap-2 border-b pb-2.5">
             <div class="w-8 h-8 rounded-xl brand-gradient text-white flex items-center justify-center text-sm"><i class="fa-solid fa-chart-line"></i></div>
@@ -384,6 +419,62 @@
   </div>
 
   <!-- MODALS -->
+
+  <!-- D: KITCHEN RECIPE & COOKING TIPS MODAL -->
+  <div id="modalKitchenTips" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm p-4 rounded-3xl space-y-3 text-xs shadow-xl border">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-extrabold text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-kitchen-set text-teal-600"></i> હેલ્ધી કિચન રસોઈ ગાઈડ</h3>
+        <button onclick="closeKitchenTipsModal()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
+      </div>
+      <div class="space-y-2 leading-relaxed text-slate-700">
+        <div class="font-bold text-teal-800 text-xs" id="ktDishTitle">વાનગીનું નામ</div>
+        <div class="bg-slate-50 p-2.5 rounded-xl border text-[11px]" id="ktDishTips">ટિપ્સ લોડ થઈ રહી છે...</div>
+        <div class="bg-amber-50 p-2.5 rounded-xl border border-amber-200 text-[10px] text-amber-900">
+          <b>સુવર્ણ નિયમ:</b> કોઈપણ શાક કે દાળમાં ૧ નાની ચમચી (5ml) થી વધુ તેલ ન વાપરવું. ક્રીમ, બટર કે ખાંડનો સદંતર ત્યાગ કરવો.
+        </div>
+      </div>
+      <button onclick="closeKitchenTipsModal()" class="w-full bg-slate-900 text-white font-bold py-2 rounded-xl text-xs">સમજાઈ ગયું ✅</button>
+    </div>
+  </div>
+
+  <!-- A: ADD LAB REPORT MODAL -->
+  <div id="modalAddLabReport" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm p-4 rounded-3xl space-y-3 text-xs shadow-xl border">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-extrabold text-slate-900 text-sm">નવો લેબ રિપોર્ટ ઉમેરો</h3>
+        <button onclick="closeAddLabModal()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
+      </div>
+      <div class="space-y-2">
+        <div>
+          <label class="font-bold text-slate-700 text-[10px]">રિપોર્ટ તારીખ</label>
+          <input type="date" id="labInDate" class="w-full p-2 bg-slate-50 border rounded-xl text-xs">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold text-slate-700 text-[10px]">HbA1c (%)</label>
+            <input type="number" step="0.1" id="labInHba1c" placeholder="દા.ત. 6.8" class="w-full p-2 bg-slate-50 border rounded-xl text-xs">
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 text-[10px]">Fasting Insulin (µIU/mL)</label>
+            <input type="number" step="0.1" id="labInInsulin" placeholder="દા.ત. 12.5" class="w-full p-2 bg-slate-50 border rounded-xl text-xs">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold text-slate-700 text-[10px]">SGPT (Liver U/L)</label>
+            <input type="number" id="labInSgpt" placeholder="દા.ત. 45" class="w-full p-2 bg-slate-50 border rounded-xl text-xs">
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 text-[10px]">Triglycerides (mg/dL)</label>
+            <input type="number" id="labInTg" placeholder="દા.ત. 180" class="w-full p-2 bg-slate-50 border rounded-xl text-xs">
+          </div>
+        </div>
+      </div>
+      <button onclick="saveNewLabReportToCloud()" class="w-full bg-teal-600 text-white font-extrabold py-2.5 rounded-xl shadow">સેવ કરો 💾</button>
+    </div>
+  </div>
+
   <div id="modalClientForgotPin" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-sm p-5 rounded-3xl space-y-3.5 text-xs shadow-xl border">
       <h3 class="font-extrabold text-slate-900 text-sm text-center">Reset Client PIN</h3>
@@ -431,56 +522,56 @@
     let currentClient = null;
     let debounceTimer = null;
 
-    // --- 50+ CLINICAL FOOD POOL (VEG, EGG, NONVEG COMPATIBLE) ---
+    // --- 50+ CLINICAL FOOD POOL WITH D: KITCHEN RECIPE TIPS ---
     const CLINICAL_FOOD_DB = [
       // Morning Detox Infusions
-      { id: "morn_ash_gourd", name: "પેઠાનો રસ (Ash Gourd) + કાચી હળદર", slot: "morning", baseCal: 25, baseP: 0.6, gl: 1, basePortion: "૨૫૦ ml", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "પેઠું (Ash Gourd)" },
-      { id: "morn_bottle_gourd", name: "દૂધીનો રસ + આદું + લીંબુ + ફુદીનો", slot: "morning", baseCal: 30, baseP: 1.0, gl: 1, basePortion: "૨૫૦ ml", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "દૂધી, આદું" },
-      { id: "morn_amla_cumin", name: "આમળા રસ + જીરાવાળું નવશેકું પાણી", slot: "morning", baseCal: 20, baseP: 0.4, gl: 1, basePortion: "૨૫૦ ml", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "આમળાં" },
-      { id: "morn_cucumber_mint", name: "કાકડી + ફુદીનો + ચિયા સીડ્સ ઇન્ફ્યુઝન", slot: "morning", baseCal: 28, baseP: 0.8, gl: 1, basePortion: "૨૫૦ ml", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "કાકડી" },
+      { id: "morn_ash_gourd", name: "પેઠાનો રસ (Ash Gourd) + કાચી હળદર", slot: "morning", baseCal: 25, baseP: 0.6, gl: 1, basePortion: "૨૫૦ ml", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "પેઠું (Ash Gourd)", kitchenTip: "પેઠાની છાલ અને બીજ કાઢીને મિક્સરમાં ક્રશ કરી ગાળ્યા વગર લેવું જેથી ફાઇબર જળવાય. ઉપર કાચી હળદર અને સિંધવ મીઠું ભભરાવવું." },
+      { id: "morn_bottle_gourd", name: "દૂધીનો રસ + આદું + લીંબુ + ફુદીનો", slot: "morning", baseCal: 30, baseP: 1.0, gl: 1, basePortion: "૨૫૦ ml", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "દૂધી, આદું", kitchenTip: "દૂધી કડવી ન હોવી જોઈએ તે ચાખી લેવું. આદું-ફુદીના સાથે તાજો ક્રશ કરી તરત જ પીવો." },
+      { id: "morn_amla_cumin", name: "આમળા રસ + જીરાવાળું નવશેકું પાણી", slot: "morning", baseCal: 20, baseP: 0.4, gl: 1, basePortion: "૨૫૦ ml", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "આમળાં", kitchenTip: "૧ ગ્લાસ નવશેકા પાણીમાં ૨૦ml તાજો આમળાનો રસ અને અડધી ચમચી શેકેલા જીરાનો પાઉડર ઉમેરી પીવું." },
+      { id: "morn_cucumber_mint", name: "કાકડી + ફુદીનો + ચિયા સીડ્સ ઇન્ફ્યુઝન", slot: "morning", baseCal: 28, baseP: 0.8, gl: 1, basePortion: "૨૫૦ ml", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "કાકડી", kitchenTip: "રાત્રે ૧ ચમચી ચિયા સીડ્સ પલાળી રાખવા, સવારે કાકડી-ફુદીનાના પાણી સાથે મિક્સ કરવા." },
 
       // Pre-Workout
-      { id: "pre_banana_chana", name: "૧ નાનું કેળું + શેકેલા ચણા", slot: "pre_workout", baseCal: 150, baseP: 5.0, gl: 9, basePortion: "૧ કેળું + ૨૫g ચણા", diet: "veg", tags: ["workout_friendly", "energy_boost"], proteinItem: "શેકેલા ચણા" },
-      { id: "pre_makhana_apple", name: "શેકેલા મખાના + અડધું સફરજન", slot: "pre_workout", baseCal: 130, baseP: 3.0, gl: 6, basePortion: "૨૫g મખાના", diet: "veg", tags: ["workout_friendly", "low_gi"], proteinItem: "મખાના" },
+      { id: "pre_banana_chana", name: "૧ નાનું કેળું + શેકેલા ચણા", slot: "pre_workout", baseCal: 150, baseP: 5.0, gl: 9, basePortion: "૧ કેળું + ૨૫g ચણા", diet: "veg", tags: ["workout_friendly", "energy_boost"], proteinItem: "શેકેલા ચણા", kitchenTip: "શેકેલા ચણા ફોતરા સાથે લેવા જેથી ધીમો ગ્લુકોઝ રીલીઝ થાય." },
+      { id: "pre_makhana_apple", name: "શેકેલા મખાના + અડધું સફરજન", slot: "pre_workout", baseCal: 130, baseP: 3.0, gl: 6, basePortion: "૨૫g મખાના", diet: "veg", tags: ["workout_friendly", "low_gi"], proteinItem: "મખાના", kitchenTip: "મખાના માત્ર ડ્રાય રોસ્ટ કરવા, તેલ કે ઘી ઉમેરવું નહીં." },
 
-      // Post-Workout (New slot v3)
-      { id: "post_whey_water", name: "૧ સ્કૂપ વ્હે પ્રોટીન (પાણીમાં) / સત્તુ ડ્રિંક", slot: "post_workout", baseCal: 120, baseP: 24.0, gl: 2, basePortion: "૧ સ્કૂપ / ૩૦g", diet: "veg", tags: ["workout_friendly", "high_protein"], proteinItem: "વ્હે / સત્તુ" },
-      { id: "post_boiled_eggs", name: "૩ બાફેલા ઈંડા (સફેદ ભાગ) + કાકડી", slot: "post_workout", baseCal: 110, baseP: 18.0, gl: 1, basePortion: "૩ એગ વ્હાઈટ", diet: "egg", tags: ["workout_friendly", "high_protein"], proteinItem: "ઈંડા" },
-      { id: "post_paneer_curd", name: "તાજું પનીર + મોળું દહીં", slot: "post_workout", baseCal: 160, baseP: 15.0, gl: 3, basePortion: "૬૦g પનીર + ૧૦૦g દહીં", diet: "veg", tags: ["workout_friendly", "high_protein"], proteinItem: "પનીર, દહીં" },
+      // Post-Workout
+      { id: "post_whey_water", name: "૧ સ્કૂપ વ્હે પ્રોટીન (પાણીમાં) / સત્તુ ડ્રિંક", slot: "post_workout", baseCal: 120, baseP: 24.0, gl: 2, basePortion: "૧ સ્કૂપ / ૩૦g", diet: "veg", tags: ["workout_friendly", "high_protein"], proteinItem: "વ્હે / સત્તુ", kitchenTip: "વર્કઆઉટ પછી ૩૦ મિનિટમાં સામાન્ય પાણી સાથે લેવું." },
+      { id: "post_boiled_eggs", name: "૩ બાફેલા ઈંડા (સફેદ ભાગ) + કાકડી", slot: "post_workout", baseCal: 110, baseP: 18.0, gl: 1, basePortion: "૩ એગ વ્હાઈટ", diet: "egg", tags: ["workout_friendly", "high_protein"], proteinItem: "ઈંડા", kitchenTip: "પીળો ભાગ કાઢી નાખવો, માત્ર સફેદ ભાગ પર કાળા મરી અને સિંધવ મીઠું નાખીને લેવું." },
+      { id: "post_paneer_curd", name: "તાજું પનીર + મોળું દહીં", slot: "post_workout", baseCal: 160, baseP: 15.0, gl: 3, basePortion: "૬૦g પનીર + ૧૦૦g દહીં", diet: "veg", tags: ["workout_friendly", "high_protein"], proteinItem: "પનીર, દહીં", kitchenTip: "દહીં મોળું હોવું જોઈએ, ખાંડ કે મીઠું ઉમેરવું નહીં." },
 
       // Breakfast
-      { id: "bf_moong_chila", name: "મગની દાળનો ચીલો + તાજું પનીર", slot: "breakfast", baseCal: 240, baseP: 15.0, gl: 6, basePortion: "૨ ચીલા + ૫૦g પનીર", diet: "veg", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati"], proteinItem: "મગની દાળ, પનીર" },
-      { id: "bf_moth_salad", name: "ફણગાવેલા બાફેલા મઠની ચાટ + કાકડી-ટામેટાં", slot: "breakfast", baseCal: 170, baseP: 11.0, gl: 5, basePortion: "૧૫૦g મોટો બાઉલ", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "gujarati"], proteinItem: "ફણગાવેલા મઠ" },
-      { id: "bf_besan_methi_chila", name: "બેસન-મેથી ચીલો + ગ્રીલ્ડ પનીર ક્યુબ્સ", slot: "breakfast", baseCal: 250, baseP: 16.0, gl: 7, basePortion: "૨ ચીલા + ૫૦g પનીર", diet: "veg", tags: ["veg", "high_protein", "low_gi", "gujarati", "workout_friendly"], proteinItem: "બેસન, પનીર" },
-      { id: "bf_sprout_chana", name: "ફણગાવેલા ચણા + લીંબુ મરી અને ધાણા", slot: "breakfast", baseCal: 180, baseP: 10.0, gl: 6, basePortion: "૧ બાઉલ (૧૫૦g)", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "liver_friendly"], proteinItem: "દેશી ચણા" },
-      { id: "bf_muthiya_steam", name: "દૂધી-મેથીના સ્ટીમ્ડ મુઠીયા (ઓછા તેલમાં)", slot: "breakfast", baseCal: 160, baseP: 6.0, gl: 7, basePortion: "૫ પીસ", diet: "veg", tags: ["veg", "low_fat", "liver_friendly", "gujarati"], vegItem: "દૂધી, મેથી" },
-      { id: "bf_oats_chila_paneer", name: "ઓટ્સ-પાલક ચીલો + ગ્રીલ્ડ પનીર", slot: "breakfast", baseCal: 230, baseP: 14.5, gl: 6, basePortion: "૨ ચીલા + ૪૦g પનીર", diet: "veg", tags: ["veg", "high_protein", "low_gi"], proteinItem: "ઓટ્સ, પનીર" },
-      { id: "bf_tofu_bhurji", name: "ટોફૂ શાકભાજી ભુરજી + સલાડ", slot: "breakfast", baseCal: 210, baseP: 16.0, gl: 4, basePortion: "૧૨૦g ભુરજી", diet: "veg", tags: ["veg", "high_protein", "low_carb", "liver_friendly"], proteinItem: "ટોફૂ" },
-      { id: "bf_egg_omlet_veggies", name: "૨ ઈંડાનો ઓમલેટ (પાલક-ટામેટાં સાથે)", slot: "breakfast", baseCal: 210, baseP: 14.0, gl: 2, basePortion: "૨ ઈંડા", diet: "egg", tags: ["egg", "high_protein", "low_carb"], proteinItem: "ઈંડા" },
+      { id: "bf_moong_chila", name: "મગની દાળનો ચીલો + તાજું પનીર", slot: "breakfast", baseCal: 240, baseP: 15.0, gl: 6, basePortion: "૨ ચીલા + ૫૦g પનીર", diet: "veg", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati"], proteinItem: "મગની દાળ, પનીર", kitchenTip: "નોન-સ્ટીક કે કાસ્ટ આયર્ન તવા પર અડધી ચમચી તેલથી ચીલો શેકવો. વચ્ચે પનીરનું છીણ ભરીને સર્વ કરવો." },
+      { id: "bf_moth_salad", name: "ફણગાવેલા બાફેલા મઠની ચાટ + કાકડી-ટામેટાં", slot: "breakfast", baseCal: 170, baseP: 11.0, gl: 5, basePortion: "૧૫૦g મોટો બાઉલ", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "gujarati"], proteinItem: "ફણગાવેલા મઠ", kitchenTip: "મઠને હળવા બાફી લેવા. કાચી કાકડી, ટામેટાં, લીંબુ અને લીલા ધાણા મિક્સ કરવા. તેલ કે તેલવાળો વઘાર બિલકુલ ન કરવો." },
+      { id: "bf_besan_methi_chila", name: "બેસન-મેથી ચીલો + ગ્રીલ્ડ પનીર ક્યુબ્સ", slot: "breakfast", baseCal: 250, baseP: 16.0, gl: 7, basePortion: "૨ ચીલા + ૫૦g પનીર", diet: "veg", tags: ["veg", "high_protein", "low_gi", "gujarati", "workout_friendly"], proteinItem: "બેસન, પનીર", kitchenTip: "બેસનમાં પુષ્કળ તાજી ઝીણી સમારેલી મેથી અને અજમો ઉમેરવો, જેથી પાચન સારું રહે." },
+      { id: "bf_sprout_chana", name: "ફણગાવેલા ચણા + લીંબુ મરી અને ધાણા", slot: "breakfast", baseCal: 180, baseP: 10.0, gl: 6, basePortion: "૧ બાઉલ (૧૫૦g)", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "liver_friendly"], proteinItem: "દેશી ચણા", kitchenTip: "ચણાને કૂકરમાં ૧ સીટી વગાડી બાફી લેવા જેથી પેટમાં ગેસ ન થાય." },
+      { id: "bf_muthiya_steam", name: "દૂધી-મેથીના સ્ટીમ્ડ મુઠીયા (ઓછા તેલમાં)", slot: "breakfast", baseCal: 160, baseP: 6.0, gl: 7, basePortion: "૫ પીસ", diet: "veg", tags: ["veg", "low_fat", "liver_friendly", "gujarati"], vegItem: "દૂધી, મેથી", kitchenTip: "મુઠીયા સ્ટીમ કર્યા પછી તળવા નહીં. માત્ર ૧ નાની ચમચી તેલમાં રાઈ અને તલનો હળવો વઘાર કરવો." },
+      { id: "bf_oats_chila_paneer", name: "ઓટ્સ-પાલક ચીલો + ગ્રીલ્ડ પનીર", slot: "breakfast", baseCal: 230, baseP: 14.5, gl: 6, basePortion: "૨ ચીલા + ૪૦g પનીર", diet: "veg", tags: ["veg", "high_protein", "low_gi"], proteinItem: "ઓટ્સ, પનીર", kitchenTip: "ઓટ્સને પીસીને પાલકની પ્યુરી સાથે મિક્સ કરીને ખીરું બનાવવું." },
+      { id: "bf_tofu_bhurji", name: "ટોફૂ શાકભાજી ભુરજી + સલાડ", slot: "breakfast", baseCal: 210, baseP: 16.0, gl: 4, basePortion: "૧૨૦g ભુરજી", diet: "veg", tags: ["veg", "high_protein", "low_carb", "liver_friendly"], proteinItem: "ટોફૂ", kitchenTip: "૧ ચમચી ઓલિવ કે તલના તેલમાં જીરું, ડુંગળી, શિમલા મિર્ચ અને ક્રશ કરેલું ટોફૂ હળદર સાથે સાંતળવું." },
+      { id: "bf_egg_omlet_veggies", name: "૨ ઈંડાનો ઓમલેટ (પાલક-ટામેટાં સાથે)", slot: "breakfast", baseCal: 210, baseP: 14.0, gl: 2, basePortion: "૨ ઈંડા", diet: "egg", tags: ["egg", "high_protein", "low_carb"], proteinItem: "ઈંડા", kitchenTip: "માખણને બદલે ૧ ટીસ્પૂન તેલમાં પુષ્કળ પાલક નાખી ઓમલેટ બનાવવો." },
 
       // Lunch
-      { id: "ln_jowar_palak_paneer", name: "સલાડ પ્લેટ + જુવાર રોટલો + પાલક પનીર + મોળી છાશ", slot: "lunch", baseCal: 370, baseP: 19.0, gl: 9, basePortion: "૧ રોટલો + ૧૫૦g શાક + છાશ", diet: "veg", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati", "barrier_plate"], vegItem: "પાલક", proteinItem: "પનીર, છાશ" },
-      { id: "ln_bajra_methi_dal", name: "કાકડી-બીટ સલાડ + બાજરી રોટલો + મેથી ભાજી + મગ દાળ + છાશ", slot: "lunch", baseCal: 360, baseP: 16.0, gl: 10, basePortion: "૧ રોટલો + વાટકી દાળ + શાક", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "gujarati", "barrier_plate"], vegItem: "મેથી, કાકડી", proteinItem: "મગની દાળ, છાશ" },
-      { id: "ln_soya_curry_roti", name: "સોયા ચંક્સ કરી + મલ્ટી-મિલેટ રોટલી + સલાડ + છાશ", slot: "lunch", baseCal: 390, baseP: 27.0, gl: 8, basePortion: "૨ રોટલી + ૬૦g સોયા + છાશ", diet: "veg", tags: ["veg", "high_protein", "workout_friendly", "barrier_plate"], proteinItem: "સોયા ચંક્સ, છાશ" },
-      { id: "ln_tofu_tindora_roti", name: "ટોફૂ ટીંડોળા શાક + ૧ જુવાર રોટલો + સલાડ + છાશ", slot: "lunch", baseCal: 340, baseP: 18.0, gl: 8, basePortion: "૧ રોટલો + ૧૫૦g શાક + છાશ", diet: "veg", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati", "barrier_plate"], vegItem: "ટીંડોળા", proteinItem: "ટોફૂ, છાશ" },
-      { id: "ln_drumstick_curry_roti", name: "સરગવાની કરી (Drumstick) + જવની રોટલી + સલાડ + છાશ", slot: "lunch", baseCal: 330, baseP: 14.0, gl: 7, basePortion: "૨ રોટલી + શાક + છાશ", diet: "veg", tags: ["veg", "high_fiber", "liver_friendly", "low_gi", "gujarati", "barrier_plate"], vegItem: "સરગવો", proteinItem: "છાશ" },
-      { id: "ln_bhindi_moong_dal", name: "ઓછા તેલમાં ભીંડાનું શાક + બાજરી રોટલો + મગની દાળ", slot: "lunch", baseCal: 350, baseP: 15.0, gl: 9, basePortion: "૧ રોટલો + દાળ + શાક", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "gujarati", "barrier_plate"], vegItem: "ભીંડા", proteinItem: "મગની દાળ" },
-      { id: "ln_choli_sabzi_roti", name: "લીલી ચોળીનું શાક + ૧ જુવાર રોટલો + કાકડી-ગાજર સલાડ + છાશ", slot: "lunch", baseCal: 345, baseP: 15.5, gl: 8, basePortion: "૧ રોટલો + શાક + છાશ", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "gujarati"], vegItem: "ચોળી", proteinItem: "છાશ" },
-      { id: "ln_chicken_salad_roti", name: "ગ્રીલ્ડ ચિકન બ્રેસ્ટ + ૧ જુવાર રોટલો + કાકડી સલાડ", slot: "lunch", baseCal: 380, baseP: 32.0, gl: 6, basePortion: "૧૨૦g ચિકન + ૧ રોટલો", diet: "nonveg", tags: ["nonveg", "high_protein", "low_gi"], proteinItem: "ચિકન" },
+      { id: "ln_jowar_palak_paneer", name: "સલાડ પ્લેટ + જુવાર રોટલો + પાલક પનીર + મોળી છાશ", slot: "lunch", baseCal: 370, baseP: 19.0, gl: 9, basePortion: "૧ રોટલો + ૧૫૦g શાક + છાશ", diet: "veg", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati", "barrier_plate"], vegItem: "પાલક", proteinItem: "પનીર, છાશ", kitchenTip: "પાલક પનીરમાં ક્રીમ કે કાજુ પેસ્ટ ન નાખવી. પહેલાં સલાડ પૂરું કરવું, પછી રોટલો અને શાક લેવું." },
+      { id: "ln_bajra_methi_dal", name: "કાકડી-બીટ સલાડ + બાજરી રોટલો + મેથી ભાજી + મગ દાળ + છાશ", slot: "lunch", baseCal: 360, baseP: 16.0, gl: 10, basePortion: "૧ રોટલો + વાટકી દાળ + શાક", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "gujarati", "barrier_plate"], vegItem: "મેથી, કાકડી", proteinItem: "મગની દાળ, છાશ", kitchenTip: "મગની દાળ ફોતરાવાળી રાખવી. બાજરીનો રોટલો ઘી વગર કે માત્ર અડધી ચમચી ઘી સાથે લેવો." },
+      { id: "ln_soya_curry_roti", name: "સોયા ચંક્સ કરી + મલ્ટી-મિલેટ રોટલી + સલાડ + છાશ", slot: "lunch", baseCal: 390, baseP: 27.0, gl: 8, basePortion: "૨ રોટલી + ૬૦g સોયા + છાશ", diet: "veg", tags: ["veg", "high_protein", "workout_friendly", "barrier_plate"], proteinItem: "સોયા ચંક્સ, છાશ", kitchenTip: "સોયા ચંક્સને ગરમ પાણીમાં મીઠું નાખી ૨ વાર નીચોવી લેવા જેથી સોયાની સ્મેલ નીકળી જાય. ટામેટાંની ગ્રેવીમાં રાંધવા." },
+      { id: "ln_tofu_tindora_roti", name: "ટોફૂ ટીંડોળા શાક + ૧ જુવાર રોટલો + સલાડ + છાશ", slot: "lunch", baseCal: 340, baseP: 18.0, gl: 8, basePortion: "૧ રોટલો + ૧૫૦g શાક + છાશ", diet: "veg", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati", "barrier_plate"], vegItem: "ટીંડોળા", proteinItem: "ટોફૂ, છાશ", kitchenTip: "ટીંડોળા લાંબા કાપી ઓછા તેલમાં ઢાંકીને સ્ટીમથી ચડવવા. છેલ્લે ટોફૂ ક્યુબ્સ ઉમેરવા." },
+      { id: "ln_drumstick_curry_roti", name: "સરગવાની કરી (Drumstick) + જવની રોટલી + સલાડ + છાશ", slot: "lunch", baseCal: 330, baseP: 14.0, gl: 7, basePortion: "૨ રોટલી + શાક + છાશ", diet: "veg", tags: ["veg", "high_fiber", "liver_friendly", "low_gi", "gujarati", "barrier_plate"], vegItem: "સરગવો", proteinItem: "છાશ", kitchenTip: "સરગવાને બાફીને છાશ અને ચણાના લોટની કઢીમાં રાંધવો (ગોળ/ખાંડ વગર)." },
+      { id: "ln_bhindi_moong_dal", name: "ઓછા તેલમાં ભીંડાનું શાક + બાજરી રોટલો + મગની દાળ", slot: "lunch", baseCal: 350, baseP: 15.0, gl: 9, basePortion: "૧ રોટલો + દાળ + શાક", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "gujarati", "barrier_plate"], vegItem: "ભીંડા", proteinItem: "મગની દાળ", kitchenTip: "ભીંડાને ધોઈને સંપૂર્ણ કોરા કરી કાપવા જેથી ચીકાશ ન થાય અને તેલ ઓછું બળે." },
+      { id: "ln_choli_sabzi_roti", name: "લીલી ચોળીનું શાક + ૧ જુવાર રોટલો + કાકડી-ગાજર સલાડ + છાશ", slot: "lunch", baseCal: 345, baseP: 15.5, gl: 8, basePortion: "૧ રોટલો + શાક + છાશ", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "gujarati"], vegItem: "ચોળી", proteinItem: "છાશ", kitchenTip: "લીલી ચોળીમાં લસણ-મરચાંનો સાદો વઘાર કરવો, ગળપણ ઉમેરવું નહીં." },
+      { id: "ln_chicken_salad_roti", name: "ગ્રીલ્ડ ચિકન બ્રેસ્ટ + ૧ જુવાર રોટલો + કાકડી સલાડ", slot: "lunch", baseCal: 380, baseP: 32.0, gl: 6, basePortion: "૧૨૦g ચિકન + ૧ રોટલો", diet: "nonveg", tags: ["nonveg", "high_protein", "low_gi"], proteinItem: "ચિકન", kitchenTip: "ચિકનને દહીં અને લીંબુ-આદું સાથે મેરીનેટ કરી તવા પર ગ્રીલ કરવું." },
 
       // Snack
-      { id: "sn_roasted_makhana", name: "સિંધવ મીઠાવાળા શેકેલા મખાના", slot: "snack", baseCal: 110, baseP: 3.5, gl: 5, basePortion: "૨૫g", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "low_fat"], proteinItem: "મખાના" },
-      { id: "sn_chana_chaas", name: "શેકેલા ચણા + જીરા છાશ", slot: "snack", baseCal: 150, baseP: 9.0, gl: 4, basePortion: "૩૦g ચણા + ૧ ગ્લાસ છાશ", diet: "veg", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati"], proteinItem: "ચણા, છાશ" },
-      { id: "sn_guava_fruit", name: "તાજો જામફળ + સિંધવ મીઠું", slot: "snack", baseCal: 68, baseP: 2.5, gl: 3, basePortion: "૧ મધ્યમ જામફળ (૧૦૦g)", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "liver_friendly"], vegItem: "જામફળ" },
-      { id: "sn_papaya_slices", name: "તાજા પપૈયાના પીસ + લીંબુનો રસ", slot: "snack", baseCal: 60, baseP: 1.0, gl: 5, basePortion: "૧ નાની પ્લેટ (૧૨૦g)", diet: "veg", tags: ["veg", "liver_friendly", "digestive"], vegItem: "પપૈયું" },
-      { id: "sn_cucumber_peanut", name: "કાકડી-ટામેટાં કચુંબર + બાફેલી સીંગદાણા", slot: "snack", baseCal: 130, baseP: 5.5, gl: 2, basePortion: "૧ બાઉલ + ૨૦g સીંગ", diet: "veg", tags: ["veg", "healthy_fat", "low_gi"], proteinItem: "સીંગદાણા" },
+      { id: "sn_roasted_makhana", name: "સિંધવ મીઠાવાળા શેકેલા મખાના", slot: "snack", baseCal: 110, baseP: 3.5, gl: 5, basePortion: "૨૫g", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "low_fat"], proteinItem: "મખાના", kitchenTip: "ધીમી આંચે તવા પર ક્રિસ્પી શેકીને સિંધવ મીઠું અને મરી પાવડર નાખવો." },
+      { id: "sn_chana_chaas", name: "શેકેલા ચણા + જીરા છાશ", slot: "snack", baseCal: 150, baseP: 9.0, gl: 4, basePortion: "૩૦g ચણા + ૧ ગ્લાસ છાશ", diet: "veg", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati"], proteinItem: "ચણા, છાશ", kitchenTip: "છાશમાં શેકેલું જીરું અને સિંધવ મીઠું નાખવું, બરફ વાપરવો નહીં." },
+      { id: "sn_guava_fruit", name: "તાજો જામફળ + સિંધવ મીઠું", slot: "snack", baseCal: 68, baseP: 2.5, gl: 3, basePortion: "૧ મધ્યમ જામફળ (૧૦૦g)", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "liver_friendly"], vegItem: "જામફળ", kitchenTip: "જામફળ વધુ પડતું પાકેલું ન હોવું જોઈએ, થોડું કડક જામફળ સુગર માટે ઉત્તમ છે." },
+      { id: "sn_papaya_slices", name: "તાજા પપૈયાના પીસ + લીંબુનો રસ", slot: "snack", baseCal: 60, baseP: 1.0, gl: 5, basePortion: "૧ નાની પ્લેટ (૧૨૦g)", diet: "veg", tags: ["veg", "liver_friendly", "digestive"], vegItem: "પપૈયું", kitchenTip: "પપૈયા પર અડધા લીંબુનો રસ નીચોવીને ખાવું જેથી પાચન ઝડપી બને." },
+      { id: "sn_cucumber_peanut", name: "કાકડી-ટામેટાં કચુંબર + બાફેલી સીંગદાણા", slot: "snack", baseCal: 130, baseP: 5.5, gl: 2, basePortion: "૧ બાઉલ + ૨૦g સીંગ", diet: "veg", tags: ["veg", "healthy_fat", "low_gi"], proteinItem: "સીંગદાણા", kitchenTip: "સીંગદાણા મીઠા વગર કૂકરમાં બાફીને કાકડીની કચુંબરમાં મિક્સ કરવા." },
 
       // Dinner
-      { id: "dn_pumpkin_soup_paneer", name: "ગરમ દૂધી-કોળાનો સૂપ + ગ્રીલ્ડ પનીર ક્યુબ્સ", slot: "dinner", baseCal: 230, baseP: 15.0, gl: 3, basePortion: "મોટો બાઉલ સૂપ + ૬૦g પનીર", diet: "veg", tags: ["veg", "high_protein", "low_carb", "liver_friendly", "light_dinner"], vegItem: "કોળું, દૂધી", proteinItem: "પનીર" },
-      { id: "dn_spinach_soup_sprouts", name: "પાલક-આદું સૂપ + બાફેલા ફણગાવેલા મગ", slot: "dinner", baseCal: 195, baseP: 12.5, gl: 4, basePortion: "મોટો બાઉલ + ૧૦૦g મગ", diet: "veg", tags: ["veg", "high_fiber", "liver_friendly", "low_gi", "light_dinner"], vegItem: "પાલક", proteinItem: "મગ" },
-      { id: "dn_tofu_broccoli_stirfry", name: "ટોફૂ અને બ્રોકોલી-શિમલા મિર્ચ સૌતે", slot: "dinner", baseCal: 215, baseP: 16.5, gl: 2, basePortion: "૧૨૦g ટોફૂ + ૧૦૦g શાક", diet: "veg", tags: ["veg", "high_protein", "workout_friendly", "liver_friendly"], vegItem: "બ્રોકોલી", proteinItem: "ટોફૂ" },
-      { id: "dn_bottle_gourd_soup_chana", name: "દૂધી-ટામેટાં સૂપ + બાફેલા કાબુલી ચણા ચાટ", slot: "dinner", baseCal: 200, baseP: 11.0, gl: 5, basePortion: "બાઉલ સૂપ + ૮૦g ચણા", diet: "veg", tags: ["veg", "high_fiber", "liver_friendly", "light_dinner"], vegItem: "દૂધી", proteinItem: "કાબુલી ચણા" },
-      { id: "dn_moong_soup_veggies", name: "મગનું ઓસામણ/સૂપ + સૌતે શાકભાજી + પનીર", slot: "dinner", baseCal: 225, baseP: 14.0, gl: 4, basePortion: "બાઉલ સૂપ + ૫૦g પનીર", diet: "veg", tags: ["veg", "high_protein", "liver_friendly", "gujarati"], vegItem: "મિક્સ શાકભાજી", proteinItem: "પનીર" }
+      { id: "dn_pumpkin_soup_paneer", name: "ગરમ દૂધી-કોળાનો સૂપ + ગ્રીલ્ડ પનીર ક્યુબ્સ", slot: "dinner", baseCal: 230, baseP: 15.0, gl: 3, basePortion: "મોટો બાઉલ સૂપ + ૬૦g પનીર", diet: "veg", tags: ["veg", "high_protein", "low_carb", "liver_friendly", "light_dinner"], vegItem: "કોળું, દૂધી", proteinItem: "પનીર", kitchenTip: "કોળું-દૂધી બાફી બ્લેન્ડ કરવું. કોર્નફ્લોર કે મેંદો બિલકુલ ન નાખવો. ઉપર ગ્રીલ્ડ પનીર ક્યુબ્સ નાખી ગરમ પીવો." },
+      { id: "dn_spinach_soup_sprouts", name: "પાલક-આદું સૂપ + બાફેલા ફણગાવેલા મગ", slot: "dinner", baseCal: 195, baseP: 12.5, gl: 4, basePortion: "મોટો બાઉલ + ૧૦૦g મગ", diet: "veg", tags: ["veg", "high_fiber", "liver_friendly", "low_gi", "light_dinner"], vegItem: "પાલક, આદું", proteinItem: "મગ", kitchenTip: "પાલકને ૧ મિનિટ બ્લાન્ચ કરી આદું અને લસણ સાથે પીસી ગરમ સૂપ બનાવવો." },
+      { id: "dn_tofu_broccoli_stirfry", name: "ટોફૂ અને બ્રોકોલી-શિમલા મિર્ચ સૌતે", slot: "dinner", baseCal: 215, baseP: 16.5, gl: 2, basePortion: "૧૨૦g ટોફૂ + ૧૦૦g શાક", diet: "veg", tags: ["veg", "high_protein", "workout_friendly", "liver_friendly"], vegItem: "બ્રોકોલી", proteinItem: "ટોફૂ", kitchenTip: "તવા પર ૧ ચમચી તેલમાં બ્રોકોલી ક્રિસ્પી સાંતળવી, વધારે ગળવા ન દેવી." },
+      { id: "dn_bottle_gourd_soup_chana", name: "દૂધી-ટામેટાં સૂપ + બાફેલા કાબુલી ચણા ચાટ", slot: "dinner", baseCal: 200, baseP: 11.0, gl: 5, basePortion: "સૂપ + ૮૦g ચણા", diet: "veg", tags: ["veg", "high_fiber", "liver_friendly", "light_dinner"], vegItem: "દૂધી, ટામેટાં", proteinItem: "કાબુલી ચણા", kitchenTip: "દૂધી-ટામેટાંનો ગાળ્યા વગરનો જાડો સૂપ પીવો સાથે બાફેલા ચણા લેવા." },
+      { id: "dn_moong_soup_veggies", name: "મગનું ઓસામણ/સૂપ + સૌતે શાકભાજી + પનીર", slot: "dinner", baseCal: 225, baseP: 14.0, gl: 4, basePortion: "બાઉલ સૂપ + ૫૦g પનીર", diet: "veg", tags: ["veg", "high_protein", "liver_friendly", "gujarati"], vegItem: "મિક્સ શાકભાજી", proteinItem: "પનીર", kitchenTip: "આખા મગ બાફી તેનું પાણી (ઓસામણ) જીરું અને લીમડાનો હળવો વઘાર કરી સૂપ તરીકે પીવું." }
     ];
 
     const PROTOCOL_RULES = {
@@ -547,19 +638,15 @@
       };
     }
 
-    // Comprehensive Safe Multi-language Allergy & Diet Filter
     function getCandidatesForSlot(slot, clientGoals, clientPrefs, clientDiet = 'veg', excludeId = null) {
       const candidates = CLINICAL_FOOD_DB.filter(f => f.slot === slot);
       const allergies = (clientPrefs?.allergies || []).map(a => a.toLowerCase().trim()).filter(a => a.length > 0);
 
       const filtered = candidates.filter(item => {
         if (excludeId && item.id === excludeId) return false;
-
-        // Diet mode filter
         if (clientDiet === 'veg' && item.diet !== 'veg') return false;
         if (clientDiet === 'egg' && item.diet === 'nonveg') return false;
 
-        // Multi-language Allergy check
         const itemName = item.name.toLowerCase();
         if (allergies.some(a => itemName.includes(a))) return false;
 
@@ -575,10 +662,9 @@
         return true;
       });
 
-      return filtered.length > 0 ? filtered : candidates; // Zero-Crash Fallback
+      return filtered.length > 0 ? filtered : candidates;
     }
 
-    // Safe Dynamic Generation (Never overwrites whole plan in DB, uses swaps.<slot>)
     function generateDayMenu(dateKey, client) {
       const goals = client.conditions || ['diabetes', 'fatty_liver'];
       const prefs = client.preferences || { cuisine: client.cuisine || 'gujarati', allergies: [] };
@@ -594,10 +680,9 @@
         slots.splice(3, 0, 'post_workout');
       }
 
-      // Check if user has saved manual swaps for this date
       const savedSwaps = client.compliance?.[dateKey]?.swaps || {};
-
       const plan = {};
+
       slots.forEach((slot, sIdx) => {
         if (savedSwaps[slot]) {
           const swappedDish = CLINICAL_FOOD_DB.find(f => f.id === savedSwaps[slot]);
@@ -683,6 +768,7 @@
         document.getElementById('portalTabToday').className = "flex-1 py-2 rounded-xl tab-inactive-btn transition text-center flex items-center justify-center gap-1.5";
         renderUpcomingPlanner();
         generateWeeklyGroceryList();
+        renderLabReportsHistory();
         calculateOverallReports();
       }
     }
@@ -728,7 +814,8 @@
         joiningDate: getTodayDateKey(),
         refCode: 'CL-' + phone.slice(-4),
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        compliance: {}
+        compliance: {},
+        labReports: []
       };
 
       await clientRef.set(newClientData);
@@ -827,7 +914,7 @@
       if (!currentClient) return;
       if (!currentClient.compliance) currentClient.compliance = {};
       
-      const comp = currentClient.compliance[selectedDateKey] || { water: 0, metric1: '', metric2: '', note: '', weight: '', extras: [], checks: {}, swaps: {} };
+      const comp = currentClient.compliance[selectedDateKey] || { water: 0, metric1: '', metric2: '', note: '', weight: '', waist: '', extras: [], checks: {}, swaps: {} };
 
       // Water Hydration
       const waterVal = comp.water || 0;
@@ -838,12 +925,13 @@
       const targets = calculateClientTargets(currentClient);
       document.getElementById('cpFocusTag').innerText = targets.focusTag;
 
-      // Always fresh generate to never lose lunch/dinner
+      // Always fresh generate to never lose cards
       const plan = generateDayMenu(selectedDateKey, currentClient);
 
       renderPlanReasonChips();
       renderWorkoutSugarGuard();
       checkMedicationReviewTrigger();
+      checkMetabolicResetTrigger();
       renderExtrasList(comp.extras || []);
 
       let totalDayCalories = 0;
@@ -898,8 +986,13 @@
             </div>
             <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-xs text-slate-800 space-y-1">
               <div class="font-bold leading-relaxed">${esc(dish.name)}</div>
-              <div class="text-[11px] text-teal-800 font-semibold flex items-center gap-1">
-                <i class="fa-solid fa-scale-balanced text-[10px]"></i> પ્રમાણ (Portion): <span class="bg-white px-2 py-0.5 rounded border border-slate-200">${dish.portion || dish.basePortion || '૧ સર્વિંગ'}</span>
+              <div class="flex justify-between items-center pt-1 border-t border-slate-200/60 text-[11px]">
+                <span class="text-teal-800 font-semibold flex items-center gap-1">
+                  <i class="fa-solid fa-scale-balanced text-[10px]"></i> પ્રમાણ: <span class="bg-white px-2 py-0.5 rounded border border-slate-200">${dish.portion || dish.basePortion || '૧ સર્વિંગ'}</span>
+                </span>
+                <button onclick="openKitchenTipsModal('${dish.id}')" class="text-amber-800 hover:text-amber-900 font-bold flex items-center gap-1 text-[10px]">
+                  <i class="fa-solid fa-kitchen-set"></i> રસોઈ ટિપ
+                </button>
               </div>
             </div>
             <div class="grid grid-cols-3 gap-2">
@@ -914,7 +1007,7 @@
         }
       });
 
-      // Top-up suggestions if calories or protein are low
+      // Top-up suggestions
       const topupBox = document.getElementById('cpTopupContainer');
       const proteinGap = targets.targetProtein - totalDayProtein;
       if (proteinGap > 15) {
@@ -928,7 +1021,7 @@
       const finalScore = markedCount > 0 ? Math.round(scorePoints / planSlots.length) : 0;
       document.getElementById('cpScoreBadge').innerText = finalScore + '%';
 
-      let motivationMsg = "આજના મીલ્સ માર્ક કરો એટલે તમારો સ્કોર અને પ્રેરણાદાયી સંદેશ અહીં લાઈવ દેખાશે.";
+      let motivationMsg = "આજના મીલ્સ માર્ક કરો એટલે તમારો સ્કોર અને સ્ટેટસ લાઈવ દેખાશે.";
       let motiIcon = "💬";
       if (markedCount > 0) {
         if (finalScore >= 80) { motivationMsg = "🌟 અદભુત! આજનો પ્રોટોકોલ ખૂબ જ મજબૂતીથી જળવાઈ રહ્યો છે!"; motiIcon = "🏆"; }
@@ -951,24 +1044,12 @@
 
       checkSugarAlertBox(comp.metric1, comp.metric2);
 
-      const isDiabetes = (currentClient.conditions || []).includes('diabetes');
-      document.getElementById('cpDynamicInputs').innerHTML = `
-        <div class="grid grid-cols-3 gap-2">
-          <div>
-            <label class="text-[9px] text-slate-500 font-semibold">${isDiabetes ? 'Fasting Sugar' : 'Steps Walked'}</label>
-            <input type="number" id="cpInM1" oninput="debounceSaveVitals()" value="${esc(comp.metric1||'')}" placeholder="${isDiabetes ? 'mg/dl' : '8000'}" class="w-full bg-slate-50 border p-2 rounded-lg text-xs">
-          </div>
-          <div>
-            <label class="text-[9px] text-slate-500 font-semibold">${isDiabetes ? 'PP2BS Sugar' : 'Workout Mins'}</label>
-            <input type="number" id="cpInM2" oninput="debounceSaveVitals()" value="${esc(comp.metric2||'')}" placeholder="${isDiabetes ? 'mg/dl' : '30'}" class="w-full bg-slate-50 border p-2 rounded-lg text-xs">
-          </div>
-          <div>
-            <label class="text-[9px] text-slate-500 font-semibold">આજનું વજન (Weight)</label>
-            <input type="number" step="0.1" id="cpInWeight" oninput="debounceSaveVitals()" value="${esc(comp.weight||'')}" placeholder="કિલો" class="w-full bg-slate-50 border p-2 rounded-lg text-xs">
-          </div>
-        </div>
-        <input type="text" id="cpInNote" oninput="debounceSaveVitals()" value="${esc(comp.note||'')}" placeholder="શરીરમાં અનુભવાતી હળવાશ, નોંધ કે વિગત..." class="w-full bg-slate-50 border p-2 rounded-lg text-xs mt-1">
-      `;
+      // Populate Vitals Inputs
+      document.getElementById('cpInM1').value = comp.metric1 || '';
+      document.getElementById('cpInM2').value = comp.metric2 || '';
+      document.getElementById('cpInWeight').value = comp.weight || '';
+      document.getElementById('cpInWaist').value = comp.waist || '';
+      document.getElementById('cpInNote').value = comp.note || '';
     }
 
     function renderPlanReasonChips() {
@@ -1000,6 +1081,27 @@
       }
     }
 
+    // C: METABOLIC RESET / REFEED ALERT TRIGGER
+    function checkMetabolicResetTrigger() {
+      const box = document.getElementById('cpMetabolicResetBox');
+      const comp = currentClient.compliance || {};
+      const dates = Object.keys(comp);
+      // જો ક્લાયન્ટ ૨૮ દિવસ (૪ અઠવાડિયા) થી વધુ એક્ટિવ હોય તો રિફીડ સૂચન
+      if (dates.length >= 28 && dates.length % 28 <= 2) {
+        box.className = "bg-sky-50 border-2 border-sky-300 p-3 rounded-2xl text-xs text-sky-950 space-y-1 block";
+        box.innerHTML = `
+          <div class="font-extrabold flex items-center gap-1.5 text-sky-900">
+            <i class="fa-solid fa-fire-flame-curved text-sky-600"></i> 🔥 મેટાબોલિક રીસેટ દિવસ (Refeed Day Suggestion)
+          </div>
+          <p class="text-[11px] leading-tight">
+            તમે સતત ૪ અઠવાડિયાથી સફળતાપૂર્વક કેલરી ડેફિસિટમાં છો! મેટાબોલિઝમ ધીમું ન પડે તે માટે આજે કેલરીમાં ૨૫૦-૩૦૦ kcal નો હળવો વધારો (૧ વધારાનો રોટલો અથવા દાળ-સલાડ) લઈ શરીરને રીસેટ કરી શકો છો.
+          </p>
+        `;
+      } else {
+        box.className = "hidden";
+      }
+    }
+
     function checkMedicationReviewTrigger() {
       const box = document.getElementById('cpMedicationReviewBox');
       const comp = currentClient.compliance || {};
@@ -1020,6 +1122,76 @@
       } else {
         box.className = "hidden";
       }
+    }
+
+    // D: KITCHEN TIPS MODAL FUNCTIONS
+    function openKitchenTipsModal(dishId) {
+      const dish = CLINICAL_FOOD_DB.find(f => f.id === dishId);
+      if(!dish) return;
+      document.getElementById('ktDishTitle').innerText = dish.name;
+      document.getElementById('ktDishTips').innerText = dish.kitchenTip || "આ વાનગી ઓછામાં ઓછા તેલ (૧ નાની ચમચી) માં બનાવી ગરમ પીરસવી.";
+      document.getElementById('modalKitchenTips').classList.remove('hidden');
+    }
+    function closeKitchenTipsModal() {
+      document.getElementById('modalKitchenTips').classList.add('hidden');
+    }
+
+    // A: LAB REPORT MANAGEMENT
+    function saveLabReportModal() {
+      document.getElementById('labInDate').value = getTodayDateKey();
+      document.getElementById('modalAddLabReport').classList.remove('hidden');
+    }
+    function closeAddLabModal() {
+      document.getElementById('modalAddLabReport').classList.add('hidden');
+    }
+
+    async function saveNewLabReportToCloud() {
+      const date = document.getElementById('labInDate').value;
+      const hba1c = document.getElementById('labInHba1c').value.trim();
+      const insulin = document.getElementById('labInInsulin').value.trim();
+      const sgpt = document.getElementById('labInSgpt').value.trim();
+      const tg = document.getElementById('labInTg').value.trim();
+
+      if (!date || (!hba1c && !sgpt)) return alert('તારીખ અને ઓછામાં ઓછું ૧ લેબ મૂલ્ય દાખલ કરો.');
+
+      const newReport = { date, hba1c, insulin, sgpt, tg, createdAt: new Date().toISOString() };
+      if (!currentClient.labReports) currentClient.labReports = [];
+      currentClient.labReports.unshift(newReport);
+
+      await db.collection('clients').doc(currentClient.phone).update({
+        labReports: currentClient.labReports
+      });
+
+      closeAddLabModal();
+      renderLabReportsHistory();
+      alert('લેબ રિપોર્ટ સફળતાપૂર્વક સાચવ્યો! 🧪');
+    }
+
+    function renderLabReportsHistory() {
+      const container = document.getElementById('cpLabReportsList');
+      container.innerHTML = '';
+      const reports = currentClient.labReports || [];
+
+      if (reports.length === 0) {
+        container.innerHTML = `<div class="p-3 bg-slate-50 border rounded-2xl text-center text-slate-400 text-xs">હજી કોઈ લેબ રિપોર્ટ નોંધાયેલ નથી. "+ નવો રિપોર્ટ" પર ક્લિક કરી ઉમેરો.</div>`;
+        return;
+      }
+
+      reports.forEach(r => {
+        container.innerHTML += `
+          <div class="p-2.5 bg-slate-50 rounded-2xl border space-y-1">
+            <div class="flex justify-between items-center font-bold text-slate-800 text-[11px]">
+              <span>🗓️ તારીખ: ${r.date}</span>
+              ${r.hba1c ? `<span class="bg-teal-100 text-teal-900 px-2 py-0.5 rounded-lg">HbA1c: <b>${r.hba1c}%</b></span>` : ''}
+            </div>
+            <div class="grid grid-cols-3 gap-1 text-[10px] text-slate-600 pt-0.5">
+              <span>F. Insulin: <b>${r.insulin || '-'}</b></span>
+              <span>SGPT (Liver): <b>${r.sgpt || '-'} U/L</b></span>
+              <span>Triglycerides: <b>${r.tg || '-'}</b></span>
+            </div>
+          </div>
+        `;
+      });
     }
 
     // Extras/Cheat Food Logging
@@ -1081,7 +1253,6 @@
       proteinSet.forEach(p => { proUl.innerHTML += `<li>${p}</li>`; });
     }
 
-    // Safe Swap Function (Updates swaps.<slot> only, preserves all slots)
     async function swapCurrentDish(slotKey, currentDishId) {
       const goals = currentClient.conditions || ['diabetes'];
       const prefs = currentClient.preferences || {};
@@ -1151,11 +1322,13 @@
       const m1 = document.getElementById('cpInM1')?.value || '';
       const m2 = document.getElementById('cpInM2')?.value || '';
       const wt = document.getElementById('cpInWeight')?.value || '';
+      const waist = document.getElementById('cpInWaist')?.value || '';
       const note = document.getElementById('cpInNote')?.value || '';
       
       currentClient.compliance[selectedDateKey].metric1 = m1;
       currentClient.compliance[selectedDateKey].metric2 = m2;
       currentClient.compliance[selectedDateKey].weight = wt;
+      currentClient.compliance[selectedDateKey].waist = waist;
       currentClient.compliance[selectedDateKey].note = note;
       
       checkSugarAlertBox(m1, m2);
@@ -1165,11 +1338,11 @@
         [`compliance.${selectedDateKey}.metric1`]: m1,
         [`compliance.${selectedDateKey}.metric2`]: m2,
         [`compliance.${selectedDateKey}.weight`]: wt,
+        [`compliance.${selectedDateKey}.waist`]: waist,
         [`compliance.${selectedDateKey}.note`]: note
       });
     }
 
-    // Safe Sugar Alert with Manual Button (Never auto-opens WhatsApp)
     function checkSugarAlertBox(m1, m2) {
       const box = document.getElementById('sugarSafetyAlertBox');
       const goals = currentClient?.conditions || [];
@@ -1203,7 +1376,6 @@
       window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent(sosMsg)}`, '_blank');
     }
 
-    // 7-day Non-Repeat Upcoming Planner
     function renderUpcomingPlanner() {
       const container = document.getElementById('upcomingForecastContainer');
       container.innerHTML = '';
@@ -1297,13 +1469,14 @@
             const m1 = d.metric1 || '-';
             const m2 = d.metric2 || '-';
             const wt = d.weight ? `${d.weight}kg` : '-';
+            const wst = d.waist ? `${d.waist} in` : '-';
             const w = d.water ? `${d.water.toFixed(1)}L` : '0L';
             const ex = d.extras && d.extras.length > 0 ? d.extras.join(', ') : 'નથી';
-            reportLines.push(`• *${dKey}*: M1: ${m1} | M2: ${m2} | Wt: ${wt} | Water: ${w} | Extras: ${ex}`);
+            reportLines.push(`• *${dKey}*: M1: ${m1} | M2: ${m2} | Wt: ${wt} | Waist: ${wst} | Water: ${w} | Extras: ${ex}`);
           });
         }
         
-        reportLines.push(``, `Generated via Metabolic Pro Engine v3 📲`);
+        reportLines.push(``, `Generated via Metabolic Pro Engine v4 📲`);
         window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent(reportLines.join('\n'))}`, '_blank');
         return;
       }
@@ -1314,9 +1487,10 @@
       const msg = `🩺 *Metabolic Pro - Daily Report*
 Client: *${currentClient.name}*
 Date: *${selectedDateKey}*
-💧 Water Intake: *${waterVal.toFixed(2)} Liters*
-📈 Metrics: M1: *${comp.metric1 || 'N/A'}* | M2: *${comp.metric2 || 'N/A'}* | Wt: *${comp.weight || 'N/A'}*
-🍪 Extras/Cheat: *${extrasStr}*
+💧 Water: *${waterVal.toFixed(2)} L*
+📈 Vitals: F: *${comp.metric1 || 'N/A'}* | PP: *${comp.metric2 || 'N/A'}*
+⚖️ Weight: *${comp.weight || 'N/A'} kg* | Waist: *${comp.waist || 'N/A'} in*
+🍪 Extras: *${extrasStr}*
 Notes: "${comp.note || 'All good'}"`;
       window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
     }
