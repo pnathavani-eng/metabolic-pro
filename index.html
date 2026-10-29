@@ -252,7 +252,7 @@
       <!-- TAB 1: TODAY'S DIET VIEW -->
       <section id="portalTabToday" class="space-y-3.5">
 
-        <!-- VIP EXCLUSIVE LIVE SESSIONS BOX (DIRECT CLICKABLE A-TAG - NO POPUP BLOCK) -->
+        <!-- VIP EXCLUSIVE LIVE SESSIONS BOX (DIRECT CLICKABLE A-TAG) -->
         <div id="cpLiveSessionBox" class="card-clean p-4 rounded-3xl space-y-2.5 border border-teal-200 bg-gradient-to-r from-teal-50 to-emerald-50">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -281,7 +281,7 @@
           </button>
         </div>
 
-        <!-- MISSED SESSION RECORDING CARD (DIRECT CLICKABLE A-TAG) -->
+        <!-- MISSED SESSION RECORDING CARD -->
         <div id="cpRecordingBox" class="card-clean p-3 rounded-2xl border border-teal-200 bg-teal-50/50 flex items-center justify-between text-xs">
           <div>
             <div class="font-extrabold text-teal-950 text-xs flex items-center gap-1">
@@ -359,7 +359,7 @@
           </div>
         </div>
 
-        <!-- DYNAMIC DETAILED MEAL CARDS CONTAINER (WITH EXACT BADGES & SWAP) -->
+        <!-- DYNAMIC DETAILED MEAL CARDS CONTAINER -->
         <div class="space-y-3" id="cpTodayMealCards"></div>
 
         <!-- DAILY VITALS & BLOOD SUGAR -->
@@ -389,13 +389,37 @@
 
       </section>
 
-      <!-- TAB 2: UPCOMING MENU & REPORTS -->
-      <section id="portalTabUpcoming" class="hidden space-y-3">
+      <!-- TAB 2: UPCOMING MENU & GROCERY CHECKLIST (RESTORED) -->
+      <section id="portalTabUpcoming" class="hidden space-y-3.5">
+        
+        <!-- UPCOMING ROTATION DAYS BANNER -->
         <div class="p-3 bg-teal-50/60 border border-teal-200 rounded-2xl text-xs text-teal-900 font-semibold flex items-center gap-2">
           <i class="fa-solid fa-calendar-check text-teal-600 text-base"></i>
-          <span>આગામી દિવસોનું સંપૂર્ણ ડાયેટ રોટેશન ચાર્ટ નીચે મુજબ છે:</span>
+          <span>આગામી દિવસોનું સંપૂર્ણ ડાયેટ રોટેશન ચાર્ટ નીચે મુજબ છે:</span>[span_1](start_span)[span_1](end_span)
         </div>
+
+        <!-- UPCOMING ROTATION CARDS CONTAINER -->
         <div id="upcomingCardsList" class="space-y-3"></div>
+
+        <!-- 🛒 WEEKLY GROCERY CHECKLIST (સંભવિત ગ્રોસરી યાદી) -->
+        <div class="card-clean p-4 rounded-3xl border border-emerald-200 bg-emerald-50/20 space-y-3">
+          <div class="flex justify-between items-center border-b border-emerald-100 pb-2.5">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">🛒</span>
+              <div>
+                <h3 class="font-black text-slate-900 text-xs">સાપ્તાહિક સંભવિત ગ્રોસરી ચેકલિસ્ટ</h3>
+                <p class="text-[10px] text-slate-500 mt-0.5">આ અઠવાડિયાના ડાયેટ પ્લાન માટે અગાઉથી લાવી રાખવાની સામગ્રી:</p>
+              </div>
+            </div>
+            <button onclick="shareGroceryWhatsApp()" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[10px] rounded-xl flex items-center gap-1 shadow-xs">
+              <i class="fa-brands fa-whatsapp"></i> શેર કરો
+            </button>
+          </div>
+
+          <!-- GROCERY ITEMS CATEGORY-WISE -->
+          <div class="space-y-2 text-xs" id="groceryChecklistContainer"></div>
+        </div>
+
       </section>
 
     </main>
@@ -615,6 +639,7 @@
         document.getElementById('tabBtnUpcoming').className = "py-2.5 rounded-2xl main-tab-active flex items-center justify-center gap-1.5";
         document.getElementById('tabBtnToday').className = "py-2.5 rounded-2xl main-tab-inactive flex items-center justify-center gap-1.5";
         renderUpcomingCards();
+        renderGroceryList();
       }
     }
 
@@ -626,25 +651,25 @@
         {
           dtox: {
             time: "સવારે ખાલી પેટે", title: "૧. મોર્નિંગ ડિટોક્સ ઇન્ફ્યુઝન",
-            desc: "દૂધીનો રસ + આદું + લીંબુ + ફુદીનો", portion: "૨૫૦ ml",
+            desc: "દૂધીનો રસ + આદું + લીંબુ + ફુદીનો", portion: "૨૫૦ ml",[span_2](start_span)[span_2](end_span)
             cal: 42, pro: 1.4, gl: 1,
             alt: { title: "મેથી-અજમો નવશેકું પાણી", desc: "આખી રાત પલાળેલી મેથી અને અજમો", portion: "૨૫૦ ml", cal: 35, pro: 1.1, gl: 1 }
           },
           b: { 
             time: "સવારનો નાસ્તો (08:30 AM)", title: "૨. પૌષ્ટિક બ્રેકફાસ્ટ બાઉલ",
-            desc: "ફણગાવેલા મગ-મઠ ચાટ + લીંબુ & કાકડી", portion: "૧ મોટો બાઉલ",
+            desc: "ફણગાવેલા મગ-મઠ ચાટ + લીંબુ & કાકડી", portion: "૧ મોટો બાઉલ",[span_3](start_span)[span_3](end_span)
             cal: 220, pro: 14, gl: 8,
             alt: { title: "પનીર-કાકડી સ્ટીક્સ + અળસી મુખવાસ", desc: "ઓમેગા-૩ અને હાઈ પ્રોટીન પનીર", portion: "૧૦૦g પનીર", cal: 250, pro: 18, gl: 4 }
           },
           l: { 
             time: "બપોરનું ભોજન (01:00 PM)", title: "૩. મેટાબોલિક કાઠિયાવાડી થાળી",
-            desc: "સલાડ પ્લેટ + ૧ જુવારનો રોટલો + પાલક પનીર + મોળી છાશ", portion: "૧ રોટલો + શાક + છાશ",
+            desc: "સલાડ પ્લેટ + ૧ જુવારનો રોટલો + પાલક પનીર + મોળી છાશ", portion: "૧ રોટલો + શાક + છાશ",[span_4](start_span)[span_4](end_span)
             cal: 420, pro: 16, gl: 18,
             alt: { title: "ભીંડાનું શાક + ૧ બાજરી રોટલો + સલાડ + છાશ", desc: "આયર્ન અને ફાઈબરથી ભરપૂર", portion: "૧ રોટલો + શાક", cal: 410, pro: 15, gl: 19 }
           },
           d: { 
             time: "રાત્રિ ભોજન (07:30 PM)", title: "૪. લાઈટ લિવર ડિટોક્સ ડિનર",
-            desc: "દૂધી-ટામેટાનો પૌષ્ટિક સૂપ + શેકેલું પનીર (૧૦૦g)", portion: "૧ બાઉલ સૂપ + પનીર",
+            desc: "દૂધી-ટામેટાનો પૌષ્ટિક સૂપ + શેકેલું પનીર (૧૦૦g)", portion: "૧ બાઉલ સૂપ + પનીર",[span_5](start_span)[span_5](end_span)
             cal: 240, pro: 18, gl: 6,
             alt: { title: "મિક્સ વેજ પનીર સ્ટીર-ફ્રાય (ઓછા તેલમાં)", desc: "ઝીરો ગ્લાયસેમિક લોડ", portion: "૧૫૦g", cal: 260, pro: 19, gl: 5 }
           }
@@ -652,29 +677,39 @@
         {
           dtox: {
             time: "સવારે ખાલી પેટે", title: "૧. આમળા & જીરા અર્ક",
-            desc: "આમળા રસ + જીરાવાળું નવશેકું પાણી", portion: "૨૦૦ ml",
+            desc: "આમળા રસ + જીરાવાળું નવશેકું પાણી", portion: "૨૦૦ ml",[span_6](start_span)[span_6](end_span)
             cal: 38, pro: 0.8, gl: 1,
             alt: { title: "તુલસી-હળદર ડિટોક્સ ટી", desc: "ગરમ પાણીમાં લીલી હળદર અને તુલસી", portion: "૨૦૦ ml", cal: 25, pro: 0.5, gl: 0 }
           },
           b: { 
             time: "સવારનો નાસ્તો (08:30 AM)", title: "૨. પ્રોટીન ચીલા નાસ્તો",
-            desc: "મગની દાળનો પોષક ચીલો + તાજું પનીર (૨ નંગ ચીલા + ૫૦g પનીર)", portion: "૨ નંગ + પનીર",
+            desc: "મગની દાળનો પોષક ચીલો + તાજું પનીર (૨ નંગ ચીલા + ૫૦g પનીર)", portion: "૨ નંગ + પનીર",[span_7](start_span)[span_7](end_span)
             cal: 240, pro: 15, gl: 9,
             alt: { title: "બાફેલા દેશી ચણા ચાટ + કાકડી-ટમેટા", desc: "ધીમું પાચન અને સ્ટેબલ શુગર", portion: "૧ બાઉલ", cal: 230, pro: 13, gl: 10 }
           },
           l: { 
             time: "બપોરનું ભોજન (01:00 PM)", title: "૩. હાઈ-ફાઈબર દેશી લંચ",
-            desc: "કાકડી સલાડ + ૧ બાજરીનો રોટલો + રીંગણનો ઓળો + છાશ", portion: "૧ રોટલો + ઓળો",
+            desc: "કાકડી સલાડ + ૧ બાજરીનો રોટલો + રીંગણનો ઓળો + છાશ", portion: "૧ રોટલો + ઓળો",[span_8](start_span)[span_8](end_span)
             cal: 440, pro: 15, gl: 20,
             alt: { title: "દૂધી-ચણા દાળ શાક + ૧ જુવાર રોટલો + છાશ", desc: "સોફ્ટ સુપાચ્ય લંચ", portion: "૧ રોટલો + શાક", cal: 410, pro: 15, gl: 16 }
           },
           d: { 
             time: "રાત્રિ ભોજન (07:30 PM)", title: "૪. મગનું ઓસામણ & સૌતે વેજીસ",
-            desc: "મગનું ઓસામણ/સૂપ + સૌતે શાકભાજી + પનીર", portion: "૧ બાઉલ સૂપ + શાક",
+            desc: "મગનું ઓસામણ/સૂપ + સૌતે શાકભાજી + પનીર", portion: "૧ બાઉલ સૂપ + શાક",[span_9](start_span)[span_9](end_span)
             cal: 230, pro: 15, gl: 6,
             alt: { title: "પાલક-દૂધીનો ગ્રીન ડીટોક્સ સૂપ", desc: "એસિડિટી અને સોજા મુક્તિ", portion: "૧ બાઉલ", cal: 210, pro: 10, gl: 4 }
           }
         }
+      ]
+    };
+
+    // GROCERY DATABASE PER CUISINE
+    const groceryDataByCuisine = {
+      gujarati: [
+        { category: "🥦 લીલા શાકભાજી & સલાડ", items: ["દૂધી (૨-૩ નંગ - સૂપ & ડિટોક્સ)", "પાલક (૨ જૂડી)", "કાકડી & ટામેટા (૧-૧ કિલો)", "રીંગણ (ઓળા માટે)", "ભીંડા (૫૦૦g)", "લીંબુ, આદું & ફુદીનો"] },
+        { category: "🌾 અનાજ & કઠોળ (લોટ/દાળ)", items: ["જુવારનો લોટ (૧ કિલો)", "બાજરીનો લોટ (૧ કિલો)", "આખા દેશી મગ & મઠ (ફણગાવવા)", "મગની ફોતરાવાળી દાળ (૫૦૦g)", "દેશી ચણા (૫૦૦g)"] },
+        { category: "🥛 ડેરી પ્રોડક્ટ્સ", items: ["તાજું પનીર (૫૦૦g - પ્રોટીન માટે)", "મોળી છાશ અથવા તાજું દહીં"] },
+        { category: "🌿 ડિટોક્સ સીડ્સ & મસાલા", items: ["અળસી (Flaxseeds) મુખવાસ માટે", "આમળા પાવડર અથવા તાજા આમળા", "જીરું, અજમો & મેથી દાણા", "સિંધવ મીઠું (Rock Salt)"] }
       ]
     };
 
@@ -782,7 +817,6 @@
       updateWaterDisplay();
     }
 
-    // DIRECT HREF BINDING (WORKS IN SAFARI/IOS WITHOUT BLOCKS)
     async function checkVipAndLiveSessionAccess() {
       const isVip = isCurrentClientVip();
       const liveBox = document.getElementById('cpLiveSessionBox');
@@ -932,6 +966,7 @@
       });
     }
 
+    // RENDER TAB 2: UPCOMING MENU
     function renderUpcomingCards() {
       const c = document.getElementById('upcomingCardsList');
       c.innerHTML = '';
@@ -955,18 +990,62 @@
         c.innerHTML += `
           <div class="card-clean p-4 rounded-3xl border space-y-2 text-xs">
             <div class="flex justify-between items-center border-b pb-2">
-              <span class="font-extrabold text-slate-900">${i === 1 ? '🌟 આવતીકાલ (' + dayName + ', ' + dateStr + ')' : '🗓️ ' + dayName + ', ' + dateStr}</span>
-              ${i === 1 ? '<span class="px-2 py-0.5 bg-teal-100 text-teal-800 text-[9px] font-black rounded-full">Tomorrow</span>' : ''}
+              <span class="font-extrabold text-slate-900">${i === 1 ? '🌟 આવતીકાલ (' + dayName + ', ' + dateStr + ')' : '🗓️ ' + dayName + ', ' + dateStr}</span>[span_10](start_span)[span_10](end_span)
+              ${i === 1 ? '<span class="px-2 py-0.5 bg-teal-100 text-teal-800 text-[9px] font-black rounded-full">Tomorrow</span>' : ''}[span_11](start_span)[span_11](end_span)
             </div>
             <div class="space-y-1.5 text-slate-700">
-              <div>• <b>સવારે:</b> ${dayData.dtox.desc}</div>
-              <div>• <b>નાસ્તો:</b> ${dayData.b.desc}</div>
-              <div>• <b>બપોરે:</b> ${dayData.l.desc}</div>
-              <div>• <b>રાત્રે:</b> ${dayData.d.desc}</div>
+              <div>• <b>સવારે:</b> ${dayData.dtox.desc}</div>[span_12](start_span)[span_12](end_span)
+              <div>• <b>નાસ્તો:</b> ${dayData.b.desc}</div>[span_13](start_span)[span_13](end_span)
+              <div>• <b>બપોરે:</b> ${dayData.l.desc}</div>[span_14](start_span)[span_14](end_span)
+              <div>• <b>રાત્રે:</b> ${dayData.d.desc}</div>[span_15](start_span)[span_15](end_span)
             </div>
           </div>
         `;
       }
+    }
+
+    // RENDER GROCERY LIST
+    function renderGroceryList() {
+      const container = document.getElementById('groceryChecklistContainer');
+      container.innerHTML = '';
+
+      const cuisine = currentClient.cuisine || 'gujarati';
+      const categories = groceryDataByCuisine[cuisine] || groceryDataByCuisine['gujarati'];
+
+      categories.forEach(cat => {
+        let itemsHtml = '';
+        cat.items.forEach(it => {
+          itemsHtml += `
+            <label class="flex items-center gap-2 p-1.5 bg-white rounded-xl border border-slate-100 cursor-pointer">
+              <input type="checkbox" class="w-3.5 h-3.5 text-emerald-600 rounded">
+              <span class="text-slate-700 font-semibold text-[11px]">${it}</span>
+            </label>
+          `;
+        });
+
+        container.innerHTML += `
+          <div class="space-y-1.5">
+            <span class="font-bold text-slate-800 text-[11px] block">${cat.category}</span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+              ${itemsHtml}
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function shareGroceryWhatsApp() {
+      const cuisine = currentClient.cuisine || 'gujarati';
+      const categories = groceryDataByCuisine[cuisine] || groceryDataByCuisine['gujarati'];
+
+      let text = `🛒 *Metabolic Pro - સાપ્તાહિક ગ્રોસરી યાદી*\n👤 ક્લાયન્ટ: *${currentClient.name}*\n\n`;
+      categories.forEach(cat => {
+        text += `*${cat.category}*\n`;
+        cat.items.forEach(it => { text += `  ▫️ ${it}\n`; });
+        text += `\n`;
+      });
+
+      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
     }
 
     async function saveVitalsData() {
