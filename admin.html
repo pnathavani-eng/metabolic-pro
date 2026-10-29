@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Metabolic Pro - Master Admin CRM v4</title>
+  <title>Metabolic Pro - Master Admin CRM</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -60,14 +60,21 @@
       <!-- TAB 1: WHATSAPP NUDGE QUEUE RUNNER -->
       <section id="aview-nudge" class="space-y-3">
         <div class="card-clean p-4 rounded-2xl space-y-3">
-          <div class="flex justify-between items-center">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-2.5">
             <div>
-              <h2 class="font-bold text-slate-900 text-sm">સ્માર્ટ વોટ્સએપ નજ ક્યૂ રનર</h2>
-              <p class="text-[11px] text-slate-500">૧-ક્લિકથી દર્દીને તેના પોતાના ભોજનનો રિમાઇન્ડર મોકલો.</p>
+              <div class="flex items-center gap-2">
+                <h2 class="font-bold text-slate-900 text-sm">સ્માર્ટ વોટ્સએપ નજ ક્યૂ રનર</h2>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[9px] font-black" id="activeTimeSlotBadge">🕒 Auto-Detecting...</span>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-0.5">ઘડિયાળના સમય મુજબ ભોજનનો રિમાઇન્ડર આપોઆપ પસંદ થશે.</p>
             </div>
-            <select id="selNudgeMealType" class="p-1.5 bg-slate-100 border rounded-xl text-xs font-bold text-teal-800">
-              <option value="lunch" selected>🍲 બપોરનું ભોજન (Lunch)</option>
-              <option value="walk">🚶‍♂️ પોસ્ટ-મીલ વોક (Walk)</option>
+            
+            <!-- Dynamic Auto-Selected Dropdown -->
+            <select id="selNudgeMealType" onchange="handleManualSlotChange()" class="p-2 bg-slate-100 border border-slate-300 rounded-xl text-xs font-bold text-teal-900">
+              <option value="breakfast">🥗 સવારનો નાસ્તો (Breakfast)</option>
+              <option value="lunch">🍲 બપોરનું ભોજન (Lunch)</option>
+              <option value="walk">🚶‍♂️ પોસ્ટ-મીલ વોક (Post-Meal Walk)</option>
+              <option value="snack">🥜 સાંજનો નાસ્તો (Snack / Water)</option>
               <option value="dinner">🥣 રાત્રિ ભોજન (Dinner)</option>
             </select>
           </div>
@@ -112,13 +119,68 @@
 
     let liveClients = [];
     let currentPool = 'trial';
-    let sentTracker = {}; // Tracks sent messages during active session
+    let sentTracker = {};
+    let isManualOverride = false;
+
+    // --- AUTOMATIC TIME SLOT RESOLVER ---
+    function resolveCurrentTimeSlot() {
+      const now = new Date();
+      const hour = now.getHours();
+      const minutes = now.getMinutes();
+      const totalMinutes = (hour * 60) + minutes;
+
+      // 06:00 AM to 11:00 AM -> Breakfast
+      if (totalMinutes >= 360 && totalMinutes < 660) {
+        return { slot: 'breakfast', label: '🌅 નાસ્તો સ્લોટ' };
+      }
+      // 11:00 AM to 02:00 PM -> Lunch
+      else if (totalMinutes >= 660 && totalMinutes < 840) {
+        return { slot: 'lunch', label: '🍲 લંચ સ્લોટ' };
+      }
+      // 02:00 PM to 05:00 PM -> Post-Meal Walk
+      else if (totalMinutes >= 840 && totalMinutes < 1020) {
+        return { slot: 'walk', label: '🚶‍♂️ વોક સ્લોટ' };
+      }
+      // 05:00 PM to 07:30 PM -> Evening Snack
+      else if (totalMinutes >= 1020 && totalMinutes < 1170) {
+        return { slot: 'snack', label: '🥜 સ્નેક સ્લોટ' };
+      }
+      // 07:30 PM onwards -> Dinner
+      else {
+        return { slot: 'dinner', label: '🥣 ડિનર સ્લોટ' };
+      }
+    }
+
+    function autoApplyTimeSlot() {
+      if (isManualOverride) return;
+      const detected = resolveCurrentTimeSlot();
+      const sel = document.getElementById('selNudgeMealType');
+      if (sel) {
+        sel.value = detected.slot;
+      }
+      const badge = document.getElementById('activeTimeSlotBadge');
+      if (badge) {
+        badge.innerText = `🕒 ${detected.label} (ઓટો-સેટ)`;
+      }
+    }
+
+    function handleManualSlotChange() {
+      isManualOverride = true;
+      const sel = document.getElementById('selNudgeMealType');
+      const badge = document.getElementById('activeTimeSlotBadge');
+      if (badge && sel) {
+        badge.innerText = `⚙️ મેન્યુઅલ સિલેક્શન`;
+        badge.className = "px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[9px] font-black";
+      }
+      renderQueue();
+    }
 
     function verifyAdminPin() {
       const pin = document.getElementById('inAdminPin').value.trim();
       if(pin === '1234') {
         document.getElementById('adminAuthView').classList.add('hidden');
         document.getElementById('adminMainView').classList.remove('hidden');
+        autoApplyTimeSlot();
         listenToClients();
       } else {
         alert('ખોટો PIN છે.');
@@ -196,7 +258,7 @@
         if (currentPool === 'pending') return !c.whatsappVerified;
         if (currentPool === 'vip') return isVIP && c.whatsappVerified;
         if (currentPool === 'expired') return isExpired && c.whatsappVerified;
-        return !isVIP && !isExpired && c.whatsappVerified; // Active Trial
+        return !isVIP && !isExpired && c.whatsappVerified;
       });
 
       if (filtered.length === 0) {
@@ -236,10 +298,14 @@
       if(!cl) return;
 
       let msg = "";
-      if (mealType === 'lunch') {
+      if (mealType === 'breakfast') {
+        msg = `નમસ્તે ${cl.name}! 🌅 સવારના નાસ્તાનો સમય થયો છે.\nપ્રોટીન અને ફાઈબરથી ભરપૂર નાસ્તો લઈ લેજો. જમ્યા પછી પોર્ટલમાં 'લીધું' ટીક કરી લેજો 📲`;
+      } else if (mealType === 'lunch') {
         msg = `નમસ્તે ${cl.name}! 🍲 બપોરના ભોજનનો સમય થયો છે.\nયાદ રાખજો: પહેલાં સલાડ પૂરું કરવાનું છે, પછી જ રોટલો અને શાક લેવું જેથી બ્લડ શુગર સ્થિર રહે.\nજમ્યા પછી પોર્ટલમાં 'લીધું' ટીક કરી લેજો 📲`;
       } else if (mealType === 'walk') {
         msg = `નમસ્તે ${cl.name}! 🚶‍♂️ પોસ્ટ-મીલ ૧૫ મિનિટ વૉકનો સમય!\nજમ્યા પછી તરત હળવું ચાલવાથી શુગર સ્પાઇક અટકે છે અને પાચન ઝડપી બને છે.`;
+      } else if (mealType === 'snack') {
+        msg = `નમસ્તે ${cl.name}! 🥜 સાંજનો નાસ્તો & વોટર ચેક!\n૧ ગ્લાસ જીરા છાશ અથવા શેકેલા મખાના લઈ લેજો અને દિવસનું પાણીનું લક્ષ્ય પૂરું કરજો.`;
       } else {
         msg = `નમસ્તે ${cl.name}! 🥣 રાત્રિ ભોજન (Light Dinner) નો સમય થયો છે.\n૮:૩૦ પહેલાં હળવો સૂપ કે બાફેલા કઠોળ લઈ લેજો જેથી લિવર ડિટોક્સ રાત્રે વ્યવસ્થિત થાય.`;
       }
@@ -278,6 +344,9 @@
     async function updateTrial(id, days) {
       await db.collection('clients').doc(id).update({ trialDays: days });
     }
+
+    // Periodically re-check time slot every 2 minutes
+    setInterval(autoApplyTimeSlot, 120000);
   </script>
 </body>
 </html>
