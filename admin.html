@@ -31,11 +31,12 @@
       </div>
       <div>
         <h2 class="text-xl font-black text-slate-900">Coach Master Admin</h2>
-        <p class="text-xs text-slate-500 mt-0.5">Metabolic Pro Cloud CRM v4</p>
+        <p class="text-xs text-slate-500 mt-0.5">Metabolic Pro Cloud CRM</p>
       </div>
       <div class="space-y-3 text-left">
-        <input type="password" maxlength="8" id="inAdminPin" placeholder="Admin PIN દાખલ કરો" class="w-full p-3 bg-slate-50 border rounded-xl text-center text-xl font-black">
+        <input type="password" maxlength="8" id="inAdminPin" placeholder="PIN દાખલ કરો" class="w-full p-3 bg-slate-50 border rounded-xl text-center text-xl font-black">
         <button onclick="verifyAdminPin()" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-extrabold text-xs shadow">CRM એક્સેસ કરો 🔐</button>
+        <div class="text-[10px] text-slate-400 text-center">ઓનર PIN અથવા સ્ટાફ PIN વડે લોગિન કરો.</div>
       </div>
     </div>
   </div>
@@ -46,12 +47,15 @@
       <div class="flex items-center gap-2">
         <div class="w-8 h-8 rounded-xl bg-teal-500 text-slate-900 font-black flex items-center justify-center text-sm">MP</div>
         <div>
-          <h1 class="font-extrabold text-white text-sm leading-tight">Admin CRM & Nudge Center</h1>
+          <div class="flex items-center gap-1.5">
+            <h1 class="font-extrabold text-white text-sm leading-tight">Admin CRM & Nudge Center</h1>
+            <span id="roleBadge" class="px-2 py-0.2 bg-teal-800 text-teal-200 text-[9px] rounded-full font-bold">Owner</span>
+          </div>
           <p class="text-[10px] text-teal-300" id="headerCoachDisplay">Coach: Loading...</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="openCoachSettingsModal()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-teal-300 rounded-lg text-xs font-bold border border-slate-700">⚙️ સેટિંગ્સ</button>
+        <button id="btnOwnerSettings" onclick="openCoachSettingsModal()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-teal-300 rounded-lg text-xs font-bold border border-slate-700">⚙️ સેટિંગ્સ</button>
         <button onclick="logoutAdmin()" class="px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs">Logout</button>
       </div>
     </header>
@@ -103,29 +107,33 @@
     </main>
   </div>
 
-  <!-- COACH SETTINGS MODAL -->
+  <!-- OWNER SETTINGS MODAL (PHONE & PIN MANAGEMENT) -->
   <div id="modalCoachSettings" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-sm p-5 rounded-3xl space-y-3.5 text-xs shadow-2xl border">
       <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-extrabold text-slate-900 text-sm">કોચ પ્રોફાઇલ & WhatsApp નંબર</h3>
+        <h3 class="font-extrabold text-slate-900 text-sm">ઓનર કંટ્રોલ & સિક્યોરિટી સેટિંગ્સ</h3>
         <button onclick="closeCoachSettingsModal()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
       </div>
 
       <div class="space-y-2.5">
         <div>
-          <label class="font-bold text-slate-700 block mb-1">કોચનું પૂરું નામ</label>
-          <input type="text" id="setCoachName" placeholder="દા.ત. Piyush Nathavani" class="w-full p-2.5 bg-slate-50 border rounded-xl font-bold">
+          <label class="font-bold text-slate-700 block mb-1">હેલ્પલાઈન WhatsApp નંબર (૧૦ અંક)</label>
+          <input type="tel" id="setCoachPhone" placeholder="દા.ત. 9925879138" class="w-full p-2.5 bg-slate-50 border rounded-xl font-bold">
         </div>
         <div>
-          <label class="font-bold text-slate-700 block mb-1">કોચનો WhatsApp નંબર (૧૦ અંક)</label>
-          <input type="tel" id="setCoachPhone" placeholder="દા.ત. 9925879138" class="w-full p-2.5 bg-slate-50 border rounded-xl font-bold">
-          <p class="text-[10px] text-teal-700 mt-1">બધા ક્લાયન્ટ્સના મેસેજ અને 'Hi' આ નંબર પર આપમેળે જશે.</p>
+          <label class="font-bold text-slate-700 block mb-1">ઓનર માસ્ટર PIN (Master PIN)</label>
+          <input type="password" maxlength="8" id="setMasterPin" placeholder="નવો માસ્ટર PIN" class="w-full p-2.5 bg-slate-50 border rounded-xl font-bold">
+        </div>
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">કોચ/સ્ટાફ PIN (Staff PIN)</label>
+          <input type="password" maxlength="8" id="setStaffPin" placeholder="કોચ માટેનો સિક્રેટ PIN" class="w-full p-2.5 bg-slate-50 border rounded-xl font-bold">
+          <p class="text-[10px] text-teal-700 mt-1">આ PIN વડે લોગિન કરનાર કોચને દર્દીના ફોન નંબર માસ્ક થયેલા દેખાશે.</p>
         </div>
       </div>
 
       <div class="pt-2 flex gap-2">
         <button onclick="closeCoachSettingsModal()" class="flex-1 bg-slate-100 py-2.5 rounded-xl font-bold">રદ કરો</button>
-        <button onclick="saveCoachSettingsToCloud()" class="flex-1 bg-teal-600 text-white font-extrabold py-2.5 rounded-xl shadow">નંબર અપડેટ કરો 💾</button>
+        <button onclick="saveCoachSettingsToCloud()" class="flex-1 bg-teal-600 text-white font-extrabold py-2.5 rounded-xl shadow">સેટિંગ્સ સેવ કરો 💾</button>
       </div>
     </div>
   </div>
@@ -153,10 +161,12 @@
     let currentPool = 'trial';
     let sentTracker = {};
     let isManualOverride = false;
+    let currentUserRole = 'staff'; // 'owner' or 'staff'
+    let masterPinVal = '1234';
+    let staffPinVal = '5678';
     let activeCoachPhone = "919081421028";
-    let activeCoachName = "Metabolic Pro Coach";
+    let activeCoachName = "Metabolic Pro Official";
 
-    // Format phone to guarantee pure digits with 91 country code
     function formatWaPhone(phone) {
       let clean = String(phone || '').replace(/\D/g, '');
       if (clean.length === 10) clean = '91' + clean;
@@ -164,22 +174,59 @@
       return clean;
     }
 
-    // Load Coach Info from Firestore Cloud Settings
-    async function loadCoachSettings() {
+    // Mask phone number for Staff/Coach view (Hide last 5 digits)
+    function maskPhoneNumber(phone) {
+      const clean = String(phone || '').replace(/\D/g, '');
+      if (currentUserRole === 'owner') return clean;
+      if (clean.length >= 10) {
+        return clean.substring(0, 5) + ' •••••';
+      }
+      return '••••••••••';
+    }
+
+    async function loadSettingsFromCloud() {
       try {
         const doc = await db.collection('settings').doc('coach').get();
         if (doc.exists) {
           const d = doc.data();
           activeCoachPhone = formatWaPhone(d.phone || "9081421028");
-          activeCoachName = d.name || "Metabolic Pro Coach";
+          activeCoachName = d.name || "Metabolic Pro Official";
+          if (d.masterPin) masterPinVal = String(d.masterPin);
+          if (d.staffPin) staffPinVal = String(d.staffPin);
         }
-        document.getElementById('headerCoachDisplay').innerText = `Coach: ${activeCoachName} (${activeCoachPhone})`;
-      } catch(e) { console.error("Error loading coach:", e); }
+        document.getElementById('headerCoachDisplay').innerText = `Helpline: ${activeCoachPhone}`;
+      } catch(e) { console.error("Error loading settings:", e); }
+    }
+
+    async function verifyAdminPin() {
+      await loadSettingsFromCloud();
+      const inputPin = document.getElementById('inAdminPin').value.trim();
+
+      if (inputPin === masterPinVal) {
+        currentUserRole = 'owner';
+        document.getElementById('roleBadge').innerText = 'Owner (Full Access)';
+        document.getElementById('roleBadge').className = 'px-2 py-0.5 bg-amber-400 text-slate-900 text-[9px] rounded-full font-black';
+        document.getElementById('btnOwnerSettings').classList.remove('hidden');
+      } else if (inputPin === staffPinVal) {
+        currentUserRole = 'staff';
+        document.getElementById('roleBadge').innerText = 'Coach Mode (Protected)';
+        document.getElementById('roleBadge').className = 'px-2 py-0.5 bg-teal-800 text-teal-200 text-[9px] rounded-full font-bold';
+        document.getElementById('btnOwnerSettings').classList.add('hidden'); // Hide settings for coach
+      } else {
+        return alert('ખોટો PIN છે!');
+      }
+
+      document.getElementById('adminAuthView').classList.add('hidden');
+      document.getElementById('adminMainView').classList.remove('hidden');
+      autoApplyTimeSlot();
+      listenToClients();
     }
 
     function openCoachSettingsModal() {
-      document.getElementById('setCoachName').value = activeCoachName;
+      if (currentUserRole !== 'owner') return alert('માત્ર ઓનર સેટિંગ્સ બદલી શકે છે.');
       document.getElementById('setCoachPhone').value = activeCoachPhone.replace(/^91/, '');
+      document.getElementById('setMasterPin').value = masterPinVal;
+      document.getElementById('setStaffPin').value = staffPinVal;
       document.getElementById('modalCoachSettings').classList.remove('hidden');
     }
 
@@ -188,66 +235,27 @@
     }
 
     async function saveCoachSettingsToCloud() {
-      const name = document.getElementById('setCoachName').value.trim();
       const phoneRaw = document.getElementById('setCoachPhone').value.trim();
+      const mPin = document.getElementById('setMasterPin').value.trim();
+      const sPin = document.getElementById('setStaffPin').value.trim();
       const cleanPhone = formatWaPhone(phoneRaw);
 
-      if(!name || cleanPhone.length < 12) return alert('સાચું નામ અને ૧૦-અંકનો મોબાઈલ નંબર દાખલ કરો.');
+      if (cleanPhone.length < 12) return alert('સાચો ૧૦-અંકનો નંબર દાખલ કરો.');
+      if (!mPin || !sPin) return alert('Master PIN અને Staff PIN ખાલી ન હોઈ શકે.');
 
       await db.collection('settings').doc('coach').set({
-        name: name,
         phone: cleanPhone,
+        masterPin: mPin,
+        staffPin: sPin,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
 
-      activeCoachName = name;
       activeCoachPhone = cleanPhone;
-      document.getElementById('headerCoachDisplay').innerText = `Coach: ${activeCoachName} (${activeCoachPhone})`;
+      masterPinVal = mPin;
+      staffPinVal = sPin;
+      document.getElementById('headerCoachDisplay').innerText = `Helpline: ${activeCoachPhone}`;
       closeCoachSettingsModal();
-      alert(`✅ કોચ નંબર સફળતાપૂર્વક અપડેટ થયો: ${activeCoachPhone}`);
-    }
-
-    function resolveCurrentTimeSlot() {
-      const now = new Date();
-      const totalMinutes = (now.getHours() * 60) + now.getMinutes();
-
-      if (totalMinutes >= 360 && totalMinutes < 660) return { slot: 'breakfast', label: '🌅 નાસ્તો સ્લોટ' };
-      else if (totalMinutes >= 660 && totalMinutes < 840) return { slot: 'lunch', label: '🍲 લંચ સ્લોટ' };
-      else if (totalMinutes >= 840 && totalMinutes < 1020) return { slot: 'walk', label: '🚶‍♂️ વોક સ્લોટ' };
-      else if (totalMinutes >= 1020 && totalMinutes < 1170) return { slot: 'snack', label: '🥜 સ્નેક સ્લોટ' };
-      else return { slot: 'dinner', label: '🥣 ડિનર સ્લોટ' };
-    }
-
-    function autoApplyTimeSlot() {
-      if (isManualOverride) return;
-      const detected = resolveCurrentTimeSlot();
-      const sel = document.getElementById('selNudgeMealType');
-      if (sel) sel.value = detected.slot;
-      const badge = document.getElementById('activeTimeSlotBadge');
-      if (badge) badge.innerText = `🕒 ${detected.label} (ઓટો-સેટ)`;
-    }
-
-    function handleManualSlotChange() {
-      isManualOverride = true;
-      const badge = document.getElementById('activeTimeSlotBadge');
-      if (badge) {
-        badge.innerText = `⚙️ મેન્યુઅલ સિલેક્શન`;
-        badge.className = "px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[9px] font-black";
-      }
-      renderQueue();
-    }
-
-    function verifyAdminPin() {
-      const pin = document.getElementById('inAdminPin').value.trim();
-      if(pin === '1234') {
-        document.getElementById('adminAuthView').classList.add('hidden');
-        document.getElementById('adminMainView').classList.remove('hidden');
-        loadCoachSettings();
-        autoApplyTimeSlot();
-        listenToClients();
-      } else {
-        alert('ખોટો PIN છે.');
-      }
+      alert('✅ તમામ સેટિંગ્સ અને PIN સફળતાપૂર્વક અપડેટ થઈ ગયા છે!');
     }
 
     function logoutAdmin() { location.reload(); }
@@ -306,6 +314,36 @@
       renderQueue();
     }
 
+    function resolveCurrentTimeSlot() {
+      const now = new Date();
+      const totalMinutes = (now.getHours() * 60) + now.getMinutes();
+
+      if (totalMinutes >= 360 && totalMinutes < 660) return { slot: 'breakfast', label: '🌅 નાસ્તો સ્લોટ' };
+      else if (totalMinutes >= 660 && totalMinutes < 840) return { slot: 'lunch', label: '🍲 લંચ સ્લોટ' };
+      else if (totalMinutes >= 840 && totalMinutes < 1020) return { slot: 'walk', label: '🚶‍♂️ વોક સ્લોટ' };
+      else if (totalMinutes >= 1020 && totalMinutes < 1170) return { slot: 'snack', label: '🥜 સ્નેક સ્લોટ' };
+      else return { slot: 'dinner', label: '🥣 ડિનર સ્લોટ' };
+    }
+
+    function autoApplyTimeSlot() {
+      if (isManualOverride) return;
+      const detected = resolveCurrentTimeSlot();
+      const sel = document.getElementById('selNudgeMealType');
+      if (sel) sel.value = detected.slot;
+      const badge = document.getElementById('activeTimeSlotBadge');
+      if (badge) badge.innerText = `🕒 ${detected.label} (ઓટો-સેટ)`;
+    }
+
+    function handleManualSlotChange() {
+      isManualOverride = true;
+      const badge = document.getElementById('activeTimeSlotBadge');
+      if (badge) {
+        badge.innerText = `⚙️ મેન્યુઅલ સિલેક્શન`;
+        badge.className = "px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[9px] font-black";
+      }
+      renderQueue();
+    }
+
     function renderQueue() {
       const container = document.getElementById('queueClientsContainer');
       container.innerHTML = '';
@@ -330,11 +368,12 @@
       filtered.forEach(cl => {
         const isSent = sentTracker[`${cl.id}_${mealType}`];
         const conditions = (cl.conditions || []).join(' • ');
+        const displayPhone = maskPhoneNumber(cl.phone);
 
         container.innerHTML += `
           <div class="card-clean p-3 rounded-2xl flex items-center justify-between border">
             <div>
-              <div class="font-extrabold text-slate-900 text-xs">${esc(cl.name)} (${esc(cl.phone)})</div>
+              <div class="font-extrabold text-slate-900 text-xs">${esc(cl.name)} <span class="text-slate-500 font-semibold font-mono">(${displayPhone})</span></div>
               <div class="text-[10px] text-teal-700 font-bold mt-0.5">${esc(conditions)}</div>
             </div>
 
@@ -387,17 +426,22 @@
         const safeName = esc(cl.name);
         const trialDays = Number(cl.trialDays) || 0;
         const isVIP = trialDays >= 900;
+        const displayPhone = maskPhoneNumber(cl.phone);
 
         c.innerHTML += `
           <div class="card-clean p-3 rounded-2xl border flex justify-between items-center text-xs">
             <div>
-              <div class="font-bold text-slate-800">${safeName} (${cl.phone})</div>
-              <div class="text-[10px] text-teal-700 font-semibold">${(cl.conditions||[]).join(', ')} • PIN: ${cl.pin}</div>
+              <div class="font-bold text-slate-800">${safeName} <span class="font-mono text-slate-500 font-normal">(${displayPhone})</span></div>
+              <div class="text-[10px] text-teal-700 font-semibold">${(cl.conditions||[]).join(', ')} ${currentUserRole==='owner' ? '• PIN: ' + cl.pin : ''}</div>
             </div>
             <div class="flex items-center gap-1.5">
-              <button onclick="updateTrial('${safeId}', ${isVIP ? 30 : 999})" class="px-2.5 py-1 ${isVIP ? 'bg-amber-100 text-amber-900' : 'bg-slate-900 text-white'} text-[10px] font-bold rounded-lg">
-                ${isVIP ? 'Revoke VIP' : 'Make VIP 👑'}
-              </button>
+              ${currentUserRole === 'owner' ? `
+                <button onclick="updateTrial('${safeId}', ${isVIP ? 30 : 999})" class="px-2.5 py-1 ${isVIP ? 'bg-amber-100 text-amber-900' : 'bg-slate-900 text-white'} text-[10px] font-bold rounded-lg">
+                  ${isVIP ? 'Revoke VIP' : 'Make VIP 👑'}
+                </button>
+              ` : `
+                <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] font-bold">${isVIP ? 'VIP' : 'Trial'}</span>
+              `}
             </div>
           </div>
         `;
@@ -405,6 +449,7 @@
     }
 
     async function updateTrial(id, days) {
+      if (currentUserRole !== 'owner') return alert('માત્ર ઓનર પ્લાન બદલી શકે છે.');
       await db.collection('clients').doc(id).update({ trialDays: days });
     }
 
