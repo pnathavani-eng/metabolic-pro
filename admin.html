@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Metabolic Pro - Master Admin CRM</title>
+  <title>Metabolic Pro - Master Admin CRM v3</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -32,7 +32,7 @@
       </div>
       <div>
         <h2 class="text-xl font-black text-slate-900">Coach Master Admin</h2>
-        <p class="text-xs text-slate-500 mt-0.5">Metabolic Pro Cloud CRM</p>
+        <p class="text-xs text-slate-500 mt-0.5">Metabolic Pro Cloud CRM v3</p>
       </div>
       <div class="space-y-3 text-left">
         <input type="password" maxlength="8" id="inAdminPin" placeholder="Admin PIN દાખલ કરો" class="w-full p-3 bg-slate-50 border rounded-xl text-center text-xl font-black">
@@ -46,32 +46,32 @@
     <header class="p-3.5 bg-slate-900 text-white sticky top-0 z-40 flex justify-between items-center shadow-md">
       <div class="flex items-center gap-2">
         <div class="w-8 h-8 rounded-xl bg-teal-500 text-slate-900 font-black flex items-center justify-center text-sm">MP</div>
-        <h1 class="font-extrabold text-white text-sm">Admin CRM & Nutrition Engine</h1>
+        <h1 class="font-extrabold text-white text-sm">Admin CRM & Nutrition Engine v3</h1>
       </div>
       <button onclick="logoutAdmin()" class="px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs">Logout</button>
     </header>
 
     <div class="flex p-2 gap-1.5 bg-white border-b text-xs overflow-x-auto">
-      <button onclick="setAdminTab('clients')" id="atab-clients" class="tab-active px-3 py-2 rounded-xl whitespace-nowrap"><i class="fa-solid fa-users"></i> ક્લાયન્ટ્સ (Clients)</button>
-      <button onclick="setAdminTab('grocery')" id="atab-grocery" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-solid fa-carrot"></i> ૩૦-દિવસ માસ્ટર ફૂડ & ગ્રોસરી DB</button>
+      <button onclick="setAdminTab('clients')" id="atab-clients" class="tab-active px-3 py-2 rounded-xl whitespace-nowrap"><i class="fa-solid fa-users"></i> ક્લાયન્ટ્સ & લોગ્સ</button>
+      <button onclick="setAdminTab('grocery')" id="atab-grocery" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-solid fa-carrot"></i> ક્લિનિકલ પૂલ DB (50+ Dishes)</button>
     </div>
 
-    <main class="p-3.5 max-w-lg mx-auto space-y-3.5">
+    <main class="p-3.5 max-w-xl mx-auto space-y-3.5">
       <!-- Clients Tab -->
       <section id="aview-clients" class="space-y-3">
         <button onclick="openModal()" class="w-full bg-teal-600 text-white font-bold py-3 rounded-xl text-xs shadow-sm">+ નવો ક્લાયન્ટ પ્રોટોકોલ સાથે ઉમેરો</button>
         <div id="admClientsList" class="space-y-3"></div>
       </section>
 
-      <!-- 30-Day Master Food & Grocery Tab -->
+      <!-- Clinical Food Pool Tab -->
       <section id="aview-grocery" class="hidden space-y-3 text-xs">
         <div class="card-clean p-4 rounded-2xl space-y-3">
           <div class="flex justify-between items-center">
             <div>
-              <h2 class="font-bold text-slate-800 text-sm">૩૦ દિવસ માસ્ટર કેટેગરી પૂલ ડેટાબેઝ</h2>
-              <p class="text-[11px] text-slate-500">ક્લાયન્ટ પોર્ટલના રોટેશન, પોર્શન અને સ્માર્ટ ગ્રોસરી સાથે સિંક થયેલું ડેટાબેઝ.</p>
+              <h2 class="font-bold text-slate-800 text-sm">માસ્ટર કેટેગરી પૂલ ડેટાબેઝ</h2>
+              <p class="text-[11px] text-slate-500">પ્રી/પોસ્ટ વર્કઆઉટ અને ૭-દિવસ નો-રિપીટ ક્લિનિકલ પૂલ.</p>
             </div>
-            <span class="px-2.5 py-1 bg-teal-50 text-teal-800 font-bold rounded-lg text-[10px] border border-teal-200" id="totalFoodCount">25 વાનગીઓ</span>
+            <span class="px-2.5 py-1 bg-teal-50 text-teal-800 font-bold rounded-lg text-[10px] border border-teal-200" id="totalFoodCount">50+ વાનગીઓ</span>
           </div>
           <div id="groceryItemsList" class="space-y-2"></div>
         </div>
@@ -87,14 +87,14 @@
         <button onclick="closeModal()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
       </div>
 
-      <input type="text" id="mName" placeholder="પૂરું નામ" class="w-full p-2 border rounded-lg">
-      <input type="text" id="mPhone" placeholder="WhatsApp નંબર (૧૦ અંક)" class="w-full p-2 border rounded-lg">
+      <input type="text" id="mName" placeholder="પૂરું નામ *" class="w-full p-2 border rounded-lg">
+      <input type="text" id="mPhone" placeholder="WhatsApp નંબર (૧૦ અંક) *" class="w-full p-2 border rounded-lg">
       
-      <!-- Biometrics -->
+      <!-- Biometrics (Empty defaults, required) -->
       <div class="grid grid-cols-3 gap-1.5">
-        <input type="number" id="mAge" placeholder="ઉંમર" value="38" class="p-2 border rounded-lg">
-        <input type="number" id="mHeight" placeholder="ઊંચાઈ cm" value="170" class="p-2 border rounded-lg">
-        <input type="number" id="mWeight" placeholder="વજન kg" value="78" class="p-2 border rounded-lg">
+        <input type="number" id="mAge" placeholder="ઉંમર *" class="p-2 border rounded-lg">
+        <input type="number" id="mHeight" placeholder="ઊંચાઈ cm *" class="p-2 border rounded-lg">
+        <input type="number" id="mWeight" placeholder="વજન kg *" class="p-2 border rounded-lg">
       </div>
 
       <div class="grid grid-cols-2 gap-1.5">
@@ -103,25 +103,37 @@
           <option value="female">મહિલા (Female)</option>
         </select>
         <select id="mActivity" class="p-2 border rounded-lg font-semibold">
-          <option value="sedentary">Sedentary</option>
+          <option value="sedentary">Sedentary (ઓછી હિલચાલ)</option>
           <option value="light" selected>હળવી (Walk/Yoga)</option>
           <option value="moderate">મધ્યમ (3-5d Gym)</option>
-          <option value="active">ભારે વર્કઆઉટ</option>
+          <option value="active">ભારે કસરત</option>
         </select>
       </div>
 
-      <!-- Multiple Goals -->
+      <div class="grid grid-cols-2 gap-1.5">
+        <select id="mDietMode" class="p-2 border rounded-lg font-semibold">
+          <option value="veg" selected>🌱 શુદ્ધ શાકાહારી</option>
+          <option value="egg">🥚 એગિટેરિયન</option>
+          <option value="nonveg">🍗 નોન-વેજિટેરિયન</option>
+        </select>
+        <label class="flex items-center gap-1.5 p-2 border rounded-lg bg-slate-50 font-medium">
+          <input type="checkbox" id="mKidneyIssue" class="w-3.5 h-3.5 text-teal-600 rounded">
+          <span class="text-[10px] text-rose-800 font-bold">કિડની સાવચેતી</span>
+        </label>
+      </div>
+
+      <!-- Health Goals -->
       <div class="space-y-1 pt-1">
         <label class="font-bold text-slate-700">સ્વાસ્થ્ય લક્ષ્યો (Multi-Select):</label>
         <div class="grid grid-cols-2 gap-1.5 bg-slate-50 p-2 rounded-xl border">
           <label class="flex items-center gap-1.5 cursor-pointer font-medium"><input type="checkbox" name="mGoalCheck" value="diabetes" checked class="w-3.5 h-3.5 text-teal-600 rounded"> 🩺 ડાયાબિટીસ</label>
           <label class="flex items-center gap-1.5 cursor-pointer font-medium"><input type="checkbox" name="mGoalCheck" value="fatty_liver" checked class="w-3.5 h-3.5 text-teal-600 rounded"> 🥒 ફેટી લિવર</label>
-          <label class="flex items-center gap-1.5 cursor-pointer font-medium"><input type="checkbox" name="mGoalCheck" value="gym" class="w-3.5 h-3.5 text-teal-600 rounded"> 💪 જિમ / મસલ</label>
+          <label class="flex items-center gap-1.5 cursor-pointer font-medium"><input type="checkbox" name="mGoalCheck" value="gym" class="w-3.5 h-3.5 text-teal-600 rounded"> 💪 જિમ / ફિટનેસ</label>
           <label class="flex items-center gap-1.5 cursor-pointer font-medium"><input type="checkbox" name="mGoalCheck" value="fat_loss" class="w-3.5 h-3.5 text-teal-600 rounded"> ⚖️ ફેટ લોસ</label>
         </div>
       </div>
 
-      <!-- Preferences -->
+      <!-- Cuisine & Trial Days -->
       <div class="grid grid-cols-2 gap-1.5">
         <select id="mCuisine" class="p-2 border rounded-lg font-semibold">
           <option value="gujarati" selected>ગુજરાતી શૈલી</option>
@@ -132,9 +144,26 @@
         <input type="number" id="mDays" value="30" placeholder="ટ્રાયલ દિવસ (999=VIP)" class="p-2 border rounded-lg">
       </div>
 
-      <input type="text" id="mAllergies" placeholder="એલર્જી (દા.ત. મશરૂમ, ગ્લુટેન)" class="w-full p-2 border rounded-lg">
+      <input type="text" id="mAllergies" placeholder="એલર્જી / બાકાત (દા.ત. soy, mushroom, દૂધ)" class="w-full p-2 border rounded-lg">
 
       <button onclick="addNewClientToCloud()" class="w-full bg-teal-600 text-white font-bold py-2.5 rounded-xl mt-1 shadow">ક્લાઉડમાં સેવ કરો 🚀</button>
+    </div>
+  </div>
+
+  <!-- Client Details / Logs Modal -->
+  <div id="modalClientLogs" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg p-5 rounded-3xl space-y-3 text-xs shadow-xl max-h-[85vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b pb-2">
+        <div>
+          <h3 class="font-extrabold text-sm text-slate-900" id="logModalTitle">Client Insights</h3>
+          <p class="text-[10px] text-teal-700" id="logModalSub">Recent Compliance & Swaps</p>
+        </div>
+        <button onclick="closeClientLogsModal()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
+      </div>
+
+      <div id="logModalContent" class="space-y-2"></div>
+
+      <button onclick="closeClientLogsModal()" class="w-full bg-slate-100 font-bold py-2 rounded-xl text-slate-600">બંધ કરો</button>
     </div>
   </div>
 
@@ -157,51 +186,6 @@
       }[c]));
     }
 
-    // Fully Synced 30-Day Master Clinical Food & Grocery Database
-    const CLINICAL_FOOD_DB = [
-      // Morning
-      { id: "morn_ash_gourd", name: "પેઠાનો તાજો રસ (Ash Gourd) + કાચી હળદર", slot: "Morning", cal: 25, p: 0.6, gl: 1, portion: "૨૫૦ ml", vegItem: "પેઠું (Ash Gourd)", proteinItem: "-" },
-      { id: "morn_bottle_gourd", name: "દૂધીનો રસ + આદું + લીંબુ + ફુદીનો", slot: "Morning", cal: 30, p: 1.0, gl: 1, portion: "૨૫૦ ml", vegItem: "દૂધી, આદું", proteinItem: "-" },
-      { id: "morn_amla_cumin", name: "આમળા રસ + જીરાવાળું નવશેકું પાણી", slot: "Morning", cal: 20, p: 0.4, gl: 1, portion: "૨૫૦ ml", vegItem: "આમળાં", proteinItem: "-" },
-      { id: "morn_cucumber_mint", name: "કાકડી + ફુદીનો + ચિયા સીડ્સ ઇન્ફ્યુઝન", slot: "Morning", cal: 28, p: 0.8, gl: 1, portion: "૨૫૦ ml", vegItem: "કાકડી", proteinItem: "-" },
-
-      // Pre-Workout
-      { id: "pre_banana_chana", name: "૧ નાનું કેળું + શેકેલા ચણા", slot: "Pre-Workout", cal: 150, p: 5.0, gl: 9, portion: "૧ કેળું + ૨૫g ચણા", vegItem: "-", proteinItem: "શેકેલા ચણા" },
-      { id: "pre_makhana_apple", name: "શેકેલા મખાના + અડધું સફરજન", slot: "Pre-Workout", cal: 130, p: 3.0, gl: 6, portion: "૨૫g મખાના", vegItem: "-", proteinItem: "મખાના" },
-
-      // Breakfast
-      { id: "bf_moong_chila", name: "મગની દાળનો ચીલો + તાજું પનીર", slot: "Breakfast", cal: 240, p: 15.0, gl: 6, portion: "૨ ચીલા + ૫૦g પનીર", vegItem: "-", proteinItem: "મગની દાળ, પનીર" },
-      { id: "bf_moth_salad", name: "ફણગાવેલા બાફેલા મઠની ચાટ + કાકડી-ટામેટાં", slot: "Breakfast", cal: 170, p: 11.0, gl: 5, portion: "૧૫૦g બાઉલ", vegItem: "કાકડી, ટામેટાં", proteinItem: "ફણગાવેલા મઠ" },
-      { id: "bf_besan_methi_chila", name: "બેસન-મેથી ચીલો + ગ્રીલ્ડ પનીર ક્યુબ્સ", slot: "Breakfast", cal: 250, p: 16.0, gl: 7, portion: "૨ ચીલા + ૫૦g પનીર", vegItem: "મેથી", proteinItem: "બેસન, પનીર" },
-      { id: "bf_sprout_chana", name: "ફણગાવેલા ચણા + લીંબુ મરી અને ધાણા", slot: "Breakfast", cal: 180, p: 10.0, gl: 6, portion: "૧૫૦g બાઉલ", vegItem: "ધાણા, લીંબુ", proteinItem: "દેશી ચણા" },
-      { id: "bf_muthiya_steam", name: "દૂધી-મેથીના સ્ટીમ્ડ મુઠીયા (ઓછા તેલમાં)", slot: "Breakfast", cal: 160, p: 6.0, gl: 7, portion: "૫ પીસ", vegItem: "દૂધી, મેથી", proteinItem: "-" },
-      { id: "bf_oats_chila_paneer", name: "ઓટ્સ-પાલક ચીલો + ગ્રીલ્ડ પનીર", slot: "Breakfast", cal: 230, p: 14.5, gl: 6, portion: "૨ ચીલા + ૪૦g પનીર", vegItem: "પાલક", proteinItem: "ઓટ્સ, પનીર" },
-      { id: "bf_tofu_bhurji", name: "ટોફૂ શાકભાજી ભુરજી + સલાડ", slot: "Breakfast", cal: 210, p: 16.0, gl: 4, portion: "૧૨૦g ભુરજી", vegItem: "શિમલા મિર્ચ, કાકડી", proteinItem: "ટોફૂ" },
-
-      // Lunch
-      { id: "ln_jowar_palak_paneer", name: "સલાડ પ્લેટ + જુવાર રોટલો + પાલક પનીર + છાશ", slot: "Lunch", cal: 370, p: 19.0, gl: 9, portion: "૧ રોટલો + ૧૫૦g શાક + છાશ", vegItem: "પાલક, કાકડી", proteinItem: "પનીર, મોળી છાશ" },
-      { id: "ln_bajra_methi_dal", name: "કાકડી-બીટ સલાડ + બાજરી રોટલો + મેથી ભાજી + મગ દાળ + છાશ", slot: "Lunch", cal: 360, p: 16.0, gl: 10, portion: "૧ રોટલો + વાટકી દાળ + શાક", vegItem: "મેથી, બીટ, કાકડી", proteinItem: "મગની દાળ, છાશ" },
-      { id: "ln_soya_curry_roti", name: "સોયા ચંક્સ કરી + મલ્ટી-મિલેટ રોટલી + સલાડ + છાશ", slot: "Lunch", cal: 390, p: 27.0, gl: 8, portion: "૨ રોટલી + ૬૦g સોયા + છાશ", vegItem: "કાકડી, ટામેટાં", proteinItem: "સોયા ચંક્સ, છાશ" },
-      { id: "ln_tofu_tindora_roti", name: "ટોફૂ ટીંડોળા શાક + ૧ જુવાર રોટલો + સલાડ + છાશ", slot: "Lunch", cal: 340, p: 18.0, gl: 8, portion: "૧ રોટલો + ૧૫૦g શાક + છાશ", vegItem: "ટીંડોળા", proteinItem: "ટોફૂ, છાશ" },
-      { id: "ln_drumstick_curry_roti", name: "સરગવાની કરી (Drumstick) + જવની રોટલી + સલાડ + છાશ", slot: "Lunch", cal: 330, p: 14.0, gl: 7, portion: "૨ રોટલી + શાક + છાશ", vegItem: "સરગવો (Drumstick)", proteinItem: "મોળી છાશ" },
-      { id: "ln_bhindi_moong_dal", name: "ઓછા તેલમાં ભીંડાનું શાક + બાજરી રોટલો + મગની દાળ", slot: "Lunch", cal: 350, p: 15.0, gl: 9, portion: "૧ રોટલો + દાળ + શાક", vegItem: "ભીંડા", proteinItem: "મગની દાળ" },
-      { id: "ln_choli_sabzi_roti", name: "લીલી ચોળીનું શાક + ૧ જુવાર રોટલો + કાકડી-ગાજર સલાડ + છાશ", slot: "Lunch", cal: 345, p: 15.5, gl: 8, portion: "૧ રોટલો + શાક + છાશ", vegItem: "લીલી ચોળી, ગાજર", proteinItem: "મોળી છાશ" },
-
-      // Snack
-      { id: "sn_roasted_makhana", name: "સિંધવ મીઠાવાળા શેકેલા મખાના", slot: "Snack", cal: 110, p: 3.5, gl: 5, portion: "૨૫g", vegItem: "-", proteinItem: "મખાના" },
-      { id: "sn_chana_chaas", name: "શેકેલા ચણા + જીરા છાશ", slot: "Snack", cal: 150, p: 9.0, gl: 4, portion: "૩૦g ચણા + ૧ છાશ", vegItem: "-", proteinItem: "ચણા, છાશ" },
-      { id: "sn_guava_fruit", name: "તાજો જામફળ + સિંધવ મીઠું", slot: "Snack", cal: 68, p: 2.5, gl: 3, portion: "૧૦૦g", vegItem: "જામફળ", proteinItem: "-" },
-      { id: "sn_papaya_slices", name: "તાજા પપૈયાના પીસ + લીંબુનો રસ", slot: "Snack", cal: 60, p: 1.0, gl: 5, portion: "૧૨૦g", vegItem: "પપૈયું", proteinItem: "-" },
-      { id: "sn_cucumber_peanut", name: "કાકડી-ટામેટાં કચુંબર + બાફેલી સીંગદાણા", slot: "Snack", cal: 130, p: 5.5, gl: 2, portion: "૧ બાઉલ + ૨૦g સીંગ", vegItem: "કાકડી, ટામેટાં", proteinItem: "સીંગદાણા" },
-
-      // Dinner
-      { id: "dn_pumpkin_soup_paneer", name: "ગરમ દૂધી-કોળાનો સૂપ + ગ્રીલ્ડ પનીર ક્યુબ્સ", slot: "Dinner", cal: 230, p: 15.0, gl: 3, portion: "સૂપ + ૬૦g પનીર", vegItem: "કોળું, દૂધી", proteinItem: "પનીર" },
-      { id: "dn_spinach_soup_sprouts", name: "પાલક-આદું સૂપ + બાફેલા ફણગાવેલા મગ", slot: "Dinner", cal: 195, p: 12.5, gl: 4, portion: "સૂપ + ૧૦૦g મગ", vegItem: "પાલક, આદું", proteinItem: "ફણગાવેલા મગ" },
-      { id: "dn_tofu_broccoli_stirfry", name: "ટોફૂ અને બ્રોકોલી-શિમલા મિર્ચ સૌતે", slot: "Dinner", cal: 215, p: 16.5, gl: 2, portion: "૧૨૦g ટોફૂ + ૧૦૦g શાક", vegItem: "બ્રોકોલી, શિમલા મિર્ચ", proteinItem: "ટોફૂ" },
-      { id: "dn_bottle_gourd_soup_chana", name: "દૂધી-ટામેટાં સૂપ + બાફેલા કાબુલી ચણા ચાટ", slot: "Dinner", cal: 200, p: 11.0, gl: 5, portion: "સૂપ + ૮૦g ચણા", vegItem: "દૂધી, ટામેટાં", proteinItem: "કાબુલી ચણા" },
-      { id: "dn_moong_soup_veggies", name: "મગનું ઓસામણ/સૂપ + સૌતે શાકભાજી + પનીર", slot: "Dinner", cal: 225, p: 14.0, gl: 4, portion: "સૂપ + ૫૦g પનીર", vegItem: "મિક્સ શાકભાજી", proteinItem: "પનીર" }
-    ];
-
     let liveClients = [];
 
     function verifyAdminPin() {
@@ -210,7 +194,7 @@
         document.getElementById('adminAuthView').classList.add('hidden');
         document.getElementById('adminMainView').classList.remove('hidden');
         listenToClients();
-        renderMasterGrocery();
+        renderMasterPool();
       } else {
         alert('ખોટો PIN છે.');
       }
@@ -242,31 +226,49 @@
         c.innerHTML = '<div class="text-center py-6 text-slate-400">કોઈ ક્લાયન્ટ મળ્યા નથી.</div>'; 
         return; 
       }
+
       liveClients.forEach(cl => {
         const safeName = esc(cl.name);
         const safePhone = esc(cl.phone);
         const safeId = esc(cl.id);
         const conditions = (cl.conditions || []).join(' • ') || 'General Protocol';
         const weight = cl.weight ? `${cl.weight}kg` : '';
-        const cuisine = cl.preferences?.cuisine ? `[${cl.preferences.cuisine}]` : '';
+        const diet = cl.diet ? `[${cl.diet}]` : '';
         const trialDays = Number(cl.trialDays) || 0;
+
+        // Check if client has extras or sugar logs in latest compliance
+        const comp = cl.compliance || {};
+        const recentDates = Object.keys(comp).sort().slice(-3);
+        let recentExtrasCount = 0;
+        recentDates.forEach(d => {
+          if (comp[d]?.extras && comp[d].extras.length > 0) recentExtrasCount++;
+        });
 
         c.innerHTML += `
           <div class="card-clean p-3.5 rounded-2xl space-y-2 border">
             <div class="flex justify-between items-start">
               <div>
                 <span class="text-xs font-bold text-slate-800">${safeName} (${safePhone})</span>
-                <div class="text-[10px] text-teal-700 font-bold mt-0.5">${esc(conditions)} ${weight ? '• ' + weight : ''} ${cuisine}</div>
+                <div class="text-[10px] text-teal-700 font-bold mt-0.5">${esc(conditions)} ${weight ? '• ' + weight : ''} ${diet}</div>
               </div>
               <span class="text-[10px] font-extrabold px-2 py-0.5 bg-teal-50 text-teal-800 rounded">
                 ${trialDays >= 900 ? 'Lifetime VIP' : trialDays + ' Days'}
               </span>
             </div>
+
+            ${recentExtrasCount > 0 ? `
+              <div class="p-1.5 bg-amber-50 rounded-lg border border-amber-200 text-[10px] text-amber-900 font-semibold flex items-center gap-1">
+                <i class="fa-solid fa-cookie-bite text-amber-600"></i> તાજેતરમાં પ્લાન બહારનું ફૂડ (Extras) નોંધેલું છે.
+              </div>` : ''}
+
             <div class="flex items-center gap-1.5 pt-1">
-              <button onclick="updateTrial('${safeId}', 30)" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-[10px] font-semibold rounded-lg transition">30 Days</button>
-              <button onclick="updateTrial('${safeId}', 999)" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] rounded-lg font-bold transition">Make VIP</button>
+              <button onclick="openClientLogs('${safeId}')" class="px-2.5 py-1 bg-teal-50 text-teal-800 hover:bg-teal-100 text-[10px] font-bold rounded-lg transition border border-teal-200">
+                <i class="fa-solid fa-chart-simple"></i> લોગ્સ & Swaps
+              </button>
+              <button onclick="updateTrial('${safeId}', 30)" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-[10px] font-semibold rounded-lg transition">30 Days</button>
+              <button onclick="updateTrial('${safeId}', 999)" class="px-2 py-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] rounded-lg font-bold transition">VIP</button>
               <button onclick="deleteClient('${safeId}', '${safeName}')" class="text-rose-600 hover:text-rose-700 font-bold text-[10px] ml-auto px-2 py-1 bg-rose-50 rounded-lg transition">
-                <i class="fa-solid fa-trash-can"></i> Delete
+                <i class="fa-solid fa-trash-can"></i> ડિલીટ
               </button>
             </div>
           </div>
@@ -274,10 +276,53 @@
       });
     }
 
+    function openClientLogs(clientId) {
+      const cl = liveClients.find(c => c.id === clientId);
+      if(!cl) return;
+
+      document.getElementById('logModalTitle').innerText = `${cl.name} (${cl.phone})`;
+      document.getElementById('logModalSub').innerText = `લક્ષ્ય: ${(cl.conditions || []).join(', ')} | પ્રારંભિક વજન: ${cl.weight || '-'} kg`;
+
+      const comp = cl.compliance || {};
+      const dates = Object.keys(comp).sort().reverse().slice(0, 7);
+      const container = document.getElementById('logModalContent');
+      container.innerHTML = '';
+
+      if (dates.length === 0) {
+        container.innerHTML = '<div class="text-center py-4 text-slate-400 text-xs">કોઈ લોગ મળ્યા નથી.</div>';
+      } else {
+        dates.forEach(dKey => {
+          const d = comp[dKey];
+          const swaps = d.swaps ? Object.keys(d.swaps).map(s => `${s}: ${d.swaps[s]}`).join(', ') : 'નથી';
+          const extras = d.extras && d.extras.length > 0 ? d.extras.join(', ') : 'નથી';
+          const sugar = `Fasting: ${d.metric1 || '-'} | PP: ${d.metric2 || '-'}`;
+          const currentWeight = d.weight ? `${d.weight} kg` : '-';
+
+          container.innerHTML += `
+            <div class="p-2.5 bg-slate-50 rounded-xl border space-y-1">
+              <div class="flex justify-between font-bold text-slate-900">
+                <span>🗓️ ${dKey}</span>
+                <span class="text-teal-700">વજન: ${currentWeight}</span>
+              </div>
+              <div class="text-[11px] text-slate-600">🩸 શુગર: <b>${sugar}</b> | 💧 પાણી: <b>${(d.water || 0).toFixed(1)}L</b></div>
+              <div class="text-[11px] text-amber-900">🍪 પ્લાન બહારનું (Extras): <b>${esc(extras)}</b></div>
+              <div class="text-[10px] text-slate-500">🔁 Swaps: ${esc(swaps)}</div>
+            </div>
+          `;
+        });
+      }
+
+      document.getElementById('modalClientLogs').classList.remove('hidden');
+    }
+
+    function closeClientLogsModal() {
+      document.getElementById('modalClientLogs').classList.add('hidden');
+    }
+
     async function updateTrial(id, days) {
       try {
         await db.collection('clients').doc(id).update({ trialDays: days });
-        alert('એક્સેસ અપડેટ સફળ!');
+        alert('ટ્રાયલ અપડેટ સફળ!');
       } catch (e) {
         alert('Error: ' + e.message);
       }
@@ -292,30 +337,16 @@
       }
     }
 
-    function renderMasterGrocery() {
+    function renderMasterPool() {
       const c = document.getElementById('groceryItemsList');
-      c.innerHTML = '';
-      document.getElementById('totalFoodCount').innerText = `${CLINICAL_FOOD_DB.length} વાનગીઓ`;
-
-      CLINICAL_FOOD_DB.forEach(item => {
-        c.innerHTML += `
-          <div class="p-2.5 bg-slate-50 rounded-2xl border text-xs space-y-1.5">
-            <div class="flex justify-between items-center">
-              <span class="font-bold text-slate-900">${esc(item.name)}</span>
-              <span class="text-[10px] px-2 py-0.5 bg-slate-200 text-slate-700 rounded-full font-bold">${item.slot}</span>
-            </div>
-            <div class="flex items-center gap-2 text-[11px] flex-wrap">
-              <span class="text-teal-800 font-semibold">🔥 ${item.cal} kcal</span>
-              <span class="text-emerald-800 font-semibold">💪 ${item.p}g Pro</span>
-              <span class="text-sky-800 font-semibold">📊 GL: ${item.gl}</span>
-              <span class="text-slate-500 font-medium">⚖️ ${item.portion}</span>
-            </div>
-            <div class="flex items-center gap-2 pt-1 border-t text-[10px] text-slate-600">
-              ${item.vegItem !== '-' ? `<span class="bg-emerald-50 text-emerald-800 px-1.5 py-0.5 rounded border border-emerald-200">🥦 ${esc(item.vegItem)}</span>` : ''}
-              ${item.proteinItem !== '-' ? `<span class="bg-amber-50 text-amber-800 px-1.5 py-0.5 rounded border border-amber-200">🫘 ${esc(item.proteinItem)}</span>` : ''}
-            </div>
-          </div>`;
-      });
+      c.innerHTML = `
+        <div class="p-3 bg-teal-50 border border-teal-200 rounded-xl space-y-1 text-teal-900">
+          <div class="font-bold">✅ પૂલ આર્કિટેક્ચર સિંક થયેલું છે</div>
+          <p class="text-[11px] leading-relaxed">
+            હવે પોર્ટલમાં વાનગીઓ સંપૂર્ણપણે ક્લાયન્ટ સાઇડથી કેટેગરી-વાઇઝ ડાયનામિક કન્સ્ટ્રેઇન્ટ એન્જિન વડે બને છે. Firestore માં આખો પ્લાન સેવ થતો નથી, ફક્ત સ્વેપ આઈડી અને યુઝર લોગ્સ સેવ થાય છે, જેથી કોઈ કાર્ડ ગાયબ થવાનો પ્રશ્ન રહેતો નથી.
+          </p>
+        </div>
+      `;
     }
 
     function openModal() { document.getElementById('admModal').classList.remove('hidden'); }
@@ -324,11 +355,13 @@
     async function addNewClientToCloud() {
       const n = document.getElementById('mName').value.trim();
       const p = document.getElementById('mPhone').value.trim().replace(/\D/g,'');
-      const age = Number(document.getElementById('mAge').value) || 38;
-      const height = Number(document.getElementById('mHeight').value) || 170;
-      const weight = Number(document.getElementById('mWeight').value) || 78;
+      const age = Number(document.getElementById('mAge').value);
+      const height = Number(document.getElementById('mHeight').value);
+      const weight = Number(document.getElementById('mWeight').value);
       const gender = document.getElementById('mGender').value;
       const activity = document.getElementById('mActivity').value;
+      const diet = document.getElementById('mDietMode').value;
+      const kidneyIssue = document.getElementById('mKidneyIssue').checked;
       const cuisine = document.getElementById('mCuisine').value;
       const days = parseInt(document.getElementById('mDays').value) || 30;
       const allergiesInput = document.getElementById('mAllergies').value.trim();
@@ -336,18 +369,20 @@
 
       const conditions = Array.from(document.querySelectorAll('input[name="mGoalCheck"]:checked')).map(cb => cb.value);
 
-      if(!n || p.length < 10) return alert('કૃપા કરીને પૂરું નામ અને ૧૦-અંકનો નંબર દાખલ કરો');
-      if(conditions.length === 0) return alert('ઓછામાં ઓછું એક લક્ષ્ય પસંદ કરો');
+      if(!n || p.length < 10) return alert('પૂરું નામ અને ૧૦-અંકનો નંબર ફરજિયાત છે.');
+      if(!age || !height || !weight) return alert('ઉંમર, ઊંચાઈ અને વજનના સાચા આંકડા દાખલ કરો.');
+      if(conditions.length === 0) return alert('ઓછામાં ઓછું એક લક્ષ્ય પસંદ કરો.');
 
       try {
         const existing = await db.collection('clients').doc(p).get();
         if(existing.exists) {
-          if(!confirm('આ નંબર પર ક્લાયન્ટ પહેલેથી મોજૂદ છે. શું તમે ઓવરરાઇટ કરવા માંગો છો?')) return;
+          if(!confirm('આ નંબર પર ક્લાયન્ટ પહેલેથી મોજૂદ છે. શું ઓવરરાઇટ કરવું છે?')) return;
         }
 
         await db.collection('clients').doc(p).set({
           name: n, phone: p, pin: p.slice(-4),
-          age, height, weight, gender, activity, conditions,
+          age, height, weight, gender, activity, diet,
+          kidneyIssue, conditions,
           preferences: { cuisine, allergies, swapScores: {} },
           goal: conditions.join(' + '),
           trialDays: days,
@@ -357,7 +392,7 @@
         }, { merge: true });
 
         closeModal();
-        alert('ક્લાયન્ટ પ્રોટોકોલ સાથે સફળતાપૂર્વક ઉમેરાઈ ગયો!');
+        alert('ક્લાયન્ટ v3 સ્કીમા સાથે સફળતાપૂર્વક ઉમેરાઈ ગયો!');
       } catch (e) {
         alert('Error: ' + e.message);
       }
