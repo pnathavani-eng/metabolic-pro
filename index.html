@@ -39,7 +39,7 @@
       <div class="w-16 h-16 rounded-2xl brand-gradient flex items-center justify-center text-white text-3xl font-black shadow-lg mx-auto">🩺</div>
       <div>
         <h1 class="text-2xl font-black text-slate-900 tracking-tight">Metabolic Pro</h1>
-        <p class="text-xs font-semibold text-teal-700 uppercase tracking-widest mt-0.5">Clinical Lifestyle & Nutrition Engine v4</p>
+        <p class="text-xs font-semibold text-teal-700 uppercase tracking-widest mt-0.5">Clinical Lifestyle & Nutrition Engine</p>
       </div>
       <p class="text-xs text-slate-500 max-w-xs mx-auto">ડાયાબિટીસ મુક્તિ, ફેટી લિવર ડિટોક્સ અને પર્સનલાઇઝ્ડ મેટાબોલિક હેલ્થ સિસ્ટમ.</p>
     </div>
@@ -50,6 +50,7 @@
         <button onclick="setAuthTab('login')" id="tabLogin" class="flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold">🔑 લોગિન</button>
       </div>
 
+      <!-- Registration Form -->
       <div id="formRegister" class="space-y-3 text-xs">
         <div>
           <label class="font-bold text-slate-700">પૂરું નામ *</label>
@@ -58,6 +59,13 @@
         <div>
           <label class="font-bold text-slate-700">WhatsApp મોબાઈલ નંબર *</label>
           <input type="tel" id="regPhone" placeholder="દા.ત. 9925879138" class="w-full mt-1 p-2.5 bg-slate-50 border rounded-xl text-slate-800">
+        </div>
+
+        <!-- Custom Secure PIN Input -->
+        <div class="p-2.5 bg-teal-50/70 border border-teal-200 rounded-2xl space-y-1">
+          <label class="font-bold text-teal-900 block">તમારો મનપસંદ ૪-અંકનો સિક્રેટ PIN બનાવો *</label>
+          <input type="password" maxlength="4" id="regPin" placeholder="•••• (દા.ત. 1988 કે 5624)" class="w-full p-2 bg-white border border-teal-300 rounded-xl text-center text-sm font-black tracking-widest text-slate-900">
+          <span class="text-[9px] text-teal-700 block">⚠️ સુરક્ષા માટે 1234, 0000 કે 1111 જેવા નબળા પિન રાખવા નહીં.</span>
         </div>
 
         <div class="grid grid-cols-3 gap-2">
@@ -121,10 +129,10 @@
               <input type="checkbox" name="regCondition" value="fatty_liver" checked class="w-4 h-4 text-teal-600 rounded"> 🥒 ફેટી લિવર
             </label>
             <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
-              <input type="checkbox" name="regCondition" value="gym" class="w-4 h-4 text-teal-600 rounded"> 💪 જિમ / ફિટનેસ
+              <input type="checkbox" name="regCondition" value="menopause" class="w-4 h-4 text-teal-600 rounded"> 🌸 મેનોપોઝ / હોર્મોન્સ
             </label>
             <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium">
-              <input type="checkbox" name="regCondition" value="fat_loss" class="w-4 h-4 text-teal-600 rounded"> ⚖️ ફેટ લોસ
+              <input type="checkbox" name="regCondition" value="gym" class="w-4 h-4 text-teal-600 rounded"> 💪 જિમ / ફિટનેસ
             </label>
           </div>
         </div>
@@ -145,16 +153,10 @@
           </div>
         </div>
 
-        <div class="p-2 bg-slate-50 border rounded-xl">
-          <label class="flex items-start gap-2 cursor-pointer text-[10px] text-slate-600 leading-tight">
-            <input type="checkbox" id="regConsent" class="w-4 h-4 text-teal-600 rounded mt-0.5" checked>
-            <span>હું સમજું છું કે આ પોર્ટલ લાઈફસ્ટાઈલ માર્ગદર્શન માટે છે. ડૉક્ટરની સલાહ વગર કોઈ દવા બંધ કરીશ નહીં.</span>
-          </label>
-        </div>
-
         <button onclick="handleClientRegister()" id="btnRegisterSubmit" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-sm shadow-md mt-1">મારું ક્લિનિકલ પોર્ટલ શરૂ કરો 🚀</button>
       </div>
 
+      <!-- Login Form -->
       <div id="formLogin" class="hidden space-y-3.5 text-xs">
         <div>
           <label class="font-bold text-slate-700">વોટ્સએપ મોબાઈલ નંબર</label>
@@ -172,6 +174,47 @@
     </div>
   </div>
 
+  <!-- MANDATORY WHATSAPP ACTIVATION GATE MODAL -->
+  <div id="modalActivationGate" class="hidden fixed inset-0 bg-slate-950/85 z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm p-5 rounded-3xl space-y-4 text-xs shadow-2xl border text-center">
+      <div class="w-14 h-14 rounded-2xl bg-teal-50 border border-teal-200 text-teal-700 flex items-center justify-center text-2xl mx-auto shadow-sm">
+        <i class="fa-brands fa-whatsapp"></i>
+      </div>
+      <div>
+        <h3 class="font-black text-slate-900 text-base">WhatsApp એક્ટિવેશન ફરજિયાત</h3>
+        <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">
+          ડેઈલી મીલ રિમાઇન્ડર્સ અને પર્સનલ કોચિંગ શરૂ કરવા નીચેના ૨ સરળ સ્ટેપ્સ પૂર્ણ કરો:
+        </p>
+      </div>
+
+      <div class="space-y-2.5 text-left pt-1">
+        <div class="p-3 bg-slate-50 rounded-2xl border flex items-center justify-between">
+          <div>
+            <div class="font-extrabold text-slate-900 text-xs">સ્ટેપ ૧: કોચ નંબર સેવ કરો</div>
+            <div class="text-[10px] text-slate-500">Metabolic Pro Coach (.vcf)</div>
+          </div>
+          <button onclick="downloadCoachVCard()" class="px-3 py-1.5 bg-slate-900 text-white rounded-xl font-bold text-[10px] flex items-center gap-1 shadow-xs">
+            <i class="fa-solid fa-address-book"></i> સેવ કરો
+          </button>
+        </div>
+
+        <div class="p-3 bg-teal-50/70 border border-teal-200 rounded-2xl flex items-center justify-between">
+          <div>
+            <div class="font-extrabold text-teal-950 text-xs">સ્ટેપ ૨: WhatsApp પર 'Hi' મોકલો</div>
+            <div class="text-[10px] text-teal-700">સિક્યોર એક્ટિવેશન મેસેજ</div>
+          </div>
+          <button onclick="sendActivationHi()" class="px-3 py-1.5 bg-teal-600 text-white rounded-xl font-extrabold text-[10px] flex items-center gap-1 shadow-xs">
+            <i class="fa-brands fa-whatsapp text-sm"></i> 'Hi' મોકલો
+          </button>
+        </div>
+      </div>
+
+      <button onclick="verifyActivationDone()" id="btnCheckActivation" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-2xl shadow-md transition">
+        મેં બંને સ્ટેપ પૂરા કર્યા, પોર્ટલ ખોલો 🚀
+      </button>
+    </div>
+  </div>
+
   <!-- CLIENT PORTAL VIEW -->
   <div id="clientPortalView" class="hidden min-h-screen">
     <header class="p-3.5 bg-white border-b sticky top-0 z-40 flex justify-between items-center shadow-xs">
@@ -180,7 +223,7 @@
         <div>
           <div class="flex items-center gap-1.5">
             <h1 class="font-extrabold text-slate-900 text-sm leading-tight" id="cpClientTitle">Welcome</h1>
-            <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[9px] font-black" id="cpStreakBadge">🔥 1 Day Streak</span>
+            <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[9px] font-black" id="cpStreakBadge">🔥 Active</span>
           </div>
           <p class="text-[10px] font-bold text-teal-700" id="cpClientSub">Metabolic Plan</p>
         </div>
@@ -199,13 +242,11 @@
     </div>
 
     <main class="p-3.5 max-w-lg mx-auto space-y-3.5">
-      
       <!-- TAB 1: TODAY'S PROTOCOL -->
       <div id="tabContentToday" class="space-y-3.5">
-        
         <div id="cpPlanReasonChips" class="flex flex-wrap gap-1.5 p-2.5 bg-slate-100 rounded-2xl border text-[10px] font-bold text-slate-700 items-center"></div>
 
-        <!-- DYNAMIC METABOLIC BUDGET & MACRO CARD -->
+        <!-- MACRO TARGET CARD -->
         <div class="card-clean p-4 rounded-3xl space-y-3 bg-gradient-to-br from-slate-900 to-teal-950 text-white shadow-md border border-teal-800">
           <div class="flex justify-between items-center">
             <h3 class="font-extrabold text-xs flex items-center gap-1.5 text-teal-300"><i class="fa-solid fa-bolt text-amber-400"></i> Personalized Macro Targets</h3>
@@ -243,23 +284,16 @@
           </div>
 
           <div id="cpTopupContainer" class="hidden p-2 bg-white/10 rounded-xl text-[11px] text-amber-200 font-semibold border border-amber-300/30"></div>
-
-          <div class="bg-white/10 rounded-2xl p-2.5 border border-white/10 flex items-center gap-2">
-            <span class="text-base" id="cpMotiIcon">💬</span>
-            <p class="text-[11px] font-semibold text-teal-100 leading-tight" id="cpMotivationText">આજના મીલ્સ માર્ક કરો એટલે તમારો સ્કોર અને સ્ટેટસ લાઈવ દેખાશે.</p>
-          </div>
         </div>
 
-        <!-- C: METABOLIC RESET / REFEED ALERT -->
         <div id="cpMetabolicResetBox" class="hidden"></div>
-
         <div id="cpMedicationReviewBox" class="hidden"></div>
         <div id="cpWorkoutSugarGuardBox" class="hidden"></div>
 
         <!-- WATER TRACKER -->
         <div class="card-clean p-3.5 rounded-2xl space-y-2 border">
           <div class="flex justify-between items-center text-xs">
-            <span class="font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-droplet text-sky-500 text-sm"></i> Water Target (હાઇડ્રેશન)</span>
+            <span class="font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-droplet text-sky-500 text-sm"></i> Water Target</span>
             <span class="font-black text-sky-600 text-xs" id="cpWaterCount">0.0 / 3.0 Liters</span>
           </div>
           <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
@@ -281,7 +315,7 @@
               <span class="font-extrabold text-slate-800 text-[11px]" id="cpCurrentWeekLabel">This Week</span>
               <button onclick="changeWeek(1)" class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>
             </div>
-            <button onclick="jumpToToday()" class="text-[10px] font-extrabold bg-teal-50 text-teal-800 border border-teal-200 px-2 py-1 rounded-lg">Today (આજે) 📍</button>
+            <button onclick="jumpToToday()" class="text-[10px] font-extrabold bg-teal-50 text-teal-800 border border-teal-200 px-2 py-1 rounded-lg">Today 📍</button>
           </div>
           <div class="grid grid-cols-7 gap-1 text-center" id="cpDateGridButtons"></div>
           <div class="pt-1 flex justify-between items-center text-[11px]">
@@ -290,76 +324,53 @@
           </div>
         </div>
 
-        <!-- MEAL CARDS (WITH D: KITCHEN RECIPE TIPS) -->
+        <!-- MEAL CARDS (ISOLATED & GUARANTEED) -->
         <div class="space-y-3" id="cpTodayMealCards"></div>
 
-        <!-- EXTRAS / CHEAT FOOD LOGGING -->
+        <!-- EXTRAS / CHEAT LOGGING -->
         <div class="card-clean p-3.5 rounded-2xl space-y-2 border text-xs">
-          <span class="font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-cookie-bite text-amber-500"></i> પ્લાન બહારનું કંઈ ખાધું હોય તો નોંધો (Extras / Cheat Food)</span>
+          <span class="font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-cookie-bite text-amber-500"></i> પ્લાન બહારનું કંઈ ખાધું હોય તો નોંધો (Extras)</span>
           <div class="flex gap-1.5">
-            <input type="text" id="cpInExtraFood" placeholder="દા.ત. ૧ ગુલાબજાંબુ, ગાંઠિયા, ૨ બિસ્કિટ..." class="flex-1 p-2 bg-slate-50 border rounded-xl text-xs">
+            <input type="text" id="cpInExtraFood" placeholder="દા.ત. ૧ ગુલાબજાંબુ, ગાંઠિયા..." class="flex-1 p-2 bg-slate-50 border rounded-xl text-xs">
             <button onclick="addExtraFoodLog()" class="px-3 bg-slate-900 text-white font-bold rounded-xl text-xs">+ ઉમેરો</button>
           </div>
           <div id="cpActiveExtrasContainer" class="flex flex-wrap gap-1 pt-1"></div>
         </div>
 
-        <!-- B: VITALS, DAILY WEIGHT & INCH LOSS TRACKER -->
+        <!-- DYNAMIC VITALS BASED ON PATIENT'S ACTUAL CONDITION -->
         <div class="card-clean p-3.5 rounded-2xl space-y-2 text-xs">
           <div class="font-bold text-slate-700 text-xs flex items-center justify-between">
-            <span class="flex items-center gap-1.5"><i class="fa-solid fa-notes-medical text-teal-600"></i> Daily Vitals, Weight & Inches</span>
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-notes-medical text-teal-600"></i> Daily Vitals & Measurements</span>
           </div>
           <div id="sugarSafetyAlertBox" class="hidden"></div>
-          
-          <div class="grid grid-cols-4 gap-1.5 pt-1">
-            <div>
-              <label class="text-[9px] text-slate-500 font-semibold">Fasting Sugar</label>
-              <input type="number" id="cpInM1" oninput="debounceSaveVitals()" placeholder="mg/dl" class="w-full bg-slate-50 border p-2 rounded-lg text-xs">
-            </div>
-            <div>
-              <label class="text-[9px] text-slate-500 font-semibold">PP2BS Sugar</label>
-              <input type="number" id="cpInM2" oninput="debounceSaveVitals()" placeholder="mg/dl" class="w-full bg-slate-50 border p-2 rounded-lg text-xs">
-            </div>
-            <div>
-              <label class="text-[9px] text-slate-500 font-semibold">વજન (kg)</label>
-              <input type="number" step="0.1" id="cpInWeight" oninput="debounceSaveVitals()" placeholder="કિલો" class="w-full bg-slate-50 border p-2 rounded-lg text-xs">
-            </div>
-            <div>
-              <label class="text-[9px] text-slate-500 font-semibold text-teal-800 font-bold">કમર (Inches)</label>
-              <input type="number" step="0.5" id="cpInWaist" oninput="debounceSaveVitals()" placeholder="ઈંચ" class="w-full bg-teal-50 border border-teal-200 p-2 rounded-lg text-xs font-bold text-teal-900">
-            </div>
-          </div>
+          <div id="dynamicVitalsInputsGrid" class="pt-1"></div>
           <input type="text" id="cpInNote" oninput="debounceSaveVitals()" placeholder="શરીરમાં અનુભવાતી હળવાશ, નોંધ કે ઊર્જા સ્તર..." class="w-full bg-slate-50 border p-2 rounded-lg text-xs mt-1">
         </div>
 
-        <div class="space-y-2 pt-1">
-          <button onclick="submitClientReport('daily')" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md">
-            <i class="fa-brands fa-whatsapp text-lg"></i> આજના દિવસનો રિપોર્ટ કોચને મોકલો 📲
-          </button>
-        </div>
+        <button onclick="submitClientReport('daily')" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md">
+          <i class="fa-brands fa-whatsapp text-lg"></i> આજના દિવસનો રિપોર્ટ કોચને મોકલો 📲
+        </button>
       </div>
 
-      <!-- TAB 2: REPORTS & ADVANCE UPCOMING MENU PLANNER + LAB TRACKER -->
+      <!-- TAB 2: REPORTS & LAB TRACKER -->
       <div id="tabContentReports" class="hidden space-y-3.5 text-xs">
-        
-        <!-- A: CLINICAL LAB REPORT TRACKER (HbA1c, HOMA-IR, Liver SGPT) -->
         <div class="card-clean p-4 rounded-3xl space-y-3 border-teal-300">
           <div class="flex items-center justify-between border-b pb-2">
             <div>
-              <h3 class="font-black text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-vial-circle-check text-teal-600"></i> ક્લિનિકલ લેબ રિપોર્ટ્સ (Lab Tracker)</h3>
-              <p class="text-[10px] text-slate-500">HbA1c, લિવર SGPT અને Fasting Insulin રેકોર્ડ</p>
+              <h3 class="font-black text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-vial-circle-check text-teal-600"></i> લેબ રિપોર્ટ્સ (Lab Tracker)</h3>
+              <p class="text-[10px] text-slate-500">HbA1c, લિવર SGPT & Fasting Insulin</p>
             </div>
             <button onclick="saveLabReportModal()" class="px-2.5 py-1 bg-teal-600 text-white font-bold rounded-xl text-[10px] shadow">+ નવો રિપોર્ટ</button>
           </div>
-
           <div id="cpLabReportsList" class="space-y-1.5"></div>
         </div>
 
-        <!-- AUTOMATED 7-DAY GROCERY BASKET -->
+        <!-- GROCERY BASKET -->
         <div class="card-clean p-4 rounded-3xl space-y-3 border-teal-300 bg-teal-50/40">
           <div class="flex items-center justify-between border-b border-teal-100 pb-2.5">
             <div>
-              <h3 class="font-black text-teal-950 text-sm flex items-center gap-1.5"><i class="fa-solid fa-basket-shopping text-teal-600"></i> સ્માર્ટ સાપ્તાહિક ગ્રોસરી લિસ્ટ</h3>
-              <p class="text-[11px] text-teal-700">આગામી ૭ દિવસના મેનૂ આધારિત જરૂરી શાકભાજી અને કઠોળ</p>
+              <h3 class="font-black text-teal-950 text-sm flex items-center gap-1.5"><i class="fa-solid fa-basket-shopping text-teal-600"></i> સાપ્તાહિક ગ્રોસરી લિસ્ટ</h3>
+              <p class="text-[11px] text-teal-700">૭ દિવસના મેનૂ આધારિત સામગ્રી</p>
             </div>
             <button onclick="generateWeeklyGroceryList()" class="px-2.5 py-1 bg-teal-600 text-white font-bold rounded-xl text-[10px] shadow">રીફ્રેશ 🔄</button>
           </div>
@@ -369,58 +380,25 @@
               <ul id="groceryVegList" class="space-y-0.5 list-disc list-inside text-slate-600"></ul>
             </div>
             <div class="bg-white p-2.5 rounded-2xl border border-teal-100">
-              <span class="font-bold text-teal-800 block mb-1">🫘 કઠોળ / પ્રોટીન:</span>
+              <span class="font-bold text-teal-800 block mb-1">🫘 પ્રોટીન / કઠોળ:</span>
               <ul id="groceryProteinList" class="space-y-0.5 list-disc list-inside text-slate-600"></ul>
             </div>
           </div>
         </div>
 
-        <!-- 7-DAY NON-REPEAT UPCOMING PLANNER -->
+        <!-- 7-DAY PLANNER -->
         <div class="card-clean p-4 rounded-3xl space-y-3 border-teal-200">
           <div class="flex items-center justify-between border-b pb-2.5">
-            <div>
-              <h3 class="font-black text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-calendar-check text-teal-600"></i> આગામી ૭ દિવસનું એડવાન્સ મેનૂ</h3>
-              <p class="text-[11px] text-slate-500">દરરોજ સંપૂર્ણ અલગ અને બિન-રિપીટ ભોજન</p>
-            </div>
-            <span class="px-2 py-0.5 bg-teal-50 text-teal-800 text-[10px] font-extrabold rounded-lg border border-teal-200">Non-Repeat Planner</span>
+            <h3 class="font-black text-slate-900 text-sm">આગામી ૭ દિવસનું એડવાન્સ મેનૂ</h3>
+            <span class="px-2 py-0.5 bg-teal-50 text-teal-800 text-[10px] font-extrabold rounded-lg">Non-Repeat</span>
           </div>
-
           <div id="upcomingForecastContainer" class="space-y-2 pt-1"></div>
         </div>
-
-        <!-- OVERALL PERFORMANCE SUMMARY -->
-        <div class="card-clean p-4 rounded-3xl space-y-3">
-          <div class="flex items-center gap-2 border-b pb-2.5">
-            <div class="w-8 h-8 rounded-xl brand-gradient text-white flex items-center justify-center text-sm"><i class="fa-solid fa-chart-line"></i></div>
-            <div>
-              <h3 class="font-black text-slate-900 text-sm">Overall Protocol Performance</h3>
-              <p class="text-[10px] text-slate-500">ક્લિનિકલ ટ્રેકિંગ અને કમ્પ્લાયન્સ સમરી</p>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2 pt-1">
-            <div class="bg-slate-50 p-2.5 rounded-2xl border text-center space-y-0.5">
-              <div class="text-[9px] text-slate-500 font-bold uppercase">સરેરાશ કમ્પ્લાયન્સ</div>
-              <div class="text-lg font-black text-teal-700" id="repAvgCompliance">0%</div>
-            </div>
-            <div class="bg-slate-50 p-2.5 rounded-2xl border text-center space-y-0.5">
-              <div class="text-[9px] text-slate-500 font-bold uppercase">દૈનિક સરેરાશ પાણી</div>
-              <div class="text-lg font-black text-sky-600" id="repAvgWater">0.0 L</div>
-            </div>
-          </div>
-
-          <button onclick="submitClientReport('summary')" class="w-full py-3 rounded-2xl bg-slate-900 text-white font-extrabold text-xs shadow">
-            <i class="fa-brands fa-whatsapp"></i> છેલ્લી ૭ દિવસીય સંપૂર્ણ સમરી મોકલો 📲
-          </button>
-        </div>
       </div>
-
     </main>
   </div>
 
-  <!-- MODALS -->
-
-  <!-- D: KITCHEN RECIPE & COOKING TIPS MODAL -->
+  <!-- KITCHEN RECIPE TIPS MODAL -->
   <div id="modalKitchenTips" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-sm p-4 rounded-3xl space-y-3 text-xs shadow-xl border">
       <div class="flex justify-between items-center border-b pb-2">
@@ -431,67 +409,10 @@
         <div class="font-bold text-teal-800 text-xs" id="ktDishTitle">વાનગીનું નામ</div>
         <div class="bg-slate-50 p-2.5 rounded-xl border text-[11px]" id="ktDishTips">ટિપ્સ લોડ થઈ રહી છે...</div>
         <div class="bg-amber-50 p-2.5 rounded-xl border border-amber-200 text-[10px] text-amber-900">
-          <b>સુવર્ણ નિયમ:</b> કોઈપણ શાક કે દાળમાં ૧ નાની ચમચી (5ml) થી વધુ તેલ ન વાપરવું. ક્રીમ, બટર કે ખાંડનો સદંતર ત્યાગ કરવો.
+          <b>સુવર્ણ નિયમ:</b> કોઈપણ શાક કે દાળમાં ૧ નાની ચમચી (5ml) થી વધુ તેલ ન વાપરવું. ક્રીમ, બટર કે ખાંડનો ત્યાગ કરવો.
         </div>
       </div>
       <button onclick="closeKitchenTipsModal()" class="w-full bg-slate-900 text-white font-bold py-2 rounded-xl text-xs">સમજાઈ ગયું ✅</button>
-    </div>
-  </div>
-
-  <!-- A: ADD LAB REPORT MODAL -->
-  <div id="modalAddLabReport" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm p-4 rounded-3xl space-y-3 text-xs shadow-xl border">
-      <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-extrabold text-slate-900 text-sm">નવો લેબ રિપોર્ટ ઉમેરો</h3>
-        <button onclick="closeAddLabModal()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
-      </div>
-      <div class="space-y-2">
-        <div>
-          <label class="font-bold text-slate-700 text-[10px]">રિપોર્ટ તારીખ</label>
-          <input type="date" id="labInDate" class="w-full p-2 bg-slate-50 border rounded-xl text-xs">
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="font-bold text-slate-700 text-[10px]">HbA1c (%)</label>
-            <input type="number" step="0.1" id="labInHba1c" placeholder="દા.ત. 6.8" class="w-full p-2 bg-slate-50 border rounded-xl text-xs">
-          </div>
-          <div>
-            <label class="font-bold text-slate-700 text-[10px]">Fasting Insulin (µIU/mL)</label>
-            <input type="number" step="0.1" id="labInInsulin" placeholder="દા.ત. 12.5" class="w-full p-2 bg-slate-50 border rounded-xl text-xs">
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="font-bold text-slate-700 text-[10px]">SGPT (Liver U/L)</label>
-            <input type="number" id="labInSgpt" placeholder="દા.ત. 45" class="w-full p-2 bg-slate-50 border rounded-xl text-xs">
-          </div>
-          <div>
-            <label class="font-bold text-slate-700 text-[10px]">Triglycerides (mg/dL)</label>
-            <input type="number" id="labInTg" placeholder="દા.ત. 180" class="w-full p-2 bg-slate-50 border rounded-xl text-xs">
-          </div>
-        </div>
-      </div>
-      <button onclick="saveNewLabReportToCloud()" class="w-full bg-teal-600 text-white font-extrabold py-2.5 rounded-xl shadow">સેવ કરો 💾</button>
-    </div>
-  </div>
-
-  <div id="modalClientForgotPin" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm p-5 rounded-3xl space-y-3.5 text-xs shadow-xl border">
-      <h3 class="font-extrabold text-slate-900 text-sm text-center">Reset Client PIN</h3>
-      <input type="tel" id="inClientForgotPhone" placeholder="Enter mobile number" class="w-full p-2.5 bg-slate-50 border rounded-xl">
-      <button onclick="handleClientSelfResetPin()" class="w-full bg-teal-600 text-white font-extrabold py-2.5 rounded-xl">Auto-Reset PIN 🔄</button>
-      <button onclick="closeClientForgotPinModal()" class="w-full text-slate-400 text-center py-1">Cancel</button>
-    </div>
-  </div>
-
-  <div id="modalFeedback" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-sm p-4 rounded-3xl space-y-3 text-xs shadow-xl border">
-      <h3 class="font-bold text-slate-900 text-sm">Help & Support</h3>
-      <textarea id="fbMessage" rows="3" class="w-full bg-slate-50 border p-2 rounded-xl" placeholder="તમારો સંદેશ લખો..."></textarea>
-      <div class="flex gap-2 pt-1">
-        <button onclick="closeFeedbackModal()" class="flex-1 bg-slate-100 py-2 rounded-xl font-bold">Cancel</button>
-        <button onclick="sendFeedbackWhatsApp()" class="flex-1 bg-teal-600 text-white py-2 rounded-xl font-bold">Submit 📲</button>
-      </div>
     </div>
   </div>
 
@@ -516,70 +437,39 @@
 
     const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const DAY_NAMES_GUJ = ['રવિવાર', 'સોમવાર', 'મંગળવાર', 'બુધવાર', 'ગુરુવાર', 'શુક્રવાર', 'શનિવાર'];
-    let COACH_PHONE = "919081421028";
+    const COACH_PHONE = "919081421028";
+    const COACH_NAME = "Metabolic Pro Coach";
     let weekOffset = 0;
     let selectedDateKey = getTodayDateKey();
     let currentClient = null;
     let debounceTimer = null;
 
-    // --- 50+ CLINICAL FOOD POOL WITH D: KITCHEN RECIPE TIPS ---
+    // --- 50+ FOOD POOL WITH DIABETES & MENOPAUSE TAGS ---
     const CLINICAL_FOOD_DB = [
-      // Morning Detox Infusions
-      { id: "morn_ash_gourd", name: "પેઠાનો રસ (Ash Gourd) + કાચી હળદર", slot: "morning", baseCal: 25, baseP: 0.6, gl: 1, basePortion: "૨૫૦ ml", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "પેઠું (Ash Gourd)", kitchenTip: "પેઠાની છાલ અને બીજ કાઢીને મિક્સરમાં ક્રશ કરી ગાળ્યા વગર લેવું જેથી ફાઇબર જળવાય. ઉપર કાચી હળદર અને સિંધવ મીઠું ભભરાવવું." },
-      { id: "morn_bottle_gourd", name: "દૂધીનો રસ + આદું + લીંબુ + ફુદીનો", slot: "morning", baseCal: 30, baseP: 1.0, gl: 1, basePortion: "૨૫૦ ml", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "દૂધી, આદું", kitchenTip: "દૂધી કડવી ન હોવી જોઈએ તે ચાખી લેવું. આદું-ફુદીના સાથે તાજો ક્રશ કરી તરત જ પીવો." },
-      { id: "morn_amla_cumin", name: "આમળા રસ + જીરાવાળું નવશેકું પાણી", slot: "morning", baseCal: 20, baseP: 0.4, gl: 1, basePortion: "૨૫૦ ml", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "આમળાં", kitchenTip: "૧ ગ્લાસ નવશેકા પાણીમાં ૨૦ml તાજો આમળાનો રસ અને અડધી ચમચી શેકેલા જીરાનો પાઉડર ઉમેરી પીવું." },
-      { id: "morn_cucumber_mint", name: "કાકડી + ફુદીનો + ચિયા સીડ્સ ઇન્ફ્યુઝન", slot: "morning", baseCal: 28, baseP: 0.8, gl: 1, basePortion: "૨૫૦ ml", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "કાકડી", kitchenTip: "રાત્રે ૧ ચમચી ચિયા સીડ્સ પલાળી રાખવા, સવારે કાકડી-ફુદીનાના પાણી સાથે મિક્સ કરવા." },
-
-      // Pre-Workout
-      { id: "pre_banana_chana", name: "૧ નાનું કેળું + શેકેલા ચણા", slot: "pre_workout", baseCal: 150, baseP: 5.0, gl: 9, basePortion: "૧ કેળું + ૨૫g ચણા", diet: "veg", tags: ["workout_friendly", "energy_boost"], proteinItem: "શેકેલા ચણા", kitchenTip: "શેકેલા ચણા ફોતરા સાથે લેવા જેથી ધીમો ગ્લુકોઝ રીલીઝ થાય." },
-      { id: "pre_makhana_apple", name: "શેકેલા મખાના + અડધું સફરજન", slot: "pre_workout", baseCal: 130, baseP: 3.0, gl: 6, basePortion: "૨૫g મખાના", diet: "veg", tags: ["workout_friendly", "low_gi"], proteinItem: "મખાના", kitchenTip: "મખાના માત્ર ડ્રાય રોસ્ટ કરવા, તેલ કે ઘી ઉમેરવું નહીં." },
-
-      // Post-Workout
-      { id: "post_whey_water", name: "૧ સ્કૂપ વ્હે પ્રોટીન (પાણીમાં) / સત્તુ ડ્રિંક", slot: "post_workout", baseCal: 120, baseP: 24.0, gl: 2, basePortion: "૧ સ્કૂપ / ૩૦g", diet: "veg", tags: ["workout_friendly", "high_protein"], proteinItem: "વ્હે / સત્તુ", kitchenTip: "વર્કઆઉટ પછી ૩૦ મિનિટમાં સામાન્ય પાણી સાથે લેવું." },
-      { id: "post_boiled_eggs", name: "૩ બાફેલા ઈંડા (સફેદ ભાગ) + કાકડી", slot: "post_workout", baseCal: 110, baseP: 18.0, gl: 1, basePortion: "૩ એગ વ્હાઈટ", diet: "egg", tags: ["workout_friendly", "high_protein"], proteinItem: "ઈંડા", kitchenTip: "પીળો ભાગ કાઢી નાખવો, માત્ર સફેદ ભાગ પર કાળા મરી અને સિંધવ મીઠું નાખીને લેવું." },
-      { id: "post_paneer_curd", name: "તાજું પનીર + મોળું દહીં", slot: "post_workout", baseCal: 160, baseP: 15.0, gl: 3, basePortion: "૬૦g પનીર + ૧૦૦g દહીં", diet: "veg", tags: ["workout_friendly", "high_protein"], proteinItem: "પનીર, દહીં", kitchenTip: "દહીં મોળું હોવું જોઈએ, ખાંડ કે મીઠું ઉમેરવું નહીં." },
-
+      { id: "morn_ash_gourd", name: "પેઠાનો રસ (Ash Gourd) + કાચી હળદર", slot: "morning", baseCal: 25, baseP: 0.6, gl: 1, basePortion: "૨૫૦ ml", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "detox", "diabetes"], vegItem: "પેઠું", kitchenTip: "છાલ કાઢી ક્રશ કરી ગાળ્યા વગર પીવો." },
+      { id: "morn_bottle_gourd", name: "દૂધીનો રસ + આદું + લીંબુ + ફુદીનો", slot: "morning", baseCal: 30, baseP: 1.0, gl: 1, basePortion: "૨૫૦ ml", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "detox", "menopause"], vegItem: "દૂધી", kitchenTip: "દૂધી કડવી ન હોવી જોઈએ. તાજો ક્રશ કરી પીવો." },
+      { id: "morn_flax_infusion", name: "અળસી (Flaxseeds) & તલ ઇન્ફ્યુઝન વોટર", slot: "morning", baseCal: 35, baseP: 1.5, gl: 1, basePortion: "૨૫૦ ml", diet: "veg", tags: ["veg", "low_gi", "menopause", "bone_health"], vegItem: "-", kitchenTip: "રાત્રે ૧ ચમચી અળસી પલાળી સવારે નવશેકા પાણી સાથે લેવી." },
+      { id: "morn_amla_cumin", name: "આમળા રસ + જીરાવાળું નવશેકું પાણી", slot: "morning", baseCal: 20, baseP: 0.4, gl: 1, basePortion: "૨૫૦ ml", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "detox", "diabetes"], vegItem: "આમળાં", kitchenTip: "૨૦ml આમળા રસ જીરા પાઉડર સાથે લેવો." },
+      
       // Breakfast
-      { id: "bf_moong_chila", name: "મગની દાળનો ચીલો + તાજું પનીર", slot: "breakfast", baseCal: 240, baseP: 15.0, gl: 6, basePortion: "૨ ચીલા + ૫૦g પનીર", diet: "veg", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati"], proteinItem: "મગની દાળ, પનીર", kitchenTip: "નોન-સ્ટીક કે કાસ્ટ આયર્ન તવા પર અડધી ચમચી તેલથી ચીલો શેકવો. વચ્ચે પનીરનું છીણ ભરીને સર્વ કરવો." },
-      { id: "bf_moth_salad", name: "ફણગાવેલા બાફેલા મઠની ચાટ + કાકડી-ટામેટાં", slot: "breakfast", baseCal: 170, baseP: 11.0, gl: 5, basePortion: "૧૫૦g મોટો બાઉલ", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "gujarati"], proteinItem: "ફણગાવેલા મઠ", kitchenTip: "મઠને હળવા બાફી લેવા. કાચી કાકડી, ટામેટાં, લીંબુ અને લીલા ધાણા મિક્સ કરવા. તેલ કે તેલવાળો વઘાર બિલકુલ ન કરવો." },
-      { id: "bf_besan_methi_chila", name: "બેસન-મેથી ચીલો + ગ્રીલ્ડ પનીર ક્યુબ્સ", slot: "breakfast", baseCal: 250, baseP: 16.0, gl: 7, basePortion: "૨ ચીલા + ૫૦g પનીર", diet: "veg", tags: ["veg", "high_protein", "low_gi", "gujarati", "workout_friendly"], proteinItem: "બેસન, પનીર", kitchenTip: "બેસનમાં પુષ્કળ તાજી ઝીણી સમારેલી મેથી અને અજમો ઉમેરવો, જેથી પાચન સારું રહે." },
-      { id: "bf_sprout_chana", name: "ફણગાવેલા ચણા + લીંબુ મરી અને ધાણા", slot: "breakfast", baseCal: 180, baseP: 10.0, gl: 6, basePortion: "૧ બાઉલ (૧૫૦g)", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "liver_friendly"], proteinItem: "દેશી ચણા", kitchenTip: "ચણાને કૂકરમાં ૧ સીટી વગાડી બાફી લેવા જેથી પેટમાં ગેસ ન થાય." },
-      { id: "bf_muthiya_steam", name: "દૂધી-મેથીના સ્ટીમ્ડ મુઠીયા (ઓછા તેલમાં)", slot: "breakfast", baseCal: 160, baseP: 6.0, gl: 7, basePortion: "૫ પીસ", diet: "veg", tags: ["veg", "low_fat", "liver_friendly", "gujarati"], vegItem: "દૂધી, મેથી", kitchenTip: "મુઠીયા સ્ટીમ કર્યા પછી તળવા નહીં. માત્ર ૧ નાની ચમચી તેલમાં રાઈ અને તલનો હળવો વઘાર કરવો." },
-      { id: "bf_oats_chila_paneer", name: "ઓટ્સ-પાલક ચીલો + ગ્રીલ્ડ પનીર", slot: "breakfast", baseCal: 230, baseP: 14.5, gl: 6, basePortion: "૨ ચીલા + ૪૦g પનીર", diet: "veg", tags: ["veg", "high_protein", "low_gi"], proteinItem: "ઓટ્સ, પનીર", kitchenTip: "ઓટ્સને પીસીને પાલકની પ્યુરી સાથે મિક્સ કરીને ખીરું બનાવવું." },
-      { id: "bf_tofu_bhurji", name: "ટોફૂ શાકભાજી ભુરજી + સલાડ", slot: "breakfast", baseCal: 210, baseP: 16.0, gl: 4, basePortion: "૧૨૦g ભુરજી", diet: "veg", tags: ["veg", "high_protein", "low_carb", "liver_friendly"], proteinItem: "ટોફૂ", kitchenTip: "૧ ચમચી ઓલિવ કે તલના તેલમાં જીરું, ડુંગળી, શિમલા મિર્ચ અને ક્રશ કરેલું ટોફૂ હળદર સાથે સાંતળવું." },
-      { id: "bf_egg_omlet_veggies", name: "૨ ઈંડાનો ઓમલેટ (પાલક-ટામેટાં સાથે)", slot: "breakfast", baseCal: 210, baseP: 14.0, gl: 2, basePortion: "૨ ઈંડા", diet: "egg", tags: ["egg", "high_protein", "low_carb"], proteinItem: "ઈંડા", kitchenTip: "માખણને બદલે ૧ ટીસ્પૂન તેલમાં પુષ્કળ પાલક નાખી ઓમલેટ બનાવવો." },
+      { id: "bf_moong_chila", name: "મગની દાળનો ચીલો + તાજું પનીર", slot: "breakfast", baseCal: 240, baseP: 15.0, gl: 6, basePortion: "૨ ચીલા + ૫૦g પનીર", diet: "veg", tags: ["veg", "high_protein", "low_gi", "diabetes", "gujarati"], proteinItem: "મગ દાળ, પનીર", kitchenTip: "તવા પર ૧/૨ ચમચી તેલથી શેકવો." },
+      { id: "bf_soya_methi_chila", name: "સોયા-મેથી ચીલો + શેકેલા તલ (Phytoestrogen Rich)", slot: "breakfast", baseCal: 235, baseP: 16.0, gl: 5, basePortion: "૨ ચીલા + ૧ ચમચી તલ", diet: "veg", tags: ["veg", "high_protein", "menopause", "bone_health"], proteinItem: "સોયા, તલ", kitchenTip: "મેનોપોઝ હોર્મોન્સ બેલેન્સ માટે અતિ ઉત્તમ." },
+      { id: "bf_moth_salad", name: "ફણગાવેલા બાફેલા મઠની ચાટ + કાકડી-ટામેટાં", slot: "breakfast", baseCal: 170, baseP: 11.0, gl: 5, basePortion: "૧૫૦g મોટો બાઉલ", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "diabetes"], proteinItem: "મઠ", kitchenTip: "તેલ વગર માત્ર લીંબુ-ધાણા સાથે બનાવવી." },
+      { id: "bf_muthiya_steam", name: "દૂધી-મેથીના સ્ટીમ્ડ મુઠીયા (ઓછા તેલમાં)", slot: "breakfast", baseCal: 160, baseP: 6.0, gl: 7, basePortion: "૫ પીસ", diet: "veg", tags: ["veg", "low_fat", "liver_friendly", "menopause"], vegItem: "દૂધી, મેથી", kitchenTip: "તળવા નહીં, માત્ર રાઈ-તલનો હળવો વઘાર કરવો." },
 
       // Lunch
-      { id: "ln_jowar_palak_paneer", name: "સલાડ પ્લેટ + જુવાર રોટલો + પાલક પનીર + મોળી છાશ", slot: "lunch", baseCal: 370, baseP: 19.0, gl: 9, basePortion: "૧ રોટલો + ૧૫૦g શાક + છાશ", diet: "veg", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati", "barrier_plate"], vegItem: "પાલક", proteinItem: "પનીર, છાશ", kitchenTip: "પાલક પનીરમાં ક્રીમ કે કાજુ પેસ્ટ ન નાખવી. પહેલાં સલાડ પૂરું કરવું, પછી રોટલો અને શાક લેવું." },
-      { id: "ln_bajra_methi_dal", name: "કાકડી-બીટ સલાડ + બાજરી રોટલો + મેથી ભાજી + મગ દાળ + છાશ", slot: "lunch", baseCal: 360, baseP: 16.0, gl: 10, basePortion: "૧ રોટલો + વાટકી દાળ + શાક", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "gujarati", "barrier_plate"], vegItem: "મેથી, કાકડી", proteinItem: "મગની દાળ, છાશ", kitchenTip: "મગની દાળ ફોતરાવાળી રાખવી. બાજરીનો રોટલો ઘી વગર કે માત્ર અડધી ચમચી ઘી સાથે લેવો." },
-      { id: "ln_soya_curry_roti", name: "સોયા ચંક્સ કરી + મલ્ટી-મિલેટ રોટલી + સલાડ + છાશ", slot: "lunch", baseCal: 390, baseP: 27.0, gl: 8, basePortion: "૨ રોટલી + ૬૦g સોયા + છાશ", diet: "veg", tags: ["veg", "high_protein", "workout_friendly", "barrier_plate"], proteinItem: "સોયા ચંક્સ, છાશ", kitchenTip: "સોયા ચંક્સને ગરમ પાણીમાં મીઠું નાખી ૨ વાર નીચોવી લેવા જેથી સોયાની સ્મેલ નીકળી જાય. ટામેટાંની ગ્રેવીમાં રાંધવા." },
-      { id: "ln_tofu_tindora_roti", name: "ટોફૂ ટીંડોળા શાક + ૧ જુવાર રોટલો + સલાડ + છાશ", slot: "lunch", baseCal: 340, baseP: 18.0, gl: 8, basePortion: "૧ રોટલો + ૧૫૦g શાક + છાશ", diet: "veg", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati", "barrier_plate"], vegItem: "ટીંડોળા", proteinItem: "ટોફૂ, છાશ", kitchenTip: "ટીંડોળા લાંબા કાપી ઓછા તેલમાં ઢાંકીને સ્ટીમથી ચડવવા. છેલ્લે ટોફૂ ક્યુબ્સ ઉમેરવા." },
-      { id: "ln_drumstick_curry_roti", name: "સરગવાની કરી (Drumstick) + જવની રોટલી + સલાડ + છાશ", slot: "lunch", baseCal: 330, baseP: 14.0, gl: 7, basePortion: "૨ રોટલી + શાક + છાશ", diet: "veg", tags: ["veg", "high_fiber", "liver_friendly", "low_gi", "gujarati", "barrier_plate"], vegItem: "સરગવો", proteinItem: "છાશ", kitchenTip: "સરગવાને બાફીને છાશ અને ચણાના લોટની કઢીમાં રાંધવો (ગોળ/ખાંડ વગર)." },
-      { id: "ln_bhindi_moong_dal", name: "ઓછા તેલમાં ભીંડાનું શાક + બાજરી રોટલો + મગની દાળ", slot: "lunch", baseCal: 350, baseP: 15.0, gl: 9, basePortion: "૧ રોટલો + દાળ + શાક", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "gujarati", "barrier_plate"], vegItem: "ભીંડા", proteinItem: "મગની દાળ", kitchenTip: "ભીંડાને ધોઈને સંપૂર્ણ કોરા કરી કાપવા જેથી ચીકાશ ન થાય અને તેલ ઓછું બળે." },
-      { id: "ln_choli_sabzi_roti", name: "લીલી ચોળીનું શાક + ૧ જુવાર રોટલો + કાકડી-ગાજર સલાડ + છાશ", slot: "lunch", baseCal: 345, baseP: 15.5, gl: 8, basePortion: "૧ રોટલો + શાક + છાશ", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "gujarati"], vegItem: "ચોળી", proteinItem: "છાશ", kitchenTip: "લીલી ચોળીમાં લસણ-મરચાંનો સાદો વઘાર કરવો, ગળપણ ઉમેરવું નહીં." },
-      { id: "ln_chicken_salad_roti", name: "ગ્રીલ્ડ ચિકન બ્રેસ્ટ + ૧ જુવાર રોટલો + કાકડી સલાડ", slot: "lunch", baseCal: 380, baseP: 32.0, gl: 6, basePortion: "૧૨૦g ચિકન + ૧ રોટલો", diet: "nonveg", tags: ["nonveg", "high_protein", "low_gi"], proteinItem: "ચિકન", kitchenTip: "ચિકનને દહીં અને લીંબુ-આદું સાથે મેરીનેટ કરી તવા પર ગ્રીલ કરવું." },
+      { id: "ln_jowar_palak_paneer", name: "સલાડ પ્લેટ + જુવાર રોટલો + પાલક પનીર + મોળી છાશ", slot: "lunch", baseCal: 370, baseP: 19.0, gl: 9, basePortion: "૧ રોટલો + ૧૫૦g શાક + છાશ", diet: "veg", tags: ["veg", "high_protein", "low_gi", "diabetes", "barrier_plate"], vegItem: "પાલક", proteinItem: "પનીર, છાશ", kitchenTip: "પહેલાં સલાડ પૂરું કરવું, પછી રોટલો લેવો." },
+      { id: "ln_ragi_soya_curry", name: "રાગી રોટલો + સોયા-પાલક કરી + અળસી છાશ (Calcium Rich)", slot: "lunch", baseCal: 365, baseP: 22.0, gl: 8, basePortion: "૧ રોટલો + વાટકી શાક + છાશ", diet: "veg", tags: ["veg", "high_protein", "menopause", "bone_health"], vegItem: "પાલક", proteinItem: "સોયા, છાશ", kitchenTip: "હાડકાંની મજબૂતી અને હોર્મોન્સ માટે રાગી અને સોયા શ્રેષ્ઠ છે." },
+      { id: "ln_bajra_methi_dal", name: "કાકડી-બીટ સલાડ + બાજરી રોટલો + મેથી ભાજી + મગ દાળ + છાશ", slot: "lunch", baseCal: 360, baseP: 16.0, gl: 10, basePortion: "૧ રોટલો + વાટકી દાળ + શાક", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "diabetes"], vegItem: "મેથી", proteinItem: "મગ દાળ", kitchenTip: "મગ દાળ ફોતરાવાળી રાખવી." },
 
       // Snack
-      { id: "sn_roasted_makhana", name: "સિંધવ મીઠાવાળા શેકેલા મખાના", slot: "snack", baseCal: 110, baseP: 3.5, gl: 5, basePortion: "૨૫g", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "low_fat"], proteinItem: "મખાના", kitchenTip: "ધીમી આંચે તવા પર ક્રિસ્પી શેકીને સિંધવ મીઠું અને મરી પાવડર નાખવો." },
-      { id: "sn_chana_chaas", name: "શેકેલા ચણા + જીરા છાશ", slot: "snack", baseCal: 150, baseP: 9.0, gl: 4, basePortion: "૩૦g ચણા + ૧ ગ્લાસ છાશ", diet: "veg", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati"], proteinItem: "ચણા, છાશ", kitchenTip: "છાશમાં શેકેલું જીરું અને સિંધવ મીઠું નાખવું, બરફ વાપરવો નહીં." },
-      { id: "sn_guava_fruit", name: "તાજો જામફળ + સિંધવ મીઠું", slot: "snack", baseCal: 68, baseP: 2.5, gl: 3, basePortion: "૧ મધ્યમ જામફળ (૧૦૦g)", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "liver_friendly"], vegItem: "જામફળ", kitchenTip: "જામફળ વધુ પડતું પાકેલું ન હોવું જોઈએ, થોડું કડક જામફળ સુગર માટે ઉત્તમ છે." },
-      { id: "sn_papaya_slices", name: "તાજા પપૈયાના પીસ + લીંબુનો રસ", slot: "snack", baseCal: 60, baseP: 1.0, gl: 5, basePortion: "૧ નાની પ્લેટ (૧૨૦g)", diet: "veg", tags: ["veg", "liver_friendly", "digestive"], vegItem: "પપૈયું", kitchenTip: "પપૈયા પર અડધા લીંબુનો રસ નીચોવીને ખાવું જેથી પાચન ઝડપી બને." },
-      { id: "sn_cucumber_peanut", name: "કાકડી-ટામેટાં કચુંબર + બાફેલી સીંગદાણા", slot: "snack", baseCal: 130, baseP: 5.5, gl: 2, basePortion: "૧ બાઉલ + ૨૦g સીંગ", diet: "veg", tags: ["veg", "healthy_fat", "low_gi"], proteinItem: "સીંગદાણા", kitchenTip: "સીંગદાણા મીઠા વગર કૂકરમાં બાફીને કાકડીની કચુંબરમાં મિક્સ કરવા." },
+      { id: "sn_roasted_makhana", name: "સિંધવ મીઠાવાળા શેકેલા મખાના", slot: "snack", baseCal: 110, baseP: 3.5, gl: 5, basePortion: "૨૫g", diet: "veg", tags: ["veg", "low_gi", "diabetes", "liver_friendly"], proteinItem: "મખાના", kitchenTip: "ડ્રાય રોસ્ટ કરવા." },
+      { id: "sn_pumpkin_flax_mix", name: "કોળાના બીજ (Pumpkin) + શેકેલી અળસી ચાટ", slot: "snack", baseCal: 125, baseP: 5.0, gl: 3, basePortion: "૨૫g મિક્સ", diet: "veg", tags: ["veg", "menopause", "healthy_fat"], proteinItem: "કોળાના બીજ", kitchenTip: "મેગ્નેશિયમથી ભરપૂર, ઊંઘ અને મૂડ સુધારે." },
 
       // Dinner
-      { id: "dn_pumpkin_soup_paneer", name: "ગરમ દૂધી-કોળાનો સૂપ + ગ્રીલ્ડ પનીર ક્યુબ્સ", slot: "dinner", baseCal: 230, baseP: 15.0, gl: 3, basePortion: "મોટો બાઉલ સૂપ + ૬૦g પનીર", diet: "veg", tags: ["veg", "high_protein", "low_carb", "liver_friendly", "light_dinner"], vegItem: "કોળું, દૂધી", proteinItem: "પનીર", kitchenTip: "કોળું-દૂધી બાફી બ્લેન્ડ કરવું. કોર્નફ્લોર કે મેંદો બિલકુલ ન નાખવો. ઉપર ગ્રીલ્ડ પનીર ક્યુબ્સ નાખી ગરમ પીવો." },
-      { id: "dn_spinach_soup_sprouts", name: "પાલક-આદું સૂપ + બાફેલા ફણગાવેલા મગ", slot: "dinner", baseCal: 195, baseP: 12.5, gl: 4, basePortion: "મોટો બાઉલ + ૧૦૦g મગ", diet: "veg", tags: ["veg", "high_fiber", "liver_friendly", "low_gi", "light_dinner"], vegItem: "પાલક, આદું", proteinItem: "મગ", kitchenTip: "પાલકને ૧ મિનિટ બ્લાન્ચ કરી આદું અને લસણ સાથે પીસી ગરમ સૂપ બનાવવો." },
-      { id: "dn_tofu_broccoli_stirfry", name: "ટોફૂ અને બ્રોકોલી-શિમલા મિર્ચ સૌતે", slot: "dinner", baseCal: 215, baseP: 16.5, gl: 2, basePortion: "૧૨૦g ટોફૂ + ૧૦૦g શાક", diet: "veg", tags: ["veg", "high_protein", "workout_friendly", "liver_friendly"], vegItem: "બ્રોકોલી", proteinItem: "ટોફૂ", kitchenTip: "તવા પર ૧ ચમચી તેલમાં બ્રોકોલી ક્રિસ્પી સાંતળવી, વધારે ગળવા ન દેવી." },
-      { id: "dn_bottle_gourd_soup_chana", name: "દૂધી-ટામેટાં સૂપ + બાફેલા કાબુલી ચણા ચાટ", slot: "dinner", baseCal: 200, baseP: 11.0, gl: 5, basePortion: "સૂપ + ૮૦g ચણા", diet: "veg", tags: ["veg", "high_fiber", "liver_friendly", "light_dinner"], vegItem: "દૂધી, ટામેટાં", proteinItem: "કાબુલી ચણા", kitchenTip: "દૂધી-ટામેટાંનો ગાળ્યા વગરનો જાડો સૂપ પીવો સાથે બાફેલા ચણા લેવા." },
-      { id: "dn_moong_soup_veggies", name: "મગનું ઓસામણ/સૂપ + સૌતે શાકભાજી + પનીર", slot: "dinner", baseCal: 225, baseP: 14.0, gl: 4, basePortion: "બાઉલ સૂપ + ૫૦g પનીર", diet: "veg", tags: ["veg", "high_protein", "liver_friendly", "gujarati"], vegItem: "મિક્સ શાકભાજી", proteinItem: "પનીર", kitchenTip: "આખા મગ બાફી તેનું પાણી (ઓસામણ) જીરું અને લીમડાનો હળવો વઘાર કરી સૂપ તરીકે પીવું." }
+      { id: "dn_pumpkin_soup_paneer", name: "ગરમ દૂધી-કોળાનો સૂપ + ગ્રીલ્ડ પનીર ક્યુબ્સ", slot: "dinner", baseCal: 230, baseP: 15.0, gl: 3, basePortion: "મોટો બાઉલ સૂપ + ૬૦g પનીર", diet: "veg", tags: ["veg", "high_protein", "low_carb", "diabetes", "liver_friendly"], vegItem: "દૂધી, કોળું", proteinItem: "પનીર", kitchenTip: "કોર્નફ્લોર વગરનો સૂપ બનાવવો." },
+      { id: "dn_spinach_tofu_stirfry", name: "પાલક-બ્રોકોલી સૂપ + સોયા ટોફૂ સૌતે", slot: "dinner", baseCal: 210, baseP: 16.0, gl: 2, basePortion: "બાઉલ સૂપ + ૧૦૦g ટોફૂ", diet: "veg", tags: ["veg", "high_protein", "menopause", "bone_health"], vegItem: "પાલક, બ્રોકોલી", proteinItem: "ટોફૂ", kitchenTip: "ઓલિવ ઓઇલમાં હળવું સાંતળવું." }
     ];
-
-    const PROTOCOL_RULES = {
-      diabetes: { maxMealGL: 10, forbiddenTags: ["high_sugar", "refined_carbs", "fried"], reasonChip: "✔ ડાયાબિટીસ: ગ્લાયસેમિક લોડ (GL ≤ 10)" },
-      fatty_liver: { forbiddenTags: ["fried", "high_sugar"], reasonChip: "✔ લિવર: તેલ-ખાંડ મુક્ત ડિટોક્સ" },
-      gym: { reasonChip: "✔ જિમ: મસલ રિકવરી પ્રોટીન" },
-      fat_loss: { forbiddenTags: ["fried", "high_sugar"], reasonChip: "✔ ફેટ લોસ: કેલરી ડેફિસિટ" }
-    };
 
     function calculateClientTargets(profile) {
       const weight = Number(profile.weight) || 75;
@@ -588,7 +478,6 @@
       const gender = profile.gender || 'male';
       const activity = profile.activity || 'light';
       const goals = profile.conditions || ['diabetes'];
-      const kidneyIssue = profile.kidneyIssue || false;
 
       let bmr = (10 * weight) + (6.25 * height) - (5 * age);
       bmr = (gender === 'male') ? bmr + 5 : bmr - 161;
@@ -597,33 +486,24 @@
       const tdee = Math.round(bmr * (actMultipliers[activity] || 1.375));
 
       let targetCal = tdee;
-      let proteinPerKg = kidneyIssue ? 0.8 : 1.2;
+      let proteinPerKg = 1.2;
       let focusTag = "Metabolic Care";
 
-      if (goals.includes('gym')) {
-        targetCal = tdee + 250;
-        proteinPerKg = kidneyIssue ? 1.0 : 1.8;
-        focusTag = "Hypertrophy & High Protein";
-      } else if (goals.includes('fat_loss')) {
-        targetCal = Math.max(gender === 'male' ? 1450 : 1200, tdee - 450);
-        proteinPerKg = kidneyIssue ? 0.9 : 1.6;
-        focusTag = "Fat Loss & Deficit";
+      if (goals.includes('menopause')) {
+        targetCal = Math.max(1300, tdee - 250);
+        proteinPerKg = 1.3;
+        focusTag = "Hormone & Bone Health";
       } else if (goals.includes('diabetes')) {
-        targetCal = Math.max(gender === 'male' ? 1400 : 1200, tdee - 300);
-        proteinPerKg = kidneyIssue ? 0.8 : 1.25;
+        targetCal = Math.max(1350, tdee - 300);
+        proteinPerKg = 1.25;
         focusTag = "Low Glycemic Stability";
-      } else if (goals.includes('fatty_liver')) {
-        targetCal = Math.max(gender === 'male' ? 1400 : 1200, tdee - 350);
-        proteinPerKg = kidneyIssue ? 0.8 : 1.2;
-        focusTag = "Liver Detox & Clean Fat";
       }
 
-      const scaleFactor = targetCal / 1500;
       return {
         targetCal: Math.round(targetCal),
         targetProtein: Math.round(weight * proteinPerKg),
         focusTag,
-        scaleFactor: Math.min(Math.max(scaleFactor, 0.8), 1.4)
+        scaleFactor: Math.min(Math.max(targetCal / 1500, 0.8), 1.4)
       };
     }
 
@@ -640,25 +520,10 @@
 
     function getCandidatesForSlot(slot, clientGoals, clientPrefs, clientDiet = 'veg', excludeId = null) {
       const candidates = CLINICAL_FOOD_DB.filter(f => f.slot === slot);
-      const allergies = (clientPrefs?.allergies || []).map(a => a.toLowerCase().trim()).filter(a => a.length > 0);
-
       const filtered = candidates.filter(item => {
         if (excludeId && item.id === excludeId) return false;
         if (clientDiet === 'veg' && item.diet !== 'veg') return false;
-        if (clientDiet === 'egg' && item.diet === 'nonveg') return false;
-
-        const itemName = item.name.toLowerCase();
-        if (allergies.some(a => itemName.includes(a))) return false;
-
-        if (clientGoals.includes('diabetes')) {
-          if (item.gl > PROTOCOL_RULES.diabetes.maxMealGL) return false;
-          if (item.tags.some(t => PROTOCOL_RULES.diabetes.forbiddenTags.includes(t))) return false;
-        }
-
-        if (clientGoals.includes('fatty_liver')) {
-          if (item.tags.some(t => PROTOCOL_RULES.fatty_liver.forbiddenTags.includes(t))) return false;
-        }
-
+        if (clientGoals.includes('diabetes') && item.gl > 10) return false;
         return true;
       });
 
@@ -666,32 +531,22 @@
     }
 
     function generateDayMenu(dateKey, client) {
-      const goals = client.conditions || ['diabetes', 'fatty_liver'];
-      const prefs = client.preferences || { cuisine: client.cuisine || 'gujarati', allergies: [] };
+      const goals = client.conditions || ['diabetes'];
+      const prefs = client.preferences || {};
       const diet = client.diet || 'veg';
       const targets = calculateClientTargets(client);
 
       const dObj = parseDateKey(dateKey);
       const dayOfYear = Math.floor((dObj - new Date(dObj.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
-
-      let slots = ['morning', 'breakfast', 'lunch', 'snack', 'dinner'];
-      if (goals.includes('gym')) {
-        slots.splice(1, 0, 'pre_workout');
-        slots.splice(3, 0, 'post_workout');
-      }
-
+      const slots = ['morning', 'breakfast', 'lunch', 'snack', 'dinner'];
       const savedSwaps = client.compliance?.[dateKey]?.swaps || {};
       const plan = {};
 
       slots.forEach((slot, sIdx) => {
         if (savedSwaps[slot]) {
-          const swappedDish = CLINICAL_FOOD_DB.find(f => f.id === savedSwaps[slot]);
-          if (swappedDish) {
-            plan[slot] = scaleDishPortion(swappedDish, targets.scaleFactor);
-            return;
-          }
+          const swapped = CLINICAL_FOOD_DB.find(f => f.id === savedSwaps[slot]);
+          if (swapped) { plan[slot] = scaleDishPortion(swapped, targets.scaleFactor); return; }
         }
-
         const pool = getCandidatesForSlot(slot, goals, prefs, diet);
         const chosen = pool[(dayOfYear + (sIdx * 3)) % pool.length];
         plan[slot] = scaleDishPortion(chosen, targets.scaleFactor);
@@ -725,12 +580,56 @@
       return weekDates;
     }
 
+    // --- VCF CONTACT GENERATOR (One-Click Save Coach) ---
+    function downloadCoachVCard() {
+      const vcardData = `BEGIN:VCARD
+VERSION:3.0
+FN:${COACH_NAME}
+TEL;TYPE=CELL,VOICE:+${COACH_PHONE}
+ORG:Metabolic Pro Clinical Health
+TITLE:Clinical Nutrition Coach
+NOTE:Metabolic Pro Verified Coach
+END:VCARD`;
+
+      const blob = new Blob([vcardData], { type: 'text/vcard;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'Metabolic_Pro_Coach.vcf');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function sendActivationHi() {
+      const msg = `Hi Coach! I have registered on Metabolic Pro.\nName: *${currentClient.name}*\nPhone: *${currentClient.phone}*\nPlease activate my 30-day clinical plan!`;
+      window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    async function verifyActivationDone() {
+      if(!currentClient) return;
+      currentClient.whatsappVerified = true;
+      await db.collection('clients').doc(currentClient.phone).update({
+        whatsappVerified: true
+      });
+      document.getElementById('modalActivationGate').classList.add('hidden');
+      openPortal();
+    }
+
     window.addEventListener('DOMContentLoaded', async () => {
       const savedPhone = localStorage.getItem('met_pro_session_phone');
       if (savedPhone) {
         try {
           const doc = await db.collection('clients').doc(savedPhone).get();
-          if (doc.exists) { currentClient = doc.data(); openPortal(); return; }
+          if (doc.exists) { 
+            currentClient = doc.data(); 
+            if (!currentClient.whatsappVerified) {
+              document.getElementById('modalActivationGate').classList.remove('hidden');
+            } else {
+              openPortal(); 
+            }
+            return; 
+          }
         } catch(e) { console.error(e); }
       }
       showAuth();
@@ -769,13 +668,14 @@
         renderUpcomingPlanner();
         generateWeeklyGroceryList();
         renderLabReportsHistory();
-        calculateOverallReports();
       }
     }
 
+    // --- REGISTRATION WITH WEAK PIN VALIDATION ---
     async function handleClientRegister() {
       const name = document.getElementById('regName').value.trim();
       const phone = document.getElementById('regPhone').value.trim().replace(/\D/g, '');
+      const pin = document.getElementById('regPin').value.trim();
       const age = Number(document.getElementById('regAge').value);
       const height = Number(document.getElementById('regHeight').value);
       const weight = Number(document.getElementById('regWeight').value);
@@ -786,13 +686,18 @@
       const cuisine = document.getElementById('regCuisine').value;
       const allergiesInput = document.getElementById('regAllergies').value.trim();
       const allergies = allergiesInput ? allergiesInput.split(',').map(s => s.trim().toLowerCase()) : [];
-      const consent = document.getElementById('regConsent').checked;
       const conditions = Array.from(document.querySelectorAll('input[name="regCondition"]:checked')).map(cb => cb.value);
 
       if (!name || phone.length < 10) return alert('પૂરું નામ અને ૧૦-અંકનો મોબાઈલ નંબર દાખલ કરો.');
+      if (!pin || pin.length !== 4) return alert('કૃપા કરીને ૪-અંકનો સિક્રેટ PIN બનાવો.');
+      
+      // Prohibit Weak PINs
+      if (['1234', '0000', '1111', '2222', '3333', '4444', '9999'].includes(pin)) {
+        return alert(`⚠️ PIN '${pin}' ખૂબ જ નબળો છે! સુરક્ષા માટે કોઈ અલગ ૪ આંકડા પસંદ કરો (દા.ત. જન્મનું વર્ષ).`);
+      }
+
       if (!age || !height || !weight) return alert('ઉંમર, ઊંચાઈ અને વજનના સાચા આંકડા દાખલ કરો.');
       if (conditions.length === 0) return alert('ઓછામાં ઓછું એક હેલ્થ લક્ષ્ય પસંદ કરો.');
-      if (!consent) return alert('સંમતિ ચેકબોક્સ સ્વીકારવું ફરજિયાત છે.');
 
       const clientRef = db.collection('clients').doc(phone);
       const existing = await clientRef.get();
@@ -803,16 +708,14 @@
         return;
       }
 
-      const pin = phone.slice(-4) || '1234';
       const newClientData = {
         name, phone, pin, age, height, weight, gender, activity, diet,
         kidneyIssue, conditions,
         preferences: { cuisine, allergies, swapScores: {} },
         goal: conditions.join(' + '),
-        tier: 'trial',
         trialDays: 30,
+        whatsappVerified: false, // Must pass gate
         joiningDate: getTodayDateKey(),
-        refCode: 'CL-' + phone.slice(-4),
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         compliance: {},
         labReports: []
@@ -821,8 +724,9 @@
       await clientRef.set(newClientData);
       currentClient = newClientData;
       localStorage.setItem('met_pro_session_phone', phone);
-      alert(`🎉 સ્વાગત છે ${esc(name)}! તમારો પર્સનલાઇઝ્ડ પ્લાન સક્રિય થયો છે. (PIN: ${pin})`);
-      openPortal();
+      
+      document.getElementById('authView').classList.add('hidden');
+      document.getElementById('modalActivationGate').classList.remove('hidden');
     }
 
     async function handleClientLogin() {
@@ -838,27 +742,20 @@
 
       currentClient = data;
       localStorage.setItem('met_pro_session_phone', input);
-      openPortal();
+
+      if (!currentClient.whatsappVerified) {
+        document.getElementById('authView').classList.add('hidden');
+        document.getElementById('modalActivationGate').classList.remove('hidden');
+      } else {
+        openPortal();
+      }
     }
 
     function logoutClient() { localStorage.removeItem('met_pro_session_phone'); currentClient = null; showAuth(); }
-    function openClientForgotPinModal() { document.getElementById('inClientForgotPhone').value = document.getElementById('loginId').value.trim(); document.getElementById('modalClientForgotPin').classList.remove('hidden'); }
-    function closeClientForgotPinModal() { document.getElementById('modalClientForgotPin').classList.add('hidden'); }
-    
-    async function handleClientSelfResetPin() {
-      const phone = document.getElementById('inClientForgotPhone').value.trim().replace(/\D/g, '');
-      if (phone.length < 10) return alert('Enter valid phone number.');
-      const doc = await db.collection('clients').doc(phone).get();
-      if (!doc.exists) return alert('Phone not registered.');
-
-      const defaultPin = phone.slice(-4) || '1234';
-      await db.collection('clients').doc(phone).update({ pin: defaultPin });
-      alert(`✅ PIN reset: ${defaultPin}`);
-      closeClientForgotPinModal();
-    }
 
     function openPortal() {
       document.getElementById('authView').classList.add('hidden');
+      document.getElementById('modalActivationGate').classList.add('hidden');
       document.getElementById('clientPortalView').classList.remove('hidden');
 
       document.getElementById('cpClientTitle').innerText = currentClient.name;
@@ -874,9 +771,6 @@
       const container = document.getElementById('cpDateGridButtons');
       container.innerHTML = '';
       const todayKey = getTodayDateKey();
-      const joiningKey = currentClient.joiningDate || todayKey;
-      const isLifetimeVIP = (currentClient.trialDays >= 900);
-      const isFutureWeek = (weekOffset > 0);
 
       weekDates.forEach(d => {
         const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -884,18 +778,13 @@
         const dayShort = DAY_NAMES[d.getDay()].substring(0, 3);
         const isSelected = (dateKey === selectedDateKey);
         const isToday = (dateKey === todayKey);
-        const isBeforeJoining = (dateKey < joiningKey);
 
         const btn = document.createElement('button');
-        if (isBeforeJoining || (!isLifetimeVIP && isFutureWeek)) {
-          btn.className = "py-2 px-1 rounded-2xl bg-slate-100 text-slate-300 border border-slate-200 text-xs flex flex-col items-center justify-center cursor-not-allowed";
-          btn.onclick = () => alert(isBeforeJoining ? "🔒 જોડાવાની તારીખ પહેલાંનો રેકોર્ડ." : "🔒 આગળના અઠવાડિયા લૉક છે.");
-        } else {
-          btn.onclick = () => selectClientDate(dateKey);
-          if (isSelected) btn.className = "py-2 px-1 rounded-2xl bg-teal-600 text-white font-extrabold text-xs shadow-md flex flex-col items-center justify-center";
-          else if (isToday) btn.className = "py-2 px-1 rounded-2xl bg-teal-50 border-2 border-teal-500 text-teal-800 font-extrabold text-xs flex flex-col items-center justify-center";
-          else btn.className = "py-2 px-1 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-xs flex flex-col items-center justify-center";
-        }
+        btn.onclick = () => selectClientDate(dateKey);
+        if (isSelected) btn.className = "py-2 px-1 rounded-2xl bg-teal-600 text-white font-extrabold text-xs shadow-md flex flex-col items-center justify-center";
+        else if (isToday) btn.className = "py-2 px-1 rounded-2xl bg-teal-50 border-2 border-teal-500 text-teal-800 font-extrabold text-xs flex flex-col items-center justify-center";
+        else btn.className = "py-2 px-1 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-xs flex flex-col items-center justify-center";
+        
         btn.innerHTML = `<span class="text-[9px] uppercase tracking-wider ${isSelected ? 'text-teal-100' : 'text-slate-400'}">${dayShort}</span><span class="text-sm font-black leading-tight mt-0.5">${dayNumber}</span>`;
         container.appendChild(btn);
       });
@@ -916,7 +805,7 @@
       
       const comp = currentClient.compliance[selectedDateKey] || { water: 0, metric1: '', metric2: '', note: '', weight: '', waist: '', extras: [], checks: {}, swaps: {} };
 
-      // Water Hydration
+      // Water
       const waterVal = comp.water || 0;
       document.getElementById('cpWaterCount').innerText = waterVal.toFixed(2) + ' / 3.0 Liters';
       document.getElementById('cpWaterBar').style.width = Math.min((waterVal / 3.0) * 100, 100) + '%';
@@ -925,13 +814,10 @@
       const targets = calculateClientTargets(currentClient);
       document.getElementById('cpFocusTag').innerText = targets.focusTag;
 
-      // Always fresh generate to never lose cards
       const plan = generateDayMenu(selectedDateKey, currentClient);
 
       renderPlanReasonChips();
-      renderWorkoutSugarGuard();
-      checkMedicationReviewTrigger();
-      checkMetabolicResetTrigger();
+      renderAdaptiveVitalsInputs(comp);
       renderExtrasList(comp.extras || []);
 
       let totalDayCalories = 0;
@@ -945,12 +831,10 @@
 
       const slotLabels = {
         morning: { time: 'સવારે ખાલી પેટે', label: '🌅 ૧. મોર્નિંગ ડિટોક્સ ઇન્ફ્યુઝન' },
-        pre_workout: { time: 'વર્કઆઉટ પહેલાં (Pre-Workout)', label: '⚡ ૨. પ્રી-વર્કઆઉટ ફ્યુઅલ' },
-        post_workout: { time: 'વર્કઆઉટ પછી (Post-Workout)', label: '💪 ૩. પોસ્ટ-વર્કઆઉટ રિકવરી' },
-        breakfast: { time: 'સવારનો નાસ્તો', label: '🥗 ૪. પૌષ્ટિક સવારનો નાસ્તો' },
-        lunch: { time: 'બપોરનું ભોજન', label: '🍲 ૫. બપોરનું ગ્લાયસેમિક બેરિયર ભોજન' },
-        snack: { time: 'સાંજનો નાસ્તો (૪-૫ PM)', label: '🥜 ૬. સાંજનો એન્ટિ-ક્રેવિંગ નાસ્તો' },
-        dinner: { time: 'રાત્રિ ભોજન (૮:૩૦ પહેલાં)', label: '🥣 ૭. હળવું સુપાચ્ય રાત્રિ ભોજન' }
+        breakfast: { time: 'સવારનો નાસ્તો', label: '🥗 ૨. પૌષ્ટિક સવારનો નાસ્તો' },
+        lunch: { time: 'બપોરનું ભોજન', label: '🍲 ૩. બપોરનું પોષક ભોજન' },
+        snack: { time: 'સાંજનો નાસ્તો', label: '🥜 ૪. સાંજનો નાસ્તો' },
+        dinner: { time: 'રાત્રિ ભોજન', label: '🥣 ૫. સુપાચ્ય રાત્રિ ભોજન' }
       };
 
       const planSlots = Object.keys(plan);
@@ -966,9 +850,8 @@
           const currentCheck = comp.checks?.[slotKey] || 'idle';
           if(currentCheck === 'done') { scorePoints += 100; markedCount++; }
           else if(currentCheck === 'half') { scorePoints += 50; markedCount++; }
-          else if(currentCheck === 'miss') { scorePoints += 0; markedCount++; }
 
-          const meta = slotLabels[slotKey] || { time: 'મીલ સ્લોટ', label: 'ભોજન' };
+          const meta = slotLabels[slotKey] || { time: 'મીલ', label: 'ભોજન' };
           const card = document.createElement('div');
           card.className = "card-clean p-4 rounded-3xl space-y-2.5 border border-slate-200 shadow-sm";
           card.innerHTML = `
@@ -987,9 +870,7 @@
             <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-xs text-slate-800 space-y-1">
               <div class="font-bold leading-relaxed">${esc(dish.name)}</div>
               <div class="flex justify-between items-center pt-1 border-t border-slate-200/60 text-[11px]">
-                <span class="text-teal-800 font-semibold flex items-center gap-1">
-                  <i class="fa-solid fa-scale-balanced text-[10px]"></i> પ્રમાણ: <span class="bg-white px-2 py-0.5 rounded border border-slate-200">${dish.portion || dish.basePortion || '૧ સર્વિંગ'}</span>
-                </span>
+                <span class="text-teal-800 font-semibold">Portion: ${dish.portion || dish.basePortion || '૧ સર્વિંગ'}</span>
                 <button onclick="openKitchenTipsModal('${dish.id}')" class="text-amber-800 hover:text-amber-900 font-bold flex items-center gap-1 text-[10px]">
                   <i class="fa-solid fa-kitchen-set"></i> રસોઈ ટિપ
                 </button>
@@ -1002,285 +883,118 @@
             </div>
           `;
           container.appendChild(card);
-        } catch(err) {
-          console.error(`Slot render error ${slotKey}:`, err);
-        }
+        } catch(e) { console.error(e); }
       });
-
-      // Top-up suggestions
-      const topupBox = document.getElementById('cpTopupContainer');
-      const proteinGap = targets.targetProtein - totalDayProtein;
-      if (proteinGap > 15) {
-        topupBox.className = "p-2 bg-amber-500/20 rounded-xl text-[11px] text-amber-200 font-semibold border border-amber-400/30 block";
-        topupBox.innerHTML = `💡 <b>પ્રોટીન ટોપ-અપ સૂચન:</b> લક્ષ્ય પૂરું કરવા ૧ ગ્લાસ છાશ, ૨૫g શેકેલા ચણા અથવા ૫૦g પનીર સાંજે ઉમેરી શકો છો.`;
-      } else {
-        topupBox.className = "hidden";
-      }
 
       // Score
       const finalScore = markedCount > 0 ? Math.round(scorePoints / planSlots.length) : 0;
       document.getElementById('cpScoreBadge').innerText = finalScore + '%';
 
-      let motivationMsg = "આજના મીલ્સ માર્ક કરો એટલે તમારો સ્કોર અને સ્ટેટસ લાઈવ દેખાશે.";
-      let motiIcon = "💬";
-      if (markedCount > 0) {
-        if (finalScore >= 80) { motivationMsg = "🌟 અદભુત! આજનો પ્રોટોકોલ ખૂબ જ મજબૂતીથી જળવાઈ રહ્યો છે!"; motiIcon = "🏆"; }
-        else if (finalScore >= 50) { motivationMsg = "👍 સારો પ્રયાસ! બાકી રહેલા મીલ્સ સમયસર પૂરા કરી લો."; motiIcon = "🎯"; }
-        else { motivationMsg = "💪 નિયમિતતા જાળવો, શરીર કુદરતી રીતે રીસેટ થશે!"; motiIcon = "🌱"; }
-      }
-      document.getElementById('cpMotivationText').innerText = motivationMsg;
-      document.getElementById('cpMotiIcon').innerText = motiIcon;
-
-      const calPercent = Math.min(Math.round((totalDayCalories / targets.targetCal) * 100), 100);
-      const proPercent = Math.min(Math.round((totalDayProtein / targets.targetProtein) * 100), 100);
-
       document.getElementById('cpConsumedCal').innerText = `${totalDayCalories} / ${targets.targetCal}`;
       document.getElementById('cpProteinStats').innerText = `${Math.round(totalDayProtein)}g / ${targets.targetProtein}g`;
       document.getElementById('cpDailyGi').innerText = 'GL: ' + Math.round(totalDayGl);
-      document.getElementById('cpCalProgress').style.width = calPercent + '%';
-      document.getElementById('cpProteinProgress').style.width = proPercent + '%';
-      document.getElementById('cpCalProgressText').innerText = calPercent + '%';
-      document.getElementById('cpProteinProgressText').innerText = proPercent + '%';
+      document.getElementById('cpCalProgress').style.width = Math.min(Math.round((totalDayCalories / targets.targetCal) * 100), 100) + '%';
+      document.getElementById('cpProteinProgress').style.width = Math.min(Math.round((totalDayProtein / targets.targetProtein) * 100), 100) + '%';
+      document.getElementById('cpCalProgressText').innerText = Math.round((totalDayCalories / targets.targetCal) * 100) + '%';
+      document.getElementById('cpProteinProgressText').innerText = Math.round((totalDayProtein / targets.targetProtein) * 100) + '%';
+    }
 
-      checkSugarAlertBox(comp.metric1, comp.metric2);
+    // --- ADAPTIVE VITALS: Shows Sugar ONLY if Diabetes, shows Hormones/Weight if Menopause ---
+    function renderAdaptiveVitalsInputs(comp) {
+      const container = document.getElementById('dynamicVitalsInputsGrid');
+      const goals = currentClient.conditions || [];
+      const isDiabetes = goals.includes('diabetes');
+      const isMenopause = goals.includes('menopause');
 
-      // Populate Vitals Inputs
-      document.getElementById('cpInM1').value = comp.metric1 || '';
-      document.getElementById('cpInM2').value = comp.metric2 || '';
-      document.getElementById('cpInWeight').value = comp.weight || '';
-      document.getElementById('cpInWaist').value = comp.waist || '';
-      document.getElementById('cpInNote').value = comp.note || '';
+      if (isDiabetes) {
+        container.innerHTML = `
+          <div class="grid grid-cols-4 gap-1.5">
+            <div>
+              <label class="text-[9px] text-slate-500 font-semibold">Fasting Sugar</label>
+              <input type="number" id="cpInM1" oninput="debounceSaveVitals()" value="${esc(comp.metric1||'')}" placeholder="mg/dl" class="w-full bg-slate-50 border p-2 rounded-lg text-xs">
+            </div>
+            <div>
+              <label class="text-[9px] text-slate-500 font-semibold">PP2BS Sugar</label>
+              <input type="number" id="cpInM2" oninput="debounceSaveVitals()" value="${esc(comp.metric2||'')}" placeholder="mg/dl" class="w-full bg-slate-50 border p-2 rounded-lg text-xs">
+            </div>
+            <div>
+              <label class="text-[9px] text-slate-500 font-semibold">વજન (kg)</label>
+              <input type="number" step="0.1" id="cpInWeight" oninput="debounceSaveVitals()" value="${esc(comp.weight||'')}" placeholder="કિલો" class="w-full bg-slate-50 border p-2 rounded-lg text-xs">
+            </div>
+            <div>
+              <label class="text-[9px] text-teal-800 font-bold">કમર (Inches)</label>
+              <input type="number" step="0.5" id="cpInWaist" oninput="debounceSaveVitals()" value="${esc(comp.waist||'')}" placeholder="ઈંચ" class="w-full bg-teal-50 border border-teal-200 p-2 rounded-lg text-xs font-bold text-teal-900">
+            </div>
+          </div>
+        `;
+      } else if (isMenopause) {
+        container.innerHTML = `
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="text-[9px] text-slate-500 font-semibold">હોટ ફ્લેશ / લક્ષણો</label>
+              <select id="cpInM1" onchange="debounceSaveVitals()" class="w-full bg-slate-50 border p-2 rounded-lg text-xs">
+                <option value="કોઈ તકલીફ નથી" ${comp.metric1==='કોઈ તકલીફ નથી'?'selected':''}>કોઈ તકલીફ નથી 😊</option>
+                <option value="હળવા હોટ ફ્લેશ" ${comp.metric1==='હળવા હોટ ફ્લેશ'?'selected':''}>હળવા ફ્લેશ 🌤️</option>
+                <option value="તીવ્ર ગરમી / મૂડ સ્વીંગ" ${comp.metric1==='તીવ્ર ગરમી / મૂડ સ્વીંગ'?'selected':''}>તીવ્ર ગરમી ⚡</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[9px] text-slate-500 font-semibold">વજન (kg)</label>
+              <input type="number" step="0.1" id="cpInWeight" oninput="debounceSaveVitals()" value="${esc(comp.weight||'')}" placeholder="કિલો" class="w-full bg-slate-50 border p-2 rounded-lg text-xs">
+            </div>
+            <div>
+              <label class="text-[9px] text-teal-800 font-bold">કમર (Inches)</label>
+              <input type="number" step="0.5" id="cpInWaist" oninput="debounceSaveVitals()" value="${esc(comp.waist||'')}" placeholder="ઈંચ" class="w-full bg-teal-50 border border-teal-200 p-2 rounded-lg text-xs font-bold text-teal-900">
+            </div>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="text-[9px] text-slate-500 font-semibold">દૈનિક સ્ટેપ્સ</label>
+              <input type="number" id="cpInM1" oninput="debounceSaveVitals()" value="${esc(comp.metric1||'')}" placeholder="8000" class="w-full bg-slate-50 border p-2 rounded-lg text-xs">
+            </div>
+            <div>
+              <label class="text-[9px] text-slate-500 font-semibold">વજન (kg)</label>
+              <input type="number" step="0.1" id="cpInWeight" oninput="debounceSaveVitals()" value="${esc(comp.weight||'')}" placeholder="કિલો" class="w-full bg-slate-50 border p-2 rounded-lg text-xs">
+            </div>
+            <div>
+              <label class="text-[9px] text-teal-800 font-bold">કમર (Inches)</label>
+              <input type="number" step="0.5" id="cpInWaist" oninput="debounceSaveVitals()" value="${esc(comp.waist||'')}" placeholder="ઈંચ" class="w-full bg-teal-50 border border-teal-200 p-2 rounded-lg text-xs font-bold text-teal-900">
+            </div>
+          </div>
+        `;
+      }
     }
 
     function renderPlanReasonChips() {
       const container = document.getElementById('cpPlanReasonChips');
-      container.innerHTML = '<span class="text-teal-900 font-black">🎯 પ્લાન નિયમ:</span>';
-      const goals = currentClient.conditions || ['diabetes'];
-      goals.forEach(g => {
-        if (PROTOCOL_RULES[g]?.reasonChip) {
-          container.innerHTML += `<span class="bg-white px-2 py-0.5 rounded-lg border border-slate-300 text-teal-800">${PROTOCOL_RULES[g].reasonChip}</span>`;
-        }
+      container.innerHTML = '<span class="text-teal-900 font-black">🎯 પ્લાન:</span>';
+      (currentClient.conditions || []).forEach(g => {
+        container.innerHTML += `<span class="bg-white px-2 py-0.5 rounded-lg border text-teal-800">${g.toUpperCase()}</span>`;
       });
     }
 
-    function renderWorkoutSugarGuard() {
-      const box = document.getElementById('cpWorkoutSugarGuardBox');
-      const goals = currentClient.conditions || [];
-      if (goals.includes('gym') && goals.includes('diabetes')) {
-        box.className = "bg-amber-50 border-2 border-amber-300 p-3 rounded-2xl text-xs text-amber-950 space-y-1 block";
-        box.innerHTML = `
-          <div class="font-extrabold flex items-center gap-1.5 text-amber-900">
-            <i class="fa-solid fa-shield-heart text-amber-600"></i> ⚠️ વર્કઆઉટ પૂર્વે શુગર સુરક્ષા નિયમ
-          </div>
-          <p class="text-[11px] leading-tight">
-            કસરત શરૂ કરતાં પહેલાં શુગર તપાસો. જો શુગર <b>૧૦૦ mg/dl થી ઓછી</b> હોય, તો ૧૫ ગ્રામ ઝડપી કાર્બ્સ (૧ કેળું અથવા શેકેલા ચણા) અચૂક લો અને સાથે ગ્લુકોઝ હંમેશા રાખો.
-          </p>
-        `;
-      } else {
-        box.className = "hidden";
-      }
-    }
-
-    // C: METABOLIC RESET / REFEED ALERT TRIGGER
-    function checkMetabolicResetTrigger() {
-      const box = document.getElementById('cpMetabolicResetBox');
-      const comp = currentClient.compliance || {};
-      const dates = Object.keys(comp);
-      // જો ક્લાયન્ટ ૨૮ દિવસ (૪ અઠવાડિયા) થી વધુ એક્ટિવ હોય તો રિફીડ સૂચન
-      if (dates.length >= 28 && dates.length % 28 <= 2) {
-        box.className = "bg-sky-50 border-2 border-sky-300 p-3 rounded-2xl text-xs text-sky-950 space-y-1 block";
-        box.innerHTML = `
-          <div class="font-extrabold flex items-center gap-1.5 text-sky-900">
-            <i class="fa-solid fa-fire-flame-curved text-sky-600"></i> 🔥 મેટાબોલિક રીસેટ દિવસ (Refeed Day Suggestion)
-          </div>
-          <p class="text-[11px] leading-tight">
-            તમે સતત ૪ અઠવાડિયાથી સફળતાપૂર્વક કેલરી ડેફિસિટમાં છો! મેટાબોલિઝમ ધીમું ન પડે તે માટે આજે કેલરીમાં ૨૫૦-૩૦૦ kcal નો હળવો વધારો (૧ વધારાનો રોટલો અથવા દાળ-સલાડ) લઈ શરીરને રીસેટ કરી શકો છો.
-          </p>
-        `;
-      } else {
-        box.className = "hidden";
-      }
-    }
-
-    function checkMedicationReviewTrigger() {
-      const box = document.getElementById('cpMedicationReviewBox');
-      const comp = currentClient.compliance || {};
-      const dates = Object.keys(comp).sort().slice(-5);
-      if (dates.length < 5) { box.className = "hidden"; return; }
-
-      const fastings = dates.map(d => Number(comp[d]?.metric1)).filter(n => !isNaN(n) && n > 0);
-      if (fastings.length === 5 && fastings.every(v => v < 100)) {
-        box.className = "bg-emerald-50 border-2 border-emerald-300 p-3 rounded-2xl text-xs text-emerald-950 space-y-1 block";
-        box.innerHTML = `
-          <div class="font-extrabold flex items-center gap-1.5 text-emerald-900">
-            <i class="fa-solid fa-stethoscope text-emerald-600"></i> 🩺 મેડિકેશન રિવ્યુ સૂચન (ડૉક્ટર સંપર્ક)
-          </div>
-          <p class="text-[11px] leading-tight">
-            તમારી ફાસ્ટિંગ શુગર છેલ્લા ૫ દિવસથી સતત ૧૦૦ થી નીચે આવી રહી છે. કૃપા કરીને તમારા ડૉક્ટર પાસે દવાની સમીક્ષા કરાવો, જેથી ડૉક્ટર જરૂર મુજબ ડોઝ ઘટાડી શકે. કોઈ દવા જાતે બંધ કરવી નહીં.
-          </p>
-        `;
-      } else {
-        box.className = "hidden";
-      }
-    }
-
-    // D: KITCHEN TIPS MODAL FUNCTIONS
     function openKitchenTipsModal(dishId) {
       const dish = CLINICAL_FOOD_DB.find(f => f.id === dishId);
       if(!dish) return;
       document.getElementById('ktDishTitle').innerText = dish.name;
-      document.getElementById('ktDishTips').innerText = dish.kitchenTip || "આ વાનગી ઓછામાં ઓછા તેલ (૧ નાની ચમચી) માં બનાવી ગરમ પીરસવી.";
+      document.getElementById('ktDishTips').innerText = dish.kitchenTip || "૧ નાની ચમચી તેલમાં બનાવવું.";
       document.getElementById('modalKitchenTips').classList.remove('hidden');
     }
-    function closeKitchenTipsModal() {
-      document.getElementById('modalKitchenTips').classList.add('hidden');
-    }
-
-    // A: LAB REPORT MANAGEMENT
-    function saveLabReportModal() {
-      document.getElementById('labInDate').value = getTodayDateKey();
-      document.getElementById('modalAddLabReport').classList.remove('hidden');
-    }
-    function closeAddLabModal() {
-      document.getElementById('modalAddLabReport').classList.add('hidden');
-    }
-
-    async function saveNewLabReportToCloud() {
-      const date = document.getElementById('labInDate').value;
-      const hba1c = document.getElementById('labInHba1c').value.trim();
-      const insulin = document.getElementById('labInInsulin').value.trim();
-      const sgpt = document.getElementById('labInSgpt').value.trim();
-      const tg = document.getElementById('labInTg').value.trim();
-
-      if (!date || (!hba1c && !sgpt)) return alert('તારીખ અને ઓછામાં ઓછું ૧ લેબ મૂલ્ય દાખલ કરો.');
-
-      const newReport = { date, hba1c, insulin, sgpt, tg, createdAt: new Date().toISOString() };
-      if (!currentClient.labReports) currentClient.labReports = [];
-      currentClient.labReports.unshift(newReport);
-
-      await db.collection('clients').doc(currentClient.phone).update({
-        labReports: currentClient.labReports
-      });
-
-      closeAddLabModal();
-      renderLabReportsHistory();
-      alert('લેબ રિપોર્ટ સફળતાપૂર્વક સાચવ્યો! 🧪');
-    }
-
-    function renderLabReportsHistory() {
-      const container = document.getElementById('cpLabReportsList');
-      container.innerHTML = '';
-      const reports = currentClient.labReports || [];
-
-      if (reports.length === 0) {
-        container.innerHTML = `<div class="p-3 bg-slate-50 border rounded-2xl text-center text-slate-400 text-xs">હજી કોઈ લેબ રિપોર્ટ નોંધાયેલ નથી. "+ નવો રિપોર્ટ" પર ક્લિક કરી ઉમેરો.</div>`;
-        return;
-      }
-
-      reports.forEach(r => {
-        container.innerHTML += `
-          <div class="p-2.5 bg-slate-50 rounded-2xl border space-y-1">
-            <div class="flex justify-between items-center font-bold text-slate-800 text-[11px]">
-              <span>🗓️ તારીખ: ${r.date}</span>
-              ${r.hba1c ? `<span class="bg-teal-100 text-teal-900 px-2 py-0.5 rounded-lg">HbA1c: <b>${r.hba1c}%</b></span>` : ''}
-            </div>
-            <div class="grid grid-cols-3 gap-1 text-[10px] text-slate-600 pt-0.5">
-              <span>F. Insulin: <b>${r.insulin || '-'}</b></span>
-              <span>SGPT (Liver): <b>${r.sgpt || '-'} U/L</b></span>
-              <span>Triglycerides: <b>${r.tg || '-'}</b></span>
-            </div>
-          </div>
-        `;
-      });
-    }
-
-    // Extras/Cheat Food Logging
-    async function addExtraFoodLog() {
-      const val = document.getElementById('cpInExtraFood').value.trim();
-      if(!val) return;
-      if(!currentClient.compliance[selectedDateKey]) currentClient.compliance[selectedDateKey] = {};
-      if(!currentClient.compliance[selectedDateKey].extras) currentClient.compliance[selectedDateKey].extras = [];
-
-      currentClient.compliance[selectedDateKey].extras.push(val);
-      document.getElementById('cpInExtraFood').value = '';
-      renderExtrasList(currentClient.compliance[selectedDateKey].extras);
-
-      await db.collection('clients').doc(currentClient.phone).update({
-        [`compliance.${selectedDateKey}.extras`]: currentClient.compliance[selectedDateKey].extras
-      });
-    }
-
-    function renderExtrasList(extras) {
-      const c = document.getElementById('cpActiveExtrasContainer');
-      c.innerHTML = '';
-      extras.forEach((ex, idx) => {
-        c.innerHTML += `<span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-900 font-bold text-[10px] flex items-center gap-1">🍪 ${esc(ex)} <button onclick="removeExtraFoodLog(${idx})"><i class="fa-solid fa-xmark"></i></button></span>`;
-      });
-    }
-
-    async function removeExtraFoodLog(idx) {
-      currentClient.compliance[selectedDateKey].extras.splice(idx, 1);
-      renderExtrasList(currentClient.compliance[selectedDateKey].extras);
-      await db.collection('clients').doc(currentClient.phone).update({
-        [`compliance.${selectedDateKey}.extras`]: currentClient.compliance[selectedDateKey].extras
-      });
-    }
-
-    function generateWeeklyGroceryList() {
-      if (!currentClient) return;
-      const today = new Date();
-      const vegSet = new Set();
-      const proteinSet = new Set();
-
-      for (let i = 1; i <= 7; i++) {
-        const nextDate = new Date(today);
-        nextDate.setDate(today.getDate() + i);
-        const dKey = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`;
-        const dayPlan = generateDayMenu(dKey, currentClient);
-
-        Object.values(dayPlan).forEach(item => {
-          if (item?.vegItem && item.vegItem !== '-') vegSet.add(item.vegItem);
-          if (item?.proteinItem && item.proteinItem !== '-') proteinSet.add(item.proteinItem);
-        });
-      }
-
-      const vegUl = document.getElementById('groceryVegList');
-      const proUl = document.getElementById('groceryProteinList');
-      vegUl.innerHTML = '';
-      proUl.innerHTML = '';
-
-      vegSet.forEach(v => { vegUl.innerHTML += `<li>${v}</li>`; });
-      proteinSet.forEach(p => { proUl.innerHTML += `<li>${p}</li>`; });
-    }
+    function closeKitchenTipsModal() { document.getElementById('modalKitchenTips').classList.add('hidden'); }
 
     async function swapCurrentDish(slotKey, currentDishId) {
-      const goals = currentClient.conditions || ['diabetes'];
-      const prefs = currentClient.preferences || {};
-      const diet = currentClient.diet || 'veg';
-
-      const alternatives = getCandidatesForSlot(slotKey, goals, prefs, diet, currentDishId);
-      if (alternatives.length === 0) {
-        return alert("આ ક્લિનિકલ નિયમો હેઠળ અન્ય કોઈ વૈકલ્પિક વાનગી ઉપલબ્ધ નથી.");
-      }
-
+      const alternatives = getCandidatesForSlot(slotKey, currentClient.conditions||[], {}, currentClient.diet||'veg', currentDishId);
+      if(alternatives.length === 0) return alert('કોઈ વૈકલ્પિક વાનગી નથી.');
       const nextDish = alternatives[0];
-
       if (!currentClient.compliance[selectedDateKey]) currentClient.compliance[selectedDateKey] = {};
       if (!currentClient.compliance[selectedDateKey].swaps) currentClient.compliance[selectedDateKey].swaps = {};
-
       currentClient.compliance[selectedDateKey].swaps[slotKey] = nextDish.id;
-
-      if (!currentClient.preferences) currentClient.preferences = {};
-      if (!currentClient.preferences.swapScores) currentClient.preferences.swapScores = {};
-      currentClient.preferences.swapScores[currentDishId] = (currentClient.preferences.swapScores[currentDishId] || 0) - 1;
-      currentClient.preferences.swapScores[nextDish.id] = (currentClient.preferences.swapScores[nextDish.id] || 0) + 1;
-
       loadTodayClientView();
-
       await db.collection('clients').doc(currentClient.phone).update({
-        [`compliance.${selectedDateKey}.swaps.${slotKey}`]: nextDish.id,
-        [`preferences.swapScores.${currentDishId}`]: currentClient.preferences.swapScores[currentDishId],
-        [`preferences.swapScores.${nextDish.id}`]: currentClient.preferences.swapScores[nextDish.id]
+        [`compliance.${selectedDateKey}.swaps.${slotKey}`]: nextDish.id
       });
     }
 
@@ -1296,8 +1010,7 @@
 
     async function addWater(amount) {
       if(!currentClient.compliance[selectedDateKey]) currentClient.compliance[selectedDateKey] = {};
-      let cur = currentClient.compliance[selectedDateKey].water || 0;
-      cur = Math.round((cur + amount) * 100) / 100;
+      let cur = Math.round(((currentClient.compliance[selectedDateKey].water || 0) + amount) * 100) / 100;
       currentClient.compliance[selectedDateKey].water = cur;
       loadTodayClientView();
       await db.collection('clients').doc(currentClient.phone).update({ [`compliance.${selectedDateKey}.water`]: cur });
@@ -1312,9 +1025,7 @@
 
     function debounceSaveVitals() {
       clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
-        saveVitals();
-      }, 1000);
+      debounceTimer = setTimeout(() => saveVitals(), 1000);
     }
 
     async function saveVitals() {
@@ -1330,9 +1041,6 @@
       currentClient.compliance[selectedDateKey].weight = wt;
       currentClient.compliance[selectedDateKey].waist = waist;
       currentClient.compliance[selectedDateKey].note = note;
-      
-      checkSugarAlertBox(m1, m2);
-      checkMedicationReviewTrigger();
 
       await db.collection('clients').doc(currentClient.phone).update({
         [`compliance.${selectedDateKey}.metric1`]: m1,
@@ -1343,154 +1051,99 @@
       });
     }
 
-    function checkSugarAlertBox(m1, m2) {
-      const box = document.getElementById('sugarSafetyAlertBox');
-      const goals = currentClient?.conditions || [];
-      if (!goals.includes('diabetes')) { box.className = "hidden"; return; }
-
-      const readings = [Number(m1), Number(m2)].filter(n => !isNaN(n) && n > 0);
-      if (readings.some(n => n < 70)) {
-        const lowest = Math.min(...readings);
-        box.className = "p-3 rounded-2xl bg-rose-50 border border-rose-300 text-rose-900 space-y-2 block";
-        box.innerHTML = `
-          <div class="font-black text-xs flex items-center gap-1.5 text-rose-700">
-            <i class="fa-solid fa-triangle-exclamation text-sm"></i> ⚠️ શુગર એલર્ટ: હાઈપોગ્લાયસેમિયા (< 70 mg/dl)
-          </div>
-          <p class="text-[11px] leading-tight">
-            શુગર જોખમી સ્તરે નીચું છે! તાત્કાલિક ૧૫ ગ્રામ ઝડપી ગ્લુકોઝ (૩ ચમચી ખાંડ/ગ્લુકોઝ પાણી અથવા જ્યુસ) લો અને ૧૫ મિનિટ પછી ફરી માપો.
-          </p>
-          <button onclick="sendSugarSosToCoach(${lowest})" class="w-full py-2 bg-rose-600 hover:bg-rose-700 text-white font-extrabold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow">
-            <i class="fa-brands fa-whatsapp text-sm"></i> કોચને તાત્કાલિક જાણ કરો (SOS Alert) 📲
-          </button>
-        `;
-      } else if (readings.some(n => n > 300)) {
-        box.className = "p-3 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 space-y-1 block";
-        box.innerHTML = `<div class="font-black text-xs flex items-center gap-1.5 text-amber-700"><i class="fa-solid fa-circle-exclamation text-sm"></i> ⚠️ હાઈ શુગર એલર્ટ (> 300 mg/dl)</div><p class="text-[11px] leading-tight">બ્લડ શુગર ઘણું ઊંચું નોંધાયું છે. પૂરતું પાણી પીઓ અને તાત્કાલિક ડૉક્ટરનો સંપર્ક કરો.</p>`;
-      } else {
-        box.className = "hidden";
-      }
+    function renderExtrasList(extras) {
+      const c = document.getElementById('cpActiveExtrasContainer');
+      c.innerHTML = '';
+      extras.forEach((ex, idx) => {
+        c.innerHTML += `<span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-900 font-bold text-[10px] flex items-center gap-1">🍪 ${esc(ex)}</span>`;
+      });
     }
 
-    function sendSugarSosToCoach(sugarVal) {
-      const sosMsg = `🚨 *EMERGENCY HYPO ALERT* 🚨\nClient: *${currentClient.name}*\nPhone: *${currentClient.phone}*\nSugar dropped below 70 mg/dl: *${sugarVal} mg/dl*\nPlease review medicine dosage!`;
-      window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent(sosMsg)}`, '_blank');
+    async function addExtraFoodLog() {
+      const val = document.getElementById('cpInExtraFood').value.trim();
+      if(!val) return;
+      if(!currentClient.compliance[selectedDateKey]) currentClient.compliance[selectedDateKey] = {};
+      if(!currentClient.compliance[selectedDateKey].extras) currentClient.compliance[selectedDateKey].extras = [];
+      currentClient.compliance[selectedDateKey].extras.push(val);
+      document.getElementById('cpInExtraFood').value = '';
+      renderExtrasList(currentClient.compliance[selectedDateKey].extras);
+      await db.collection('clients').doc(currentClient.phone).update({
+        [`compliance.${selectedDateKey}.extras`]: currentClient.compliance[selectedDateKey].extras
+      });
+    }
+
+    function generateWeeklyGroceryList() {
+      const today = new Date();
+      const vegSet = new Set();
+      const proteinSet = new Set();
+      for (let i = 1; i <= 7; i++) {
+        const nextDate = new Date(today);
+        nextDate.setDate(today.getDate() + i);
+        const dKey = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`;
+        const p = generateDayMenu(dKey, currentClient);
+        Object.values(p).forEach(item => {
+          if (item?.vegItem && item.vegItem !== '-') vegSet.add(item.vegItem);
+          if (item?.proteinItem && item.proteinItem !== '-') proteinSet.add(item.proteinItem);
+        });
+      }
+      const vegUl = document.getElementById('groceryVegList');
+      const proUl = document.getElementById('groceryProteinList');
+      vegUl.innerHTML = ''; proUl.innerHTML = '';
+      vegSet.forEach(v => { vegUl.innerHTML += `<li>${v}</li>`; });
+      proteinSet.forEach(p => { proUl.innerHTML += `<li>${p}</li>`; });
     }
 
     function renderUpcomingPlanner() {
       const container = document.getElementById('upcomingForecastContainer');
       container.innerHTML = '';
       const today = new Date();
-
       for (let i = 1; i <= 7; i++) {
         const nextDate = new Date(today);
         nextDate.setDate(today.getDate() + i);
         const nextDateKey = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`;
-        const forecastPlan = generateDayMenu(nextDateKey, currentClient);
-
+        const p = generateDayMenu(nextDateKey, currentClient);
         const dayNameGuj = DAY_NAMES_GUJ[nextDate.getDay()];
         const dateFormatted = nextDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-        const isTomorrow = (i === 1);
-
-        const card = document.createElement('div');
-        card.className = `p-3 rounded-2xl border ${isTomorrow ? 'bg-teal-50/70 border-teal-300' : 'bg-slate-50 border-slate-200'} space-y-1.5`;
-        card.innerHTML = `
-          <div class="flex justify-between items-center">
-            <span class="font-extrabold ${isTomorrow ? 'text-teal-900' : 'text-slate-800'} text-xs">
-              ${isTomorrow ? '🌟 આવતીકાલ (' + dayNameGuj + ', ' + dateFormatted + ')' : '🗓️ ' + dayNameGuj + ', ' + dateFormatted}
-            </span>
-            ${isTomorrow ? '<span class="text-[9px] bg-teal-600 text-white px-2 py-0.5 rounded-full font-bold">Tomorrow</span>' : ''}
-          </div>
-          <div class="text-[11px] text-slate-700 space-y-1 leading-snug">
-            <div><span class="font-bold text-teal-800">• સવારે:</span> ${esc(forecastPlan.morning?.name || '-')}</div>
-            ${forecastPlan.pre_workout ? `<div><span class="font-bold text-teal-800">• પ્રી-વર્કઆઉટ:</span> ${esc(forecastPlan.pre_workout?.name || '-')}</div>` : ''}
-            ${forecastPlan.post_workout ? `<div><span class="font-bold text-teal-800">• પોસ્ટ-વર્કઆઉટ:</span> ${esc(forecastPlan.post_workout?.name || '-')}</div>` : ''}
-            <div><span class="font-bold text-teal-800">• નાસ્તો:</span> ${esc(forecastPlan.breakfast?.name || '-')} <span class="text-teal-700 font-semibold text-[10px]">(${forecastPlan.breakfast?.portion || ''})</span></div>
-            <div><span class="font-bold text-teal-800">• બપોરે:</span> ${esc(forecastPlan.lunch?.name || '-')}</div>
-            <div><span class="font-bold text-teal-800">• સાંજે:</span> ${esc(forecastPlan.snack?.name || '-')}  |  <span class="font-bold text-teal-800">• રાત્રે:</span> ${esc(forecastPlan.dinner?.name || '-')}</div>
-          </div>
-        `;
-        container.appendChild(card);
+        container.innerHTML += `
+          <div class="p-3 rounded-2xl border bg-slate-50 space-y-1 text-xs">
+            <span class="font-extrabold text-slate-800">🗓️ ${dayNameGuj}, ${dateFormatted}</span>
+            <div class="text-[11px] text-slate-600">
+              <div>• નાસ્તો: ${esc(p.breakfast?.name || '-')}</div>
+              <div>• બપોરે: ${esc(p.lunch?.name || '-')}</div>
+              <div>• રાત્રે: ${esc(p.dinner?.name || '-')}</div>
+            </div>
+          </div>`;
       }
     }
 
-    function calculateOverallReports() {
-      if(!currentClient || !currentClient.compliance) return;
-      let totalScores = 0;
-      let totalWaterSum = 0;
-      let daysCount = 0;
-
-      for(let dKey in currentClient.compliance) {
-        const dayObj = currentClient.compliance[dKey];
-        const checks = dayObj.checks || {};
-        const checkKeys = Object.keys(checks);
-        let dayPts = 0;
-        
-        checkKeys.forEach(s => {
-          if(checks[s] === 'done') dayPts += 100;
-          else if(checks[s] === 'half') dayPts += 50;
-        });
-
-        if(checkKeys.length > 0) {
-          totalScores += Math.round(dayPts / checkKeys.length);
-          daysCount++;
-        }
-        totalWaterSum += (dayObj.water || 0);
+    function renderLabReportsHistory() {
+      const container = document.getElementById('cpLabReportsList');
+      container.innerHTML = '';
+      const reports = currentClient.labReports || [];
+      if(reports.length === 0) {
+        container.innerHTML = '<div class="text-center py-3 text-slate-400">કોઈ લેબ રિપોર્ટ નથી.</div>';
+        return;
       }
-
-      const avgComp = daysCount > 0 ? Math.round(totalScores / daysCount) : 0;
-      const avgWat = daysCount > 0 ? (totalWaterSum / daysCount).toFixed(2) : '0.0';
-
-      document.getElementById('repAvgCompliance').innerText = avgComp + '%';
-      document.getElementById('repAvgWater').innerText = avgWat + ' L';
-    }
-
-    function openFeedbackModal() { document.getElementById('modalFeedback').classList.remove('hidden'); }
-    function closeFeedbackModal() { document.getElementById('modalFeedback').classList.add('hidden'); }
-    function sendFeedbackWhatsApp() {
-      const msg = document.getElementById('fbMessage').value.trim();
-      if(!msg) return alert('Enter message.');
-      window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent('Support: ' + msg)}`, '_blank');
-      closeFeedbackModal();
+      reports.forEach(r => {
+        container.innerHTML += `
+          <div class="p-2 bg-slate-50 rounded-xl border text-[11px] flex justify-between">
+            <span>📅 ${r.date}</span>
+            <span class="font-bold text-teal-800">HbA1c: ${r.hba1c || '-'}%</span>
+            <span>SGPT: ${r.sgpt || '-'}</span>
+          </div>`;
+      });
     }
 
     function submitClientReport(type) {
       if (!currentClient) return;
-
-      if (type === 'summary') {
-        const comp = currentClient.compliance || {};
-        const sortedDays = Object.keys(comp).sort().slice(-7);
-        let reportLines = [`📊 *Metabolic Pro - 7-Day Performance Summary*`, `Client: *${currentClient.name}*`, `Conditions: *${(currentClient.conditions||[]).join(', ')}*`, ``];
-        
-        if (sortedDays.length === 0) {
-          reportLines.push("હજી સુધી કોઈ દૈનિક લોગ નોંધાયેલ નથી.");
-        } else {
-          sortedDays.forEach(dKey => {
-            const d = comp[dKey];
-            const m1 = d.metric1 || '-';
-            const m2 = d.metric2 || '-';
-            const wt = d.weight ? `${d.weight}kg` : '-';
-            const wst = d.waist ? `${d.waist} in` : '-';
-            const w = d.water ? `${d.water.toFixed(1)}L` : '0L';
-            const ex = d.extras && d.extras.length > 0 ? d.extras.join(', ') : 'નથી';
-            reportLines.push(`• *${dKey}*: M1: ${m1} | M2: ${m2} | Wt: ${wt} | Waist: ${wst} | Water: ${w} | Extras: ${ex}`);
-          });
-        }
-        
-        reportLines.push(``, `Generated via Metabolic Pro Engine v4 📲`);
-        window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent(reportLines.join('\n'))}`, '_blank');
-        return;
-      }
-
       const comp = currentClient.compliance[selectedDateKey] || {};
       const waterVal = comp.water || 0;
-      const extrasStr = comp.extras && comp.extras.length > 0 ? comp.extras.join(', ') : 'નથી';
       const msg = `🩺 *Metabolic Pro - Daily Report*
-Client: *${currentClient.name}*
+Client: *${currentClient.name}* (${(currentClient.conditions||[]).join(', ')})
 Date: *${selectedDateKey}*
 💧 Water: *${waterVal.toFixed(2)} L*
-📈 Vitals: F: *${comp.metric1 || 'N/A'}* | PP: *${comp.metric2 || 'N/A'}*
-⚖️ Weight: *${comp.weight || 'N/A'} kg* | Waist: *${comp.waist || 'N/A'} in*
-🍪 Extras: *${extrasStr}*
+📈 Vitals: M1: *${comp.metric1 || 'N/A'}* | M2: *${comp.metric2 || 'N/A'}*
+⚖️ Wt: *${comp.weight || 'N/A'} kg* | Waist: *${comp.waist || 'N/A'} in*
 Notes: "${comp.note || 'All good'}"`;
       window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
     }
