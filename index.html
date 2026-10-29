@@ -3,7 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Metabolic Pro - Clinical Nutrition Engine v4</title>
+  <title>Metabolic Pro - Clinical Nutrition Engine</title>
+
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Metabolic Pro">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0d9488">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2966/2966486.png">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -33,6 +42,18 @@
 </head>
 <body class="pb-24 antialiased">
 
+  <!-- PWA INSTALL BANNER -->
+  <div id="pwaInstallBanner" class="hidden p-3 bg-teal-900 text-white text-xs flex justify-between items-center sticky top-0 z-50 shadow-md">
+    <div class="flex items-center gap-2">
+      <span class="text-base">📲</span>
+      <span>ઝડપી ઉપયોગ માટે સ્ક્રીન પર એપ ઉમેરો <b>(Add to Home Screen)</b></span>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <button onclick="dismissPwaBanner()" class="px-2 py-1 bg-teal-800 rounded-lg text-[10px]">બંધ કરો</button>
+      <button onclick="showPwaInstructions()" class="px-2.5 py-1 bg-amber-400 text-slate-900 font-extrabold rounded-lg text-[10px]">કેવી રીતે?</button>
+    </div>
+  </div>
+
   <!-- AUTH VIEW -->
   <div id="authView" class="min-h-screen flex flex-col justify-between p-4 max-w-md mx-auto space-y-4">
     <div class="text-center pt-5 space-y-2">
@@ -41,7 +62,7 @@
         <h1 class="text-2xl font-black text-slate-900 tracking-tight">Metabolic Pro</h1>
         <p class="text-xs font-semibold text-teal-700 uppercase tracking-widest mt-0.5">Clinical Lifestyle & Nutrition Engine</p>
       </div>
-      <p class="text-xs text-slate-500 max-w-xs mx-auto">ડાયાબિટીસ મુક્તિ, ફેટી લિવર ડિટોક્સ અને પર્સનલાઇઝ્ડ મેટાબોલિક હેલ્થ સિસ્ટમ.</p>
+      <p class="text-xs text-slate-500 max-w-xs mx-auto">ડાયાબિટીસ મુક્તિ, ફેટી લિવર ડિટોક્સ અને પર્સનલાઇઝ્ડ મેટાબોલિક હેલ્થ પોર્ટલ.</p>
     </div>
 
     <div class="card-clean rounded-3xl p-5 shadow-sm space-y-4 border">
@@ -212,6 +233,29 @@
       <button onclick="verifyActivationDone()" id="btnCheckActivation" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-2xl shadow-md transition">
         મેં બંને સ્ટેપ પૂરા કર્યા, પોર્ટલ ખોલો 🚀
       </button>
+    </div>
+  </div>
+
+  <!-- PWA INSTRUCTIONS MODAL -->
+  <div id="modalPwaHelp" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm p-5 rounded-3xl space-y-3.5 text-xs shadow-2xl border">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-black text-slate-900 text-sm">હોમ સ્ક્રીન પર એપ કેવી રીતે ઉમેરવી?</h3>
+        <button onclick="closePwaInstructions()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
+      </div>
+      <div class="space-y-2.5 text-slate-700 leading-relaxed text-[11px]">
+        <div class="p-2.5 bg-slate-50 rounded-xl border">
+          <span class="font-bold text-teal-800 block mb-0.5">🍏 iPhone / Safari વપરાશકર્તાઓ:</span>
+          ૧. નીચે વચ્ચે આપેલું <b>Share બટન</b> (ચોરસમાં ઉપર તીર ⎋) દબાવો.<br>
+          ૨. નીચે સ્ક્રોલ કરી <b>"Add to Home Screen"</b> (+) પર ક્લિક કરો.
+        </div>
+        <div class="p-2.5 bg-slate-50 rounded-xl border">
+          <span class="font-bold text-teal-800 block mb-0.5">🤖 Android / Chrome વપરાશકર્તાઓ:</span>
+          ૧. ઉપર જમણી બાજુના ૩ ટપકાં (⋮) પર ક્લિક કરો.<br>
+          ૨. <b>"Install App"</b> અથવા <b>"Add to Home Screen"</b> પસંદ કરો.
+        </div>
+      </div>
+      <button onclick="closePwaInstructions()" class="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl text-xs">સમજાઈ ગયું ✅</button>
     </div>
   </div>
 
@@ -437,14 +481,39 @@
 
     const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const DAY_NAMES_GUJ = ['રવિવાર', 'સોમવાર', 'મંગળવાર', 'બુધવાર', 'ગુરુવાર', 'શુક્રવાર', 'શનિવાર'];
-    const COACH_PHONE = "919081421028";
-    const COACH_NAME = "Metabolic Pro Coach";
+    let COACH_PHONE = "919081421028";
+    let COACH_NAME = "Metabolic Pro Coach";
     let weekOffset = 0;
     let selectedDateKey = getTodayDateKey();
     let currentClient = null;
     let debounceTimer = null;
 
-    // --- 50+ FOOD POOL WITH DIABETES & MENOPAUSE TAGS ---
+    // --- CLOUD SYNC COACH INFO ---
+    async function syncCoachInfo() {
+      try {
+        const doc = await db.collection('settings').doc('coach').get();
+        if (doc.exists) {
+          const d = doc.data();
+          if (d.phone) COACH_PHONE = d.phone;
+          if (d.name) COACH_NAME = d.name;
+        }
+      } catch(e) { console.error("Coach sync error:", e); }
+    }
+    syncCoachInfo();
+
+    // --- PWA HELPER FUNCTIONS ---
+    function showPwaInstructions() {
+      document.getElementById('modalPwaHelp').classList.remove('hidden');
+    }
+    function closePwaInstructions() {
+      document.getElementById('modalPwaHelp').classList.add('hidden');
+    }
+    function dismissPwaBanner() {
+      document.getElementById('pwaInstallBanner').classList.add('hidden');
+      sessionStorage.setItem('pwa_dismissed', 'true');
+    }
+
+    // --- 50+ FOOD POOL ---
     const CLINICAL_FOOD_DB = [
       { id: "morn_ash_gourd", name: "પેઠાનો રસ (Ash Gourd) + કાચી હળદર", slot: "morning", baseCal: 25, baseP: 0.6, gl: 1, basePortion: "૨૫૦ ml", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "detox", "diabetes"], vegItem: "પેઠું", kitchenTip: "છાલ કાઢી ક્રશ કરી ગાળ્યા વગર પીવો." },
       { id: "morn_bottle_gourd", name: "દૂધીનો રસ + આદું + લીંબુ + ફુદીનો", slot: "morning", baseCal: 30, baseP: 1.0, gl: 1, basePortion: "૨૫૦ ml", diet: "veg", tags: ["veg", "low_gi", "liver_friendly", "detox", "menopause"], vegItem: "દૂધી", kitchenTip: "દૂધી કડવી ન હોવી જોઈએ. તાજો ક્રશ કરી પીવો." },
@@ -453,7 +522,7 @@
       
       // Breakfast
       { id: "bf_moong_chila", name: "મગની દાળનો ચીલો + તાજું પનીર", slot: "breakfast", baseCal: 240, baseP: 15.0, gl: 6, basePortion: "૨ ચીલા + ૫૦g પનીર", diet: "veg", tags: ["veg", "high_protein", "low_gi", "diabetes", "gujarati"], proteinItem: "મગ દાળ, પનીર", kitchenTip: "તવા પર ૧/૨ ચમચી તેલથી શેકવો." },
-      { id: "bf_soya_methi_chila", name: "સોયા-મેથી ચીલો + શેકેલા તલ (Phytoestrogen Rich)", slot: "breakfast", baseCal: 235, baseP: 16.0, gl: 5, basePortion: "૨ ચીલા + ૧ ચમચી તલ", diet: "veg", tags: ["veg", "high_protein", "menopause", "bone_health"], proteinItem: "સોયા, તલ", kitchenTip: "મેનોપોઝ હોર્મોન્સ બેલેન્સ માટે અતિ ઉત્તમ." },
+      { id: "bf_soya_methi_chila", name: "સોયા-મેથી ચીલો + શેકેલા તલ (Phytoestrogen)", slot: "breakfast", baseCal: 235, baseP: 16.0, gl: 5, basePortion: "૨ ચીલા + ૧ ચમચી તલ", diet: "veg", tags: ["veg", "high_protein", "menopause", "bone_health"], proteinItem: "સોયા, તલ", kitchenTip: "હોર્મોન્સ બેલેન્સ માટે અતિ ઉત્તમ." },
       { id: "bf_moth_salad", name: "ફણગાવેલા બાફેલા મઠની ચાટ + કાકડી-ટામેટાં", slot: "breakfast", baseCal: 170, baseP: 11.0, gl: 5, basePortion: "૧૫૦g મોટો બાઉલ", diet: "veg", tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "diabetes"], proteinItem: "મઠ", kitchenTip: "તેલ વગર માત્ર લીંબુ-ધાણા સાથે બનાવવી." },
       { id: "bf_muthiya_steam", name: "દૂધી-મેથીના સ્ટીમ્ડ મુઠીયા (ઓછા તેલમાં)", slot: "breakfast", baseCal: 160, baseP: 6.0, gl: 7, basePortion: "૫ પીસ", diet: "veg", tags: ["veg", "low_fat", "liver_friendly", "menopause"], vegItem: "દૂધી, મેથી", kitchenTip: "તળવા નહીં, માત્ર રાઈ-તલનો હળવો વઘાર કરવો." },
 
@@ -580,7 +649,7 @@
       return weekDates;
     }
 
-    // --- VCF CONTACT GENERATOR (One-Click Save Coach) ---
+    // --- VCARD GENERATOR ---
     function downloadCoachVCard() {
       const vcardData = `BEGIN:VCARD
 VERSION:3.0
@@ -603,7 +672,7 @@ END:VCARD`;
 
     function sendActivationHi() {
       const msg = `Hi Coach! I have registered on Metabolic Pro.\nName: *${currentClient.name}*\nPhone: *${currentClient.phone}*\nPlease activate my 30-day clinical plan!`;
-      window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
+      window.open(`https://api.whatsapp.com/send?phone=${COACH_PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     async function verifyActivationDone() {
@@ -617,6 +686,12 @@ END:VCARD`;
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
+      // Check PWA banner
+      const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+      if (!isStandalone && !sessionStorage.getItem('pwa_dismissed')) {
+        document.getElementById('pwaInstallBanner').classList.remove('hidden');
+      }
+
       const savedPhone = localStorage.getItem('met_pro_session_phone');
       if (savedPhone) {
         try {
@@ -671,10 +746,9 @@ END:VCARD`;
       }
     }
 
-    // --- REGISTRATION WITH WEAK PIN VALIDATION ---
     async function handleClientRegister() {
       const name = document.getElementById('regName').value.trim();
-      const phone = document.getElementById('regPhone').value.trim().replace(/\D/g, '');
+      const phoneRaw = document.getElementById('regPhone').value.trim().replace(/\D/g, '');
       const pin = document.getElementById('regPin').value.trim();
       const age = Number(document.getElementById('regAge').value);
       const height = Number(document.getElementById('regHeight').value);
@@ -688,10 +762,9 @@ END:VCARD`;
       const allergies = allergiesInput ? allergiesInput.split(',').map(s => s.trim().toLowerCase()) : [];
       const conditions = Array.from(document.querySelectorAll('input[name="regCondition"]:checked')).map(cb => cb.value);
 
-      if (!name || phone.length < 10) return alert('પૂરું નામ અને ૧૦-અંકનો મોબાઈલ નંબર દાખલ કરો.');
+      if (!name || phoneRaw.length < 10) return alert('પૂરું નામ અને ૧૦-અંકનો મોબાઈલ નંબર દાખલ કરો.');
       if (!pin || pin.length !== 4) return alert('કૃપા કરીને ૪-અંકનો સિક્રેટ PIN બનાવો.');
       
-      // Prohibit Weak PINs
       if (['1234', '0000', '1111', '2222', '3333', '4444', '9999'].includes(pin)) {
         return alert(`⚠️ PIN '${pin}' ખૂબ જ નબળો છે! સુરક્ષા માટે કોઈ અલગ ૪ આંકડા પસંદ કરો (દા.ત. જન્મનું વર્ષ).`);
       }
@@ -699,12 +772,15 @@ END:VCARD`;
       if (!age || !height || !weight) return alert('ઉંમર, ઊંચાઈ અને વજનના સાચા આંકડા દાખલ કરો.');
       if (conditions.length === 0) return alert('ઓછામાં ઓછું એક હેલ્થ લક્ષ્ય પસંદ કરો.');
 
+      // Standardize phone
+      const phone = phoneRaw.length === 10 ? '91' + phoneRaw : phoneRaw;
+
       const clientRef = db.collection('clients').doc(phone);
       const existing = await clientRef.get();
       if (existing.exists) {
         alert('આ નંબર પર એકાઉન્ટ મોજૂદ છે! Login ટેબમાં જઈને લોગિન કરો.');
         setAuthTab('login');
-        document.getElementById('loginId').value = phone;
+        document.getElementById('loginId').value = phone.replace(/^91/, '');
         return;
       }
 
@@ -714,7 +790,7 @@ END:VCARD`;
         preferences: { cuisine, allergies, swapScores: {} },
         goal: conditions.join(' + '),
         trialDays: 30,
-        whatsappVerified: false, // Must pass gate
+        whatsappVerified: false,
         joiningDate: getTodayDateKey(),
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         compliance: {},
@@ -730,10 +806,12 @@ END:VCARD`;
     }
 
     async function handleClientLogin() {
-      const input = document.getElementById('loginId').value.trim().replace(/\D/g, '');
+      let input = document.getElementById('loginId').value.trim().replace(/\D/g, '');
       const pin = document.getElementById('loginPin').value.trim();
       if (input.length < 10) return alert('૧૦-અંકનો નંબર દાખલ કરો.');
       if (!pin || pin.length !== 4) return alert('કૃપા કરીને ૪-અંકનો PIN દાખલ કરો.');
+
+      if (input.length === 10) input = '91' + input;
 
       const doc = await db.collection('clients').doc(input).get();
       if (!doc.exists) return alert('આ એકાઉન્ટ મળ્યું નથી.');
@@ -899,7 +977,6 @@ END:VCARD`;
       document.getElementById('cpProteinProgressText').innerText = Math.round((totalDayProtein / targets.targetProtein) * 100) + '%';
     }
 
-    // --- ADAPTIVE VITALS: Shows Sugar ONLY if Diabetes, shows Hormones/Weight if Menopause ---
     function renderAdaptiveVitalsInputs(comp) {
       const container = document.getElementById('dynamicVitalsInputsGrid');
       const goals = currentClient.conditions || [];
@@ -1145,7 +1222,7 @@ Date: *${selectedDateKey}*
 📈 Vitals: M1: *${comp.metric1 || 'N/A'}* | M2: *${comp.metric2 || 'N/A'}*
 ⚖️ Wt: *${comp.weight || 'N/A'} kg* | Waist: *${comp.waist || 'N/A'} in*
 Notes: "${comp.note || 'All good'}"`;
-      window.open(`https://wa.me/${COACH_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
+      window.open(`https://api.whatsapp.com/send?phone=${COACH_PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
     }
   </script>
 </body>
