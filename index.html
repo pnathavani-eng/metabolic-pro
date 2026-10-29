@@ -53,12 +53,12 @@
 
     <div class="card-clean rounded-3xl p-5 shadow-sm space-y-4 border">
       <div class="flex p-1 bg-slate-100 rounded-2xl text-xs font-bold text-slate-600">
-        <button onclick="setAuthTab('register')" id="tabRegister" class="flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold">✨ નવું રજીસ્ટ્રેશન</button>
-        <button onclick="setAuthTab('login')" id="tabLogin" class="flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold">🔑 લોગિન</button>
+        <button onclick="setAuthTab('register')" id="tabRegister" class="flex-1 py-2.5 rounded-xl transition text-slate-500 font-semibold">✨ નવું રજીસ્ટ્રેશન</button>
+        <button onclick="setAuthTab('login')" id="tabLogin" class="flex-1 py-2.5 rounded-xl transition bg-white text-teal-700 shadow-sm font-extrabold">🔑 લોગિન</button>
       </div>
 
       <!-- Registration Form -->
-      <div id="formRegister" class="space-y-3 text-xs">
+      <div id="formRegister" class="hidden space-y-3 text-xs">
         <div>
           <label class="font-bold text-slate-700">પૂરું નામ *</label>
           <input type="text" id="regName" placeholder="દા.ત. પિયુષ નથવાણી" class="w-full mt-1 p-2.5 bg-slate-50 border rounded-xl text-slate-800 font-bold">
@@ -145,8 +145,8 @@
         <button onclick="handleClientRegister()" class="w-full py-3.5 rounded-2xl brand-gradient text-white font-extrabold text-sm shadow-md mt-1">મારું ક્લિનિકલ પોર્ટલ શરૂ કરો 🚀</button>
       </div>
 
-      <!-- Login Form -->
-      <div id="formLogin" class="hidden space-y-3.5 text-xs">
+      <!-- Login Form (Default View) -->
+      <div id="formLogin" class="space-y-3.5 text-xs">
         <div>
           <label class="font-bold text-slate-700">વોટ્સએપ મોબાઈલ નંબર</label>
           <input type="tel" id="loginId" placeholder="દા.ત. 9925879138" class="w-full mt-1 p-3 bg-slate-50 border rounded-xl text-slate-800 font-bold">
@@ -362,7 +362,7 @@
         try {
           const doc = await db.collection('clients').doc(savedPhone).get();
           if (doc.exists) { 
-            currentClient = doc.data(); 
+            currentClient = { id: doc.id, ...doc.data() }; 
             if (!currentClient.whatsappVerified) {
               document.getElementById('modalActivationGate').classList.remove('hidden');
             } else {
@@ -412,8 +412,8 @@
       if (['1234', '0000', '1111'].includes(pin)) return alert('કોઈ મજબૂત PIN પસંદ કરો.');
       if (!age || !height || !weight) return alert('ઉંમર, ઊંચાઈ અને વજન દાખલ કરો.');
 
-      const phone = phoneRaw.length === 10 ? '91' + phoneRaw : phoneRaw;
-      const clientRef = db.collection('clients').doc(phone);
+      const tenDigit = phoneRaw.length === 12 && phoneRaw.startsWith('91') ? phoneRaw.substring(2) : phoneRaw;
+      const clientRef = db.collection('clients').doc(tenDigit);
       const existing = await clientRef.get();
       if (existing.exists) {
         alert('આ એકાઉન્ટ મોજૂદ છે! લોગિન કરો.');
@@ -422,7 +422,7 @@
       }
 
       const newClientData = {
-        name, phone, pin, age, height, weight, gender, activity, diet,
+        name, phone: tenDigit, pin, age, height, weight, gender, activity, diet,
         kidneyIssue, conditions,
         goal: conditions.join(' + '),
         trialDays: 30,
@@ -435,32 +435,63 @@
       };
 
       await clientRef.set(newClientData);
-      currentClient = newClientData;
-      localStorage.setItem('met_pro_session_phone', phone);
+      currentClient = { id: tenDigit, ...newClientData };
+      localStorage.setItem('met_pro_session_phone', tenDigit);
       
       document.getElementById('authView').classList.add('hidden');
       document.getElementById('modalActivationGate').classList.remove('hidden');
     }
 
+    // DUAL-LOOKUP LOGIN FUNCTION (FIXES "એકાઉન્ટ મળ્યું નથી" ERROR)
     async function handleClientLogin() {
-      let input = document.getElementById('loginId').value.trim().replace(/\D/g, '');
+      let rawInput = document.getElementById('loginId').value.trim().replace(/\D/g, '');
       const pin = document.getElementById('loginPin').value.trim();
-      if (input.length < 10 || pin.length !== 4) return alert('સાચો નંબર અને ૪-અંકનો PIN નાખો.');
-      if (input.length === 10) input = '91' + input;
 
-      const doc = await db.collection('clients').doc(input).get();
-      if (!doc.exists) return alert('એકાઉન્ટ મળ્યું નથી.');
-      const data = doc.data();
-      if (pin !== data.pin) return alert('ખોટો PIN છે.');
+      if (rawInput.length < 10 || pin.length !== 4) {
+        return alert('સાચો ૧૦-અંકનો મોબાઈલ નંબર અને ૪-અંકનો PIN નાખો.');
+      }
 
-      currentClient = data;
-      localStorage.setItem('met_pro_session_phone', input);
+      const tenDigit = rawInput.length === 12 && rawInput.startsWith('91') ? rawInput.substring(2) : rawInput;
+      const withCountry = tenDigit.length === 10 ? '91' + tenDigit : tenDigit;
 
-      if (!currentClient.whatsappVerified) {
-        document.getElementById('authView').classList.add('hidden');
-        document.getElementById('modalActivationGate').classList.remove('hidden');
-      } else {
-        openPortal();
+      try {
+        let doc = await db.collection('clients').doc(tenDigit).get();
+
+        if (!doc.exists) {
+          doc = await db.collection('clients').doc(withCountry).get();
+        }
+
+        if (!doc.exists) {
+          const qSnap = await db.collection('clients')
+            .where('phone', 'in', [tenDigit, withCountry, Number(tenDigit)])
+            .limit(1)
+            .get();
+          if (!qSnap.empty) {
+            doc = qSnap.docs[0];
+          }
+        }
+
+        if (!doc.exists) {
+          return alert('એકાઉન્ટ મળ્યું નથી. કૃપા કરીને રજીસ્ટ્રેશન ચકાસો.');
+        }
+
+        const data = doc.data();
+        if (String(data.pin).trim() !== pin) {
+          return alert('ખોટો PIN છે! કૃપા કરીને સાચો PIN દાખલ કરો.');
+        }
+
+        currentClient = { id: doc.id, ...data };
+        localStorage.setItem('met_pro_session_phone', doc.id);
+
+        if (!currentClient.whatsappVerified) {
+          document.getElementById('authView').classList.add('hidden');
+          document.getElementById('modalActivationGate').classList.remove('hidden');
+        } else {
+          openPortal();
+        }
+      } catch (err) {
+        console.error("Login error:", err);
+        alert('લોગિન કરવામાં સમસ્યા આવી: ' + err.message);
       }
     }
 
@@ -554,7 +585,9 @@
       }
 
       bannerBox.classList.add('hidden');
-      const services = currentClient.services || ['yoga', 'garbh', 'med']; // Default all services if VIP
+      const services = currentClient.services && currentClient.services.length > 0 
+        ? currentClient.services 
+        : ['yoga', 'garbh', 'med'];
 
       try {
         const doc = await db.collection('settings').doc('live_sessions').get();
@@ -643,7 +676,7 @@
                 <i class="fa-solid fa-adjust"></i> ૫૦% અડધું
               </button>
               <button onclick="setMealCompliance('${m.key}', 0.0)" class="py-2 rounded-xl text-xs flex items-center justify-center gap-1 transition ${val === 0.0 ? 'btn-miss-active' : 'btn-idle'}">
-                <i class="fa-solid fa-xmark"></i> બાકી / ચૂકી ગયા
+                <i class="fa-solid fa-xmark"></i> બાકી / ચૂક્યા
               </button>
             </div>
           </div>
@@ -659,7 +692,7 @@
       renderTodayMealCards();
       updateMacroDisplay();
 
-      await db.collection('clients').doc(currentClient.phone).update({
+      await db.collection('clients').doc(currentClient.id).update({
         [`compliance.${selectedDateKey}.${mealKey}`]: ratio
       });
     }
@@ -705,7 +738,7 @@
       let cur = Math.round(((currentClient.compliance[selectedDateKey].water || 0) + amt) * 100) / 100;
       currentClient.compliance[selectedDateKey].water = cur;
       updateWaterDisplay();
-      await db.collection('clients').doc(currentClient.phone).update({ [`compliance.${selectedDateKey}.water`]: cur });
+      await db.collection('clients').doc(currentClient.id).update({ [`compliance.${selectedDateKey}.water`]: cur });
     }
 
     async function resetWater() {
@@ -713,14 +746,14 @@
       if (!currentClient.compliance[selectedDateKey]) currentClient.compliance[selectedDateKey] = {};
       currentClient.compliance[selectedDateKey].water = 0;
       updateWaterDisplay();
-      await db.collection('clients').doc(currentClient.phone).update({ [`compliance.${selectedDateKey}.water`]: 0 });
+      await db.collection('clients').doc(currentClient.id).update({ [`compliance.${selectedDateKey}.water`]: 0 });
     }
 
     async function openChangePinModal() {
       const newPin = prompt("તમારો નવો ૪-અંકનો સિક્રેટ PIN દાખલ કરો:");
       if (!newPin || newPin.length !== 4 || isNaN(newPin)) return alert("⚠️ ૪ આંકડાનો સાચો PIN નાખો.");
       currentClient.pin = newPin;
-      await db.collection('clients').doc(currentClient.phone).update({ pin: newPin });
+      await db.collection('clients').doc(currentClient.id).update({ pin: newPin });
       alert("✅ તમારો નવો PIN સેવ થઈ ગયો: " + newPin);
     }
 
@@ -743,7 +776,7 @@
     async function verifyActivationDone() {
       if (!currentClient) return;
       currentClient.whatsappVerified = true;
-      await db.collection('clients').doc(currentClient.phone).update({ whatsappVerified: true });
+      await db.collection('clients').doc(currentClient.id).update({ whatsappVerified: true });
       document.getElementById('modalActivationGate').classList.add('hidden');
       openPortal();
     }
@@ -766,4 +799,3 @@
   </script>
 </body>
 </html>
-
