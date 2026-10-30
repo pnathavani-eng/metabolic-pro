@@ -395,7 +395,7 @@
         <!-- UPCOMING ROTATION DAYS BANNER -->
         <div class="p-3 bg-teal-50/60 border border-teal-200 rounded-2xl text-xs text-teal-900 font-semibold flex items-center gap-2">
           <i class="fa-solid fa-calendar-check text-teal-600 text-base"></i>
-          <span>આગામી દિવસોનું સંપૂર્ણ ડાયેટ રોટેશન ચાર્ટ નીચે મુજબ છે:</span>[span_1](start_span)[span_1](end_span)
+          <span>આગામી દિવસોનું સંપૂર્ણ ડાયેટ રોટેશન ચાર્ટ નીચે મુજબ છે:</span>
         </div>
 
         <!-- UPCOMING ROTATION CARDS CONTAINER -->
@@ -456,9 +456,14 @@
 
     async function syncCoachInfo() {
       try {
-        const doc = await db.collection('settings').doc('coach').get();
-        if (doc.exists && doc.data().phone) {
-          COACH_PHONE = doc.data().phone;
+        const doc = await db.collection('settings').doc('public').get();
+        if (doc.exists && doc.data().coachPhone) {
+          COACH_PHONE = doc.data().coachPhone;
+        } else {
+          const oldDoc = await db.collection('settings').doc('coach').get();
+          if (oldDoc.exists && oldDoc.data().phone) {
+            COACH_PHONE = oldDoc.data().phone;
+          }
         }
       } catch(e) { console.error(e); }
     }
@@ -538,6 +543,7 @@
         trialDays: 30,
         isVip: false,
         whatsappVerified: false,
+        waRequested: true,
         joiningDate: getTodayDateKey(),
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         compliance: {},
@@ -616,7 +622,7 @@
       if (!currentClient) return false;
       if (currentClient.isVip === true) {
         if (!currentClient.vipExpiryDate) return true;
-        const exp = new Date(currentClient.vipExpiryDate);
+        const exp = new Date(currentClient.vipExpiryDate + 'T23:59:59');
         return exp >= new Date();
       }
       return (Number(currentClient.trialDays) >= 900);
@@ -651,25 +657,25 @@
         {
           dtox: {
             time: "સવારે ખાલી પેટે", title: "૧. મોર્નિંગ ડિટોક્સ ઇન્ફ્યુઝન",
-            desc: "દૂધીનો રસ + આદું + લીંબુ + ફુદીનો", portion: "૨૫૦ ml",[span_2](start_span)[span_2](end_span)
+            desc: "દૂધીનો રસ + આદું + લીંબુ + ફુદીનો", portion: "૨૫૦ ml",
             cal: 42, pro: 1.4, gl: 1,
             alt: { title: "મેથી-અજમો નવશેકું પાણી", desc: "આખી રાત પલાળેલી મેથી અને અજમો", portion: "૨૫૦ ml", cal: 35, pro: 1.1, gl: 1 }
           },
           b: { 
             time: "સવારનો નાસ્તો (08:30 AM)", title: "૨. પૌષ્ટિક બ્રેકફાસ્ટ બાઉલ",
-            desc: "ફણગાવેલા મગ-મઠ ચાટ + લીંબુ & કાકડી", portion: "૧ મોટો બાઉલ",[span_3](start_span)[span_3](end_span)
+            desc: "ફણગાવેલા મગ-મઠ ચાટ + લીંબુ & કાકડી", portion: "૧ મોટો બાઉલ",
             cal: 220, pro: 14, gl: 8,
             alt: { title: "પનીર-કાકડી સ્ટીક્સ + અળસી મુખવાસ", desc: "ઓમેગા-૩ અને હાઈ પ્રોટીન પનીર", portion: "૧૦૦g પનીર", cal: 250, pro: 18, gl: 4 }
           },
           l: { 
             time: "બપોરનું ભોજન (01:00 PM)", title: "૩. મેટાબોલિક કાઠિયાવાડી થાળી",
-            desc: "સલાડ પ્લેટ + ૧ જુવારનો રોટલો + પાલક પનીર + મોળી છાશ", portion: "૧ રોટલો + શાક + છાશ",[span_4](start_span)[span_4](end_span)
+            desc: "સલાડ પ્લેટ + ૧ જુવારનો રોટલો + પાલક પનીર + મોળી છાશ", portion: "૧ રોટલો + શાક + છાશ",
             cal: 420, pro: 16, gl: 18,
             alt: { title: "ભીંડાનું શાક + ૧ બાજરી રોટલો + સલાડ + છાશ", desc: "આયર્ન અને ફાઈબરથી ભરપૂર", portion: "૧ રોટલો + શાક", cal: 410, pro: 15, gl: 19 }
           },
           d: { 
             time: "રાત્રિ ભોજન (07:30 PM)", title: "૪. લાઈટ લિવર ડિટોક્સ ડિનર",
-            desc: "દૂધી-ટામેટાનો પૌષ્ટિક સૂપ + શેકેલું પનીર (૧૦૦g)", portion: "૧ બાઉલ સૂપ + પનીર",[span_5](start_span)[span_5](end_span)
+            desc: "દૂધી-ટામેટાનો પૌષ્ટિક સૂપ + શેકેલું પનીર (૧૦૦g)", portion: "૧ બાઉલ સૂપ + પનીર",
             cal: 240, pro: 18, gl: 6,
             alt: { title: "મિક્સ વેજ પનીર સ્ટીર-ફ્રાય (ઓછા તેલમાં)", desc: "ઝીરો ગ્લાયસેમિક લોડ", portion: "૧૫૦g", cal: 260, pro: 19, gl: 5 }
           }
@@ -677,25 +683,25 @@
         {
           dtox: {
             time: "સવારે ખાલી પેટે", title: "૧. આમળા & જીરા અર્ક",
-            desc: "આમળા રસ + જીરાવાળું નવશેકું પાણી", portion: "૨૦૦ ml",[span_6](start_span)[span_6](end_span)
+            desc: "આમળા રસ + જીરાવાળું નવશેકું પાણી", portion: "૨૦૦ ml",
             cal: 38, pro: 0.8, gl: 1,
             alt: { title: "તુલસી-હળદર ડિટોક્સ ટી", desc: "ગરમ પાણીમાં લીલી હળદર અને તુલસી", portion: "૨૦૦ ml", cal: 25, pro: 0.5, gl: 0 }
           },
           b: { 
             time: "સવારનો નાસ્તો (08:30 AM)", title: "૨. પ્રોટીન ચીલા નાસ્તો",
-            desc: "મગની દાળનો પોષક ચીલો + તાજું પનીર (૨ નંગ ચીલા + ૫૦g પનીર)", portion: "૨ નંગ + પનીર",[span_7](start_span)[span_7](end_span)
+            desc: "મગની દાળનો પોષક ચીલો + તાજું પનીર (૨ નંગ ચીલા + ૫૦g પનીર)", portion: "૨ નંગ + પનીર",
             cal: 240, pro: 15, gl: 9,
             alt: { title: "બાફેલા દેશી ચણા ચાટ + કાકડી-ટમેટા", desc: "ધીમું પાચન અને સ્ટેબલ શુગર", portion: "૧ બાઉલ", cal: 230, pro: 13, gl: 10 }
           },
           l: { 
             time: "બપોરનું ભોજન (01:00 PM)", title: "૩. હાઈ-ફાઈબર દેશી લંચ",
-            desc: "કાકડી સલાડ + ૧ બાજરીનો રોટલો + રીંગણનો ઓળો + છાશ", portion: "૧ રોટલો + ઓળો",[span_8](start_span)[span_8](end_span)
+            desc: "કાકડી સલાડ + ૧ બાજરીનો રોટલો + રીંગણનો ઓળો + છાશ", portion: "૧ રોટલો + ઓળો",
             cal: 440, pro: 15, gl: 20,
             alt: { title: "દૂધી-ચણા દાળ શાક + ૧ જુવાર રોટલો + છાશ", desc: "સોફ્ટ સુપાચ્ય લંચ", portion: "૧ રોટલો + શાક", cal: 410, pro: 15, gl: 16 }
           },
           d: { 
             time: "રાત્રિ ભોજન (07:30 PM)", title: "૪. મગનું ઓસામણ & સૌતે વેજીસ",
-            desc: "મગનું ઓસામણ/સૂપ + સૌતે શાકભાજી + પનીર", portion: "૧ બાઉલ સૂપ + શાક",[span_9](start_span)[span_9](end_span)
+            desc: "મગનું ઓસામણ/સૂપ + સૌતે શાકભાજી + પનીર", portion: "૧ બાઉલ સૂપ + શાક",
             cal: 230, pro: 15, gl: 6,
             alt: { title: "પાલક-દૂધીનો ગ્રીન ડીટોક્સ સૂપ", desc: "એસિડિટી અને સોજા મુક્તિ", portion: "૧ બાઉલ", cal: 210, pro: 10, gl: 4 }
           }
@@ -990,14 +996,14 @@
         c.innerHTML += `
           <div class="card-clean p-4 rounded-3xl border space-y-2 text-xs">
             <div class="flex justify-between items-center border-b pb-2">
-              <span class="font-extrabold text-slate-900">${i === 1 ? '🌟 આવતીકાલ (' + dayName + ', ' + dateStr + ')' : '🗓️ ' + dayName + ', ' + dateStr}</span>[span_10](start_span)[span_10](end_span)
-              ${i === 1 ? '<span class="px-2 py-0.5 bg-teal-100 text-teal-800 text-[9px] font-black rounded-full">Tomorrow</span>' : ''}[span_11](start_span)[span_11](end_span)
+              <span class="font-extrabold text-slate-900">${i === 1 ? '🌟 આવતીકાલ (' + dayName + ', ' + dateStr + ')' : '🗓️ ' + dayName + ', ' + dateStr}</span>
+              ${i === 1 ? '<span class="px-2 py-0.5 bg-teal-100 text-teal-800 text-[9px] font-black rounded-full">Tomorrow</span>' : ''}
             </div>
             <div class="space-y-1.5 text-slate-700">
-              <div>• <b>સવારે:</b> ${dayData.dtox.desc}</div>[span_12](start_span)[span_12](end_span)
-              <div>• <b>નાસ્તો:</b> ${dayData.b.desc}</div>[span_13](start_span)[span_13](end_span)
-              <div>• <b>બપોરે:</b> ${dayData.l.desc}</div>[span_14](start_span)[span_14](end_span)
-              <div>• <b>રાત્રે:</b> ${dayData.d.desc}</div>[span_15](start_span)[span_15](end_span)
+              <div>• <b>સવારે:</b> ${dayData.dtox.desc}</div>
+              <div>• <b>નાસ્તો:</b> ${dayData.b.desc}</div>
+              <div>• <b>બપોરે:</b> ${dayData.l.desc}</div>
+              <div>• <b>રાત્રે:</b> ${dayData.d.desc}</div>
             </div>
           </div>
         `;
