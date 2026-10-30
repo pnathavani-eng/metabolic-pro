@@ -164,21 +164,31 @@
           <input type="password" maxlength="8" id="setMasterPin" placeholder="નવો માસ્ટર PIN" class="w-full p-2 bg-slate-50 border rounded-xl font-bold">
         </div>
 
-        <!-- LIVE SESSIONS LINK CONTROLS -->
+        <!-- LIVE SESSIONS LINK CONTROLS WITH TIME FIELDS -->
         <div class="pt-2 border-t border-slate-200 space-y-2">
-          <span class="font-black text-teal-900 block text-xs">🔴 લાઈવ ક્લાસ લિંક્સ (Google Meet / Zoom)</span>
-          <div>
-            <label class="font-bold text-slate-600 block mb-0.5">🧘‍♀️ યોગા & પ્રાણાયામ લિંક</label>
-            <input type="url" id="setYogaLink" placeholder="https://meet.google.com/xxx-yyyy-zzz" class="w-full p-2 bg-slate-50 border rounded-xl font-mono text-[11px]">
+          <span class="font-black text-teal-900 block text-xs">🔴 લાઈવ ક્લાસ લિંક્સ & સમય સેટિંગ્સ</span>
+          
+          <!-- Yoga Link & Time -->
+          <div class="space-y-1 bg-slate-50 p-2 rounded-xl border">
+            <label class="font-bold text-slate-700 block text-[11px]">🧘‍♀️ યોગા & પ્રાણાયામ</label>
+            <input type="url" id="setYogaLink" placeholder="Google Meet Link (https://...)" class="w-full p-1.5 bg-white border rounded-lg font-mono text-[10px]">
+            <input type="text" id="setYogaTime" placeholder="દા.ત. 07:00 AM" class="w-full p-1.5 bg-white border rounded-lg text-[10px] font-bold">
           </div>
-          <div>
-            <label class="font-bold text-slate-600 block mb-0.5">🌸 ગર્ભસંસ્કાર લિંક</label>
-            <input type="url" id="setGarbhLink" placeholder="https://meet.google.com/xxx-yyyy-zzz" class="w-full p-2 bg-slate-50 border rounded-xl font-mono text-[11px]">
+
+          <!-- Garbh Link & Time -->
+          <div class="space-y-1 bg-slate-50 p-2 rounded-xl border">
+            <label class="font-bold text-slate-700 block text-[11px]">🌸 ગર્ભસંસ્કાર સેશન</label>
+            <input type="url" id="setGarbhLink" placeholder="Google Meet Link (https://...)" class="w-full p-1.5 bg-white border rounded-lg font-mono text-[10px]">
+            <input type="text" id="setGarbhTime" placeholder="દા.ત. 11:30 AM" class="w-full p-1.5 bg-white border rounded-lg text-[10px] font-bold">
           </div>
-          <div>
-            <label class="font-bold text-slate-600 block mb-0.5">🧠 મેડિટેશન લિંક</label>
-            <input type="url" id="setMedLink" placeholder="https://meet.google.com/xxx-yyyy-zzz" class="w-full p-2 bg-slate-50 border rounded-xl font-mono text-[11px]">
+
+          <!-- Meditation Link & Time -->
+          <div class="space-y-1 bg-slate-50 p-2 rounded-xl border">
+            <label class="font-bold text-slate-700 block text-[11px]">🧠 ધ્યાન & મેડિટેશન</label>
+            <input type="url" id="setMedLink" placeholder="Google Meet Link (https://...)" class="w-full p-1.5 bg-white border rounded-lg font-mono text-[10px]">
+            <input type="text" id="setMedTime" placeholder="દા.ત. 07:30 PM" class="w-full p-1.5 bg-white border rounded-lg text-[10px] font-bold">
           </div>
+
           <div>
             <label class="font-bold text-slate-600 block mb-0.5">🎥 લેટેસ્ટ રેકોર્ડિંગ લિંક (YouTube Unlisted)</label>
             <input type="url" id="setRecordLink" placeholder="https://youtu.be/..." class="w-full p-2 bg-slate-50 border rounded-xl font-mono text-[11px]">
@@ -218,9 +228,9 @@
     let isManualOverride = false;
     let currentUserRole = 'staff';
     let loggedInCoach = null;
-    let masterPinVal = null; // Default 1234 દૂર કરેલ છે
+    let masterPinVal = null;
     let activeCoachPhone = "919081421028";
-    let liveSessionLinks = { yoga: '', garbh: '', med: '', record: '' };
+    let liveSessionLinks = { yoga: '', garbh: '', med: '', record: '', yogaTime: '07:00 AM', garbhTime: '11:30 AM', medTime: '07:30 PM' };
 
     function getTodayKey() {
       const d = new Date();
@@ -243,7 +253,6 @@
       return '••••••••••';
     }
 
-    // PERSISTENT SENT TRACKER
     function getSentTracker() {
       try {
         const stored = localStorage.getItem('met_pro_sent_tracker_' + getTodayKey());
@@ -259,12 +268,10 @@
 
     async function loadSettingsFromCloud() {
       try {
-        // Public settings - client safe
         const pubDoc = await db.collection('settings').doc('public').get();
         if (pubDoc.exists && pubDoc.data().coachPhone) {
           activeCoachPhone = formatWaPhone(pubDoc.data().coachPhone);
         } else {
-          // Backward compatibility check
           const oldDoc = await db.collection('settings').doc('coach').get();
           if (oldDoc.exists && oldDoc.data().phone) {
             activeCoachPhone = formatWaPhone(oldDoc.data().phone);
@@ -272,7 +279,6 @@
         }
         document.getElementById('headerCoachDisplay').innerText = `Helpline: ${activeCoachPhone}`;
 
-        // Security settings - Isolated Master PIN
         const secDoc = await db.collection('settings').doc('security').get();
         if (secDoc.exists && secDoc.data().masterPin) {
           masterPinVal = String(secDoc.data().masterPin);
@@ -285,7 +291,7 @@
 
         const liveDoc = await db.collection('settings').doc('live_sessions').get();
         if (liveDoc.exists) {
-          liveSessionLinks = liveDoc.data();
+          liveSessionLinks = { ...liveSessionLinks, ...liveDoc.data() };
         }
       } catch(e) { console.error("Settings error:", e); }
     }
@@ -779,8 +785,11 @@
       document.getElementById('setCoachPhone').value = activeCoachPhone.replace(/^91/, '');
       document.getElementById('setMasterPin').value = masterPinVal || '';
       document.getElementById('setYogaLink').value = liveSessionLinks.yoga || '';
+      document.getElementById('setYogaTime').value = liveSessionLinks.yogaTime || '07:00 AM';
       document.getElementById('setGarbhLink').value = liveSessionLinks.garbh || '';
+      document.getElementById('setGarbhTime').value = liveSessionLinks.garbhTime || '11:30 AM';
       document.getElementById('setMedLink').value = liveSessionLinks.med || '';
+      document.getElementById('setMedTime').value = liveSessionLinks.medTime || '07:30 PM';
       document.getElementById('setRecordLink').value = liveSessionLinks.record || '';
       document.getElementById('modalCoachSettings').classList.remove('hidden');
     }
@@ -795,34 +804,34 @@
       const cleanPhone = formatWaPhone(phoneRaw);
 
       const yoga = document.getElementById('setYogaLink').value.trim();
+      const yogaTime = document.getElementById('setYogaTime').value.trim();
       const garbh = document.getElementById('setGarbhLink').value.trim();
+      const garbhTime = document.getElementById('setGarbhTime').value.trim();
       const med = document.getElementById('setMedLink').value.trim();
+      const medTime = document.getElementById('setMedTime').value.trim();
       const record = document.getElementById('setRecordLink').value.trim();
 
       if (cleanPhone.length < 12) return alert('સાચો ૧૦-અંકનો નંબર દાખલ કરો.');
       if (!mPin) return alert('Master PIN ખાલી ન હોઈ શકે.');
 
-      // 1. Save Public Helpline
       await db.collection('settings').doc('public').set({
         coachPhone: cleanPhone,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
-      // 2. Save Security PIN (Isolated)
       await db.collection('settings').doc('security').set({
         masterPin: mPin,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
-      // 3. Save Live Sessions
       await db.collection('settings').doc('live_sessions').set({
-        yoga, garbh, med, record,
+        yoga, yogaTime, garbh, garbhTime, med, medTime, record,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
       activeCoachPhone = cleanPhone;
       masterPinVal = mPin;
-      liveSessionLinks = { yoga, garbh, med, record };
+      liveSessionLinks = { yoga, yogaTime, garbh, garbhTime, med, medTime, record };
 
       document.getElementById('headerCoachDisplay').innerText = `Helpline: ${activeCoachPhone}`;
       closeCoachSettingsModal();
