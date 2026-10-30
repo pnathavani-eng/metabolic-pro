@@ -60,6 +60,15 @@
       </div>
     </header>
 
+    <!-- LIVE SESSION HOST BAR -->
+    <div id="admHostBar" class="p-2.5 bg-gradient-to-r from-teal-900 via-slate-900 to-teal-950 border-b border-teal-800 text-white flex flex-wrap items-center justify-between text-xs px-4 gap-2">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+        <span class="font-bold text-[11px]" id="admHostTitle">લાઈવ ક્લાસ હોસ્ટ કરો:</span>
+      </div>
+      <div class="flex items-center gap-1.5 flex-wrap" id="admHostButtonsContainer"></div>
+    </div>
+
     <!-- Navigation Tabs -->
     <div class="flex p-2 gap-1.5 bg-white border-b text-xs overflow-x-auto">
       <button onclick="setAdminTab('nudge')" id="atab-nudge" class="tab-active px-3 py-2 rounded-xl whitespace-nowrap"><i class="fa-brands fa-whatsapp text-emerald-400"></i> WhatsApp નજ ક્યૂ</button>
@@ -206,13 +215,17 @@
     let liveClients = [];
     let liveCoaches = [];
     let currentPool = 'trial';
-    let sentTracker = {};
     let isManualOverride = false;
     let currentUserRole = 'staff';
     let loggedInCoach = null;
-    let masterPinVal = '1234';
+    let masterPinVal = null; // Default 1234 દૂર કરેલ છે
     let activeCoachPhone = "919081421028";
     let liveSessionLinks = { yoga: '', garbh: '', med: '', record: '' };
+
+    function getTodayKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
 
     function formatWaPhone(phone) {
       let clean = String(phone || '').replace(/\D/g, '');
@@ -230,15 +243,45 @@
       return '••••••••••';
     }
 
+    // PERSISTENT SENT TRACKER
+    function getSentTracker() {
+      try {
+        const stored = localStorage.getItem('met_pro_sent_tracker_' + getTodayKey());
+        return stored ? JSON.parse(stored) : {};
+      } catch(e) { return {}; }
+    }
+
+    function setClientSent(clientId, mealType) {
+      const tracker = getSentTracker();
+      tracker[`${clientId}_${mealType}`] = true;
+      localStorage.setItem('met_pro_sent_tracker_' + getTodayKey(), JSON.stringify(tracker));
+    }
+
     async function loadSettingsFromCloud() {
       try {
-        const doc = await db.collection('settings').doc('coach').get();
-        if (doc.exists) {
-          const d = doc.data();
-          activeCoachPhone = formatWaPhone(d.phone || "9081421028");
-          if (d.masterPin) masterPinVal = String(d.masterPin);
+        // Public settings - client safe
+        const pubDoc = await db.collection('settings').doc('public').get();
+        if (pubDoc.exists && pubDoc.data().coachPhone) {
+          activeCoachPhone = formatWaPhone(pubDoc.data().coachPhone);
+        } else {
+          // Backward compatibility check
+          const oldDoc = await db.collection('settings').doc('coach').get();
+          if (oldDoc.exists && oldDoc.data().phone) {
+            activeCoachPhone = formatWaPhone(oldDoc.data().phone);
+          }
         }
         document.getElementById('headerCoachDisplay').innerText = `Helpline: ${activeCoachPhone}`;
+
+        // Security settings - Isolated Master PIN
+        const secDoc = await db.collection('settings').doc('security').get();
+        if (secDoc.exists && secDoc.data().masterPin) {
+          masterPinVal = String(secDoc.data().masterPin);
+        } else {
+          const oldDoc = await db.collection('settings').doc('coach').get();
+          if (oldDoc.exists && oldDoc.data().masterPin) {
+            masterPinVal = String(oldDoc.data().masterPin);
+          }
+        }
 
         const liveDoc = await db.collection('settings').doc('live_sessions').get();
         if (liveDoc.exists) {
@@ -251,7 +294,7 @@
       await loadSettingsFromCloud();
       const inputPin = document.getElementById('inAdminPin').value.trim();
 
-      if (inputPin === masterPinVal) {
+      if (masterPinVal && inputPin === masterPinVal) {
         currentUserRole = 'owner';
         loggedInCoach = { name: "Master Admin", id: "owner" };
         document.getElementById('roleBadge').innerText = 'Owner (Full Access)';
@@ -266,7 +309,7 @@
           document.getElementById('roleBadge').innerText = `Coach: ${loggedInCoach.name}`;
           document.getElementById('roleBadge').className = 'px-2 py-0.5 bg-teal-800 text-teal-200 text-[9px] rounded-full font-bold';
           document.getElementById('btnOwnerSettings').classList.add('hidden');
-          document.getElementById('atab-coaches').classList.add('hidden'); // Coach cannot manage coaches
+          document.getElementById('atab-coaches').classList.add('hidden');
         } else {
           return alert('ખોટો PIN છે!');
         }
@@ -274,10 +317,58 @@
 
       document.getElementById('adminAuthView').classList.add('hidden');
       document.getElementById('adminMainView').classList.remove('hidden');
+      renderHostBar();
       setAdminTab('nudge');
       autoApplyTimeSlot();
       listenToCoaches();
       listenToClients();
+    }
+
+    function renderHostBar() {
+      const container = document.getElementById('admHostButtonsContainer');
+      const title = document.getElementById('admHostTitle');
+      container.innerHTML = '';
+
+      const cleanLink = (url) => {
+        if (!url) return '';
+        return (url.startsWith('http://') || url.startsWith('https://')) ? url : 'https://' + url;
+      };
+
+      const yogaUrl = cleanLink(liveSessionLinks.yoga);
+      const garbhUrl = cleanLink(liveSessionLinks.garbh);
+      const medUrl = cleanLink(liveSessionLinks.med);
+
+      if (currentUserRole === 'owner') {
+        title.innerText = 'ઓનર લાઈવ કંટ્રોલ:';
+        container.innerHTML = `
+          <a href="${yogaUrl || 'https://meet.google.com'}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-extrabold flex items-center gap-1 shadow-xs">
+            <i class="fa-solid fa-video"></i> 🧘‍♀️ યોગા
+          </a>
+          <a href="${garbhUrl || 'https://meet.google.com'}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-[10px] font-extrabold flex items-center gap-1 shadow-xs">
+            <i class="fa-solid fa-video"></i> 🌸 ગર્ભસંસ્કાર
+          </a>
+          <a href="${medUrl || 'https://meet.google.com'}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-[10px] font-extrabold flex items-center gap-1 shadow-xs">
+            <i class="fa-solid fa-video"></i> 🧠 ધ્યાન
+          </a>
+        `;
+      } else {
+        const spec = loggedInCoach?.speciality || 'all';
+        title.innerText = `હોસ્ટ કરો (${esc(loggedInCoach.name)}):`;
+
+        let assignedUrl = 'https://meet.google.com';
+        let label = 'સેશન શરૂ કરો';
+
+        if (spec === 'yoga') { assignedUrl = yogaUrl || 'https://meet.google.com'; label = '🧘‍♀️ યોગા ક્લાસ હોસ્ટ કરો'; }
+        else if (spec === 'garbh') { assignedUrl = garbhUrl || 'https://meet.google.com'; label = '🌸 ગર્ભસંસ્કાર હોસ્ટ કરો'; }
+        else if (spec === 'med') { assignedUrl = medUrl || 'https://meet.google.com'; label = '🧠 મેડિટેશન હોસ્ટ કરો'; }
+        else { assignedUrl = yogaUrl || garbhUrl || medUrl || 'https://meet.google.com'; label = '🔴 ક્લાસ શરૂ કરો (Start Live)'; }
+
+        container.innerHTML = `
+          <a href="${assignedUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-black flex items-center gap-1.5 shadow">
+            <i class="fa-solid fa-video text-xs"></i> ${label} 📲
+          </a>
+        `;
+      }
     }
 
     function setAdminTab(tab) {
@@ -322,7 +413,13 @@
 
       if (!name || cleanPhone.length < 12) return alert('કોચનું પૂરું નામ અને ૧૦-અંકનો મોબાઈલ નંબર દાખલ કરો.');
 
-      const generatedPin = String(Math.floor(1000 + Math.random() * 9000));
+      let generatedPin = '';
+      let isUnique = false;
+      while (!isUnique) {
+        generatedPin = String(Math.floor(1000 + Math.random() * 9000));
+        const check = await db.collection('coaches').where('pin', '==', generatedPin).get();
+        if (check.empty && generatedPin !== masterPinVal) isUnique = true;
+      }
 
       await db.collection('coaches').doc(cleanPhone).set({
         name,
@@ -403,7 +500,14 @@
       await db.collection('clients').doc(clientId).update({ services });
     }
 
-    // Grant or revoke VIP
+    async function verifyClientWhatsApp(clientId) {
+      await db.collection('clients').doc(clientId).update({
+        whatsappVerified: true,
+        waRequested: false
+      });
+      alert('✅ ક્લાયન્ટનું WhatsApp વેરિફિકેશન મંજૂર થઈ ગયું!');
+    }
+
     async function grantVipStatus(clientId, days) {
       if (currentUserRole !== 'owner') return alert('માત્ર ઓનર VIP બદલી શકે છે.');
       
@@ -424,7 +528,7 @@
       if (!cl) return false;
       if (cl.isVip === true) {
         if (!cl.vipExpiryDate) return true;
-        const exp = new Date(cl.vipExpiryDate);
+        const exp = new Date(cl.vipExpiryDate + 'T23:59:59');
         return exp >= new Date();
       }
       return (Number(cl.trialDays) >= 900);
@@ -505,6 +609,7 @@
       const container = document.getElementById('queueClientsContainer');
       container.innerHTML = '';
       const mealType = document.getElementById('selNudgeMealType').value;
+      const tracker = getSentTracker();
 
       const filtered = liveClients.filter(c => {
         if (currentUserRole !== 'owner' && c.assignedCoachId !== loggedInCoach?.id) return false;
@@ -525,7 +630,7 @@
       }
 
       filtered.forEach(cl => {
-        const isSent = sentTracker[`${cl.id}_${mealType}`];
+        const isSent = !!tracker[`${cl.id}_${mealType}`];
         const conditions = (cl.conditions || []).join(' • ');
         const displayPhone = maskPhoneNumber(cl.phone);
         const services = cl.services || [];
@@ -550,7 +655,11 @@
               </div>
 
               <div class="flex items-center gap-1.5">
-                ${isSent ? `
+                ${currentPool === 'pending' ? `
+                  <button onclick="verifyClientWhatsApp('${cl.id}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl flex items-center gap-1 shadow-xs transition">
+                    <i class="fa-solid fa-check"></i> ✅ Verify WA
+                  </button>
+                ` : isSent ? `
                   <span class="px-2 py-1 bg-emerald-100 text-emerald-900 font-extrabold text-[10px] rounded-lg">
                     <i class="fa-solid fa-check-double"></i> Sent
                   </span>
@@ -623,7 +732,7 @@
         msg = `નમસ્તે ${cl.name}! 🥣 રાત્રિ ભોજન (Light Dinner) નો સમય થયો છે.\n૮:૩૦ પહેલાં હળવો સૂપ કે બાફેલા કઠોળ લઈ લેજો જેથી લિવર ડિટોક્સ રાત્રે વ્યવસ્થિત થાય.`;
       }
 
-      sentTracker[`${cl.id}_${mealType}`] = true;
+      setClientSent(cl.id, mealType);
       renderQueue();
 
       window.open(`https://api.whatsapp.com/send?phone=${validPhone}&text=${encodeURIComponent(msg)}`, '_blank');
@@ -668,7 +777,7 @@
     function openCoachSettingsModal() {
       if (currentUserRole !== 'owner') return alert('માત્ર ઓનર સેટિંગ્સ બદલી શકે છે.');
       document.getElementById('setCoachPhone').value = activeCoachPhone.replace(/^91/, '');
-      document.getElementById('setMasterPin').value = masterPinVal;
+      document.getElementById('setMasterPin').value = masterPinVal || '';
       document.getElementById('setYogaLink').value = liveSessionLinks.yoga || '';
       document.getElementById('setGarbhLink').value = liveSessionLinks.garbh || '';
       document.getElementById('setMedLink').value = liveSessionLinks.med || '';
@@ -693,12 +802,19 @@
       if (cleanPhone.length < 12) return alert('સાચો ૧૦-અંકનો નંબર દાખલ કરો.');
       if (!mPin) return alert('Master PIN ખાલી ન હોઈ શકે.');
 
-      await db.collection('settings').doc('coach').set({
-        phone: cleanPhone,
+      // 1. Save Public Helpline
+      await db.collection('settings').doc('public').set({
+        coachPhone: cleanPhone,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      // 2. Save Security PIN (Isolated)
+      await db.collection('settings').doc('security').set({
         masterPin: mPin,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
+      });
 
+      // 3. Save Live Sessions
       await db.collection('settings').doc('live_sessions').set({
         yoga, garbh, med, record,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -710,6 +826,7 @@
 
       document.getElementById('headerCoachDisplay').innerText = `Helpline: ${activeCoachPhone}`;
       closeCoachSettingsModal();
+      renderHostBar();
       alert('✅ તમામ સેટિંગ્સ & લાઈવ ક્લાસ લિંક્સ સાચવવામાં આવી છે!');
     }
 
