@@ -1,64 +1,1298 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metabolic Pro - Master Admin CRM</title>
+  <meta name="theme-color" content="#0f172a">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <style>
+    body { background-color: #f8fafc; color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    .card-clean { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
+    .tab-active { background: #0f766e; color: #ffffff !important; font-weight: 700; }
+  </style>
+</head>
+<body class="pb-24 antialiased">
+
+  <div id="toast" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-[80] px-4 py-2 rounded-2xl bg-slate-900 text-white text-xs font-bold shadow-xl max-w-[90vw] text-center"></div>
+
+  <!-- Admin Login View -->
+  <div id="adminAuthView" class="min-h-screen flex flex-col justify-center p-4 max-w-sm mx-auto space-y-4">
+    <div class="card-clean rounded-3xl p-6 shadow-xl border text-center space-y-4">
+      <div class="w-14 h-14 rounded-2xl bg-slate-900 text-teal-400 flex items-center justify-center text-2xl font-black mx-auto"><i class="fa-solid fa-shield-halved"></i></div>
+      <div>
+        <h2 class="text-xl font-black text-slate-900">Metabolic Pro Admin</h2>
+        <p class="text-xs text-slate-500 mt-0.5">Clinical CRM & Staff Portal</p>
+      </div>
+      <div class="space-y-3 text-left">
+        <input type="password" maxlength="24" id="inAdminPin" onkeydown="if(event.key==='Enter')verifyAdminPin()" placeholder="પાસવર્ડ / PIN દાખલ કરો" class="w-full p-3 bg-slate-50 border rounded-xl text-center text-lg font-black">
+        <button onclick="verifyAdminPin()" id="btnAdminLogin" class="w-full py-3.5 rounded-2xl bg-slate-900 text-white font-extrabold text-xs shadow">પોર્ટલ ખોલો 🔐</button>
+        <div class="text-[10px] text-slate-400 text-center">ઓનર પાસવર્ડ અથવા કોચ PIN દાખલ કરો.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Admin View -->
+  <div id="adminMainView" class="hidden min-h-screen">
+    <header class="p-3.5 bg-slate-900 text-white sticky top-0 z-40 flex justify-between items-center shadow-md">
+      <div class="flex items-center gap-2 min-w-0">
+        <div class="w-8 h-8 rounded-xl bg-teal-500 text-slate-900 font-black flex items-center justify-center text-sm shrink-0">MP</div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-1.5">
+            <h1 class="font-extrabold text-white text-sm leading-tight" id="headerTitle">Admin CRM</h1>
+            <span id="roleBadge" class="px-2 py-0.5 bg-amber-400 text-slate-900 text-[9px] rounded-full font-black whitespace-nowrap">Owner</span>
+          </div>
+          <p class="text-[10px] text-teal-300 truncate" id="headerCoachDisplay">Helpline: Loading...</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="btnOwnerSettings" onclick="openCoachSettingsModal()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-teal-300 rounded-lg text-xs font-bold border border-slate-700">⚙️</button>
+        <button onclick="logoutAdmin()" class="px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs">Logout</button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="flex p-2 gap-1.5 bg-white border-b text-xs overflow-x-auto sticky top-[57px] z-30">
+      <button onclick="setAdminTab('dash')" id="atab-dash" class="tab-active px-3 py-2 rounded-xl whitespace-nowrap"><i class="fa-solid fa-gauge-high"></i> ડેશબોર્ડ</button>
+      <button onclick="setAdminTab('nudge')" id="atab-nudge" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-brands fa-whatsapp text-emerald-500"></i> નજ ક્યૂ</button>
+      <button onclick="setAdminTab('clients')" id="atab-clients" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-solid fa-users"></i> દર્દીઓ</button>
+      <button onclick="setAdminTab('broadcast')" id="atab-broadcast" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-solid fa-bullhorn"></i> બ્રોડકાસ્ટ</button>
+      <button id="atab-coaches" onclick="setAdminTab('coaches')" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-solid fa-user-doctor text-teal-600"></i> કોચ</button>
+    </div>
+
+    <main class="p-3.5 max-w-xl mx-auto space-y-3.5">
+
+      <!-- TAB: DASHBOARD -->
+      <section id="aview-dash" class="space-y-3">
+        <div id="dashKpis" class="grid grid-cols-3 gap-2"></div>
+        <div class="card-clean p-3.5 rounded-2xl space-y-2">
+          <h2 class="font-extrabold text-slate-900 text-sm">⚠️ ધ્યાન જોઈએ (Needs Attention)</h2>
+          <div id="dashAttention" class="space-y-2"></div>
+        </div>
+        <div class="card-clean p-3.5 rounded-2xl space-y-2">
+          <h2 class="font-extrabold text-slate-900 text-sm">🏆 ટોપ પર્ફોર્મર્સ (૭ દિવસ)</h2>
+          <div id="dashTop" class="space-y-1.5"></div>
+        </div>
+      </section>
+
+      <!-- TAB: WHATSAPP NUDGE QUEUE RUNNER -->
+      <section id="aview-nudge" class="hidden space-y-3">
+        <div class="card-clean p-4 rounded-2xl space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-2.5">
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="font-bold text-slate-900 text-sm">સ્માર્ટ વોટ્સએપ નજ ક્યૂ</h2>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[9px] font-black" id="activeTimeSlotBadge">🕒 Auto-Detecting...</span>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-0.5">સમય મુજબ સ્લોટ આપોઆપ પસંદ થાય છે. મેસેજમાં ક્લાયન્ટની આજની વાનગી આપોઆપ આવે છે.</p>
+            </div>
+            <select id="selNudgeMealType" onchange="handleManualSlotChange()" class="p-2 bg-slate-100 border border-slate-300 rounded-xl text-xs font-bold text-teal-900">
+              <option value="breakfast">🥗 સવારનો નાસ્તો</option>
+              <option value="lunch">🍲 બપોરનું ભોજન</option>
+              <option value="walk">🚶‍♂️ પોસ્ટ-મીલ વોક</option>
+              <option value="snack">🥜 સાંજનો નાસ્તો</option>
+              <option value="dinner">🥣 રાત્રિ ભોજન</option>
+              <option value="water">💧 પાણી રિમાઇન્ડર</option>
+              <option value="log">📝 આજનો લોગ ભરવાનો</option>
+            </select>
+          </div>
+          <div class="flex gap-1.5 text-[11px] overflow-x-auto pb-1">
+            <button onclick="setPoolFilter('trial')" id="pfilter-trial" class="px-3 py-1.5 rounded-xl bg-teal-600 text-white font-bold whitespace-nowrap">⏳ Free (<span id="cntTrial">0</span>)</button>
+            <button onclick="setPoolFilter('vip')" id="pfilter-vip" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 font-bold whitespace-nowrap">👑 VIP (<span id="cntVip">0</span>)</button>
+            <button onclick="setPoolFilter('pending')" id="pfilter-pending" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 font-bold whitespace-nowrap">⚠️ Pending WA (<span id="cntPending">0</span>)</button>
+            <button onclick="setPoolFilter('expired')" id="pfilter-expired" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 font-bold whitespace-nowrap">🔒 Expired (<span id="cntExpired">0</span>)</button>
+          </div>
+          <button onclick="sendNextUnsent()" class="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-extrabold text-xs"><i class="fa-brands fa-whatsapp"></i> પછીનાને મોકલો (Next Unsent)</button>
+        </div>
+        <div id="queueClientsContainer" class="space-y-2"></div>
+      </section>
+
+      <!-- TAB: ALL CLIENTS -->
+      <section id="aview-clients" class="hidden space-y-3">
+        <div class="card-clean p-3 rounded-2xl space-y-2">
+          <input id="clientSearch" oninput="renderClientsList()" placeholder="🔍 નામ / નંબર શોધો" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-semibold">
+          <div class="flex gap-2">
+            <select id="clientFilter" onchange="renderClientsList()" class="flex-1 p-2 bg-slate-50 border rounded-xl text-xs font-bold">
+              <option value="all">બધા</option><option value="attention">⚠️ ધ્યાન જોઈએ</option><option value="pending">Pending WA</option>
+              <option value="trial">Free Trial</option><option value="vip">VIP</option><option value="expired">Expired</option>
+            </select>
+            <button id="btnExportCsv" onclick="exportCsv()" class="px-3 py-2 bg-slate-900 text-white rounded-xl text-[11px] font-bold">⬇ CSV</button>
+          </div>
+        </div>
+        <div id="admClientsList" class="space-y-2.5"></div>
+      </section>
+
+      <!-- TAB: BROADCAST -->
+      <section id="aview-broadcast" class="hidden space-y-3">
+        <div class="card-clean p-4 rounded-2xl space-y-2.5">
+          <h2 class="font-extrabold text-slate-900 text-sm">📣 બ્રોડકાસ્ટ મેસેજ</h2>
+          <div class="grid grid-cols-2 gap-2">
+            <select id="bcAudience" onchange="renderBroadcast()" class="p-2 bg-slate-50 border rounded-xl text-xs font-bold">
+              <option value="active">બધા સક્રિય</option><option value="trial">Free Trial</option><option value="vip">👑 VIP</option><option value="attention">⚠️ ધ્યાન જોઈએ</option>
+              <option value="diabetes">🩺 ડાયાબિટીસ</option><option value="fatty_liver">🥒 ફેટી લિવર</option><option value="gym">💪 જિમ</option><option value="fat_loss">⚖️ ફેટ લોસ</option><option value="menopause">🌸 મેનોપોઝ</option>
+            </select>
+            <select id="bcTemplate" onchange="applyBroadcastTemplate()" class="p-2 bg-slate-50 border rounded-xl text-xs font-bold"></select>
+          </div>
+          <textarea id="bcText" rows="5" oninput="renderBroadcast()" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs"></textarea>
+          <p class="text-[10px] text-slate-500">{name} = ક્લાયન્ટનું પહેલું નામ, {link} = પોર્ટલ લિંક. WhatsApp સ્પામથી બચવા ફક્ત તમારા ક્લાયન્ટ્સને અને ઓછી સંખ્યામાં મોકલો.</p>
+          <button onclick="sendNextBroadcast()" class="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-extrabold text-xs"><i class="fa-brands fa-whatsapp"></i> પછીનાને મોકલો (<span id="bcCount">0</span>)</button>
+        </div>
+        <div id="bcList" class="space-y-2"></div>
+      </section>
+
+      <!-- TAB: COACH MANAGEMENT (OWNER ONLY) -->
+      <section id="aview-coaches" class="hidden space-y-3">
+        <div class="card-clean p-4 rounded-2xl space-y-3 border border-teal-200 bg-teal-50/30">
+          <h2 class="font-extrabold text-slate-900 text-sm flex items-center gap-1.5"><i class="fa-solid fa-user-plus text-teal-600"></i> નવો ક્લિનિકલ કોચ ઉમેરો</h2>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div><label class="font-bold text-slate-700 block mb-0.5">કોચનું પૂરું નામ *</label><input type="text" id="newCoachName" placeholder="દા.ત. ડૉ. પૂજા પટેલ" class="w-full p-2 bg-white border rounded-xl font-bold"></div>
+            <div><label class="font-bold text-slate-700 block mb-0.5">WhatsApp નંબર (૧૦ અંક) *</label><input type="tel" id="newCoachPhone" placeholder="દા.ત. 9825012345" class="w-full p-2 bg-white border rounded-xl font-bold"></div>
+          </div>
+          <button onclick="addNewCoach()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl">+ કોચ ઉમેરો & PIN બનાવો</button>
+        </div>
+        <div class="space-y-2">
+          <h3 class="font-bold text-slate-800 text-xs">સક્રિય કોચ લિસ્ટ</h3>
+          <div id="activeCoachesContainer" class="space-y-2"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- CLIENT DETAIL MODAL -->
+  <div id="modalClient" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white w-full max-w-lg max-h-[92vh] overflow-y-auto p-4 rounded-t-3xl sm:rounded-3xl space-y-3 text-xs shadow-2xl border">
+      <div class="flex justify-between items-center border-b pb-2"><h3 class="font-extrabold text-slate-900 text-sm" id="mcTitle">Client</h3><button onclick="closeClientModal()"><i class="fa-solid fa-xmark text-slate-400 text-lg"></i></button></div>
+      <div id="mcBody" class="space-y-3"></div>
+    </div>
+  </div>
+
+  <!-- SET PASSWORD MODAL -->
+  <div id="modalSetPw" class="hidden fixed inset-0 bg-slate-950/85 z-[70] flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm p-5 rounded-3xl space-y-3 text-xs shadow-2xl border">
+      <h3 class="font-extrabold text-slate-900 text-sm" id="pwTitle">નવો ઓનર પાસવર્ડ બનાવો</h3>
+      <p class="text-[11px] text-slate-500" id="pwNote">સુરક્ષા માટે ઓછામાં ઓછા ૬ અક્ષરનો પાસવર્ડ બનાવો (અક્ષર + આંકડા વધુ સારા).</p>
+      <input type="password" id="npw1" maxlength="24" placeholder="નવો પાસવર્ડ" class="w-full p-2.5 bg-slate-50 border rounded-xl font-bold">
+      <input type="password" id="npw2" maxlength="24" placeholder="ફરી લખો" class="w-full p-2.5 bg-slate-50 border rounded-xl font-bold">
+      <button onclick="saveNewPassword()" class="w-full py-2.5 bg-teal-600 text-white font-extrabold rounded-xl">સેવ કરો 🔒</button>
+    </div>
+  </div>
+
+  <!-- OWNER SETTINGS MODAL -->
+  <div id="modalCoachSettings" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm max-h-[90vh] overflow-y-auto p-5 rounded-3xl space-y-3.5 text-xs shadow-2xl border">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-extrabold text-slate-900 text-sm">ઓનર કંટ્રોલ & સેટિંગ્સ</h3>
+        <button onclick="closeCoachSettingsModal()"><i class="fa-solid fa-xmark text-slate-400 text-base"></i></button>
+      </div>
+      <div class="space-y-2.5">
+        <div><label class="font-bold text-slate-700 block mb-1">મુખ્ય હેલ્પલાઇન WhatsApp નંબર</label><input type="tel" id="setCoachPhone" placeholder="દા.ત. 9925879138" class="w-full p-2 bg-slate-50 border rounded-xl font-bold"></div>
+        <div><label class="font-bold text-slate-700 block mb-1">હેલ્પલાઇન/કોચનું નામ</label><input type="text" id="setCoachName" placeholder="Metabolic Pro Coach" class="w-full p-2 bg-slate-50 border rounded-xl font-bold"></div>
+        <div><label class="font-bold text-slate-700 block mb-1">ક્લાયન્ટ પોર્ટલ લિંક (મેસેજમાં મૂકવા)</label><input type="url" id="setPortalUrl" placeholder="https://..." class="w-full p-2 bg-slate-50 border rounded-xl font-mono text-[11px]"></div>
+        <div><label class="font-bold text-slate-700 block mb-1">પાસવર્ડ બદલવો હોય તો (ખાલી = ના બદલો)</label>
+          <input type="password" maxlength="24" id="setNewPw" placeholder="નવો પાસવર્ડ (૬+ અક્ષર)" class="w-full p-2 bg-slate-50 border rounded-xl font-bold"></div>
+        <div class="pt-2 border-t border-slate-200 space-y-2">
+          <span class="font-black text-teal-900 block text-xs">🔴 લાઈવ ક્લાસ લિંક્સ (Google Meet / Zoom)</span>
+          <div><label class="font-bold text-slate-600 block mb-0.5">🧘‍♀️ યોગા & પ્રાણાયામ</label><input type="url" id="setYogaLink" class="w-full p-2 bg-slate-50 border rounded-xl font-mono text-[11px]"></div>
+          <div><label class="font-bold text-slate-600 block mb-0.5">🌸 ગર્ભસંસ્કાર</label><input type="url" id="setGarbhLink" class="w-full p-2 bg-slate-50 border rounded-xl font-mono text-[11px]"></div>
+          <div><label class="font-bold text-slate-600 block mb-0.5">🧠 મેડિટેશન</label><input type="url" id="setMedLink" class="w-full p-2 bg-slate-50 border rounded-xl font-mono text-[11px]"></div>
+          <div><label class="font-bold text-slate-600 block mb-0.5">🎥 લેટેસ્ટ રેકોર્ડિંગ (YouTube Unlisted)</label><input type="url" id="setRecordLink" class="w-full p-2 bg-slate-50 border rounded-xl font-mono text-[11px]"></div>
+        </div>
+      </div>
+      <div class="pt-2 flex gap-2">
+        <button onclick="closeCoachSettingsModal()" class="flex-1 bg-slate-100 py-2.5 rounded-xl font-bold">રદ કરો</button>
+        <button onclick="saveCoachSettingsToCloud()" class="flex-1 bg-teal-600 text-white font-extrabold py-2.5 rounded-xl shadow">સેવ કરો 💾</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC7HLpZIEayOfmUuHVK_8Fm34Un73i33KE",
+      authDomain: "metabolic-pro-bd3a2.firebaseapp.com",
+      projectId: "metabolic-pro-bd3a2",
+      storageBucket: "metabolic-pro-bd3a2.firebasestorage.app",
+      messagingSenderId: "462945165017",
+      appId: "1:462945165017:web:4e4727c725eb643a29a8c8"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function esc(s) {
+      return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    // ============ Shared nutrition engine (same code as the client portal; used for personalised nudges & client insights) ============
+    function D(id, slot, name, baseCal, baseP, gl, basePortion, tags, vegItem, proteinItem) { return { id, slot, name, baseCal, baseP, gl, basePortion, tags, vegItem: vegItem || '-', proteinItem: proteinItem || '-' }; }
+    const CLINICAL_FOOD_DB = [
+      // Morning
+      { id: "morn_ash_gourd", name: "પેઠાનો તાજો રસ (Ash Gourd) + કાચી હળદર", slot: "morning", baseCal: 25, baseP: 0.6, gl: 1, basePortion: "૨૫૦ ml", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "પેઠું (Ash Gourd)" },
+      { id: "morn_bottle_gourd", name: "દૂધીનો રસ + આદું + લીંબુ + ફુદીનો", slot: "morning", baseCal: 30, baseP: 1.0, gl: 1, basePortion: "૨૫૦ ml", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "દૂધી, આદું" },
+      { id: "morn_amla_cumin", name: "આમળા રસ + જીરાવાળું નવશેકું પાણી", slot: "morning", baseCal: 20, baseP: 0.4, gl: 1, basePortion: "૨૫૦ ml", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "આમળાં" },
+      { id: "morn_cucumber_mint", name: "કાકડી + ફુદીનો + ચિયા સીડ્સ ઇન્ફ્યુઝન", slot: "morning", baseCal: 28, baseP: 0.8, gl: 1, basePortion: "૨૫૦ ml", tags: ["veg", "low_gi", "liver_friendly", "detox"], vegItem: "કાકડી" },
+
+      // Pre-Workout
+      { id: "pre_banana_chana", name: "૧ નાનું કેળું + શેકેલા ચણા", slot: "pre_workout", baseCal: 150, baseP: 5.0, gl: 9, basePortion: "૧ કેળું + ૨૫g ચણા", tags: ["workout_friendly", "energy_boost"], proteinItem: "શેકેલા ચણા" },
+      { id: "pre_makhana_apple", name: "શેકેલા મખાના + અડધું સફરજન", slot: "pre_workout", baseCal: 130, baseP: 3.0, gl: 6, basePortion: "૨૫g મખાના", tags: ["workout_friendly", "low_gi"], proteinItem: "મખાના" },
+
+      // Breakfast
+      { id: "bf_moong_chila", name: "મગની દાળનો પોષક ચીલો + તાજું પનીર", slot: "breakfast", baseCal: 240, baseP: 15.0, gl: 6, basePortion: "૨ નંગ ચીલા + ૫૦g પનીર", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati"], proteinItem: "મગની દાળ, પનીર" },
+      { id: "bf_moth_salad", name: "ફણગાવેલા બાફેલા મઠની ચાટ + કાકડી-ટામેટાં", slot: "breakfast", baseCal: 170, baseP: 11.0, gl: 5, basePortion: "૧૫૦g મોટો બાઉલ", tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "gujarati"], proteinItem: "ફણગાવેલા મઠ" },
+      { id: "bf_besan_methi_chila", name: "બેસન-મેથી ચીલો + ગ્રીલ્ડ પનીર ક્યુબ્સ", slot: "breakfast", baseCal: 250, baseP: 16.0, gl: 7, basePortion: "૨ નંગ + ૫૦g પનીર", tags: ["veg", "high_protein", "low_gi", "gujarati", "workout_friendly"], proteinItem: "બેસન, પનીર" },
+      { id: "bf_sprout_chana", name: "ફણગાવેલા ચણા + લીંબુ મરી અને ધાણા", slot: "breakfast", baseCal: 180, baseP: 10.0, gl: 6, basePortion: "૧ બાઉલ (૧૫૦g)", tags: ["veg", "high_fiber", "low_gi", "liver_friendly"], proteinItem: "દેશી ચણા" },
+      { id: "bf_muthiya_steam", name: "દૂધી-મેથીના સ્ટીમ્ડ મુઠીયા (ઓછા તેલમાં)", slot: "breakfast", baseCal: 160, baseP: 6.0, gl: 7, basePortion: "૫ પીસ", tags: ["veg", "low_fat", "liver_friendly", "gujarati"], vegItem: "દૂધી, મેથી" },
+      { id: "bf_oats_chila_paneer", name: "ઓટ્સ-પાલક ચીલો + ગ્રીલ્ડ પનીર", slot: "breakfast", baseCal: 230, baseP: 14.5, gl: 6, basePortion: "૨ નંગ + ૪૦g પનીર", tags: ["veg", "high_protein", "low_gi"], proteinItem: "ઓટ્સ, પનીર" },
+      { id: "bf_tofu_bhurji", name: "ટોફૂ શાકભાજી ભુરજી + સલાડ", slot: "breakfast", baseCal: 210, baseP: 16.0, gl: 4, basePortion: "૧૨૦g ભુરજી", tags: ["veg", "high_protein", "low_carb", "liver_friendly"], proteinItem: "ટોફૂ" },
+
+      // Lunch
+      { id: "ln_jowar_palak_paneer", name: "સલાડ પ્લેટ + જુવાર રોટલો + પાલક પનીર + મોળી છાશ", slot: "lunch", baseCal: 370, baseP: 19.0, gl: 9, basePortion: "૧ રોટલો + ૧૫૦g શાક + છાશ", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati", "barrier_plate"], vegItem: "પાલક", proteinItem: "પનીર, છાશ" },
+      { id: "ln_bajra_methi_dal", name: "કાકડી-બીટ સલાડ + બાજરી રોટલો + મેથી ભાજી + મગ દાળ + છાશ", slot: "lunch", baseCal: 360, baseP: 16.0, gl: 10, basePortion: "૧ રોટલો + વાટકી દાળ + શાક", tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "gujarati", "barrier_plate"], vegItem: "મેથી, કાકડી", proteinItem: "મગની દાળ, છાશ" },
+      { id: "ln_soya_curry_roti", name: "સોયા ચંક્સ કરી + મલ્ટી-મિલેટ રોટલી + સલાડ + છાશ", slot: "lunch", baseCal: 390, baseP: 27.0, gl: 8, basePortion: "૨ રોટલી + ૬૦g સોયા + છાશ", tags: ["veg", "high_protein", "workout_friendly", "barrier_plate"], proteinItem: "સોયા ચંક્સ, છાશ" },
+      { id: "ln_tofu_tindora_roti", name: "ટોફૂ ટીંડોળા શાક + ૧ જુવાર રોટલો + સલાડ + છાશ", slot: "lunch", baseCal: 340, baseP: 18.0, gl: 8, basePortion: "૧ રોટલો + ૧૫૦g શાક + છાશ", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati", "barrier_plate"], vegItem: "ટીંડોળા", proteinItem: "ટોફૂ, છાશ" },
+      { id: "ln_drumstick_curry_roti", name: "સરગવાની કરી (Drumstick) + જવની રોટલી + સલાડ + છાશ", slot: "lunch", baseCal: 330, baseP: 14.0, gl: 7, basePortion: "૨ રોટલી + શાક + છાશ", tags: ["veg", "high_fiber", "liver_friendly", "low_gi", "gujarati", "barrier_plate"], vegItem: "સરગવો", proteinItem: "છાશ" },
+      { id: "ln_bhindi_moong_dal", name: "ઓછા તેલમાં ભીંડાનું શાક + બાજરી રોટલો + મગની દાળ", slot: "lunch", baseCal: 350, baseP: 15.0, gl: 9, basePortion: "૧ રોટલો + વાટકી દાળ + શાક", tags: ["veg", "high_fiber", "low_gi", "gujarati", "barrier_plate"], vegItem: "ભીંડા", proteinItem: "મગની દાળ" },
+      { id: "ln_choli_sabzi_roti", name: "લીલી ચોળીનું શાક + ૧ જુવાર રોટલો + કાકડી-ગાજર સલાડ + છાશ", slot: "lunch", baseCal: 345, baseP: 15.5, gl: 8, basePortion: "૧ રોટલો + શાક + છાશ", tags: ["veg", "high_fiber", "low_gi", "liver_friendly", "gujarati"], vegItem: "ચોળી", proteinItem: "છાશ" },
+
+      // Snack
+      { id: "sn_roasted_makhana", name: "સિંધવ મીઠાવાળા શેકેલા મખાના", slot: "snack", baseCal: 110, baseP: 3.5, gl: 5, basePortion: "૨૫g", tags: ["veg", "low_gi", "liver_friendly", "low_fat"], proteinItem: "મખાના" },
+      { id: "sn_chana_chaas", name: "શેકેલા ચણા + જીરા છાશ", slot: "snack", baseCal: 150, baseP: 9.0, gl: 4, basePortion: "૩૦g ચણા + ૧ ગ્લાસ છાશ", tags: ["veg", "high_protein", "low_gi", "liver_friendly", "gujarati"], proteinItem: "ચણા, છાશ" },
+      { id: "sn_guava_fruit", name: "તાજો જામફળ + સિંધવ મીઠું", slot: "snack", baseCal: 68, baseP: 2.5, gl: 3, basePortion: "૧ મધ્યમ જામફળ (૧૦૦g)", tags: ["veg", "high_fiber", "low_gi", "liver_friendly"], vegItem: "જામફળ" },
+      { id: "sn_papaya_slices", name: "તાજા પપૈયાના પીસ + લીંબુનો રસ", slot: "snack", baseCal: 60, baseP: 1.0, gl: 5, basePortion: "૧ નાની પ્લેટ (૧૨૦g)", tags: ["veg", "liver_friendly", "digestive"], vegItem: "પપૈયું" },
+      { id: "sn_cucumber_peanut", name: "કાકડી-ટામેટાં કચુંબર + બાફેલી સીંગદાણા", slot: "snack", baseCal: 130, baseP: 5.5, gl: 2, basePortion: "૧ બાઉલ + ૨૦g સીંગ", tags: ["veg", "healthy_fat", "low_gi"], proteinItem: "સીંગદાણા" },
+
+      // Dinner
+      { id: "dn_pumpkin_soup_paneer", name: "ગરમ દૂધી-કોળાનો સૂપ + ગ્રીલ્ડ પનીર ક્યુબ્સ", slot: "dinner", baseCal: 230, baseP: 15.0, gl: 3, basePortion: "મોટો બાઉલ સૂપ + ૬૦g પનીર", tags: ["veg", "high_protein", "low_carb", "liver_friendly", "light_dinner"], vegItem: "કોળું, દૂધી", proteinItem: "પનીર" },
+      { id: "dn_spinach_soup_sprouts", name: "પાલક-આદું સૂપ + બાફેલા ફણગાવેલા મગ", slot: "dinner", baseCal: 195, baseP: 12.5, gl: 4, basePortion: "મોટો બાઉલ + ૧૦૦g મગ", tags: ["veg", "high_fiber", "liver_friendly", "low_gi", "light_dinner"], vegItem: "પાલક", proteinItem: "મગ" },
+      { id: "dn_tofu_broccoli_stirfry", name: "ટોફૂ અને બ્રોકોલી-શિમલા મિર્ચ સૌતે", slot: "dinner", baseCal: 215, baseP: 16.5, gl: 2, basePortion: "૧૨૦g ટોફૂ + ૧૦૦g શાક", tags: ["veg", "high_protein", "workout_friendly", "liver_friendly"], vegItem: "બ્રોકોલી", proteinItem: "ટોફૂ" },
+      { id: "dn_bottle_gourd_soup_chana", name: "દૂધી-ટામેટાં સૂપ + બાફેલા કાબુલી ચણા ચાટ", slot: "dinner", baseCal: 200, baseP: 11.0, gl: 5, basePortion: "બાઉલ સૂપ + ૮૦g ચણા", tags: ["veg", "high_fiber", "liver_friendly", "light_dinner"], vegItem: "દૂધી", proteinItem: "કાબુલી ચણા" },
+      { id: "dn_moong_soup_veggies", name: "મગનું ઓસામણ/સૂપ + સૌતે શાકભાજી + પનીર", slot: "dinner", baseCal: 225, baseP: 14.0, gl: 4, basePortion: "બાઉલ સૂપ + ૫૦g પનીર", tags: ["veg", "high_protein", "liver_friendly", "gujarati"], vegItem: "મિક્સ શાકભાજી", proteinItem: "પનીર" }
+      ,
+      // ===== v3: more variety (approx. values per serving - dietitian se verify karwayein) =====
+      // Morning
+      D("morn_lemon_ginger","morning","નવશેકું લીંબુ-આદુંનું પાણી",10,0.2,1,"૨૫૦ ml",["veg","low_gi","liver_friendly","detox"],"લીંબુ, આદું"),
+      D("morn_methi_water","morning","આખી રાત પલાળેલા મેથી દાણાનું પાણી",15,0.8,1,"૨૫૦ ml",["veg","low_gi","liver_friendly","detox"],"મેથી દાણા"),
+      D("morn_saunf_jeera","morning","વરિયાળી-જીરું-ધાણાનું પાણી",12,0.4,1,"૨૫૦ ml",["veg","low_gi","liver_friendly","detox"],"વરિયાળી, જીરું, ધાણા"),
+      D("morn_tulsi_ginger","morning","તુલસી-આદું ઇન્ફ્યુઝન",8,0.3,1,"૨૫૦ ml",["veg","low_gi","liver_friendly","detox"],"તુલસી, આદું"),
+      D("morn_amla_aloe","morning","આમળા-એલોવેરા રસ",30,0.4,2,"૨૦૦ ml",["veg","low_gi","liver_friendly","detox"],"આમળાં, એલોવેરા"),
+      D("morn_turmeric_pepper","morning","કાચી હળદર + કાળા મરી નવશેકું પાણી",15,0.3,1,"૨૫૦ ml",["veg","low_gi","liver_friendly","detox"],"કાચી હળદર"),
+      // Pre-workout
+      D("pre_sattu_sharbat","pre_workout","સત્તુનું શરબત (સિંધવ-લીંબુ)",120,7,5,"૧ ગ્લાસ (૩૦g સત્તુ)",["veg","workout_friendly","low_gi","high_protein"],"-","સત્તુ"),
+      D("pre_banana_pb","pre_workout","અડધું કેળું + ૧ ચમચી પીનટ બટર",130,4,6,"½ કેળું + ૧૦g",["veg","workout_friendly","energy_boost"],"કેળું","પીનટ બટર"),
+      D("pre_dates_almond","pre_workout","૫ પલાળેલી બદામ + ૧ ખજૂર",90,2.5,5,"૫ બદામ + ૧ ખજૂર",["veg","workout_friendly","energy_boost"],"-","બદામ"),
+      // Post-workout (only for gym clients)
+      D("post_whey","post_workout","વ્હે પ્રોટીન શેક (૧ સ્કૂપ, પાણી સાથે)",120,24,1,"૧ સ્કૂપ",["veg","high_protein","workout_friendly","low_gi"],"-","વ્હે પ્રોટીન"),
+      D("post_paneer_salad","post_workout","ગ્રીલ્ડ પનીર + કાકડી-ટામેટાં સલાડ",220,16,3,"૭૦g પનીર + સલાડ",["veg","high_protein","workout_friendly","low_gi"],"કાકડી, ટામેટાં","પનીર"),
+      D("post_sattu_chana","post_workout","સત્તુ છાશ + શેકેલા ચણા",190,13,6,"૧ ગ્લાસ + ૨૫g ચણા",["veg","high_protein","workout_friendly"],"-","સત્તુ, ચણા, છાશ"),
+      D("post_sprouts_curd","post_workout","ફણગાવેલા મગ + ગ્રીક-સ્ટાઇલ દહીં",210,17,5,"૧ બાઉલ + ૧ વાટકી દહીં",["veg","high_protein","workout_friendly","low_gi"],"-","ફણગાવેલા મગ, દહીં"),
+      D("post_tofu_roti","post_workout","ટોફૂ ભુરજી + ૧ મલ્ટી-મિલેટ રોટલી",240,18,8,"૧૦૦g ટોફૂ + ૧ રોટલી",["veg","high_protein","workout_friendly"],"-","ટોફૂ"),
+      D("post_eggs","post_workout","બાફેલા ઈંડા ×૩ (૨ આખા + ૧ વ્હાઇટ) + સલાડ",200,19,1,"૩ ઈંડા + સલાડ",["egg","high_protein","workout_friendly","low_gi"],"-","ઈંડા"),
+      D("post_chicken","post_workout","ગ્રીલ્ડ ચિકન ૧૦૦g + સલાડ",190,28,1,"૧૦૦g ચિકન",["nonveg","high_protein","workout_friendly","low_gi"],"-","ચિકન"),
+      // Breakfast
+      D("bf_dhokla","breakfast","ખમણ ઢોકળા + ફુદીના ચટણી",170,8,7,"૪ પીસ",["veg","low_fat","liver_friendly","gujarati"],"-","ચણાનો લોટ"),
+      D("bf_handvo","breakfast","બેક્ડ મિક્સ-દાળ હાંડવો + દહીં",230,12,9,"૧ મોટો પીસ + ૧ વાટકી દહીં",["veg","gujarati","high_fiber"],"દૂધી","મિક્સ દાળ, દહીં"),
+      D("bf_sattu_chila","breakfast","સત્તુ-શાકભાજી ચીલો + લીલી ચટણી",220,13,7,"૨ નંગ",["veg","high_protein","low_gi"],"-","સત્તુ"),
+      D("bf_curd_bowl","breakfast","દહીં + ચિયા + અખરોટ-બદામ બાઉલ",210,12,3,"૧ મોટો બાઉલ",["veg","high_protein","low_carb","liver_friendly"],"-","દહીં, બદામ"),
+      D("bf_paneer_bhurji","breakfast","પનીર ભુરજી + ૧ મલ્ટી-મિલેટ રોટલી",280,18,8,"૮૦g પનીર + ૧ રોટલી",["veg","high_protein","workout_friendly"],"-","પનીર"),
+      D("bf_misal_marathi","breakfast","ફણગાવેલા મઠની મિસળ (ઓછા તેલમાં) + છાશ",200,12,7,"૧ મોટો બાઉલ + છાશ",["veg","high_fiber","marathi","liver_friendly"],"-","મઠ, છાશ"),
+      D("bf_moong_idli","breakfast","મગ દાળ ઈડલી + ફુદીના ચટણી",190,11,8,"૩ ઈડલી",["veg","low_fat","liver_friendly"],"-","મગ દાળ"),
+      D("bf_boiled_eggs","breakfast","બાફેલા ઈંડા ×૨ + સૌતે શાકભાજી",210,15,2,"૨ ઈંડા + ૧૦૦g શાક",["egg","high_protein","low_carb","liver_friendly"],"મિક્સ શાકભાજી","ઈંડા"),
+      D("bf_egg_bhurji","breakfast","એગ ભુરજી (૨ ઈંડા) + ૧ જુવાર રોટલો",290,17,9,"૨ ઈંડા + ૧ રોટલો",["egg","high_protein","workout_friendly"],"-","ઈંડા"),
+      D("bf_veg_omelette","breakfast","શાકભાજી ઓમલેટ (૧ આખું + ૨ વ્હાઇટ) + સલાડ",190,17,3,"૩ ઈંડા (૧ આખું)",["egg","high_protein","low_carb","liver_friendly"],"કાંદા-ટામેટાં","ઈંડા"),
+      // Lunch
+      D("ln_paneer_bhurji_bajra","lunch","પનીર ભુરજી + બાજરી રોટલો + કચુંબર + છાશ",380,22,9,"૧ રોટલો + ૧૦૦g ભુરજી + છાશ",["veg","high_protein","gujarati","barrier_plate"],"કાંદા-ટામેટાં","પનીર, છાશ"),
+      D("ln_chanadal_dudhi","lunch","ચણા દાળ-દૂધી + જુવાર રોટલો + સલાડ + છાશ",340,17,9,"૧ રોટલો + વાટકી શાક + છાશ",["veg","high_fiber","low_gi","liver_friendly","gujarati","barrier_plate"],"દૂધી","ચણા દાળ, છાશ"),
+      D("ln_mixdal_palak","lunch","મિક્સ દાળ + પાલક-મેથી શાક + મલ્ટી-મિલેટ રોટલી + છાશ",350,18,9,"૨ રોટલી + વાટકી દાળ + છાશ",["veg","high_fiber","liver_friendly","gujarati","barrier_plate"],"પાલક, મેથી","મિક્સ દાળ, છાશ"),
+      D("ln_tofu_saute_roti","lunch","ટોફૂ-સૌતે શાકભાજી + મલ્ટી-મિલેટ રોટલી + સલાડ",380,24,9,"૧૨૦g ટોફૂ + ૨ રોટલી",["veg","high_protein","workout_friendly","barrier_plate"],"મિક્સ શાકભાજી","ટોફૂ"),
+      D("ln_methi_thepla","lunch","મેથી થેપલા (ઓછા તેલ) + દહીં + સલાડ",330,13,10,"૨ થેપલા + ૧ વાટકી દહીં",["veg","gujarati","high_fiber","barrier_plate"],"મેથી","દહીં"),
+      D("ln_pithla_bhakri","lunch","ઝુણકા (પીઠલા) + જુવાર ભાકરી + કચુંબર",330,14,9,"૧ ભાકરી + વાટકી પીઠલા",["veg","marathi","barrier_plate"],"કાંદા, કોથમીર","ચણાનો લોટ"),
+      D("ln_rajma_small","lunch","રાજમા (નાની વાટકી, ઓછા તેલમાં) + જુવાર રોટલી + સલાડ",360,17,10,"૧ રોટલી + નાની વાટકી રાજમા",["veg","punjabi","high_fiber","barrier_plate"],"સલાડ","રાજમા"),
+      D("ln_chicken_grill","lunch","ગ્રીલ્ડ ચિકન બ્રેસ્ટ + સૌતે શાકભાજી + ૧ જુવાર રોટલો + સલાડ",400,38,8,"૧૨૦g ચિકન + ૧ રોટલો",["nonveg","high_protein","workout_friendly","barrier_plate"],"સૌતે શાકભાજી","ચિકન"),
+      D("ln_fish_curry","lunch","ફિશ કરી (ઓછા તેલમાં) + ૧ રોટલી + સલાડ",360,30,7,"૧૨૦g ફિશ + ૧ રોટલી",["nonveg","high_protein","liver_friendly","barrier_plate"],"સલાડ","ફિશ"),
+      D("ln_egg_curry","lunch","એગ કરી (૨ ઈંડા) + ૧ રોટલી + સલાડ",370,22,8,"૨ ઈંડા + ૧ રોટલી",["egg","high_protein","barrier_plate"],"સલાડ","ઈંડા"),
+      // Snack
+      D("sn_sattu_chaas","snack","સત્તુ છાશ (જીરું-મરી)",130,8,5,"૧ ગ્લાસ",["veg","high_protein","low_gi","liver_friendly"],"-","સત્તુ, છાશ"),
+      D("sn_curd_chia","snack","દહીં + ચિયા સીડ્સ",120,8,3,"૧ વાટકી",["veg","high_protein","low_gi","liver_friendly"],"-","દહીં"),
+      D("sn_nuts","snack","૫ બદામ + ૨ અખરોટ",90,3,1,"૭ પીસ",["veg","healthy_fat","low_gi"],"-","બદામ, અખરોટ"),
+      D("sn_soya_nuts","snack","શેકેલા સોયા નટ્સ",130,13,3,"૨૫g",["veg","high_protein","low_gi"],"-","સોયા"),
+      D("sn_apple_pb","snack","સફરજનના ટુકડા + ૧ ચમચી પીનટ બટર",130,3.5,5,"½ સફરજન + ૧૦g",["veg","healthy_fat","low_gi"],"સફરજન","પીનટ બટર"),
+      D("sn_sprouts_chaat","snack","ફણગાવેલા મગ ચાટ (લીંબુ-ધાણા)",100,8,3,"૧ નાનો બાઉલ",["veg","high_fiber","low_gi","liver_friendly"],"-","ફણગાવેલા મગ"),
+      D("sn_paneer_cubes","snack","શેકેલા પનીર ક્યુબ્સ + કાળા મરી",130,9,1,"૫૦g",["veg","high_protein","low_carb"],"-","પનીર"),
+      D("sn_boiled_egg","snack","બાફેલા ઈંડા ×૨ + મરી",140,12,1,"૨ ઈંડા",["egg","high_protein","low_carb","liver_friendly"],"-","ઈંડા"),
+      D("sn_chicken_tikka","snack","ગ્રીલ્ડ ચિકન ટિક્કા (૫૦g)",100,16,1,"૫૦g",["nonveg","high_protein","low_carb"],"-","ચિકન"),
+      // Dinner
+      D("dn_grilled_paneer_veg","dinner","ગ્રીલ્ડ પનીર + સૌતે શાકભાજી",240,16,3,"૭૦g પનીર + ૧૫૦g શાક",["veg","high_protein","low_carb","liver_friendly"],"મિક્સ શાકભાજી","પનીર"),
+      D("dn_tofu_tikka_soup","dinner","ટોફૂ ટિક્કા + ટામેટાં-ધાણા સૂપ",220,15,4,"૧૦૦g ટોફૂ + બાઉલ સૂપ",["veg","high_protein","light_dinner","liver_friendly"],"ટામેટાં, ધાણા","ટોફૂ"),
+      D("dn_palak_chana_soup","dinner","પાલક-ચણા સૂપ + સલાડ",210,12,5,"મોટો બાઉલ",["veg","high_fiber","light_dinner","liver_friendly"],"પાલક","ચણા"),
+      D("dn_moong_khichdi","dinner","મગ દાળ-શાકભાજી ખીચડી (ઓછા તેલમાં) + છાશ",230,11,10,"૧ વાટકી + છાશ",["veg","gujarati","light_dinner"],"મિક્સ શાકભાજી","મગ દાળ, છાશ"),
+      D("dn_sprouts_soup","dinner","ફણગાવેલા મગ સૂપ + કાકડી-ટામેટાં સલાડ",190,12,4,"બાઉલ સૂપ + સલાડ",["veg","high_fiber","light_dinner","liver_friendly"],"કાકડી, ટામેટાં","ફણગાવેલા મગ"),
+      D("dn_mushroom_paneer_soup","dinner","મશરૂમ-પનીર સૂપ",210,15,3,"મોટો બાઉલ",["veg","high_protein","light_dinner","liver_friendly"],"મશરૂમ","પનીર"),
+      D("dn_fish_tikka","dinner","ફિશ ટિક્કા + વેજ સૂપ",230,26,3,"૧૦૦g ફિશ + બાઉલ સૂપ",["nonveg","high_protein","light_dinner","liver_friendly"],"વેજ સૂપ","ફિશ"),
+      D("dn_chicken_soup","dinner","ચિકન સૂપ + ગ્રીલ્ડ ચિકન (૮૦g) + શાકભાજી",250,30,3,"બાઉલ સૂપ + ૮૦g ચિકન",["nonveg","high_protein","light_dinner"],"શાકભાજી","ચિકન"),
+      D("dn_egg_white_bhurji","dinner","એગ વ્હાઇટ ભુરજી + વેજ સૂપ",200,20,3,"૪ વ્હાઇટ + બાઉલ સૂપ",["egg","high_protein","light_dinner","liver_friendly"],"વેજ સૂપ","ઈંડા")
+      ,
+      // ===== regional additions (Marathi / Punjabi / South Indian) + Jain-safe detox drinks. Values approximate. =====
+      D("morn_jeera_dhana","morning","જીરા-ધાણા-વરિયાળીનું નવશેકું પાણી",12,0.4,1,"૨૫૦ ml",["veg","low_gi","liver_friendly","detox"],"જીરું, ધાણા, વરિયાળી"),
+      D("morn_coriander_lemon","morning","ધાણા-ફુદીના-લીંબુનું ડિટોક્સ વોટર",12,0.3,1,"૨૫૦ ml",["veg","low_gi","liver_friendly","detox"],"ધાણા, ફુદીનો, લીંબુ"),
+      D("bf_sou_pesarattu","breakfast","પેસરટ્ટુ (મગ ઢોસા) ×૨ + ટામેટાં-ફુદીના ચટણી",230,14,8,"૨ ઢોસા + ચટણી",["veg","high_protein","south_indian","low_gi"],"ટામેટાં, ફુદીનો","લીલા મગ"),
+      D("bf_sou_ragi_idli","breakfast","રાગી ઇડલી ×૩ + શાકભાજી સાંભાર",230,10,9,"૩ ઇડલી + ૧ વાટકી સાંભાર",["veg","high_fiber","south_indian","liver_friendly"],"દૂધી, ડ્રમસ્ટિક","તુવેર દાળ"),
+      D("bf_sou_millet_upma","breakfast","ફોક્સટેલ મિલેટ ઉપમા (શાકભાજી) + છાશ",220,8,9,"૧ મોટો બાઉલ + છાશ",["veg","high_fiber","south_indian"],"ફણસી, વટાણા","છાશ"),
+      D("bf_sou_moong_dosa","breakfast","મગ દાળ ઢોસા ×૨ + નાળિયેર-ચણા ચટણી",240,13,9,"૨ ઢોસા + ચટણી",["veg","high_protein","south_indian"],"-","મગ દાળ"),
+      D("bf_pun_besan_chilla","breakfast","બેસન ચીલા (પનીર સ્ટફ્ડ) ×૨ + ફુદીના ચટણી",250,17,8,"૨ ચીલા + ચટણી",["veg","high_protein","punjabi"],"કાંદા, ટામેટાં","બેસન, પનીર"),
+      D("bf_pun_paneer_bhurji","breakfast","પનીર ભુરજી + ૧ મલ્ટીગ્રેઈન ટોસ્ટ",260,19,7,"૧૦૦g ભુરજી + ૧ ટોસ્ટ",["veg","high_protein","punjabi"],"કાંદા, ટામેટાં","પનીર"),
+      D("ln_mar_amti_bhakri","lunch","આમટી (તુવેર દાળ) + જુવાર ભાકરી + કોશિંબીર",350,16,9,"૧ ભાકરી + ૧ વાટકી આમટી",["veg","high_fiber","marathi","barrier_plate"],"કાકડી, ટામેટાં","તુવેર દાળ"),
+      D("ln_mar_matki_usal","lunch","મઠ ઉસળ + બાજરી ભાકરી + સલાડ",360,17,9,"૧ ભાકરી + ૧ વાટકી ઉસળ",["veg","high_fiber","marathi","barrier_plate"],"કાંદા, ટામેટાં","મઠ"),
+      D("ln_mar_palak_bhaji","lunch","પાલક ભાજી (ચણા દાળ) + જુવાર ભાકરી + તક",340,15,8,"૧ ભાકરી + વાટકી ભાજી + તક",["veg","high_fiber","liver_friendly","marathi","barrier_plate"],"પાલક","ચણા દાળ, છાશ"),
+      D("ln_mar_kulith","lunch","કુળથી ઉસળ + ભાકરી + કોશિંબીર",340,18,9,"૧ ભાકરી + ૧ વાટકી ઉસળ",["veg","high_protein","marathi","barrier_plate"],"કાકડી","કુળથી"),
+      D("ln_mar_dudhi_chana","lunch","દૂધી-ચણા દાળ ભાજી + ભાકરી + તક",340,16,9,"૧ ભાકરી + વાટકી ભાજી + તક",["veg","high_fiber","liver_friendly","marathi","barrier_plate"],"દૂધી","ચણા દાળ, છાશ"),
+      D("ln_mar_bharli_vangi","lunch","ભરલી વાંગી (ઓછા તેલમાં) + ભાકરી + દહીં",350,13,9,"૧ ભાકરી + ૨ રીંગણ + દહીં",["veg","marathi","barrier_plate"],"રીંગણ","દહીં"),
+      D("ln_pun_rajma_light","lunch","રાજમા (ઓછા તેલ) + ૧ મિસી રોટી + કચુંબર",380,18,10,"૧ વાટકી રાજમા + ૧ રોટી",["veg","high_fiber","punjabi","barrier_plate"],"કાંદા, ટામેટાં","રાજમા"),
+      D("ln_pun_chole_light","lunch","ચણા મસાલા (ઓછા તેલ) + ૧ આખા ઘઉંની રોટી + સલાડ",370,16,10,"૧ વાટકી ચણા + ૧ રોટી",["veg","high_fiber","punjabi","barrier_plate"],"કાંદા, ટામેટાં","દેશી ચણા"),
+      D("ln_pun_palak_paneer","lunch","પાલક પનીર (ઓછી ક્રીમ) + ૧ મિસી રોટી + સલાડ",390,22,8,"૧૦૦g પનીર + ૧ રોટી",["veg","high_protein","liver_friendly","punjabi","barrier_plate"],"પાલક","પનીર"),
+      D("ln_pun_dal_tadka","lunch","મગ દાળ તડકા + ૧ રોટી + ભીંડી શાક + છાશ",360,18,9,"૧ વાટકી દાળ + ૧ રોટી + છાશ",["veg","high_fiber","punjabi","barrier_plate"],"ભીંડા","મગ દાળ, છાશ"),
+      D("ln_pun_tandoori_paneer","lunch","તંદૂરી પનીર ટિક્કા (ગ્રીલ્ડ) + સલાડ + ૧ રોટી",380,26,6,"૧૫૦g પનીર + ૧ રોટી",["veg","high_protein","punjabi","low_gi"],"કેપ્સિકમ, કાંદા","પનીર"),
+      D("ln_pun_mixveg_raita","lunch","મિક્સ વેજ સબ્ઝી + રાયતા + ૧ રોટી",340,12,9,"૧ વાટકી શાક + રાયતા + ૧ રોટી",["veg","high_fiber","punjabi"],"ફણસી, ગાજર, વટાણા","દહીં"),
+      D("ln_sou_sambar_millet","lunch","સાંભાર + મિલેટ ભાત (૧ વાટકી) + પોરીયલ",380,15,10,"૧ વાટકી સાંભાર + ૧ વાટકી ભાત",["veg","high_fiber","south_indian","barrier_plate"],"દૂધી, ડ્રમસ્ટિક, કોબી","તુવેર દાળ"),
+      D("ln_sou_rasam_kootu","lunch","રસમ + મગ દાળ કૂટુ + રાગી રોટી",340,16,9,"૧ વાટકી કૂટુ + ૨ રોટી",["veg","high_fiber","south_indian","barrier_plate"],"દૂધી","મગ દાળ"),
+      D("ln_sou_avial","lunch","અવિયલ (મિક્સ વેજ-નાળિયેર) + કોડો ભાત + દહીં",370,12,10,"૧ વાટકી અવિયલ + ૧ વાટકી ભાત",["veg","south_indian","barrier_plate"],"ફણસી, દૂધી, કાચું કેળું","દહીં"),
+      D("ln_sou_keerai","lunch","કીરાઈ (પાલક) મસિયલ + રાગી રોટી + છાશ",330,13,8,"૧ વાટકી મસિયલ + ૨ રોટી + છાશ",["veg","high_fiber","liver_friendly","south_indian","barrier_plate"],"પાલક","મગ દાળ, છાશ"),
+      D("ln_sou_sundal","lunch","ચણા સુંદલ + રાગી ઢોસા ×૨ + મોળી છાશ",350,17,9,"૧ વાટકી સુંદલ + ૨ ઢોસા + છાશ",["veg","high_protein","south_indian","barrier_plate"],"નાળિયેર, કોથમીર","ચણા, છાશ"),
+      D("ln_sou_pesarattu_lunch","lunch","પેસરટ્ટુ ×૨ + સાંભાર + કાકડી સલાડ",340,18,9,"૨ ઢોસા + ૧ વાટકી સાંભાર",["veg","high_protein","south_indian","barrier_plate"],"કાકડી, દૂધી","લીલા મગ, તુવેર દાળ"),
+      D("ln_sou_curd_millet","lunch","દહીં-મિલેટ ભાત + પોરીયલ + સલાડ",360,11,10,"૧ વાટકી ભાત + ૧ વાટકી શાક",["veg","south_indian","barrier_plate"],"ફણસી, કોબી","દહીં"),
+      D("ln_jn_tindora_chana","lunch","ટીંડોળા-ચણા દાળ શાક + જુવાર રોટલો + કાકડી-ટામેટાં કચુંબર + છાશ",340,16,9,"૧ રોટલો + વાટકી શાક + છાશ",["veg","high_fiber","gujarati","barrier_plate"],"ટીંડોળા, કાકડી, ટામેટાં","ચણા દાળ, છાશ"),
+      D("ln_jn_turai_moong","lunch","તુરિયા-મગ દાળ + મલ્ટી-મિલેટ રોટલી + દહીં",330,15,8,"૨ રોટલી + વાટકી શાક + દહીં",["veg","high_fiber","liver_friendly","gujarati","barrier_plate"],"તુરિયા","મગ દાળ, દહીં"),
+      D("ln_jn_sprout_bowl","lunch","ફણગાવેલા મગ-મઠ સલાડ બાઉલ + ૧ જુવાર રોટલો + છાશ",350,19,9,"૧ મોટો બાઉલ + ૧ રોટલો + છાશ",["veg","high_protein","high_fiber","gujarati","barrier_plate"],"કાકડી, ટામેટાં, કોથમીર","મગ, મઠ, છાશ")
+    ];
+
+    const PROTOCOL_RULES = {
+      diabetes: {
+        maxMealGL: 10,
+        forbiddenTags: ["high_sugar", "refined_carbs", "fried"],
+        reasonChip: "✔ ડાયાબિટીસ: ગ્લાયસેમિક લોડ (GL ≤ 10)"
+      },
+      fatty_liver: {
+        forbiddenTags: ["fried", "high_sugar"],
+        reasonChip: "✔ લિવર: તેલ-ખાંડ મુક્ત ડિટોક્સ"
+      },
+      gym: {
+        reasonChip: "✔ જિમ: મસલ રિકવરી પ્રોટીન"
+      },
+      fat_loss: {
+        forbiddenTags: ["fried", "high_sugar"],
+        reasonChip: "✔ ફેટ લોસ: કેલરી ડેફિસિટ"
+      },
+      menopause: {
+        forbiddenTags: ["fried", "high_sugar"],
+        reasonChip: "✔ હોર્મોન બેલેન્સ: કેલ્શિયમ + પ્રોટીન + ફાઇબર"
+      }
+    };
+
+    function calculateClientTargets(profile) {
+      const weight = Number(profile.weight) || 70;
+      const height = Number(profile.height) || 170;
+      const age = Number(profile.age) || 38;
+      const gender = profile.gender || 'male';
+      const activity = profile.activity || 'light';
+      const goals = profile.conditions || ['diabetes'];
+      const clinical = goals.includes('diabetes') || goals.includes('fatty_liver');
+      const gym = goals.includes('gym');
+      const loss = goals.includes('fat_loss');
+      const meno = goals.includes('menopause');
+
+      let bmr = (10 * weight) + (6.25 * height) - (5 * age);
+      bmr = (gender === 'male') ? bmr + 5 : bmr - 161;
+      const actMultipliers = { sedentary: 1.2, light: 1.375, moderate: 1.55, active: 1.725 };
+      const tdee = Math.round(bmr * (actMultipliers[activity] || 1.375));
+      const floor = gender === 'male' ? 1450 : 1200;
+
+      let targetCal = tdee, ppk = 1.2, focusTag = 'Metabolic Care';
+      // SAFETY FIRST: diabetes / fatty liver clients never get a calorie surplus, even if they also do gym.
+      if (clinical) {
+        targetCal = Math.max(floor, tdee - (gym ? 200 : 300));
+        ppk = gym ? 1.6 : 1.25;
+        focusTag = gym ? 'Clinical + Strength Support' : (goals.includes('diabetes') ? 'Low Glycemic Stability' : 'Liver Detox & Clean Fat');
+      } else if (gym && loss) {
+        targetCal = Math.max(floor, tdee - 300);
+        ppk = 1.9;
+        focusTag = 'Lean Recomposition';
+      } else if (gym) {
+        targetCal = tdee + 250;
+        ppk = 1.8;
+        focusTag = 'Hypertrophy & High Protein';
+      } else if (loss) {
+        targetCal = Math.max(floor, tdee - 450);
+        ppk = 1.6;
+        focusTag = 'Fat Loss & Deficit';
+      } else if (meno) {
+        targetCal = Math.max(floor, tdee - 150);
+        ppk = 1.3;
+        focusTag = 'Hormone Balance & Bone Support';
+      }
+      // Protein is calculated on a reference weight (so very heavy clients don't get extreme targets).
+      const refWeight = Math.min(weight, Math.max(50, (height - 100) * 1.15));
+      if (profile.kidney || profile.kidneyIssue) { ppk = 0.8; focusTag += ' • Kidney-safe protein'; }
+      return {
+        targetCal: Math.round(targetCal),
+        targetProtein: Math.round(refWeight * ppk),
+        focusTag,
+        clinical
+      };
+    }
+
+    // Honest portion label: if calories are scaled, the portion text says so.
+    function scaleDishPortion(dish, scale) {
+      if (!dish) return null;
+      const f = Math.round(scale * 10) / 10;
+      const label = (f >= 0.95 && f <= 1.05) ? dish.basePortion : `${dish.basePortion} × ${f.toFixed(1)}`;
+      return {
+        ...dish,
+        cal: Math.round(dish.baseCal * f),
+        p: Math.round(dish.baseP * f * 10) / 10,
+        gl: Math.round(dish.gl * f),
+        portion: label
+      };
+    }
+
+    // ---- Allergens: inferred from dish text (Gujarati + English), so clients don't have to type exact dish names ----
+    const ALLERGEN_KEYWORDS = {
+      peanut: ['સીંગ', 'મગફળી', 'પીનટ', 'peanut'],
+      soy: ['સોયા', 'ટોફૂ', 'soy', 'tofu'],
+      dairy: ['પનીર', 'છાશ', 'દહીં', 'વ્હે', 'paneer', 'curd', 'whey', 'dairy'],
+      gluten: ['ઓટ્સ', 'મલ્ટી-મિલેટ', 'થેપલા', 'ઘઉં', 'oats', 'gluten', 'ગ્લુટેન'],
+      nuts: ['બદામ', 'અખરોટ', 'almond', 'walnut'],
+      egg: ['ઈંડા', 'ઈંડું', 'એગ ', 'egg'],
+      fish: ['ફિશ', 'માછલી', 'fish'],
+      mushroom: ['મશરૂમ', 'mushroom'],
+      jain: ['ડુંગળી', 'કાંદા', 'લસણ', 'બટેટા', 'બટાકા', 'બટાટા', 'ગાજર', 'મૂળા', 'બીટ', 'શક્કરિયા', 'આદું', 'આદુ', 'સુરણ', 'અળવી', 'onion', 'garlic', 'potato', 'carrot', 'beetroot', 'radish', 'ginger']
+    };
+    const CUISINE_TAGS = ['gujarati', 'marathi', 'punjabi', 'south_indian'];
+    const ALLERGEN_LABELS = { peanut: 'મગફળી/સીંગ', soy: 'સોયા', dairy: 'ડેરી (પનીર/દહીં/છાશ)', gluten: 'ગ્લુટેન', nuts: 'બદામ-અખરોટ', egg: 'ઈંડા', fish: 'માછલી', mushroom: 'મશરૂમ', jain: 'જૈન (કંદમૂળ/ડુંગળી-લસણ વગર)' };
+    const GOAL_LABELS = { diabetes: 'ડાયાબિટીસ', fatty_liver: 'ફેટી લિવર', gym: 'જિમ', fat_loss: 'ફેટ લોસ', menopause: 'મેનોપોઝ/હોર્મોન' };
+
+    function dishAllergens(dish) {
+      if (dish._alg) return dish._alg;
+      const text = (dish.name + ' ' + (dish.proteinItem || '') + ' ' + (dish.vegItem || '')).toLowerCase();
+      dish._alg = Object.keys(ALLERGEN_KEYWORDS).filter(a => ALLERGEN_KEYWORDS[a].some(k => text.includes(k.toLowerCase())));
+      return dish._alg;
+    }
+
+    function getClientPrefs(client) {
+      const p = client.preferences || {};
+      const typed = (p.allergies || []).map(a => String(a).toLowerCase().trim()).filter(Boolean);
+      const set = new Set(p.allergens || []);
+      typed.forEach(t => {
+        Object.keys(ALLERGEN_KEYWORDS).forEach(a => {
+          if (t === a || ALLERGEN_KEYWORDS[a].some(k => k.toLowerCase().trim() === t || t.includes(k.toLowerCase().trim()))) set.add(a);
+        });
+      });
+      const cuisine = p.cuisine || client.cuisine || 'gujarati';
+      if (cuisine === 'jain') set.add('jain');
+      const diet = cuisine === 'jain' ? 'veg' : (client.diet || 'veg');
+      return { cuisine, cuisineKey: cuisine === 'jain' ? 'gujarati' : cuisine, diet, allergenSet: set, allergyText: typed, kidney: !!(client.kidney || client.kidneyIssue), swapScores: p.swapScores || {} };
+    }
+
+    // Safe filtering. If NOTHING safe is available we return [] (never fall back to an unsafe dish).
+    function getCandidatesForSlot(slot, clientGoals, prefs, excludeId = null) {
+      return CLINICAL_FOOD_DB.filter(item => {
+        if (item.slot !== slot) return false;
+        if (excludeId && item.id === excludeId) return false;
+        const tags = item.tags || [];
+        if (tags.includes('nonveg') && prefs.diet !== 'nonveg') return false;
+        if (tags.includes('egg') && !['egg', 'nonveg'].includes(prefs.diet)) return false;
+        if (dishAllergens(item).some(a => prefs.allergenSet.has(a))) return false;
+        const ct = tags.filter(t => CUISINE_TAGS.includes(t));
+        if (prefs.cuisine !== 'general' && ct.length && !ct.includes(prefs.cuisineKey)) return false;
+        if (prefs.allergyText.some(a => a.length > 2 && item.name.toLowerCase().includes(a))) return false;
+        if (clientGoals.includes('diabetes')) {
+          if (item.gl > PROTOCOL_RULES.diabetes.maxMealGL) return false;
+          if (tags.some(t => PROTOCOL_RULES.diabetes.forbiddenTags.includes(t))) return false;
+        }
+        if (clientGoals.includes('fatty_liver')) {
+          if (tags.some(t => PROTOCOL_RULES.fatty_liver.forbiddenTags.includes(t))) return false;
+        }
+        if (clientGoals.includes('fat_loss') && tags.some(t => PROTOCOL_RULES.fat_loss.forbiddenTags.includes(t))) return false;
+        return true;
+      });
+    }
+
+    function getDayIndex(dateKey, client) {
+      const dObj = parseDateKey(dateKey);
+      const dayOfYear = Math.floor((dObj - new Date(dObj.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+      // Small per-client offset so two clients don't get an identical sequence on the same day.
+      const off = (parseInt(String(client.phone || '0').slice(-3), 10) || 0) % 7;
+      return dayOfYear + off;
+    }
+
+    function slotsForClient(goals) {
+      const gym = goals.includes('gym');
+      return ['morning'].concat(gym ? ['pre_workout'] : [], ['breakfast', 'lunch', 'snack'], gym ? ['post_workout'] : [], ['dinner']);
+    }
+
+    // Deterministic rotation. Pools are 9-14 dishes per slot, so no repeat inside any 7-day window.
+    function generateDayMenu(dateKey, client) {
+      const goals = client.conditions || ['diabetes', 'fatty_liver'];
+      const prefs = getClientPrefs(client);
+      const targets = calculateClientTargets(client);
+      const dayIdx = getDayIndex(dateKey, client);
+
+      const chosen = {};
+      slotsForClient(goals).forEach((slot, sIdx) => {
+        const pool = getCandidatesForSlot(slot, goals, prefs);
+        chosen[slot] = pool.length ? pool[(dayIdx + sIdx * 3) % pool.length] : null;
+      });
+
+      // Portion scale so the day lands near the calorie target (limited range; top-up cards cover the rest).
+      const baseTotal = Object.values(chosen).reduce((s, d) => s + (d ? d.baseCal : 0), 0) || 1;
+      const maxScale = targets.clinical ? 1.3 : 1.5;
+      const scale = Math.min(Math.max(targets.targetCal / baseTotal, 0.85), maxScale);
+
+      const plan = {};
+      Object.keys(chosen).forEach(slot => { plan[slot] = chosen[slot] ? scaleDishPortion(chosen[slot], scale) : null; });
+      Object.defineProperty(plan, '__scale', { value: scale, enumerable: false });
+      return plan;
+    }
+
+    // Final plan for a date = generated plan + client's swaps (stored as dish IDs only).
+    // Legacy partial "generatedPlan" values (the old bug) are healed here instead of hiding meals.
+    function getDayPlan(dateKey, client) {
+      const plan = generateDayMenu(dateKey, client);
+      const scale = plan.__scale || 1;
+      const comp = (client.compliance || {})[dateKey] || {};
+      const goals = client.conditions || ['diabetes', 'fatty_liver'];
+      const prefs = getClientPrefs(client);
+      const applyId = (slot, id) => {
+        if (!(slot in plan)) return;
+        const dish = CLINICAL_FOOD_DB.find(d => d.id === id);
+        if (dish && dish.slot === slot && getCandidatesForSlot(slot, goals, prefs).some(d => d.id === id)) plan[slot] = scaleDishPortion(dish, scale);
+      };
+      if (comp.generatedPlan) Object.keys(comp.generatedPlan).forEach(s => applyId(s, comp.generatedPlan[s]?.id));
+      if (comp.swaps) Object.keys(comp.swaps).forEach(s => applyId(s, comp.swaps[s]));
+      return plan;
+    }
+
+    // ---- Top-up suggestions when the plan falls short of the calorie/protein target ----
+    const TOPUP_DB = [
+      D("tu_paneer", "topup", "૫૦g વધારાનું પનીર / ટોફૂ", 130, 10, 1, "૫૦g", ["veg", "high_protein", "low_gi"]),
+      D("tu_curd", "topup", "૧ વાટકી ગ્રીક-સ્ટાઇલ દહીં", 100, 9, 3, "૧ વાટકી", ["veg", "high_protein", "low_gi"]),
+      D("tu_sattu", "topup", "સત્તુ છાશ", 130, 8, 5, "૧ ગ્લાસ", ["veg", "high_protein", "low_gi"]),
+      D("tu_nuts", "topup", "મુઠ્ઠી (૨૦g) બદામ-અખરોટ", 120, 4, 1, "૨૦g", ["veg", "healthy_fat", "low_gi"]),
+      D("tu_peanuts", "topup", "૨૦g શેકેલી સીંગ", 115, 5, 2, "૨૦g", ["veg", "healthy_fat", "low_gi"]),
+      D("tu_roti", "topup", "૧ વધારાની મલ્ટી-મિલેટ રોટલી", 110, 3.5, 8, "૧ રોટલી", ["veg", "low_gi"]),
+      D("tu_whey", "topup", "વ્હે પ્રોટીન શેક (૧ સ્કૂપ)", 120, 24, 1, "૧ સ્કૂપ", ["veg", "high_protein", "low_gi", "gym_only"]),
+      D("tu_eggs", "topup", "બાફેલા ઈંડા ×૨", 140, 12, 1, "૨ ઈંડા", ["egg", "high_protein", "low_gi"]),
+      D("tu_chicken", "topup", "૧૦૦g ગ્રીલ્ડ ચિકન", 165, 31, 0, "૧૦૦g", ["nonveg", "high_protein", "low_gi"])
+    ];
+
+    function getTopUps(goals, prefs, gapCal, gapP) {
+      const ok = TOPUP_DB.filter(item => {
+        const tags = item.tags;
+        if (tags.includes('gym_only') && !goals.includes('gym')) return false;
+        if (tags.includes('nonveg') && prefs.diet !== 'nonveg') return false;
+        if (tags.includes('egg') && !['egg', 'nonveg'].includes(prefs.diet)) return false;
+        if (dishAllergens(item).some(a => prefs.allergenSet.has(a))) return false;
+        if (goals.includes('diabetes') && item.gl > PROTOCOL_RULES.diabetes.maxMealGL) return false;
+        return true;
+      });
+      // protein gap -> protein-dense first; otherwise calorie-dense healthy fats / roti
+      ok.sort((a, b) => gapP > 12 ? (b.baseP / b.baseCal - a.baseP / a.baseCal) : (b.baseCal - a.baseCal));
+      return ok.slice(0, 3);
+    }
+
+    // ---- Off-plan food logging (clients eat things that are not on the plan - log them honestly) ----
+    const COMMON_EXTRAS = [
+      { n: 'ચા (ખાંડ સાથે) ૧ કપ', cal: 45, p: 1, gl: 6 },
+      { n: 'ચા (ખાંડ વગર) ૧ કપ', cal: 20, p: 1, gl: 1 },
+      { n: 'ફળ (૧ મધ્યમ)', cal: 70, p: 1, gl: 7 },
+      { n: 'કેળું ૧', cal: 90, p: 1, gl: 12 },
+      { n: 'વધારાની રોટલી ૧', cal: 110, p: 3.5, gl: 8 },
+      { n: 'બિસ્કિટ ×૨', cal: 80, p: 1, gl: 10 },
+      { n: 'ખીચડી-કઢી ૧ પ્લેટ', cal: 380, p: 12, gl: 25 },
+      { n: 'ભજીયા ×૪', cal: 280, p: 5, gl: 12 },
+      { n: 'ગાંઠિયા / ફરસાણ ૫૦g', cal: 240, p: 5, gl: 15 },
+      { n: 'પૂરી ×૨', cal: 300, p: 5, gl: 20 },
+      { n: 'મીઠાઈ ૧ પીસ', cal: 200, p: 2, gl: 18 },
+      { n: 'જ્યુસ / કોલ્ડ ડ્રિંક ૧ ગ્લાસ', cal: 120, p: 0, gl: 20 }
+    ];
+
+    function getTodayDateKey() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    }
+
+    function parseDateKey(key) {
+      const parts = key.split('-');
+      return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    }
 
 
-Metabolic Pro Admin
-Clinical CRM & Staff Portal
-પોર્ટલ ખોલો 🔐
-ઓનર પાસવર્ડ અથવા કોચ PIN દાખલ કરો.
-MP
-Admin CRM
-Owner
-Helpline: Loading...
-⚙️ Logout
-ડેશબોર્ડ નજ ક્યૂ દર્દીઓ બ્રોડકાસ્ટ કોચ
+    // ===================== ADMIN STATE =====================
+    let liveClients = [];
+    let liveCoaches = [];
+    let currentPool = 'trial';
+    let isManualOverride = false;
+    let currentUserRole = 'staff';
+    let loggedInCoach = null;
+    let activeCoachPhone = "919081421028";
+    let activeCoachName = "Metabolic Pro Coach";
+    let portalUrl = '';
+    let liveSessionLinks = { yoga: '', garbh: '', med: '', record: '' };
+    let mustSetPassword = false;
+    let insCache = {};
+    let clientsUnsub = null, coachesUnsub = null;
+    const $ = id => document.getElementById(id);
 
-⚠️ ધ્યાન જોઈએ (Needs Attention)
+    function toast(msg) {
+      const t = $('toast'); if (!t) return;
+      t.innerText = msg; t.classList.remove('hidden');
+      clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.add('hidden'), 2600);
+    }
+    async function safe(fn, okMsg) {
+      try { const r = await fn(); if (okMsg) toast(okMsg); return r; }
+      catch (e) { console.error(e); alert('સેવ/લોડ કરવામાં સમસ્યા આવી (ઇન્ટરનેટ ચેક કરો): ' + (e.message || e)); return null; }
+    }
 
-🏆 ટોપ પર્ફોર્મર્સ (૭ દિવસ)
+    function formatWaPhone(phone) {
+      let clean = String(phone || '').replace(/\D/g, '');
+      if (clean.length === 10) clean = '91' + clean;
+      if (clean.startsWith('0') && clean.length === 11) clean = '91' + clean.substring(1);
+      return clean;
+    }
+    function maskPhoneNumber(phone) {
+      const clean = String(phone || '').replace(/\D/g, '');
+      if (currentUserRole === 'owner') return clean;
+      return clean.length >= 10 ? clean.substring(0, 5) + ' •••••' : '••••••••••';
+    }
+    function waLink(phone, msg) { return `https://api.whatsapp.com/send?phone=${formatWaPhone(phone)}&text=${encodeURIComponent(msg)}`; }
+    function dateKeyOf(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+    function pkLocal(k) { const [a, b, c] = String(k).split('-').map(Number); return new Date(a, (b || 1) - 1, c || 1); }
+    function daysBetween(aKey, bKey) { return Math.round((pkLocal(bKey) - pkLocal(aKey)) / 86400000); }
+    function firstName(n) { return String(n || '').trim().split(/\s+/)[0] || 'મિત્ર'; }
 
-સ્માર્ટ વોટ્સએપ નજ ક્યૂ
-🕒 Auto-Detecting...
-સમય મુજબ સ્લોટ આપોઆપ પસંદ થાય છે. મેસેજમાં ક્લાયન્ટની આજની વાનગી આપોઆપ આવે છે.
-              🥗 સવારનો નાસ્તો
-              🍲 બપોરનું ભોજન
-              🚶‍♂️ પોસ્ટ-મીલ વોક
-              🥜 સાંજનો નાસ્તો
-              🥣 રાત્રિ ભોજન
-              💧 પાણી રિમાઇન્ડર
-              📝 આજનો લોગ ભરવાનો
-            
-⏳ Free (0) 👑 VIP (0) ⚠️ Pending WA (0) 🔒 Expired (0)
-પછીનાને મોકલો (Next Unsent)
+    // ===================== SECURITY: hashing, lockout =====================
+    async function hashPin(p) {
+      const s = 'mp-v1:' + String(p);
+      try {
+        if (window.crypto && crypto.subtle) {
+          const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+          return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+      } catch (e) {}
+      let h1 = 0xdeadbeef, h2 = 0x41c6ce57;           // fallback (non-secure contexts): cyrb53
+      for (let i = 0; i < s.length; i++) { const ch = s.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); }
+      h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+      h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+      return 'f' + (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16);
+    }
+    function adminLocked() {
+      try { const o = JSON.parse(localStorage.getItem('mp_adm_lg') || '{}'); if (o.until && Date.now() < o.until) return Math.ceil((o.until - Date.now()) / 60000); } catch (e) {}
+      return 0;
+    }
+    function adminFail() {
+      let o = {}; try { o = JSON.parse(localStorage.getItem('mp_adm_lg') || '{}'); } catch (e) {}
+      o.n = (o.n || 0) + 1; if (o.n >= 5) { o.until = Date.now() + 5 * 60000; o.n = 0; }
+      try { localStorage.setItem('mp_adm_lg', JSON.stringify(o)); } catch (e) {}
+    }
 
-              બધા⚠️ ધ્યાન જોઈએPending WA
-              Free TrialVIPExpired
-             ⬇ CSV
+    async function verifyAdminPin() {
+      const input = $('inAdminPin').value.trim();
+      if (!input) return;
+      const lk = adminLocked();
+      if (lk) return alert(`ઘણા ખોટા પ્રયત્નો. ${lk} મિનિટ પછી ફરી પ્રયત્ન કરો.`);
+      const btn = $('btnAdminLogin'); btn.disabled = true;
+      try {
+        let adminDoc, coachDoc, secDoc;
+        try {
+          adminDoc = await db.collection('settings').doc('admin').get();
+          coachDoc = await db.collection('settings').doc('coach').get();
+          secDoc = await db.collection('settings').doc('security').get();
+        } catch (e) { return alert('ડેટાબેઝ સાથે કનેક્ટ થઈ શકાયું નથી. ઇન્ટરનેટ ચેક કરી ફરી પ્રયત્ન કરો.'); }
+        const adm = adminDoc.exists ? adminDoc.data() : null;
+        const legacy = coachDoc.exists ? coachDoc.data() : {};
+        const secLegacy = (secDoc && secDoc.exists) ? secDoc.data() : {};
+        const legacyMaster = String(legacy.masterPin || secLegacy.masterPin || '');
+        const h = await hashPin(input);
+        let role = null, coach = null, firstRun = false;
 
-📣 બ્રોડકાસ્ટ મેસેજ
-              બધા સક્રિયFree Trial👑 VIP⚠️ ધ્યાન જોઈએ
-              🩺 ડાયાબિટીસ🥒 ફેટી લિવર💪 જિમ⚖️ ફેટ લોસ🌸 મેનોપોઝ
-            
-{name} = ક્લાયન્ટનું પહેલું નામ, {link} = પોર્ટલ લિંક. WhatsApp સ્પામથી બચવા ફક્ત તમારા ક્લાયન્ટ્સને અને ઓછી સંખ્યામાં મોકલો.
-પછીનાને મોકલો (0)
+        if (adm && adm.hash) { if (h === adm.hash) role = 'owner'; }
+        else if (legacyMaster) { if (legacyMaster === input) { role = 'owner'; mustSetPassword = true; } }
+        else { role = 'owner'; mustSetPassword = true; firstRun = true; }   // nothing configured yet: this person becomes the owner and must set a password now
 
-નવો ક્લિનિકલ કોચ ઉમેરો
-કોચનું પૂરું નામ *
-WhatsApp નંબર (૧૦ અંક) *
-+ કોચ ઉમેરો & PIN બનાવો
-સક્રિય કોચ લિસ્ટ
+        if (!role) {
+          let q = await db.collection('coaches').where('pinHash', '==', h).limit(1).get();
+          if (q.empty) {
+            q = await db.collection('coaches').where('pin', '==', input).limit(1).get();   // legacy plain-text PIN
+            if (!q.empty) { const d0 = q.docs[0]; db.collection('coaches').doc(d0.id).update({ pinHash: h, pin: firebase.firestore.FieldValue.delete() }).catch(() => {}); }
+          }
+          if (!q.empty) { role = 'staff'; coach = { id: q.docs[0].id, ...q.docs[0].data() }; }
+        }
+        if (!role) { adminFail(); return alert('ખોટો પાસવર્ડ/PIN છે!'); }
+        try { localStorage.removeItem('mp_adm_lg'); } catch (e) {}
 
-Client
+        currentUserRole = role;
+        activeCoachPhone = formatWaPhone(legacy.phone || activeCoachPhone);
+        try {
+          const pub = await db.collection('settings').doc('public').get();
+          if (pub.exists) { const p = pub.data(); if (p.phone || p.coachPhone) activeCoachPhone = formatWaPhone(p.phone || p.coachPhone); activeCoachName = p.name || activeCoachName; portalUrl = p.portalUrl || ''; }
+          const live = await db.collection('settings').doc('live_sessions').get();
+          if (live.exists) liveSessionLinks = { yoga: '', garbh: '', med: '', record: '', ...live.data() };
+        } catch (e) { console.error(e); }
 
-નવો ઓનર પાસવર્ડ બનાવો
-સુરક્ષા માટે ઓછામાં ઓછા ૬ અક્ષરનો પાસવર્ડ બનાવો (અક્ષર + આંકડા વધુ સારા).
-સેવ કરો 🔒
-ઓનર કંટ્રોલ & સેટિંગ્સ
-મુખ્ય હેલ્પલાઇન WhatsApp નંબર
-હેલ્પલાઇન/કોચનું નામ
-ક્લાયન્ટ પોર્ટલ લિંક (મેસેજમાં મૂકવા)
-પાસવર્ડ બદલવો હોય તો (ખાલી = ના બદલો)
-🔴 લાઈવ ક્લાસ લિંક્સ (Google Meet / Zoom)
-🧘‍♀️ યોગા & પ્રાણાયામ
-🌸 ગર્ભસંસ્કાર
-🧠 મેડિટેશન
-🎥 લેટેસ્ટ રેકોર્ડિંગ (YouTube Unlisted)
-રદ કરો સેવ કરો 💾
+        if (role === 'owner') {
+          loggedInCoach = { name: 'Master Admin', id: 'owner' };
+          $('roleBadge').innerText = 'Owner'; $('roleBadge').className = 'px-2 py-0.5 bg-amber-400 text-slate-900 text-[9px] rounded-full font-black whitespace-nowrap';
+          $('btnOwnerSettings').classList.remove('hidden'); $('atab-coaches').classList.remove('hidden'); $('btnExportCsv').classList.remove('hidden');
+        } else {
+          loggedInCoach = coach;
+          $('roleBadge').innerText = `Coach: ${coach.name}`; $('roleBadge').className = 'px-2 py-0.5 bg-teal-800 text-teal-200 text-[9px] rounded-full font-bold whitespace-nowrap';
+          $('btnOwnerSettings').classList.add('hidden'); $('atab-coaches').classList.add('hidden'); $('btnExportCsv').classList.add('hidden');
+        }
+        $('headerCoachDisplay').innerText = `Helpline: ${activeCoachPhone}`;
+        $('adminAuthView').classList.add('hidden'); $('adminMainView').classList.remove('hidden');
+        setAdminTab('dash'); autoApplyTimeSlot(); initBroadcast();
+        listenToCoaches(); listenToClients();
+        if (mustSetPassword) openSetPw(firstRun ? 'પહેલી વાર સેટઅપ: ઓનર પાસવર્ડ બનાવો' : 'સુરક્ષા અપગ્રેડ: નવો ઓનર પાસવર્ડ બનાવો', firstRun ? '' : 'જૂનો માસ્ટર PIN હવે ડેટાબેઝમાં સાદા ટેક્સ્ટ તરીકે રહેશે નહીં.');
+      } finally { btn.disabled = false; }
+    }
+
+    function openSetPw(title, note) {
+      $('pwTitle').innerText = title || 'નવો ઓનર પાસવર્ડ બનાવો';
+      if (note) $('pwNote').innerText = note;
+      $('npw1').value = ''; $('npw2').value = '';
+      $('modalSetPw').classList.remove('hidden');
+    }
+    async function writeAdminPassword(pw) {
+      const h = await hashPin(pw);
+      await db.collection('settings').doc('admin').set({ hash: h, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+      try { await db.collection('settings').doc('coach').update({ masterPin: firebase.firestore.FieldValue.delete() }); } catch (e) { /* doc may not exist */ }
+      try { await db.collection('settings').doc('security').update({ masterPin: firebase.firestore.FieldValue.delete() }); } catch (e) { /* doc may not exist */ }
+    }
+    async function saveNewPassword() {
+      const a = $('npw1').value, b = $('npw2').value;
+      if (a.length < 6) return alert('પાસવર્ડ ઓછામાં ઓછો ૬ અક્ષરનો રાખો.');
+      if (/^(1234|123456|000000|111111|password)$/i.test(a)) return alert('આ પાસવર્ડ સહેલો છે, બીજો પસંદ કરો.');
+      if (a !== b) return alert('બંને પાસવર્ડ સરખા નથી.');
+      const ok = await safe(() => writeAdminPassword(a), '✅ પાસવર્ડ સેવ થયો');
+      if (ok === null) return;
+      mustSetPassword = false; $('modalSetPw').classList.add('hidden');
+    }
+
+    function logoutAdmin() { if (clientsUnsub) clientsUnsub(); if (coachesUnsub) coachesUnsub(); location.reload(); }
+
+    // ===================== NAVIGATION =====================
+    function setAdminTab(tab) {
+      if (tab === 'coaches' && currentUserRole !== 'owner') tab = 'dash';
+      ['dash', 'nudge', 'clients', 'broadcast', 'coaches'].forEach(t => {
+        const v = $('aview-' + t), b = $('atab-' + t);
+        if (v) v.classList.add('hidden');
+        if (b) b.className = "px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap";
+      });
+      $('aview-' + tab).classList.remove('hidden');
+      $('atab-' + tab).className = "tab-active px-3 py-2 rounded-xl whitespace-nowrap";
+      if (tab === 'broadcast') renderBroadcast();
+    }
+
+    function listenToCoaches() {
+      if (coachesUnsub) coachesUnsub();
+      coachesUnsub = db.collection('coaches').onSnapshot(snap => {
+        liveCoaches = []; snap.forEach(d => liveCoaches.push({ id: d.id, ...d.data() }));
+        renderCoachesList(); renderQueue(); renderClientsList();
+      }, e => console.error(e));
+    }
+    function listenToClients() {
+      if (clientsUnsub) clientsUnsub();
+      clientsUnsub = db.collection('clients').onSnapshot(snap => {
+        liveClients = []; snap.forEach(d => liveClients.push({ id: d.id, ...d.data() }));
+        liveClients.sort((a, b) => ((b.createdAt && b.createdAt.seconds) || 0) - ((a.createdAt && a.createdAt.seconds) || 0));
+        insCache = {};
+        renderAll();
+      }, e => { console.error(e); toast('ક્લાયન્ટ ડેટા લોડ થયો નથી'); });
+    }
+    function renderAll() {
+      updatePoolCounters(); renderDashboard(); renderQueue(); renderClientsList(); renderBroadcast();
+      const mc = $('modalClient');
+      if (mc && !mc.classList.contains('hidden') && mc.dataset.id) openClientModal(mc.dataset.id, true);
+    }
+    function accessible() {
+      return liveClients.filter(c => currentUserRole === 'owner' || c.assignedCoachId === (loggedInCoach && loggedInCoach.id));
+    }
+
+    // ===================== MEMBERSHIP HELPERS =====================
+    function isClientVip(cl) {
+      if (!cl) return false;
+      if (cl.isVip === true) return !cl.vipExpiryDate || String(cl.vipExpiryDate) >= dateKeyOf(new Date());
+      return Number(cl.trialDays) >= 900;
+    }
+    function trialLeft(cl) {
+      if (isClientVip(cl)) return null;
+      const td = Number(cl.trialDays) || 30;
+      const used = Math.max(0, daysBetween(cl.joiningDate || dateKeyOf(new Date()), dateKeyOf(new Date())));
+      return td - used;
+    }
+    function poolOf(c) {
+      if (!c.whatsappVerified) return 'pending';
+      if (isClientVip(c)) return 'vip';
+      const left = trialLeft(c);
+      return left !== null && left < 0 ? 'expired' : 'trial';
+    }
+    function updatePoolCounters() {
+      const n = { trial: 0, vip: 0, pending: 0, expired: 0 };
+      accessible().forEach(c => n[poolOf(c)]++);
+      $('cntTrial').innerText = n.trial; $('cntVip').innerText = n.vip; $('cntPending').innerText = n.pending; $('cntExpired').innerText = n.expired;
+    }
+    function setPoolFilter(pool) {
+      currentPool = pool;
+      ['trial', 'vip', 'pending', 'expired'].forEach(p => $('pfilter-' + p).className = "px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 font-bold whitespace-nowrap");
+      $('pfilter-' + pool).className = "px-3 py-1.5 rounded-xl bg-teal-600 text-white font-bold whitespace-nowrap";
+      renderQueue();
+    }
+
+    // ===================== CLIENT INSIGHTS =====================
+    function hasLog(d) {
+      if (!d) return false;
+      if (d.checks && Object.keys(d.checks).length) return true;
+      if (Number(d.water) > 0 || d.metric1 || d.metric2 || d.weight) return true;
+      return ['dtox', 'b', 'l', 'd'].some(k => d[k] !== undefined);
+    }
+    function dayScore(cl, k) {
+      const d = (cl.compliance || {})[k]; if (!d) return null;
+      if (d.checks) {
+        let plan = null; try { plan = getDayPlan(k, cl); } catch (e) {}
+        const slots = plan ? Object.keys(plan).filter(s => plan[s]) : Object.keys(d.checks);
+        if (!slots.length) return null;
+        let pts = 0, m = 0;
+        slots.forEach(s => { const c = d.checks[s]; if (c === 'done') { pts += 100; m++; } else if (c === 'half') { pts += 50; m++; } else if (c === 'miss') m++; });
+        return m ? Math.round(pts / slots.length) : null;
+      }
+      const legacy = ['dtox', 'b', 'l', 'd'].filter(x => d[x] !== undefined);
+      return legacy.length ? Math.round(legacy.reduce((a, x) => a + Number(d[x] || 0), 0) / 4 * 100) : null;
+    }
+    function insights(cl) {
+      if (insCache[cl.id]) return insCache[cl.id];
+      const comp = cl.compliance || {}; const today = dateKeyOf(new Date());
+      const keys = Object.keys(comp).sort();
+      let lastLog = null; keys.forEach(k => { if (hasLog(comp[k])) lastLog = k; });
+      const daysSince = lastLog ? daysBetween(lastLog, today) : null;
+      let sum = 0, n = 0, logged7 = 0;
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(); d.setDate(d.getDate() - i); const k = dateKeyOf(d);
+        if (hasLog(comp[k])) logged7++;
+        const sc = dayScore(cl, k); if (sc !== null) { sum += sc; n++; }
+      }
+      const avg7 = n ? Math.round(sum / n) : null;
+      let lastFasting = null; keys.forEach(k => { const v = Number((comp[k] || {}).metric1); if (v > 0) lastFasting = { v, k }; });
+      const isD = (cl.conditions || []).includes('diabetes');
+      let sugarAlert = null;
+      if (isD) for (let i = 0; i < 3 && !sugarAlert; i++) {
+        const d = new Date(); d.setDate(d.getDate() - i); const k = dateKeyOf(d); const c = comp[k] || {};
+        [c.metric1, c.metric2].map(Number).filter(v => v > 0).forEach(v => { if (!sugarAlert && (v < 70 || v > 300)) sugarAlert = { v, k, type: v < 70 ? 'low' : 'high' }; });
+      }
+      const tl = trialLeft(cl);
+      const flags = [];
+      if (sugarAlert) flags.push({ t: 'sugar', text: sugarAlert.type === 'low' ? `🔴 શુગર ${sugarAlert.v} (ઓછી)` : `🔴 શુગર ${sugarAlert.v} (વધુ)` });
+      if (cl.whatsappVerified && (daysSince === null ? daysBetween(cl.joiningDate || today, today) >= 2 : daysSince >= 3)) flags.push({ t: 'nolog', text: daysSince === null ? 'હજી લોગ નથી' : `${daysSince} દિવસથી લોગ નથી` });
+      if (avg7 !== null && avg7 < 40 && logged7 >= 3) flags.push({ t: 'low', text: `સ્કોર ${avg7}%` });
+      if (tl !== null && tl >= 0 && tl <= 5) flags.push({ t: 'trial', text: `ટ્રાયલ ${tl} દિવસ` });
+      if (tl !== null && tl < 0) flags.push({ t: 'expired', text: 'ટ્રાયલ પૂરો' });
+      if (!cl.whatsappVerified) flags.push({ t: 'pending', text: cl.waRequested ? 'WA વેરિફાય બાકી (રિક્વેસ્ટ આવી)' : 'WA વેરિફાય બાકી' });
+      return (insCache[cl.id] = { lastLog, daysSince, avg7, logged7, lastFasting, sugarAlert, trialLeft: tl, flags });
+    }
+    function needsAttention(cl) { const f = insights(cl).flags; return f.some(x => ['sugar', 'nolog', 'low'].includes(x.t)); }
+
+    // ===================== DASHBOARD =====================
+    function renderDashboard() {
+      const list = accessible(); const today = dateKeyOf(new Date());
+      const activeToday = list.filter(c => hasLog((c.compliance || {})[today])).length;
+      const attention = list.filter(needsAttention);
+      const endingSoon = list.filter(c => { const t = trialLeft(c); return t !== null && t >= 0 && t <= 5; }).length;
+      const pending = list.filter(c => !c.whatsappVerified).length;
+      const vip = list.filter(isClientVip).length;
+      const tile = (v, l, cls) => `<div class="card-clean rounded-2xl p-2.5 text-center ${cls || ''}"><div class="text-lg font-black">${v}</div><div class="text-[9px] font-bold text-slate-500 leading-tight">${l}</div></div>`;
+      $('dashKpis').innerHTML = tile(list.length, 'કુલ દર્દીઓ') + tile(activeToday, 'આજે લોગ કર્યો', 'text-emerald-700') + tile(attention.length, 'ધ્યાન જોઈએ', attention.length ? 'text-rose-700' : '') + tile(endingSoon, 'ટ્રાયલ ૫ દિવસમાં પૂરો', 'text-amber-700') + tile(pending, 'WA વેરિફાય બાકી', pending ? 'text-sky-700' : '') + tile(vip, '👑 VIP', 'text-amber-700');
+      const att = $('dashAttention');
+      const rows = list.filter(c => insights(c).flags.some(f => f.t !== 'trial' && f.t !== 'expired') || insights(c).flags.some(f => f.t === 'trial'));
+      rows.sort((a, b) => (insights(b).flags.some(f => f.t === 'sugar') ? 1 : 0) - (insights(a).flags.some(f => f.t === 'sugar') ? 1 : 0));
+      att.innerHTML = rows.length ? rows.slice(0, 25).map(c => attentionRow(c)).join('') : '<div class="text-center text-slate-400 py-4">બધું સરસ ચાલે છે 🎉</div>';
+      const top = list.map(c => ({ c, a: insights(c).avg7 })).filter(x => x.a !== null).sort((a, b) => b.a - a.a).slice(0, 5);
+      $('dashTop').innerHTML = top.length ? top.map((x, i) => `<div class="flex items-center justify-between bg-slate-50 border rounded-xl px-2.5 py-1.5"><span class="font-bold">${['🥇', '🥈', '🥉', '4️⃣', '5️⃣'][i]} ${esc(x.c.name)}</span><span class="font-black text-emerald-700">${x.a}%</span></div>`).join('') : '<div class="text-center text-slate-400 py-3">હજી પૂરતો ડેટા નથી.</div>';
+    }
+    function flagChip(f) {
+      const cls = f.t === 'sugar' ? 'bg-rose-100 text-rose-800' : f.t === 'nolog' ? 'bg-amber-100 text-amber-900' : f.t === 'low' ? 'bg-orange-100 text-orange-900' : f.t === 'pending' ? 'bg-sky-100 text-sky-900' : 'bg-slate-100 text-slate-700';
+      return `<span class="px-1.5 py-0.5 rounded-md text-[9px] font-black ${cls}">${esc(f.text)}</span>`;
+    }
+    function attentionRow(c) {
+      const ins = insights(c);
+      return `<div class="border rounded-xl p-2.5 space-y-1.5">
+        <div class="flex items-center justify-between gap-2"><div class="font-extrabold">${esc(c.name)} <span class="font-mono text-slate-400 font-normal">(${esc(maskPhoneNumber(c.phone))})</span></div>
+          <div class="flex gap-1"><button onclick="sendCheckin('${esc(c.id)}')" class="px-2 py-1 bg-emerald-600 text-white rounded-lg text-[10px] font-bold"><i class="fa-brands fa-whatsapp"></i></button>
+          <button onclick="openClientModal('${esc(c.id)}')" class="px-2 py-1 bg-slate-900 text-white rounded-lg text-[10px] font-bold">Details</button></div></div>
+        <div class="flex flex-wrap gap-1">${ins.flags.map(flagChip).join('')}</div></div>`;
+    }
+    function sendCheckin(id) {
+      const cl = liveClients.find(c => c.id === id); if (!cl) return;
+      const ins = insights(cl);
+      let msg;
+      if (ins.sugarAlert) msg = `નમસ્તે ${firstName(cl.name)}! તમારી શુગર ${ins.sugarAlert.v} mg/dl નોંધાઈ છે. કેવું લાગે છે? કોઈ ચક્કર/ધ્રુજારી/વધુ તરસ હોય તો જણાવો, અને જરૂર પડે તો આજે જ તમારા ડૉક્ટરનો સંપર્ક કરો.`;
+      else msg = `નમસ્તે ${firstName(cl.name)}! 🙏 થોડા દિવસથી તમારો લોગ દેખાતો નથી. બધું બરાબર છે ને? ૧ મિનિટમાં આજનું ભોજન અને પાણી નોંધી દેશો તો હું તમારો પ્લાન સારી રીતે ગોઠવી શકીશ.${portalUrl ? '\n' + portalUrl : ''}`;
+      window.open(waLink(cl.phone, msg), '_blank');
+    }
+
+    // ===================== NUDGE QUEUE =====================
+    function resolveCurrentTimeSlot() {
+      const m = new Date().getHours() * 60 + new Date().getMinutes();
+      if (m >= 360 && m < 660) return { slot: 'breakfast', label: '🌅 નાસ્તો સ્લોટ' };
+      if (m >= 660 && m < 840) return { slot: 'lunch', label: '🍲 લંચ સ્લોટ' };
+      if (m >= 840 && m < 1020) return { slot: 'walk', label: '🚶‍♂️ વોક સ્લોટ' };
+      if (m >= 1020 && m < 1170) return { slot: 'snack', label: '🥜 સ્નેક સ્લોટ' };
+      if (m >= 1170 && m < 1290) return { slot: 'dinner', label: '🥣 ડિનર સ્લોટ' };
+      return { slot: 'log', label: '📝 લોગ સ્લોટ' };
+    }
+    function autoApplyTimeSlot() {
+      if (isManualOverride) return;
+      const d = resolveCurrentTimeSlot();
+      const sel = $('selNudgeMealType'); if (sel) sel.value = d.slot;
+      const b = $('activeTimeSlotBadge'); if (b) b.innerText = `🕒 ${d.label} (ઓટો-સેટ)`;
+      renderQueue();
+    }
+    function handleManualSlotChange() {
+      isManualOverride = true;
+      const b = $('activeTimeSlotBadge');
+      if (b) { b.innerText = '⚙️ મેન્યુઅલ સિલેક્શન'; b.className = "px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[9px] font-black"; }
+      renderQueue();
+    }
+    function sentKey() { return 'mp_sent_' + dateKeyOf(new Date()); }
+    function getSent() { try { return JSON.parse(localStorage.getItem(sentKey()) || '{}'); } catch (e) { return {}; } }
+    function markSent(k) { const s = getSent(); s[k] = 1; try { localStorage.setItem(sentKey(), JSON.stringify(s)); } catch (e) {} }
+
+    function reminderInfo(cl, slot) {
+      const r = cl.reminders; if (!r) return { opted: false };
+      const off = r.enabled && slot in r.enabled && r.enabled[slot] === false;
+      return { opted: !!r.wa, off, time: r.times && r.times[slot] };
+    }
+    function buildNudge(cl, slot) {
+      const name = firstName(cl.name);
+      const today = dateKeyOf(new Date());
+      let dish = null;
+      if (['breakfast', 'lunch', 'snack', 'dinner'].includes(slot)) { try { dish = getDayPlan(today, cl)[slot]; } catch (e) {} }
+      const dishLine = dish ? `\n🍽️ આજે તમારા પ્લાનમાં: *${dish.name}* (${dish.portion})` : '';
+      const link = portalUrl ? `\n📲 ${portalUrl}` : '';
+      const done = "\nજમ્યા પછી પોર્ટલમાં 'લીધું' ટીક કરી લેજો.";
+      const M = {
+        breakfast: `નમસ્તે ${name}! 🌅 સવારના નાસ્તાનો સમય થયો છે.${dishLine}\nપ્રોટીન અને ફાઇબરથી ભરપૂર નાસ્તો લેજો.${done}${link}`,
+        lunch: `નમસ્તે ${name}! 🍲 બપોરના ભોજનનો સમય થયો છે.${dishLine}\nટિપ: પહેલાં સલાડ, પછી દાળ/શાક, છેલ્લે રોટલી, તેનાથી જમ્યા પછી શુગર વધતી ઓછી રહે છે.${done}${link}`,
+        walk: `નમસ્તે ${name}! 🚶‍♂️ જમ્યા પછી ૧૦-૧૫ મિનિટ વૉકનો સમય!\nહળવું ચાલવાથી જમ્યા પછીની શુગર ઘટાડવામાં અને પાચનમાં મદદ મળે છે.`,
+        snack: `નમસ્તે ${name}! 🥜 સાંજનો નાસ્તો & વોટર ચેક!${dishLine}\nદિવસનું પાણીનું લક્ષ્ય પૂરું કરજો.${link}`,
+        dinner: `નમસ્તે ${name}! 🥣 રાત્રિ ભોજનનો સમય થયો છે.${dishLine}\nહળવું ભોજન સૂવાના ૨-૩ કલાક પહેલાં પૂરું કરી લેજો.${done}${link}`,
+        water: `નમસ્તે ${name}! 💧 એક ગ્લાસ પાણી પી લો. આજનું લક્ષ્ય ~૩ લિટર છે, થોડું થોડું આખો દિવસ પીઓ.`,
+        log: `નમસ્તે ${name}! 📝 આજના મીલ્સ, પાણી${(cl.conditions || []).includes('diabetes') ? ' અને શુગર' : ''} પોર્ટલમાં નોંધવાનો સમય. ૧ મિનિટ લાગશે, તમારો સ્ટ્રીક જળવાઈ રહેશે 🔥${link}`
+      };
+      return M[slot] || M.log;
+    }
+
+    function filteredPool(pool) {
+      return accessible().filter(c => poolOf(c) === pool);
+    }
+    function renderQueue() {
+      const container = $('queueClientsContainer'); if (!container) return;
+      const slot = $('selNudgeMealType').value; const sent = getSent();
+      const list = filteredPool(currentPool);
+      if (!list.length) { container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">આ પૂલમાં કોઈ દર્દી નથી.</div>`; return; }
+      // clients who opted in for WhatsApp reminders first
+      list.sort((a, b) => (reminderInfo(b, slot).opted ? 1 : 0) - (reminderInfo(a, slot).opted ? 1 : 0));
+      container.innerHTML = list.map(cl => {
+        const isSent = sent[`${cl.id}_${slot}`]; const ri = reminderInfo(cl, slot); const ins = insights(cl);
+        const today = dateKeyOf(new Date()); const loggedToday = hasLog((cl.compliance || {})[today]);
+        const goals = (cl.conditions || []).map(g => (typeof GOAL_LABELS !== 'undefined' && GOAL_LABELS[g]) || g).join(' • ');
+        let btn;
+        if (isSent) btn = `<span class="px-2 py-1 bg-emerald-100 text-emerald-900 font-extrabold text-[10px] rounded-lg"><i class="fa-solid fa-check-double"></i> Sent</span>`;
+        else if (ri.off) btn = `<span class="px-2 py-1 bg-slate-100 text-slate-500 font-bold text-[10px] rounded-lg">ક્લાયન્ટે બંધ કર્યું</span>`;
+        else if (!cl.whatsappVerified) btn = `<button onclick="verifyClient('${esc(cl.id)}')" class="px-3 py-1.5 bg-sky-600 text-white font-extrabold text-[11px] rounded-xl">✅ Verify</button>`;
+        else btn = `<button onclick="sendNudgeWhatsApp('${esc(cl.id)}','${slot}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl flex items-center gap-1"><i class="fa-brands fa-whatsapp text-sm"></i> Send</button>`;
+        return `<div class="card-clean p-3 rounded-2xl border flex items-center justify-between gap-2">
+          <div class="min-w-0"><div class="font-extrabold text-slate-900 text-xs truncate">${esc(cl.name)} <span class="text-slate-500 font-semibold font-mono">(${esc(maskPhoneNumber(cl.phone))})</span> ${isClientVip(cl) ? '👑' : ''}</div>
+            <div class="text-[10px] text-teal-700 font-bold mt-0.5 truncate">${esc(goals)}</div>
+            <div class="flex flex-wrap gap-1 mt-0.5">${ri.opted ? `<span class="px-1.5 py-0.5 rounded-md text-[9px] font-black bg-green-100 text-green-800">🔔 WA રિમાઇન્ડર${ri.time ? ' ' + esc(ri.time) : ''}</span>` : ''}${loggedToday ? '<span class="px-1.5 py-0.5 rounded-md text-[9px] font-black bg-emerald-50 text-emerald-700">આજે લોગ ✓</span>' : ''}${ins.flags.filter(f => ['sugar', 'nolog'].includes(f.t)).map(flagChip).join('')}</div></div>
+          <div class="shrink-0">${btn}</div></div>`;
+      }).join('');
+    }
+    function sendNudgeWhatsApp(clientId, slot) {
+      const cl = liveClients.find(c => c.id === clientId); if (!cl) return;
+      markSent(`${cl.id}_${slot}`); renderQueue();
+      window.open(waLink(cl.phone, buildNudge(cl, slot)), '_blank');
+    }
+    function sendNextUnsent() {
+      const slot = $('selNudgeMealType').value; const sent = getSent();
+      const next = filteredPool(currentPool).find(cl => cl.whatsappVerified && !sent[`${cl.id}_${slot}`] && !reminderInfo(cl, slot).off);
+      if (!next) return toast('બધાને મોકલાઈ ગયું ✅');
+      sendNudgeWhatsApp(next.id, slot);
+    }
+
+    // ===================== CLIENTS TAB =====================
+    function renderClientsList() {
+      const c = $('admClientsList'); if (!c) return;
+      const q = (($('clientSearch') || {}).value || '').trim().toLowerCase();
+      const f = ($('clientFilter') || {}).value || 'all';
+      let list = accessible().filter(cl => !q || String(cl.name || '').toLowerCase().includes(q) || String(cl.phone || '').includes(q));
+      if (f === 'attention') list = list.filter(needsAttention);
+      else if (f !== 'all') list = list.filter(cl => poolOf(cl) === f);
+      if (!list.length) { c.innerHTML = '<div class="text-center text-slate-400 py-8 text-xs">કોઈ દર્દી મળ્યા નથી.</div>'; return; }
+      c.innerHTML = list.map(cl => {
+        const ins = insights(cl); const vip = isClientVip(cl);
+        const goals = (cl.conditions || []).map(g => GOAL_LABELS[g] || g).join(', ');
+        return `<div class="card-clean p-3 rounded-2xl border text-xs space-y-2">
+          <div class="flex justify-between items-start gap-2">
+            <div class="min-w-0"><div class="font-bold text-slate-800 truncate">${esc(cl.name)} <span class="font-mono text-slate-500 font-normal">(${esc(maskPhoneNumber(cl.phone))})</span></div>
+              <div class="text-[10px] text-teal-700 font-semibold truncate">${esc(goals)}</div></div>
+            <span class="px-2 py-0.5 rounded-lg text-[10px] font-black ${vip ? 'bg-amber-100 text-amber-900' : 'bg-slate-100 text-slate-600'}">${vip ? '👑 VIP' : 'Free'}</span></div>
+          <div class="grid grid-cols-3 gap-1.5 text-center">
+            <div class="bg-slate-50 border rounded-lg p-1.5"><div class="text-[9px] text-slate-500">૭-દિવસ સ્કોર</div><div class="font-black">${ins.avg7 === null ? '-' : ins.avg7 + '%'}</div></div>
+            <div class="bg-slate-50 border rounded-lg p-1.5"><div class="text-[9px] text-slate-500">છેલ્લો લોગ</div><div class="font-black">${ins.daysSince === null ? '-' : ins.daysSince === 0 ? 'આજે' : ins.daysSince + ' દિવસ'}</div></div>
+            <div class="bg-slate-50 border rounded-lg p-1.5"><div class="text-[9px] text-slate-500">Fasting</div><div class="font-black">${ins.lastFasting ? ins.lastFasting.v : '-'}</div></div></div>
+          <div class="flex flex-wrap gap-1">${ins.flags.map(flagChip).join('')}</div>
+          <div class="flex gap-1.5">
+            ${!cl.whatsappVerified ? `<button onclick="verifyClient('${esc(cl.id)}')" class="flex-1 py-2 bg-sky-600 text-white rounded-xl font-bold">✅ Verify WA</button>` : ''}
+            <button onclick="openClientModal('${esc(cl.id)}')" class="flex-1 py-2 bg-slate-900 text-white rounded-xl font-bold">Details & Progress</button></div></div>`;
+      }).join('');
+    }
+    async function verifyClient(id) {
+      await safe(() => db.collection('clients').doc(id).update({ whatsappVerified: true, verifiedAt: new Date().toISOString(), verifiedBy: (loggedInCoach && loggedInCoach.name) || '' }), '✅ વેરિફાય થયું');
+    }
+
+    // ---- Client detail modal ----
+    function sparkSvg(vals, color) {
+      const pts = vals.filter(v => v !== null);
+      if (pts.length < 2) return '<div class="text-[10px] text-slate-400">ટ્રેન્ડ માટે ≥૨ નોંધ જોઈએ</div>';
+      const w = 260, h = 48, pad = 5; const mn = Math.min(...pts), mx = Math.max(...pts), sp = (mx - mn) || 1; const st = (w - pad * 2) / (vals.length - 1);
+      const co = []; vals.forEach((v, i) => { if (v !== null) co.push([pad + i * st, h - pad - ((v - mn) / sp) * (h - pad * 2)]); });
+      const last = co[co.length - 1];
+      return `<svg viewBox="0 0 ${w} ${h}" class="w-full h-12"><polyline fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round" points="${co.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ')}"/><circle cx="${last[0]}" cy="${last[1]}" r="3.5" fill="${color}"/></svg><div class="flex justify-between text-[9px] text-slate-500"><span>Min ${mn}</span><span>છેલ્લું ${pts[pts.length - 1]}</span><span>Max ${mx}</span></div>`;
+    }
+    function openClientModal(id, keepScroll) {
+      const cl = liveClients.find(c => c.id === id); if (!cl) return;
+      const owner = currentUserRole === 'owner';
+      const ins = insights(cl); const comp = cl.compliance || {}; const t = calculateClientTargets(cl); const pr = getClientPrefs(cl);
+      const keys = []; for (let i = 0; i < 14; i++) { const d = new Date(); d.setDate(d.getDate() - i); keys.push(dateKeyOf(d)); }
+      keys.reverse();
+      const series = f => keys.map(k => { const v = Number((comp[k] || {})[f]); return v > 0 ? v : null; });
+      const rows = keys.slice().reverse().map(k => { const d = comp[k] || {}; if (!hasLog(d)) return ''; const sc = dayScore(cl, k);
+        return `<tr class="border-t"><td class="py-1">${k.slice(5)}</td><td class="font-black">${sc === null ? '-' : sc + '%'}</td><td>${esc(d.metric1 || '-')}</td><td>${esc(d.metric2 || '-')}</td><td>${d.water ? Number(d.water).toFixed(1) : '-'}</td><td>${esc(d.weight || '-')}</td><td>${(d.extras || []).length || ''}</td></tr>`; }).join('');
+      const notes = (keys.slice().reverse().map(k => ((comp[k] || {}).note ? `${k.slice(5)}: ${(comp[k] || {}).note}` : '')).filter(Boolean)).slice(0, 5);
+      const goals = (cl.conditions || []).map(g => GOAL_LABELS[g] || g).join(' • ');
+      const services = cl.services || [];
+      let coachOpts = `<option value="">-- સોંપણી બાકી --</option>` + liveCoaches.map(ch => `<option value="${esc(ch.id)}" ${cl.assignedCoachId === ch.id ? 'selected' : ''}>${esc(ch.name)}</option>`).join('');
+      $('mcTitle').innerText = cl.name;
+      const body = `
+        <div class="grid grid-cols-2 gap-1.5 text-[11px]">
+          <div class="bg-slate-50 border rounded-xl p-2">📱 ${esc(maskPhoneNumber(cl.phone))}</div>
+          <div class="bg-slate-50 border rounded-xl p-2">${esc(goals)}</div>
+          <div class="bg-slate-50 border rounded-xl p-2">${esc(cl.age || '-')} વર્ષ • ${esc(cl.gender === 'female' ? 'મહિલા' : 'પુરુષ')} • ${esc(cl.height || '-')}cm • ${esc(cl.weight || '-')}kg</div>
+          <div class="bg-slate-50 border rounded-xl p-2">${esc(pr.cuisine)} • ${esc(pr.diet)}${pr.kidney ? ' • કિડની' : ''}${pr.allergenSet.size ? ' • 🚫 ' + esc(Array.from(pr.allergenSet).join(',')) : ''}</div>
+          <div class="bg-teal-50 border border-teal-200 rounded-xl p-2">🎯 ${t.targetCal} kcal • ${t.targetProtein}g પ્રોટીન</div>
+          <div class="bg-slate-50 border rounded-xl p-2">${isClientVip(cl) ? '👑 VIP' + (cl.vipExpiryDate ? ' → ' + esc(cl.vipExpiryDate) : '') : ins.trialLeft !== null ? (ins.trialLeft >= 0 ? `Free • ${ins.trialLeft} દિવસ બાકી` : 'ટ્રાયલ પૂરો') : 'Free'}</div>
+        </div>
+        <div class="flex flex-wrap gap-1">${ins.flags.map(flagChip).join('')}</div>
+        <div class="grid grid-cols-2 gap-2"><div class="bg-slate-50 border rounded-2xl p-2"><div class="text-[10px] font-bold">🩸 Fasting (૧૪ દિવસ)</div>${sparkSvg(series('metric1'), '#0d9488')}</div>
+          <div class="bg-slate-50 border rounded-2xl p-2"><div class="text-[10px] font-bold">⚖️ વજન</div>${sparkSvg(series('weight'), '#d97706')}</div></div>
+        <div class="overflow-x-auto"><table class="w-full text-[10px] text-center"><thead class="text-slate-500"><tr><th class="text-left">તારીખ</th><th>સ્કોર</th><th>FBS</th><th>PP</th><th>પાણી</th><th>kg</th><th>Extra</th></tr></thead><tbody>${rows || '<tr><td colspan="7" class="py-3 text-slate-400">કોઈ લોગ નથી</td></tr>'}</tbody></table></div>
+        ${notes.length ? `<div class="bg-amber-50 border border-amber-200 rounded-xl p-2 text-[10px]"><b>ક્લાયન્ટ નોંધ:</b><br>${notes.map(esc).join('<br>')}</div>` : ''}
+        <div><label class="font-bold text-slate-700 block mb-1">📝 કોચ નોટ (ફક્ત સ્ટાફને દેખાશે)</label>
+          <textarea id="mcNote" rows="3" class="w-full p-2 bg-slate-50 border rounded-xl">${esc(cl.coachNote || '')}</textarea>
+          <button onclick="saveCoachNote('${esc(cl.id)}')" class="mt-1 px-3 py-1.5 bg-teal-600 text-white rounded-lg font-bold text-[11px]">નોટ સેવ કરો</button></div>
+        <div class="grid grid-cols-2 gap-1.5">
+          ${!cl.whatsappVerified ? `<button onclick="verifyClient('${esc(cl.id)}')" class="py-2 bg-sky-600 text-white rounded-xl font-bold">✅ Verify WA</button>` : ''}
+          <button onclick="sendWeeklySummary('${esc(cl.id)}')" class="py-2 bg-emerald-600 text-white rounded-xl font-bold"><i class="fa-brands fa-whatsapp"></i> પ્રોગ્રેસ મેસેજ</button>
+          <button onclick="sendCheckin('${esc(cl.id)}')" class="py-2 bg-slate-100 border rounded-xl font-bold">💬 ચેક-ઇન</button>
+          <button onclick="extendTrial('${esc(cl.id)}',15)" class="py-2 bg-slate-100 border rounded-xl font-bold">+૧૫ દિવસ ટ્રાયલ</button></div>
+        ${owner ? `<div class="border-t pt-2 space-y-2">
+          <div class="font-black text-teal-900">👑 ઓનર કંટ્રોલ્સ</div>
+          <div class="flex flex-wrap items-center gap-2">
+            ${['yoga|યોગા', 'garbh|ગર્ભસંસ્કાર', 'med|ધ્યાન'].map(x => { const [k, l] = x.split('|'); return `<label class="flex items-center gap-1 font-bold text-teal-800 text-[10px]"><input type="checkbox" onchange="toggleClientService('${esc(cl.id)}','${k}',this.checked)" ${services.includes(k) ? 'checked' : ''}> ${l}</label>`; }).join('')}</div>
+          <div class="flex items-center gap-2"><span class="text-slate-500 font-bold">કોચ:</span><select onchange="assignClientToCoach('${esc(cl.id)}',this.value)" class="flex-1 p-1.5 bg-slate-50 border rounded-lg font-bold">${coachOpts}</select></div>
+          <div class="grid grid-cols-2 gap-1.5">
+            ${isClientVip(cl) ? `<button onclick="grantVipStatus('${esc(cl.id)}',0)" class="py-2 bg-rose-50 text-rose-700 border border-rose-200 rounded-xl font-bold">Revoke VIP</button>` : `<button onclick="grantVipStatus('${esc(cl.id)}',30)" class="py-2 bg-amber-400 text-slate-900 rounded-xl font-black">👑 30-Day VIP</button>`}
+            <button onclick="grantVipStatus('${esc(cl.id)}',90)" class="py-2 bg-amber-100 border border-amber-300 rounded-xl font-bold">👑 90-Day VIP</button>
+            <button onclick="resetClientPin('${esc(cl.id)}')" class="py-2 bg-slate-100 border rounded-xl font-bold">🔑 PIN રીસેટ</button>
+            <button onclick="deleteClient('${esc(cl.id)}')" class="py-2 bg-rose-600 text-white rounded-xl font-bold">🗑 ડિલીટ</button></div></div>` : ''}`;
+      const mc = $('modalClient'); const sc = $('mcBody').scrollTop;
+      $('mcBody').innerHTML = body; mc.dataset.id = id; mc.classList.remove('hidden');
+      if (keepScroll) $('mcBody').scrollTop = sc;
+    }
+    function closeClientModal() { const mc = $('modalClient'); mc.classList.add('hidden'); mc.dataset.id = ''; }
+    async function saveCoachNote(id) { await safe(() => db.collection('clients').doc(id).update({ coachNote: $('mcNote').value.trim().slice(0, 1000), coachNoteAt: new Date().toISOString() }), '✅ નોટ સેવ થઈ'); }
+    async function extendTrial(id, days) {
+      const cl = liveClients.find(c => c.id === id); if (!cl) return;
+      if (!confirm(`ટ્રાયલ ${days} દિવસ વધારવો છે?`)) return;
+      await safe(() => db.collection('clients').doc(id).update({ trialDays: (Number(cl.trialDays) || 30) + days }), '✅ ટ્રાયલ વધાર્યો');
+    }
+    function sendWeeklySummary(id) {
+      const cl = liveClients.find(c => c.id === id); if (!cl) return;
+      const ins = insights(cl);
+      let msg = `નમસ્તે ${firstName(cl.name)}! 🙏 તમારી છેલ્લા ૭ દિવસની પ્રગતિ:\n✅ સરેરાશ સ્કોર: ${ins.avg7 === null ? 'હજી નોંધ નથી' : ins.avg7 + '%'}\n📝 લોગ કરેલા દિવસ: ${ins.logged7}/7`;
+      if (ins.lastFasting) msg += `\n🩸 છેલ્લું Fasting: ${ins.lastFasting.v} mg/dl`;
+      msg += ins.avg7 !== null && ins.avg7 >= 80 ? '\n🌟 શાનદાર! આ જ રીતે ચાલુ રાખો.' : '\n💪 નિયમિતતા વધારશો તો સારું પરિણામ મળશે. હું સાથે છું.';
+      window.open(waLink(cl.phone, msg), '_blank');
+    }
+    async function toggleClientService(id, key, on) {
+      const cl = liveClients.find(c => c.id === id); if (!cl) return;
+      let s = (cl.services || []).slice(); if (on) { if (!s.includes(key)) s.push(key); } else s = s.filter(x => x !== key);
+      await safe(() => db.collection('clients').doc(id).update({ services: s }));
+    }
+    async function assignClientToCoach(id, coachId) { await safe(() => db.collection('clients').doc(id).update({ assignedCoachId: coachId || null }), '✅ કોચ સોંપાયા'); }
+    async function grantVipStatus(id, days) {
+      if (currentUserRole !== 'owner') return alert('માત્ર ઓનર VIP બદલી શકે છે.');
+      if (days === 0 && !confirm('VIP એક્સેસ રદ કરવો છે?')) return;
+      const exp = new Date(); exp.setDate(exp.getDate() + days);
+      const upd = days > 0 ? { isVip: true, vipExpiryDate: dateKeyOf(exp) } : { isVip: false, vipExpiryDate: null };
+      if (days === 0) { const cur = liveClients.find(c => c.id === id); upd.trialDays = (cur && Number(cur.trialDays) >= 900) ? 30 : ((cur && Number(cur.trialDays)) || 30); }
+      await safe(() => db.collection('clients').doc(id).update(upd), days > 0 ? `✅ VIP ${days} દિવસ` : '✅ VIP રદ');
+    }
+    async function resetClientPin(id) {
+      const cl = liveClients.find(c => c.id === id); if (!cl) return;
+      const np = String(Math.floor(1000 + Math.random() * 9000));
+      if (WEAK.includes(np)) return resetClientPin(id);
+      if (!confirm(`${cl.name} નો નવો PIN ${np} સેટ કરવો છે?`)) return;
+      const ok = await safe(() => db.collection('clients').doc(id).update({ pin: np }), '✅ PIN બદલાયો');
+      if (ok !== null && confirm('WhatsApp પર નવો PIN મોકલવો છે?')) window.open(waLink(cl.phone, `નમસ્તે ${firstName(cl.name)}! તમારો નવો Metabolic Pro PIN: *${np}*. લોગિન પછી પ્રોફાઇલમાંથી બદલી શકશો.`), '_blank');
+    }
+    const WEAK = ['0000', '1111', '2222', '3333', '4444', '5555', '6666', '7777', '8888', '9999', '1234', '4321', '1212', '2580', '0123', '1004'];
+    async function deleteClient(id) {
+      if (currentUserRole !== 'owner') return;
+      const cl = liveClients.find(c => c.id === id); if (!cl) return;
+      const typed = (prompt(`${cl.name} નો બધો ડેટા કાયમ માટે ડિલીટ થશે. પુષ્ટિ માટે તેમના ફોનના છેલ્લા ૪ અંક લખો:`) || '').trim();
+      if (typed !== String(cl.phone).slice(-4)) return toast('અંક મેળ ખાતા નથી, ડિલીટ રદ');
+      const ok = await safe(() => db.collection('clients').doc(id).delete(), '🗑 ડિલીટ થયું');
+      if (ok !== null) closeClientModal();
+    }
+    function csvCell(v) { v = String(v ?? ''); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+    function exportCsv() {
+      if (currentUserRole !== 'owner') return;
+      const head = ['Name', 'Phone', 'Goals', 'Cuisine', 'Diet', 'Status', 'Joined', 'TrialLeft', 'LastLog', 'Avg7Score', 'LastFasting'];
+      const rows = accessible().map(c => { const i = insights(c); return [c.name, c.phone, (c.conditions || []).join('+'), getClientPrefs(c).cuisine, c.diet, poolOf(c), c.joiningDate, i.trialLeft === null ? 'VIP' : i.trialLeft, i.lastLog || '', i.avg7 === null ? '' : i.avg7, i.lastFasting ? i.lastFasting.v : '']; });
+      const csv = '﻿' + [head].concat(rows).map(r => r.map(csvCell).join(',')).join('\n');
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+      a.download = `metabolic_pro_clients_${dateKeyOf(new Date())}.csv`; document.body.appendChild(a); a.click(); a.remove();
+    }
+
+    // ===================== BROADCAST =====================
+    const BC_TEMPLATES = [
+      ['tip', '💡 આજની ટિપ', 'નમસ્તે {name}! 💡 આજની ટિપ: જમ્યા પછી ૧૦-૧૫ મિનિટ ચાલવાની આદત પાડો. તેનાથી જમ્યા પછીની શુગર ઘટાડવામાં મદદ મળે છે. 🚶‍♂️{link}'],
+      ['water', '💧 પાણી યાદ', 'નમસ્તે {name}! 💧 આજે ~૩ લિટર પાણીનું લક્ષ્ય રાખજો. થોડું થોડું આખો દિવસ પીઓ.'],
+      ['motivate', '🌟 પ્રેરણા', 'નમસ્તે {name}! 🌟 નાનાં પગલાં પણ મોટો ફેરફાર લાવે છે. આજે બધા મીલ્સ પ્લાન મુજબ લો અને પોર્ટલમાં માર્ક કરો. 🔥{link}'],
+      ['festival', '🪔 તહેવાર ટિપ', 'નમસ્તે {name}! 🪔 તહેવારની શુભેચ્છાઓ! મીઠાઈ ખાવી હોય તો ૧ નાનો પીસ, જમ્યા પછી લો અને ૧૫ મિનિટ ચાલજો. પ્લાન બહારનું ખાધું હોય તો પોર્ટલમાં "પ્લાન સિવાય" માં નોંધી દેજો, કોઈ ટેન્શન નહીં. 🙏'],
+      ['live', '🧘 લાઈવ ક્લાસ', 'નમસ્તે {name}! 🧘‍♀️ આજે લાઈવ ક્લાસ છે. પોર્ટલ ખોલી "VIP લાઈવ ક્લાસ" બોક્સમાંથી જોડાઓ.{link}'],
+      ['feedback', '📝 ફીડબેક', 'નમસ્તે {name}! 🙏 Metabolic Pro નો અનુભવ કેવો રહ્યો? ૧ લીટીમાં જણાવશો તો અમે વધુ સારું કરી શકીશું.'],
+      ['custom', '✍️ કસ્ટમ', '']
+    ];
+    function initBroadcast() {
+      const sel = $('bcTemplate'); if (sel.options.length) return;
+      sel.innerHTML = BC_TEMPLATES.map(t => `<option value="${t[0]}">${t[1]}</option>`).join('');
+      applyBroadcastTemplate();
+    }
+    function applyBroadcastTemplate() {
+      const t = BC_TEMPLATES.find(x => x[0] === $('bcTemplate').value); $('bcText').value = t ? t[2] : ''; renderBroadcast();
+    }
+    function bcAudience() {
+      const a = $('bcAudience').value; const list = accessible().filter(c => c.whatsappVerified && poolOf(c) !== 'expired');
+      if (a === 'active') return list;
+      if (a === 'trial') return list.filter(c => poolOf(c) === 'trial');
+      if (a === 'vip') return list.filter(c => poolOf(c) === 'vip');
+      if (a === 'attention') return list.filter(needsAttention);
+      return list.filter(c => (c.conditions || []).includes(a));
+    }
+    function bcMessage(cl) { return $('bcText').value.replace(/\{name\}/g, firstName(cl.name)).replace(/\{link\}/g, portalUrl ? '\n📲 ' + portalUrl : ''); }
+    function bcKey(cl) { return `bc_${$('bcTemplate').value}_${$('bcAudience').value}_${cl.id}`; }
+    function renderBroadcast() {
+      const box = $('bcList'); if (!box) return;
+      const list = bcAudience(); const sent = getSent();
+      $('bcCount').innerText = list.filter(c => !sent[bcKey(c)]).length;
+      box.innerHTML = list.length ? list.map(cl => `<div class="card-clean p-2.5 rounded-xl border flex items-center justify-between text-xs"><span class="font-bold">${esc(cl.name)} <span class="font-mono text-slate-400 font-normal">${esc(maskPhoneNumber(cl.phone))}</span></span>
+        ${sent[bcKey(cl)] ? '<span class="px-2 py-1 bg-emerald-100 text-emerald-900 font-extrabold text-[10px] rounded-lg">Sent ✓</span>' : `<button onclick="sendBroadcastTo('${esc(cl.id)}')" class="px-3 py-1.5 bg-emerald-600 text-white font-extrabold rounded-xl"><i class="fa-brands fa-whatsapp"></i> Send</button>`}</div>`).join('') : '<div class="text-center text-slate-400 py-6 text-xs">આ ઓડિયન્સમાં કોઈ નથી.</div>';
+    }
+    function sendBroadcastTo(id) {
+      const cl = liveClients.find(c => c.id === id); if (!cl) return;
+      if (!$('bcText').value.trim()) return alert('પહેલાં મેસેજ લખો.');
+      markSent(bcKey(cl)); renderBroadcast(); window.open(waLink(cl.phone, bcMessage(cl)), '_blank');
+    }
+    function sendNextBroadcast() {
+      const sent = getSent(); const next = bcAudience().find(c => !sent[bcKey(c)]);
+      if (!next) return toast('બધાને મોકલાઈ ગયું ✅'); sendBroadcastTo(next.id);
+    }
+
+    // ===================== COACH MANAGEMENT =====================
+    async function newCoachPin() {
+      for (let i = 0; i < 20; i++) {
+        const pin = String(Math.floor(100000 + Math.random() * 900000)); const h = await hashPin(pin);
+        const q = await db.collection('coaches').where('pinHash', '==', h).limit(1).get();
+        if (q.empty) return { pin, h };
+      }
+      throw new Error('PIN generate failed');
+    }
+    async function addNewCoach() {
+      const name = $('newCoachName').value.trim(); const cleanPhone = formatWaPhone($('newCoachPhone').value.trim());
+      if (!name || cleanPhone.length < 12) return alert('કોચનું પૂરું નામ અને ૧૦-અંકનો મોબાઈલ નંબર દાખલ કરો.');
+      const res = await safe(async () => { const { pin, h } = await newCoachPin();
+        await db.collection('coaches').doc(cleanPhone).set({ name, phone: cleanPhone, pinHash: h, active: true, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        return pin; });
+      if (!res) return;
+      $('newCoachName').value = ''; $('newCoachPhone').value = '';
+      inviteCoach(name, cleanPhone, res, true);
+    }
+    function inviteCoach(name, phone, pin, isNew) {
+      const appUrl = window.location.href.split('?')[0];
+      const msg = `નમસ્તે ${name}! 🩺\nતમને *Metabolic Pro* માં ક્લિનિકલ કોચ તરીકે એક્સેસ આપવામાં આવ્યો છે.\n\n🔑 તમારો લોગિન PIN: *${pin}*\n🔗 એડમિન લિંક: ${appUrl}\n\nઆ PIN કોઈને શેર ન કરો.`;
+      if (confirm(`${isNew ? '✅ કોચ ઉમેરાઈ ગયા!' : '✅ નવો PIN બન્યો!'}\nPIN: ${pin}\n(આ PIN ફરી જોઈ શકાશે નહીં, હવે નોંધી લો/મોકલો.)\n\nWhatsApp પર મોકલવો છે?`)) window.open(waLink(phone, msg), '_blank');
+    }
+    async function resetCoachPin(id) {
+      const c = liveCoaches.find(x => x.id === id); if (!c) return;
+      if (!confirm(`${c.name} માટે નવો PIN બનાવવો છે? જૂનો બંધ થઈ જશે.`)) return;
+      const pin = await safe(async () => { const { pin, h } = await newCoachPin(); await db.collection('coaches').doc(id).update({ pinHash: h, pin: firebase.firestore.FieldValue.delete() }); return pin; });
+      if (pin) inviteCoach(c.name, c.phone, pin, false);
+    }
+    async function deleteCoach(id) {
+      if (!confirm('શું તમે આ કોચનું એક્સેસ રદ કરવા માંગો છો? તેમના દર્દીઓ "સોંપણી બાકી" થશે.')) return;
+      await safe(async () => {
+        const mine = liveClients.filter(c => c.assignedCoachId === id);
+        for (const c of mine) await db.collection('clients').doc(c.id).update({ assignedCoachId: null });
+        await db.collection('coaches').doc(id).delete();
+      }, '✅ કોચ દૂર કર્યા');
+    }
+    function renderCoachesList() {
+      const box = $('activeCoachesContainer'); if (!box) return;
+      if (!liveCoaches.length) { box.innerHTML = '<div class="text-xs text-slate-400 py-4 text-center">કોઈ વધારાના કોચ ઉમેરેલા નથી.</div>'; return; }
+      box.innerHTML = liveCoaches.map(c => { const n = liveClients.filter(x => x.assignedCoachId === c.id).length;
+        return `<div class="card-clean p-3 rounded-2xl flex items-center justify-between border"><div><div class="font-bold text-slate-900 text-xs">${esc(c.name)} (${esc(c.phone)})</div>
+          <div class="text-[10px] text-teal-700 font-bold mt-0.5">${n} દર્દીઓ • ${c.pinHash ? '🔒 PIN સુરક્ષિત' : '⚠️ જૂનો PIN: રીસેટ કરો'}</div></div>
+          <div class="flex items-center gap-1.5"><button onclick="resetCoachPin('${esc(c.id)}')" class="px-2.5 py-1.5 bg-slate-900 text-white font-extrabold text-[10px] rounded-xl">🔑 નવો PIN</button>
+          <button onclick="deleteCoach('${esc(c.id)}')" class="px-2 py-1.5 bg-rose-50 text-rose-700 font-bold text-[10px] rounded-xl border border-rose-200"><i class="fa-solid fa-trash"></i></button></div></div>`; }).join('');
+    }
+
+    // ===================== OWNER SETTINGS =====================
+    function openCoachSettingsModal() {
+      if (currentUserRole !== 'owner') return alert('માત્ર ઓનર સેટિંગ્સ બદલી શકે છે.');
+      $('setCoachPhone').value = activeCoachPhone.replace(/^91/, ''); $('setCoachName').value = activeCoachName; $('setPortalUrl').value = portalUrl; $('setNewPw').value = '';
+      $('setYogaLink').value = liveSessionLinks.yoga || ''; $('setGarbhLink').value = liveSessionLinks.garbh || ''; $('setMedLink').value = liveSessionLinks.med || ''; $('setRecordLink').value = liveSessionLinks.record || '';
+      $('modalCoachSettings').classList.remove('hidden');
+    }
+    function closeCoachSettingsModal() { $('modalCoachSettings').classList.add('hidden'); }
+    async function saveCoachSettingsToCloud() {
+      const cleanPhone = formatWaPhone($('setCoachPhone').value.trim()); const name = $('setCoachName').value.trim() || 'Metabolic Pro Coach';
+      const url = $('setPortalUrl').value.trim(); const newPw = $('setNewPw').value;
+      const links = { yoga: $('setYogaLink').value.trim(), garbh: $('setGarbhLink').value.trim(), med: $('setMedLink').value.trim(), record: $('setRecordLink').value.trim() };
+      if (cleanPhone.length < 12) return alert('સાચો ૧૦-અંકનો નંબર દાખલ કરો.');
+      if (newPw && newPw.length < 6) return alert('પાસવર્ડ ઓછામાં ઓછો ૬ અક્ષરનો રાખો.');
+      const ok = await safe(async () => {
+        // public doc holds ONLY non-secret values (the client portal reads it). Secrets live in settings/admin.
+        await db.collection('settings').doc('public').set({ phone: cleanPhone, name, portalUrl: url, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+        await db.collection('settings').doc('coach').set({ phone: cleanPhone, name }, { merge: true });   // kept for older portal builds
+        await db.collection('settings').doc('live_sessions').set({ ...links, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        if (newPw) await writeAdminPassword(newPw);
+      }, '✅ સેટિંગ્સ સેવ થઈ');
+      if (ok === null) return;
+      activeCoachPhone = cleanPhone; activeCoachName = name; portalUrl = url; liveSessionLinks = links;
+      $('headerCoachDisplay').innerText = `Helpline: ${activeCoachPhone}`; closeCoachSettingsModal();
+    }
+
+    setInterval(autoApplyTimeSlot, 120000);
+  </script>
+</body>
+</html>
