@@ -252,20 +252,34 @@
       <!-- TAB 1: TODAY'S DIET VIEW -->
       <section id="portalTabToday" class="space-y-3.5">
 
-        <!-- VIP EXCLUSIVE LIVE SESSIONS BOX (DIRECT CLICKABLE A-TAG) -->
-        <div id="cpLiveSessionBox" class="card-clean p-4 rounded-3xl space-y-2.5 border border-teal-200 bg-gradient-to-r from-teal-50 to-emerald-50">
+        <!-- VIP EXCLUSIVE LIVE SESSIONS BOX WITH ALL 3 SESSIONS & TIME-WINDOW LOCK -->
+        <div id="cpLiveSessionBox" class="card-clean p-4 rounded-3xl space-y-3 border border-teal-200 bg-gradient-to-r from-teal-50 to-emerald-50">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="w-3 h-3 rounded-full bg-rose-500 animate-ping"></span>
-              <h3 class="font-extrabold text-slate-900 text-xs" id="cpLiveSessionTitle">🔴 લાઈવ યોગા & ગર્ભસંસ્કાર ક્લાસ</h3>
+              <span id="livePulseIndicator" class="w-3 h-3 rounded-full bg-rose-500 animate-ping"></span>
+              <h3 class="font-extrabold text-slate-900 text-xs" id="cpLiveSessionTitle">🔴 લાઈવ સેશન્સ હબ (VIP Portal)</h3>
             </div>
-            <span class="px-2 py-0.5 bg-rose-100 text-rose-800 font-black text-[9px] rounded-full">VIP LIVE NOW</span>
+            <span id="liveStatusBadge" class="px-2 py-0.5 bg-rose-100 text-rose-800 font-black text-[9px] rounded-full">VIP ACCESS</span>
           </div>
-          <p class="text-[11px] text-slate-600" id="cpLiveSessionDesc">તમારો સ્પેશિયલ ક્લાસ શરૂ થઈ ગયો છે. નીચે ક્લિક કરી સીધા જોડાઈ જાઓ:</p>
-          
-          <a id="btnJoinLiveClass" href="https://meet.google.com" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5 transition active:scale-95 text-center">
-            <i class="fa-solid fa-video"></i> લાઈવ ક્લાસમાં જોડાઓ 📲
-          </a>
+
+          <!-- Schedule Notice -->
+          <div class="p-2.5 bg-white/80 rounded-2xl border border-teal-100 text-[11px] text-teal-950">
+            <span class="font-bold block" id="liveTimingNotice">⏰ હવે પછીનું લાઈવ સેશન: ટૂંક સમયમાં શરૂ થશે...</span>
+            <span class="text-[10px] text-slate-500">ક્લાસના નિયત સમયે જ લાઈવ બટન સક્રિય (Active) થશે.</span>
+          </div>
+
+          <!-- ALL THREE MEETING BUTTONS -->
+          <div class="grid grid-cols-3 gap-1.5" id="liveButtonsContainer">
+            <a id="btnJoinYoga" href="#" target="_blank" rel="noopener noreferrer" class="py-2.5 px-1 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[11px] rounded-xl shadow-xs flex items-center justify-center gap-1 transition active:scale-95 text-center">
+              <i class="fa-solid fa-video text-xs"></i> 🧘‍♀️ યોગા
+            </a>
+            <a id="btnJoinGarbh" href="#" target="_blank" rel="noopener noreferrer" class="py-2.5 px-1 bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-[11px] rounded-xl shadow-xs flex items-center justify-center gap-1 transition active:scale-95 text-center">
+              <i class="fa-solid fa-video text-xs"></i> 🌸 ગર્ભસંસ્કાર
+            </a>
+            <a id="btnJoinMed" href="#" target="_blank" rel="noopener noreferrer" class="py-2.5 px-1 bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-[11px] rounded-xl shadow-xs flex items-center justify-center gap-1 transition active:scale-95 text-center">
+              <i class="fa-solid fa-video text-xs"></i> 🧠 ધ્યાન
+            </a>
+          </div>
         </div>
 
         <!-- FREE TRIAL USER UPGRADE CARD -->
@@ -361,6 +375,36 @@
 
         <!-- DYNAMIC DETAILED MEAL CARDS CONTAINER -->
         <div class="space-y-3" id="cpTodayMealCards"></div>
+
+        <!-- 🍔 વ્યવહારુ બહારનું જમ્યા હોય તેની નોંધ (EXTRA / CHEAT FOOD TRACKER) -->
+        <div class="card-clean p-4 rounded-3xl border border-amber-200 bg-amber-50/30 space-y-3">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-1.5">
+              <span class="text-base">🍽️</span>
+              <h3 class="font-black text-slate-900 text-xs">બહારનું ભોજન / વધારાનો ખોરાક (Extra Food Log)</h3>
+            </div>
+            <span class="px-2 py-0.5 bg-amber-100 text-amber-900 text-[9px] font-black rounded-full">નિષ્ઠાવાન નોંધ</span>
+          </div>
+          <p class="text-[11px] text-slate-500 leading-relaxed">
+            વ્યવહારુ રીતે ક્યારેક બહારનું, સ્વીટ કે પ્લાન સિવાયનું ખવાઈ ગયું હોય તો અહીં સાચી નોંધ કરો.
+          </p>
+
+          <div class="grid grid-cols-3 gap-2 text-xs">
+            <div class="col-span-2">
+              <input type="text" id="inExtraFoodName" placeholder="વાનગીનું નામ (દા.ત. ૨ સમોસા, ગુલાબજાંબુ)" class="w-full p-2 bg-white border border-slate-300 rounded-xl text-slate-800 font-bold">
+            </div>
+            <div>
+              <input type="number" id="inExtraFoodCal" placeholder="કેલરી (kcal)" class="w-full p-2 bg-white border border-slate-300 rounded-xl text-slate-800 font-bold">
+            </div>
+          </div>
+
+          <button onclick="addCustomExtraFood()" class="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl shadow-xs transition">
+            + વધારાની વાનગી ઉમેરો & કેલરી ગણો
+          </button>
+
+          <!-- List of logged extra foods -->
+          <div id="cpExtraFoodsContainer" class="space-y-1.5 pt-1"></div>
+        </div>
 
         <!-- DAILY VITALS & BLOOD SUGAR -->
         <div class="card-clean p-4 rounded-3xl border space-y-3">
@@ -548,6 +592,7 @@
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         compliance: {},
         swaps: {},
+        extraFoods: {},
         vitals: {},
         services: []
       };
@@ -780,6 +825,7 @@
       selectedDateKey = getTodayDateKey();
       renderWeeklyDayStrip();
       renderTodayMealCards();
+      renderExtraFoodsList();
       loadVitalsData();
       updateMacroDisplay();
       updateWaterDisplay();
@@ -789,6 +835,7 @@
       selectedDateKey = dateKey;
       renderWeeklyDayStrip();
       renderTodayMealCards();
+      renderExtraFoodsList();
       loadVitalsData();
       updateMacroDisplay();
       updateWaterDisplay();
@@ -818,17 +865,18 @@
       checkVipAndLiveSessionAccess();
       renderWeeklyDayStrip();
       renderTodayMealCards();
+      renderExtraFoodsList();
       loadVitalsData();
       updateMacroDisplay();
       updateWaterDisplay();
     }
 
+    // CHECK VIP LIVE PERMISSIONS & SCHEDULE LOCK
     async function checkVipAndLiveSessionAccess() {
       const isVip = isCurrentClientVip();
       const liveBox = document.getElementById('cpLiveSessionBox');
       const bannerBox = document.getElementById('cpFreeTrialVipBanner');
       const recBox = document.getElementById('cpRecordingBox');
-      const joinBtn = document.getElementById('btnJoinLiveClass');
       const recBtn = document.getElementById('btnWatchRecord');
 
       if (!isVip) {
@@ -839,29 +887,76 @@
       }
 
       if (bannerBox) bannerBox.classList.add('hidden');
+      if (liveBox) liveBox.classList.remove('hidden');
 
       try {
         const doc = await db.collection('settings').doc('live_sessions').get();
         if (doc.exists) {
           const data = doc.data();
-          let targetUrl = data.yoga || data.garbh || data.med || "";
+          const cleanLink = (url) => (!url ? '' : (url.startsWith('http://') || url.startsWith('https://')) ? url : 'https://' + url);
 
-          if (targetUrl && !targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
-            targetUrl = 'https://' + targetUrl;
+          const yogaUrl = cleanLink(data.yoga);
+          const garbhUrl = cleanLink(data.garbh);
+          const medUrl = cleanLink(data.med);
+          const recUrl = cleanLink(data.record);
+
+          // Client Approved Services Filter
+          const services = currentClient.services || ['yoga', 'garbh', 'med'];
+
+          const btnYoga = document.getElementById('btnJoinYoga');
+          const btnGarbh = document.getElementById('btnJoinGarbh');
+          const btnMed = document.getElementById('btnJoinMed');
+
+          if (btnYoga) {
+            btnYoga.href = yogaUrl || 'https://meet.google.com';
+            btnYoga.style.display = services.includes('yoga') ? 'flex' : 'none';
+          }
+          if (btnGarbh) {
+            btnGarbh.href = garbhUrl || 'https://meet.google.com';
+            btnGarbh.style.display = services.includes('garbh') ? 'flex' : 'none';
+          }
+          if (btnMed) {
+            btnMed.href = medUrl || 'https://meet.google.com';
+            btnMed.style.display = services.includes('med') ? 'flex' : 'none';
           }
 
-          if (targetUrl) {
-            joinBtn.href = targetUrl;
-            if (liveBox) liveBox.classList.remove('hidden');
+          // TIME-WINDOW LOCK CHECK
+          const now = new Date();
+          const currentHour = now.getHours();
+          const currentMinute = now.getMinutes();
+          const timeInMinutes = (currentHour * 60) + currentMinute;
+
+          const isMorningYogaLive = (timeInMinutes >= 400 && timeInMinutes <= 495); // 06:40 AM to 08:15 AM
+          const isAfternoonGarbhLive = (timeInMinutes >= 690 && timeInMinutes <= 780); // 11:30 AM to 01:00 PM
+          const isEveningMedLive = (timeInMinutes >= 1140 && timeInMinutes <= 1230); // 07:00 PM to 08:30 PM
+
+          const isAnyLiveNow = isMorningYogaLive || isAfternoonGarbhLive || isEveningMedLive;
+          const notice = document.getElementById('liveTimingNotice');
+          const statusBadge = document.getElementById('liveStatusBadge');
+          const pulse = document.getElementById('livePulseIndicator');
+
+          if (isAnyLiveNow) {
+            if (notice) notice.innerText = `🔴 લાઈવ ક્લાસ શરૂ છે! નીચે ક્લિક કરી સીધા જોડાઈ જાઓ:`;
+            if (statusBadge) {
+              statusBadge.innerText = 'VIP LIVE NOW';
+              statusBadge.className = 'px-2 py-0.5 bg-rose-500 text-white font-black text-[9px] rounded-full animate-pulse';
+            }
+            if (pulse) pulse.classList.remove('hidden');
           } else {
-            joinBtn.href = "https://meet.google.com";
-            if (liveBox) liveBox.classList.remove('hidden');
+            let nextInfo = "સવારે 07:00 AM (યોગા & પ્રાણાયામ)";
+            if (timeInMinutes < 420) nextInfo = "સવારે 07:00 AM (યોગા)";
+            else if (timeInMinutes < 720) nextInfo = "બપોરે 12:00 PM (ગર્ભસંસ્કાર સેશન)";
+            else if (timeInMinutes < 1170) nextInfo = "સાંજે 07:30 PM (ધ્યાન & મેડિટેશન)";
+
+            if (notice) notice.innerText = `⏰ હવે પછીનું સેશન: ${nextInfo}`;
+            if (statusBadge) {
+              statusBadge.innerText = 'SCHEDULED';
+              statusBadge.className = 'px-2 py-0.5 bg-slate-200 text-slate-700 font-bold text-[9px] rounded-full';
+            }
+            if (pulse) pulse.classList.add('hidden');
           }
 
-          let recUrl = data.record || "";
-          if (recUrl && !recUrl.startsWith('http://') && !recUrl.startsWith('https://')) {
-            recUrl = 'https://' + recUrl;
-          }
+          // Recording Box
           if (recUrl && recBtn) {
             recBtn.href = recUrl;
             if (recBox) recBox.classList.remove('hidden');
@@ -969,6 +1064,69 @@
 
       await db.collection('clients').doc(currentClient.id).update({
         [`compliance.${selectedDateKey}.${mealKey}`]: ratio
+      });
+    }
+
+    // --- EXTRA / CHEAT FOOD TRACKER ---
+    async function addCustomExtraFood() {
+      const name = document.getElementById('inExtraFoodName').value.trim();
+      const cal = Number(document.getElementById('inExtraFoodCal').value);
+
+      if (!name || isNaN(cal) || cal <= 0) {
+        return alert('કૃપા કરીને ખાધેલી વાનગીનું નામ અને સાચી કેલરી દાખલ કરો.');
+      }
+
+      if (!currentClient.extraFoods) currentClient.extraFoods = {};
+      if (!currentClient.extraFoods[selectedDateKey]) currentClient.extraFoods[selectedDateKey] = [];
+
+      const newItem = { id: Date.now(), name, cal };
+      currentClient.extraFoods[selectedDateKey].push(newItem);
+
+      document.getElementById('inExtraFoodName').value = '';
+      document.getElementById('inExtraFoodCal').value = '';
+
+      renderExtraFoodsList();
+      updateMacroDisplay();
+
+      await db.collection('clients').doc(currentClient.id).update({
+        [`extraFoods.${selectedDateKey}`]: currentClient.extraFoods[selectedDateKey]
+      });
+    }
+
+    async function removeExtraFood(itemId) {
+      if (!currentClient.extraFoods?.[selectedDateKey]) return;
+      currentClient.extraFoods[selectedDateKey] = currentClient.extraFoods[selectedDateKey].filter(x => x.id !== itemId);
+      renderExtraFoodsList();
+      updateMacroDisplay();
+
+      await db.collection('clients').doc(currentClient.id).update({
+        [`extraFoods.${selectedDateKey}`]: currentClient.extraFoods[selectedDateKey]
+      });
+    }
+
+    function renderExtraFoodsList() {
+      const c = document.getElementById('cpExtraFoodsContainer');
+      if (!c) return;
+      c.innerHTML = '';
+      const list = currentClient.extraFoods?.[selectedDateKey] || [];
+
+      if (list.length === 0) {
+        c.innerHTML = `<span class="text-[10px] text-slate-400">આજે કોઈ વધારાની વાનગી ઉમેરેલી નથી.</span>`;
+        return;
+      }
+
+      list.forEach(item => {
+        c.innerHTML += `
+          <div class="p-2 bg-white rounded-xl border flex items-center justify-between text-xs">
+            <div>
+              <span class="font-bold text-slate-800">${esc(item.name)}</span>
+              <span class="text-[10px] text-amber-700 font-bold ml-1.5">+${item.cal} kcal</span>
+            </div>
+            <button onclick="removeExtraFood(${item.id})" class="text-rose-500 hover:text-rose-700 font-bold text-xs px-1.5">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        `;
       });
     }
 
@@ -1094,6 +1252,12 @@
         }
       });
 
+      // Add extra custom food calories
+      const extraList = currentClient.extraFoods?.[selectedDateKey] || [];
+      extraList.forEach(ex => {
+        eatenCal += (Number(ex.cal) || 0);
+      });
+
       const score = totalMealsAnswered > 0 ? Math.round((scoreSum / totalMealsAnswered) * 100) : 0;
 
       document.getElementById('cpConsumedCal').innerText = `${eatenCal} / ${targets.targetCal}`;
@@ -1171,7 +1335,14 @@
         eatenPro += Math.round(mealData.pro * ratio);
       });
 
-      const msg = `🩺 *Metabolic Pro - ડેઈલી કમ્પ્લાયન્સ રિપોર્ટ*\n👤 દર્દી: *${currentClient.name}*\n📅 તારીખ: *${selectedDateKey}*\n\n🌿 ડિટોક્સ: *${comp.dtox === 1.0 ? '૧૦૦% લીધો' : comp.dtox === 0.5 ? '૫૦% લીધો' : 'બાકી'}*\n🥗 નાસ્તો: *${comp.b === 1.0 ? '૧૦૦% લીધો' : comp.b === 0.5 ? '૫૦% લીધો' : 'બાકી'}*\n🍲 લંચ: *${comp.l === 1.0 ? '૧૦૦% લીધો' : comp.l === 0.5 ? '૫૦% લીધો' : 'બાકી'}*\n🥣 ડિનર: *${comp.d === 1.0 ? '૧૦૦% લીધો' : comp.d === 0.5 ? '૫૦% લીધો' : 'બાકી'}*\n\n💧 પાણી: *${(comp.water || 0).toFixed(2)} / 3.0 L*\n🔥 કેલરી: *${eatenCal} / ${targets.targetCal} kcal*\n💪 પ્રોટીન: *${eatenPro} / ${targets.targetPro} g*\n🚶‍♂️ સ્ટેપ્સ: *${vit.steps || 0}* | વર્કઆઉટ: *${vit.workout || 0}m*`;
+      const extraList = currentClient.extraFoods?.[selectedDateKey] || [];
+      let extraSummary = "";
+      if (extraList.length > 0) {
+        extraSummary = `\n\n🍽️ *બહારનું / વધારાનું ભોજન:* ` + extraList.map(x => `${x.name} (+${x.cal}kcal)`).join(', ');
+        extraList.forEach(x => eatenCal += (Number(x.cal) || 0));
+      }
+
+      const msg = `🩺 *Metabolic Pro - ડેઈલી કમ્પ્લાયન્સ રિપોર્ટ*\n👤 દર્દી: *${currentClient.name}*\n📅 તારીખ: *${selectedDateKey}*\n\n🌿 ડિટોક્સ: *${comp.dtox === 1.0 ? '૧૦૦% લીધો' : comp.dtox === 0.5 ? '૫૦% લીધો' : 'બાકી'}*\n🥗 નાસ્તો: *${comp.b === 1.0 ? '૧૦૦% લીધો' : comp.b === 0.5 ? '૫૦% લીધો' : 'બાકી'}*\n🍲 લંચ: *${comp.l === 1.0 ? '૧૦૦% લીધો' : comp.l === 0.5 ? '૫૦% લીધો' : 'બાકી'}*\n🥣 ડિનર: *${comp.d === 1.0 ? '૧૦૦% લીધો' : comp.d === 0.5 ? '૫૦% લીધો' : 'બાકી'}*${extraSummary}\n\n💧 પાણી: *${(comp.water || 0).toFixed(2)} / 3.0 L*\n🔥 કેલરી: *${eatenCal} / ${targets.targetCal} kcal*\n💪 પ્રોટીન: *${eatenPro} / ${targets.targetPro} g*\n🚶‍♂️ સ્ટેપ્સ: *${vit.steps || 0}* | વર્કઆઉટ: *${vit.workout || 0}m*`;
       window.open(`https://api.whatsapp.com/send?phone=${COACH_PHONE}&text=${encodeURIComponent(msg)}`, '_blank');
     }
   </script>
