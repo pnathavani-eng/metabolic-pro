@@ -50,6 +50,7 @@
       </div>
       <div class="flex items-center gap-2 shrink-0">
         <button id="btnOwnerSettings" onclick="openCoachSettingsModal()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-teal-300 rounded-lg text-xs font-bold border border-slate-700">⚙️</button>
+        <button onclick="cycleLang()" data-notr class="px-2 py-1 bg-slate-800 text-teal-300 rounded-lg text-[10px] font-bold border border-slate-700" title="Language"><i class="fa-solid fa-globe"></i> <span id="langBtnTxt">GU</span></button>
         <button onclick="logoutAdmin()" class="px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs">Logout</button>
       </div>
     </header>
@@ -59,6 +60,7 @@
       <button onclick="setAdminTab('dash')" id="atab-dash" class="tab-active px-3 py-2 rounded-xl whitespace-nowrap"><i class="fa-solid fa-gauge-high"></i> ડેશબોર્ડ</button>
       <button onclick="setAdminTab('nudge')" id="atab-nudge" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-brands fa-whatsapp text-emerald-500"></i> નજ ક્યૂ</button>
       <button onclick="setAdminTab('clients')" id="atab-clients" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-solid fa-users"></i> દર્દીઓ</button>
+      <button onclick="setAdminTab('menus')" id="atab-menus" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-solid fa-utensils text-purple-600"></i> મેનુ</button>
       <button onclick="setAdminTab('broadcast')" id="atab-broadcast" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-solid fa-bullhorn"></i> બ્રોડકાસ્ટ</button>
       <button id="atab-coaches" onclick="setAdminTab('coaches')" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap"><i class="fa-solid fa-user-doctor text-teal-600"></i> કોચ</button>
     </div>
@@ -123,6 +125,43 @@
           </div>
         </div>
         <div id="admClientsList" class="space-y-2.5"></div>
+      </section>
+
+      <!-- TAB: CATEGORY MENUS -->
+      <section id="aview-menus" class="hidden space-y-3">
+        <div class="card-clean p-3.5 rounded-2xl space-y-2">
+          <h2 class="font-extrabold text-slate-900 text-sm">📋 કેટેગરી મુજબ મેનુ સેટ કરો</h2>
+          <p class="text-[11px] text-slate-500">ખાલી છોડેલા સ્લોટમાં બિલ્ટ-ઇન ઓટો મેનુ જ ચાલે છે. તમારું મેનુ ફક્ત તે કેટેગરીના ક્લાયન્ટ્સને લાગુ પડે છે. ક્લાયન્ટની એલર્જી/ડાયેટ કે બીમારીના નિયમ તોડતી વાનગી સુરક્ષા માટે આપોઆપ બિલ્ટ-ઇન વાનગીથી બદલાઈ જાય છે.</p>
+          <div id="menuCats" class="flex gap-1.5 overflow-x-auto pb-1"></div>
+        </div>
+        <div id="menuEditor" class="card-clean p-3.5 rounded-2xl space-y-2.5"></div>
+        <div class="card-clean p-3.5 rounded-2xl space-y-2">
+          <h2 class="font-extrabold text-slate-900 text-sm">✍️ મારી વાનગીઓ</h2>
+          <div id="menuCustomList" class="space-y-1.5"></div>
+          <div class="border-t pt-2 space-y-2 text-[11px]">
+            <div class="font-bold text-slate-700">નવી વાનગી ઉમેરો</div>
+            <input id="cdNameGu" placeholder="વાનગીનું નામ (ગુજરાતી)" class="w-full p-2 bg-slate-50 border rounded-xl font-semibold">
+            <input id="cdNameHi" placeholder="वानगी का नाम (हिन्दी)" class="w-full p-2 bg-slate-50 border rounded-xl font-semibold" data-notr>
+            <input id="cdNameEn" placeholder="Dish name (English)" class="w-full p-2 bg-slate-50 border rounded-xl font-semibold" data-notr>
+            <div class="grid grid-cols-2 gap-2">
+              <select id="cdSlot" class="p-2 bg-slate-50 border rounded-xl font-semibold">
+                <option value="morning">સવારનું ડિટોક્સ ડ્રિંક</option><option value="pre_workout">વર્કઆઉટ પહેલાં</option><option value="breakfast" selected>સવારનો નાસ્તો</option><option value="lunch">બપોરનું ભોજન</option><option value="snack">સાંજનો નાસ્તો</option><option value="post_workout">વર્કઆઉટ પછી (૩૦-૬૦ મિનિટમાં)</option><option value="dinner">રાત્રિ ભોજન</option>
+              </select>
+              <select id="cdDiet" class="p-2 bg-slate-50 border rounded-xl font-semibold"><option value="veg">🌱 શાકાહારી</option><option value="egg">🥚 ઈંડા સાથે</option><option value="nonveg">🍗 નોન-વેજ</option></select>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <input id="cdCal" type="number" placeholder="kcal" class="p-2 bg-slate-50 border rounded-xl font-semibold">
+              <input id="cdProt" type="number" step="0.5" placeholder="પ્રોટીન g" class="p-2 bg-slate-50 border rounded-xl font-semibold">
+              <input id="cdGl" type="number" placeholder="GL" class="p-2 bg-slate-50 border rounded-xl font-semibold">
+            </div>
+            <input id="cdPortion" placeholder="ભાગ (દા.ત. ૧ વાટકી)" class="w-full p-2 bg-slate-50 border rounded-xl font-semibold">
+            <div class="flex gap-3 flex-wrap font-semibold"><label class="flex items-center gap-1"><input type="checkbox" id="cdFried"> તળેલું</label><label class="flex items-center gap-1"><input type="checkbox" id="cdSugar"> ખાંડ વધારે</label></div>
+            <div class="font-bold text-slate-600">એલર્જન (આ વાનગીમાં છે)</div>
+            <div class="grid grid-cols-2 gap-1 font-semibold"><label class="flex items-center gap-1"><input type="checkbox" class="cdAlg" value="peanut"> મગફળી</label><label class="flex items-center gap-1"><input type="checkbox" class="cdAlg" value="soy"> સોયા</label><label class="flex items-center gap-1"><input type="checkbox" class="cdAlg" value="dairy"> ડેરી</label><label class="flex items-center gap-1"><input type="checkbox" class="cdAlg" value="gluten"> ગ્લુટેન</label><label class="flex items-center gap-1"><input type="checkbox" class="cdAlg" value="nuts"> બદામ-અખરોટ</label><label class="flex items-center gap-1"><input type="checkbox" class="cdAlg" value="egg"> ઈંડા</label><label class="flex items-center gap-1"><input type="checkbox" class="cdAlg" value="fish"> માછલી</label><label class="flex items-center gap-1"><input type="checkbox" class="cdAlg" value="mushroom"> મશરૂમ</label><label class="flex items-center gap-1"><input type="checkbox" class="cdAlg" value="jain"> કંદમૂળ/ડુંગળી-લસણ (જૈન નહીં)</label></div>
+            <button id="cdSaveBtn" onclick="saveCustomDish()" class="w-full py-2.5 rounded-xl bg-slate-900 text-white font-extrabold text-xs">વાનગી સેવ કરો</button>
+            <button onclick="resetCustomForm()" class="w-full py-1.5 rounded-xl bg-slate-100 text-slate-600 font-bold text-[10px]">ફોર્મ ખાલી કરો</button>
+          </div>
+        </div>
       </section>
 
       <!-- TAB: BROADCAST -->
@@ -208,6 +247,105 @@
     </div>
   </div>
 
+  <script>
+    const I18N_KEY = "mp_lang_admin";
+    const I18N_DICT = {"'Hi' મોકલો":["'Hi' भेजें","Send 'Hi'"],"(ઓછામાં ઓછા ૪ દિવસ નોંધો તો સાચો ટ્રેન્ડ દેખાશે.)":["(कम से कम 4 दिन दर्ज करें तो सही ट्रेंड दिखेगा।)","(Log at least 4 days to see a true trend.)"],"(નહીંતર WhatsApp મેસેજ ન દેખાય)":["(वरना WhatsApp संदेश नहीं दिखेगा)","(otherwise the WhatsApp message will not show)"],"Metabolic Pro ના WhatsApp રિમાઇન્ડર ચાલુ કરવા માંગુ છું. Hi 🙏":["मैं Metabolic Pro के WhatsApp रिमाइंडर चालू करना चाहता/चाहती हूँ। Hi 🙏","I want to turn on Metabolic Pro WhatsApp reminders. Hi 🙏"],"Metabolic Pro માં જોડાયો/જોડાઈ છું. Hi 🙏":["मैं Metabolic Pro से जुड़ रहा/रही हूँ। Hi 🙏","I am joining Metabolic Pro. Hi 🙏"],"મારે Metabolic Pro ચાલુ રાખવું છે.":["मुझे Metabolic Pro जारी रखना है।","I want to continue Metabolic Pro."],"મારે Metabolic Pro માં VIP મેમ્બરશિપ અને લાઈવ ક્લાસ ચાલુ કરવા છે.":["मुझे Metabolic Pro में VIP मेंबरशिप और लाइव क्लास शुरू करनी है।","I want to start VIP membership and live classes in Metabolic Pro."],"મારે મદદ જોઈએ છે.":["मुझे मदद चाहिए।","I need help."],"*🥦 શાકભાજી*":["*🥦 सब्ज़ियाँ*","*🥦 Vegetables*"],"*🫘 કઠોળ / પ્રોટીન*":["*🫘 दालें / प्रोटीन*","*🫘 Pulses / Protein*"],"આ ભોજન લોડ થઈ શક્યું નથી. Swap દબાવી જુઓ.":["यह भोजन लोड नहीं हो सका। Swap दबाकर देखें।","This meal could not be loaded. Try pressing Swap."],"પછી એપની જેમ એક ટેપમાં ખૂલશે.":["फिर यह ऐप की तरह एक टैप में खुलेगा।","Then it opens in one tap like an app."],"મેનૂ":["मेनू","menu"],"ડાયાબિટીસ / ફેટી લિવર / ફિટનેસ માટે ગુજરાતી ડાયેટ પ્લાન.":["डायबिटीज़ / फैटी लिवर / फिटनेस के लिए डाइट प्लान।","Diet plan for diabetes / fatty liver / fitness."],"PIN ફરી લખો":["PIN दोबारा लिखें","Re-enter PIN"],"PIN બરાબર ૪ અંકનો હોવો જોઈએ.":["PIN ठीक 4 अंकों का होना चाहिए।","PIN must be exactly 4 digits."],"(આજે)":["(आज)","(today)"],"(હાઇડ્રેશન)":["(हाइड्रेशन)","(hydration)"],"એક્ટિવેશન":["एक्टिवेशन","Activation"],"મોબાઈલ નંબર":["मोबाइल नंबर","Mobile number"],"રિમાઇન્ડર ચાલુ કરો":["रिमाइंडर चालू करें","Turn on reminders"],"અંદાજિત":["अनुमानित","approx."],"અખરોટ":["अखरोट","walnut"],"અઠવાડિયામાં એક જ દિવસ સવારે એક જ સમયે વજન કરો, રોજ નહીં, ટ્રેન્ડ જુઓ.":["हफ़्ते में एक ही दिन सुबह एक ही समय वज़न करें, रोज़ नहीं; ट्रेंड देखें।","Weigh yourself once a week at the same time in the morning, not daily; watch the trend."],"અપડેટ બાકી":["अपडेट बाकी","Update pending"],"અળવી":["अरबी","colocasia"],"આ PIN સહેલો છે. કોઈ મજબૂત PIN પસંદ કરો.":["यह PIN आसान है। कोई मज़बूत PIN चुनें।","This PIN is too easy. Choose a stronger PIN."],"આ PIN સહેલો છે. મજબૂત PIN પસંદ કરો.":["यह PIN आसान है। मज़बूत PIN चुनें।","This PIN is too easy. Choose a stronger PIN."],"આ અઠવાડિયે નોંધ શરૂ કરો, પછી અહીં તમારી સમરી દેખાશે.":["इस हफ़्ते लॉग शुरू करें, फिर यहाँ आपकी समरी दिखेगी।","Start logging this week and your summary will appear here."],"આ નંબર પર એકાઉન્ટ મોજૂદ છે! લોગિન કરો.":["इस नंबर पर अकाउंट मौजूद है! लॉगिन करें।","An account already exists for this number! Please log in."],"આ નિયમો હેઠળ અન્ય કોઈ વૈકલ્પિક વાનગી ઉપલબ્ધ નથી.":["इन नियमों के तहत कोई और विकल्प उपलब्ध नहीं है।","No other alternative dish is available under these rules."],"આ બ્રાઉઝર નોટિફિકેશન સપોર્ટ કરતું નથી.":["यह ब्राउज़र नोटिफ़िकेशन सपोर्ट नहीं करता।","This browser does not support notifications."],"આગળ ચાલુ રાખો":["आगे बढ़ें","Continue"],"આગળ વધવા માટે સંમતિ (consent) ચેકબોક્સ પસંદ કરો.":["आगे बढ़ने के लिए सहमति (consent) चेकबॉक्स चुनें।","Tick the consent checkbox to continue."],"આગામી ૭ દિવસના મેનૂ આધારિત જરૂરી શાકભાજી અને કઠોળ":["अगले 7 दिनों के मेनू के अनुसार ज़रूरी सब्ज़ियाँ और दालें","Vegetables and pulses needed for your next 7 days of menu"],"આગામી ૭ દિવસનું એડવાન્સ મેનૂ":["अगले 7 दिनों का एडवांस मेनू","Advance menu for the next 7 days"],"આજના દિવસનો રિપોર્ટ કોચને મોકલો 📲":["आज के दिन की रिपोर्ट कोच को भेजें 📲","Send today's report to coach 📲"],"આજના મીલ્સ માર્ક કરો એટલે તમારો સ્કોર અને પ્રેરણાદાયી સંદેશ અહીં લાઈવ દેખાશે.":["आज के मील मार्क करें, आपका स्कोर और प्रेरक संदेश यहाँ लाइव दिखेगा।","Mark today's meals and your score and a motivating message will show here live."],"આજના મીલ્સ માર્ક કરો એટલે તમારો સ્કોર અને સ્ટેટસ લાઈવ દેખાશે.":["आज के मील मार्क करें, आपका स्कोर और स्टेटस लाइव दिखेगा।","Mark today's meals and your score and status will show live."],"આજના મીલ્સ, પાણી અને શુગર એપમાં નોંધી દો, ૧ મિનિટ લાગશે.":["आज के मील, पानी और शुगर ऐप में दर्ज करें, 1 मिनट लगेगा।","Log today's meals, water and sugar in the app; it takes 1 minute."],"આજની ટિપ:":["आज की टिप:","Today's tip:"],"આજની લાઇફસ્ટાઇલ ડાયરી (૨૦ સેકન્ડ)":["आज की लाइफस्टाइल डायरी (20 सेकंड)","Today's Lifestyle Diary (20 seconds)"],"આજનો લોગ ભરવાનો સમય":["आज का लॉग भरने का समय","Time to fill today's log"],"આજે":["आज","Today"],"આદુ":["अदरक","ginger"],"આદું":["अदरक","ginger"],"આહાર મોડ":["आहार मोड","Diet mode"],"ઈંડા":["अंडे","eggs"],"ઈંડું":["अंडा","egg"],"ઉંમર":["उम्र","Age"],"ઉંમર ૧૮ થી ૧૦૦ વર્ષ વચ્ચે લખો. ૧૮ વર્ષથી નાનાએ ડૉક્ટર/ડાયટિશિયનની સલાહ લેવી.":["उम्र 18 से 100 वर्ष के बीच लिखें। 18 वर्ष से छोटे डॉक्टर/डाइटिशियन की सलाह लें।","Enter an age between 18 and 100. Under 18s should consult a doctor/dietitian."],"ઉપરના સમય મુજબ રોજ રિપીટ થતા રિમાઇન્ડર તમારા ફોનના કેલેન્ડરમાં ઉમેરાશે. એપ બંધ હોય, ઇન્ટરનેટ ન હોય તો પણ ફોન યાદ અપાવશે. સમય બદલ્યા પછી ફરી ઉમેરો.":["ऊपर के समय के अनुसार रोज़ दोहराए जाने वाले रिमाइंडर आपके फ़ोन के कैलेंडर में जुड़ जाएँगे। ऐप बंद हो या इंटरनेट न हो, तब भी फ़ोन याद दिलाएगा। समय बदलने के बाद फिर जोड़ें।","Daily repeating reminders at the times above will be added to your phone calendar. Your phone will remind you even if the app is closed or you're offline. Add again after changing times."],"ઉમેરો":["जोड़ें","Add"],"ઊંઘ ૭-૮ કલાક: ઓછી ઊંઘથી ભૂખ અને શુગર બંને વધે છે.":["नींद 7-8 घंटे: कम नींद से भूख और शुगर दोनों बढ़ते हैं।","Sleep 7-8 hours: less sleep raises both hunger and sugar."],"ઊંચાઈ":["ऊँचाई","Height"],"ઊંચાઈ (cm) અને વજન (kg) સાચા દાખલ કરો. આ આંકડા પરથી તમારું કેલરી-પ્રોટીન લક્ષ્ય બને છે.":["ऊँचाई (cm) और वज़न (kg) सही दर्ज करें। इन्हीं आँकड़ों से आपका कैलोरी-प्रोटीन लक्ष्य बनता है।","Enter your correct height (cm) and weight (kg). Your calorie and protein targets are based on these."],"એક ગ્લાસ પાણી પી લો. દિવસનું લક્ષ્ય ~૩ લિટર.":["एक गिलास पानी पी लें। दिन का लक्ष्य ~3 लीटर।","Drink a glass of water. Daily target ~3 litres."],"એકાઉન્ટ મળ્યું નથી. રજીસ્ટ્રેશન ચકાસો.":["अकाउंट नहीं मिला। रजिस्ट्रेशन जाँचें।","Account not found. Please check your registration."],"એક્ટિવેશન રિક્વેસ્ટ":["एक्टिवेशन रिक्वेस्ट","Activation request"],"એગ":["एग","egg"],"એપ વારંવાર ખોલવી ન પડે એટલે ફોન પર સમયસર યાદ અપાવીએ. તમારા અનુકૂળ સમય મુજબ બદલો (આપોઆપ સેવ થશે).":["ऐप बार-बार न खोलना पड़े, इसलिए फ़ोन पर समय पर याद दिलाते हैं। अपने अनुकूल समय के अनुसार बदलें (अपने आप सेव होगा)।","So you don't have to keep opening the app, we remind you on your phone. Change times to suit you (saves automatically)."],"એલર્જી":["एलर्जी","Allergies"],"પસંદ કરો":["चुनें","Select"],"ઓછામાં ઓછું એક રિમાઇન્ડર ચાલુ કરો.":["कम से कम एक रिमाइंडर चालू करें।","Turn on at least one reminder."],"ઓછી હિલચાલ":["कम गतिविधि","Low activity"],"ઓછું વજન":["कम वज़न","Underweight"],"ઓટ્સ":["ओट्स","oats"],"કાંદા":["प्याज़","onion"],"કિડની તકલીફ છે?":["किडनी की तकलीफ़ है?","Kidney problem?"],"કિલો":["किलो","kg"],"કેલરી બજેટ":["कैलोरी बजट","Calorie budget"],"કેળું ૧":["केला 1","1 banana"],"કોચ તમને WhatsApp પર તમારા આજના ભોજન સાથે સમયસર મેસેજ મોકલશે. ચાલુ કરવા કોચને એક \"Hi\" મોકલવો પડશે.":["कोच आपको WhatsApp पर आपके आज के भोजन के साथ समय पर संदेश भेजेंगे। चालू करने के लिए कोच को एक \"Hi\" भेजना होगा।","Your coach will send timely WhatsApp messages with your meal for the day. To start, send the coach a \"Hi\"."],"કોચને પૂછો":["कोच से पूछें","Ask coach"],"કોચને મળો":["कोच से मिलें","Meet the coach"],"VIP લો":["VIP लें","Get VIP"],"ક્લાસ રેકોર્ડિંગ જુઓ 🎥":["क्लास रिकॉर्डिंग देखें 🎥","Watch class recording 🎥"],"ક્લિનિકલ ટ્રેકિંગ અને કમ્પ્લાયન્સ સમરી":["क्लिनिकल ट्रैकिंग और कम्प्लायंस समरी","Clinical tracking and compliance summary"],"ખાંડવાળા પીણાં અને પેકેટ જ્યુસ બંધ; લીંબુ પાણી (ખાંડ વગર) કે છાશ પસંદ કરો.":["चीनी वाले पेय और पैकेट जूस बंद करें; नींबू पानी (बिना चीनी) या छाछ चुनें।","Avoid sugary drinks and packaged juice; choose lemon water (no sugar) or buttermilk."],"ખાધું ✓":["खाया ✓","Eaten ✓"],"ખાલી પેટે તમારું સવારનું ડિટોક્સ ડ્રિંક / હૂંફાળું પાણી લેવાનો સમય.":["खाली पेट अपना सुबह का डिटॉक्स ड्रिंक / गुनगुना पानी लेने का समय।","Time for your morning detox drink / warm water on an empty stomach."],"ખીચડી-કઢી ૧ પ્લેટ":["खिचड़ी-कढ़ी 1 प्लेट","Khichdi-kadhi 1 plate"],"ખોટો PIN છે!":["PIN गलत है!","Wrong PIN!"],"ગાંઠિયા / ફરસાણ ૫૦g":["गाठिया / फरसाण 50g","Gathiya / farsan 50g"],"ગાજર":["गाजर","carrot"],"ગુરુવાર":["गुरुवार","Thursday"],"ગ્લુટેન":["ग्लूटेन","Gluten"],"ઘઉં":["गेहूँ","wheat"],"ઘણા ખોટા પ્રયત્નો.":["बहुत गलत प्रयास।","Too many wrong attempts."],"ચા (ખાંડ વગર) ૧ કપ":["चाय (बिना चीनी) 1 कप","Tea (no sugar) 1 cup"],"ચા (ખાંડ સાથે) ૧ કપ":["चाय (चीनी के साथ) 1 कप","Tea (with sugar) 1 cup"],"છેલ્લી ૭ દિવસીય સંપૂર્ણ સમરી મોકલો 📲":["पिछले 7 दिनों की पूरी समरी भेजें 📲","Send full last-7-days summary 📲"],"જમ્યા પછી ૧૦-૧૫ મિનિટ ચાલવું એ સૌથી સસ્તી અને અસરકારક આદત છે.":["खाने के बाद 10-15 मिनट चलना सबसे सस्ती और असरदार आदत है।","Walking 10-15 minutes after meals is the cheapest and most effective habit."],"જમ્યા પછી ૧૦-૧૫ મિનિટ હળવું ચાલો, શુગર સ્પાઇક ઘટે છે.":["खाने के बाद 10-15 मिनट हल्का चलें, शुगर स्पाइक घटता है।","Take a light 10-15 minute walk after meals; it reduces sugar spikes."],"જમ્યા પછી ૧૫ મિનિટ વોક":["खाने के बाद 15 मिनट वॉक","15-minute post-meal walk"],"જાતિ":["लिंग","Gender"],"જિમ":["जिम","Gym"],"જૈન (કંદમૂળ/ડુંગળી-લસણ વગર)":["जैन (कंदमूल/प्याज़-लहसुन के बिना)","Jain (no root vegetables / onion-garlic)"],"જ્યુસ / કોલ્ડ ડ્રિંક ૧ ગ્લાસ":["जूस / कोल्ड ड्रिंक 1 गिलास","Juice / cold drink 1 glass"],"ટ્રાયલ પૂરો":["ट्रायल पूरा","Trial ended"],"ટ્રાયલ •":["ट्रायल •","Trial •"],"ટ્રેન્ડ માટે ઓછામાં ઓછી ૨ નોંધ જોઈએ.":["ट्रेंड के लिए कम से कम 2 एंट्री चाहिए।","At least 2 entries are needed for a trend."],"ડાયાબિટીસ":["डायबिटीज़","Diabetes"],"ડાયાબિટીસ મુક્તિ, ફેટી લિવર ડિટોક્સ અને વ્યક્તિગત મેટાબોલિક હેલ્થ સિસ્ટમ.":["डायबिटीज़ मुक्ति, फैटी लिवर डिटॉक्स और व्यक्तिगत मेटाबोलिक हेल्थ सिस्टम।","Diabetes reversal, fatty liver detox and a personal metabolic health system."],"ડુંગળી":["प्याज़","onion"],"ડેઈલી મીલ રિમાઇન્ડર્સ અને પર્સનલ ગાઇડન્સ માટે નીચેના ૨ સ્ટેપ પૂરા કરો. કોચ તમારો નંબર વેરિફાય કરશે; ત્યાં સુધી પણ તમે પોર્ટલ વાપરી શકો છો.":["डेली मील रिमाइंडर और पर्सनल गाइडेंस के लिए नीचे के 2 स्टेप पूरे करें। कोच आपका नंबर वेरिफ़ाई करेंगे; तब तक भी आप पोर्टल इस्तेमाल कर सकते हैं।","Complete the 2 steps below for daily meal reminders and personal guidance. The coach will verify your number; you can use the portal meanwhile."],"ડેરી":["डेयरी","Dairy"],"ડ્રાયફ્રૂટ":["ड्राईफ्रूट","dry fruit"],"તણાવ વધે તો ૫ મિનિટ ઊંડા શ્વાસ; તણાવથી પણ શુગર વધે છે.":["तनाव बढ़े तो 5 मिनट गहरी साँस लें; तनाव से भी शुगर बढ़ता है।","If stressed, take 5 minutes of deep breathing; stress also raises sugar."],"તમારું હાલનું વજન (kg) લખો:":["अपना मौजूदा वज़न (kg) लिखें:","Enter your current weight (kg):"],"તમારો ખોરાક પ્રદેશ":["आपका खान-पान क्षेत्र","Your food region"],"તમારો ડેટા અને પ્રોગ્રેસ સુરક્ષિત છે. પોર્ટલ ફરી ચાલુ કરવા કોચનો સંપર્ક કરો.":["आपका डेटा और प्रोग्रेस सुरक्षित है। पोर्टल फिर चालू करने के लिए कोच से संपर्क करें।","Your data and progress are safe. Contact your coach to reactivate the portal."],"તમારો ડેટા કાઢી નાખ્યો છે.":["आपका डेटा हटा दिया गया है।","Your data has been deleted."],"તમારો પ્લાન લોડ થઈ રહ્યો છે...":["आपका प्लान लोड हो रहा है...","Loading your plan..."],"તમારો ફ્રી ટ્રાયલ પૂરો થયો":["आपका फ्री ट्रायल पूरा हो गया","Your free trial has ended"],"તમારો સંદેશ લખો...":["अपना संदेश लिखें...","Write your message..."],"તમારો હાલનો PIN લખો:":["अपना मौजूदा PIN लिखें:","Enter your current PIN:"],"થેપલા":["थेपला","thepla"],"થોડી રાહ જુઓ...":["थोड़ी प्रतीक्षा करें...","Please wait..."],"દરરોજ સંપૂર્ણ અલગ અને બિન-રિપીટ ભોજન":["हर दिन बिल्कुल अलग और बिना दोहराव वाला भोजन","A completely different, non-repeating meal every day"],"દરેક ભોજનમાં પ્રોટીનનો સ્ત્રોત (દાળ, પનીર, દહીં, ચણા, ઈંડા) રાખો.":["हर भोजन में प्रोटीन का स्रोत (दाल, पनीर, दही, चना, अंडे) रखें।","Include a protein source (dal, paneer, curd, chana, eggs) in every meal."],"દવા લેતા હો તો શુગર ઘટે ત્યારે પણ ડૉક્ટરને પૂછ્યા વિના ડોઝ ન બદલો.":["दवा लेते हों तो शुगर घटने पर भी डॉक्टर से पूछे बिना डोज़ न बदलें।","If you take medicines, do not change the dose without asking your doctor, even when sugar drops."],"દા.ત.":["जैसे","e.g."],"પિયુષ નથવાણી":["पीयूष नथवानी","Piyush Nathwani"],"દિવસ બાકી":["दिन बाकी","days left"],"દિવસ સતત":["दिन लगातार","day streak"],"દિવસ":["दिन","days"],"દૂધ/દહીં":["दूध/दही","Milk/curd"],"દૈનિક સરેરાશ પાણી":["दैनिक औसत पानी","Daily average water"],"નંબર મેળ ખાતો નથી. રદ કર્યું.":["नंबर मेल नहीं खाता। रद्द किया।","Number does not match. Cancelled."],"નમસ્તે કોચ! હું":["नमस्ते कोच! मैं","Hello coach! I am"],"નમસ્તે, હું":["नमस्ते, मैं","Hello, I am"],"નવો ૪-અંકનો PIN લખો:":["नया 4-अंकों का PIN लिखें:","Enter a new 4-digit PIN:"],"નાની જીત ઉજવો: ૭ દિવસની સતત નોંધ પણ મોટી સિદ્ધિ છે. 🔥":["छोटी जीत मनाएँ: 7 दिन की लगातार एंट्री भी बड़ी उपलब्धि है। 🔥","Celebrate small wins: 7 days of consistent logging is a big achievement. 🔥"],"નામ અને અંદાજિત kcal દાખલ કરો.":["नाम और अनुमानित kcal दर्ज करें।","Enter the name and approx. kcal."],"નાસ્તાનો સમય. પ્રોટીન + ફાઇબર પહેલાં. ખાધા પછી એપમાં \"લીધું\" ટીક કરજો.":["नाश्ते का समय। पहले प्रोटीन + फाइबर। खाने के बाद ऐप में \"लिया\" टिक करें।","Breakfast time. Protein + fibre first. Tick \"taken\" in the app after eating."],"નોંધાયેલ ✓":["दर्ज ✓","Logged ✓"],"નોટિફિકેશન ચાલુ કરો":["नोटिफ़िकेशन चालू करें","Turn on notifications"],"નોટિફિકેશનની પરવાનગી મળી નથી. બ્રાઉઝર સેટિંગમાં ચાલુ કરો.":["नोटिफ़िकेशन की अनुमति नहीं मिली। ब्राउज़र सेटिंग में चालू करें।","Notification permission not granted. Enable it in browser settings."],"પહેલાં \"Hi\" મોકલો, પછી આગળ વધો.":["पहले \"Hi\" भेजें, फिर आगे बढ़ें।","Send \"Hi\" first, then continue."],"પહેલું પગલું":["पहला कदम","First step"],"પહેલો દિવસ નોંધો":["पहला दिन दर्ज करें","Log your first day"],"પાણી થોડું થોડું આખો દિવસ પીઓ; એક સાથે ૩ ગ્લાસ નહીં.":["पानी थोड़ा-थोड़ा पूरे दिन पिएँ; एक साथ 3 गिलास नहीं।","Sip water through the day; not 3 glasses at once."],"પાણી પીવાનો સમય":["पानी पीने का समय","Time to drink water"],"પીનટ":["पीनट","peanut"],"પુરુષ":["पुरुष","Male"],"પુષ્ટિ માટે તમારો મોબાઈલ નંબર લખો:":["पुष्टि के लिए अपना मोबाइल नंबर लिखें:","Enter your mobile number to confirm:"],"પૂરી ×૨":["पूरी ×2","Puri ×2"],"પૂરું નામ":["पूरा नाम","Full name"],"પૂરું નામ અને ૧૦-અંકનો મોબાઈલ નંબર દાખલ કરો.":["पूरा नाम और 10 अंकों का मोबाइल नंबर दर्ज करें।","Enter your full name and 10-digit mobile number."],"પોર્ટલ ખોલો":["पोर्टल खोलें","Open portal"],"પ્રવૃત્તિ સ્તર":["गतिविधि स्तर","Activity level"],"પ્રોગ્રેસ":["प्रोग्रेस","Progress"],"પ્રોટીન g":["प्रोटीन g","Protein g"],"પ્રોટીન પ્રો":["प्रोटीन प्रो","Protein Pro"],"પ્રોટીન":["प्रोटीन","protein"],"પ્રોફાઇલ":["प्रोफ़ाइल","Profile"],"પ્લાન સિવાય શું ખાધું?":["प्लान के अलावा क्या खाया?","What did you eat outside the plan?"],"ફક્ત જ્યારે એપનું ટેબ ખુલ્લું હોય ત્યારે જ કામ કરે (બેકગ્રાઉન્ડમાં બંધ થઈ શકે).":["केवल तब काम करता है जब ऐप का टैब खुला हो (बैकग्राउंड में बंद हो सकता है)।","Works only while the app tab is open (may stop in the background)."],"ફળ (૧ મધ્યમ)":["फल (1 मध्यम)","Fruit (1 medium)"],"ફેટ લોસ":["फैट लॉस","Fat Loss"],"ફેટી લિવર":["फैटी लिवर","Fatty Liver"],"ફોન કેલેન્ડરમાં ઉમેરો":["फ़ोन कैलेंडर में जोड़ें","Add to phone calendar"],"બંને PIN સરખા નથી.":["दोनों PIN एक जैसे नहीं हैं।","The two PINs do not match."],"બટાકા":["आलू","potato"],"બટાટા":["आलू","potato"],"બટેટા":["आलू","potato"],"બદામ-અખરોટ":["बादाम-अखरोट","almonds-walnuts"],"બપોરના ભોજનનો સમય. પહેલાં સલાડ, પછી શાક/કઠોળ, છેલ્લે રોટલી.":["दोपहर के भोजन का समय। पहले सलाद, फिर सब्ज़ी/दाल, आख़िर में रोटी।","Lunch time. Salad first, then vegetables/pulses, roti last."],"બપોરનું ભોજન":["दोपहर का भोजन","Lunch"],"બરાબર ૪ અંકનો PIN બનાવો.":["ठीक 4 अंकों का PIN बनाएँ।","Create a PIN of exactly 4 digits."],"બહાર જમવું પડે તો: તળેલું ટાળો, દાળ/શાક/સલાડ પસંદ કરો, ભાગ અડધો રાખો.":["बाहर खाना पड़े तो: तला हुआ टालें, दाल/सब्ज़ी/सलाद चुनें, मात्रा आधी रखें।","If eating out: avoid fried food, choose dal/vegetables/salad, keep portions half."],"બહારનું/પ્લાન બહારનું ખાધું હોય તો નોંધો, જેથી કેલરી અને શુગર ટ્રેકિંગ સાચું રહે. નોંધવું એ ગુનો નથી, ડેટા છે. 🙂":["बाहर का/प्लान के बाहर का खाया हो तो दर्ज करें, ताकि कैलोरी और शुगर ट्रैकिंग सही रहे। दर्ज करना गुनाह नहीं, डेटा है। 🙂","Log anything eaten outside the plan so calorie and sugar tracking stays accurate. Logging isn't a crime, it's data. 🙂"],"બિસ્કિટ ×૨":["बिस्किट ×2","Biscuits ×2"],"બીજી એલર્જી/ન ખાતા હો તે (અલ્પવિરામથી)":["दूसरी एलर्जी/जो न खाते हों (कॉमा से अलग करें)","Other allergies / foods you avoid (comma-separated)"],"બીજી વસ્તુનું નામ":["दूसरी चीज़ का नाम","Name of another item"],"બીટ":["चुकंदर","beetroot"],"બુધવાર":["बुधवार","Wednesday"],"ભજીયા ×૪":["भजिया ×4","Bhajiya ×4"],"ભારે કસરત":["भारी व्यायाम","Heavy exercise"],"ભોજન":["भोजन","Meal"],"ભોજનમાં પહેલાં સલાડ/શાક, પછી પ્રોટીન, છેલ્લે રોટલી ખાવાથી જમ્યા પછીની શુગર ઓછી ચડે છે.":["भोजन में पहले सलाद/सब्ज़ी, फिर प्रोटीन, आख़िर में रोटी खाने से खाने के बाद की शुगर कम चढ़ती है।","Eating salad/vegetables first, then protein, roti last keeps post-meal sugar lower."],"મંગળવાર":["मंगलवार","Tuesday"],"મગફળી/સીંગ":["मूँगफली/सींग","peanut/groundnut"],"મગફળી":["मूँगफली","peanut"],"મધ્યમ":["मध्यम","Moderate"],"મલ્ટી-મિલેટ":["मल्टी-मिलेट","multi-millet"],"મહિલા":["महिला","Female"],"માં જોડાઓ":["में जुड़ें","Join"],"માછલી":["मछली","fish"],"મારું ક્લિનિકલ પોર્ટલ શરૂ કરો 🚀":["मेरा क्लिनिकल पोर्टल शुरू करें 🚀","Start my clinical portal 🚀"],"મારો ડેટા કાયમ માટે કાઢી નાખો":["मेरा डेटा हमेशा के लिए हटा दें","Permanently delete my data"],"મિનિટ પછી ફરી પ્રયત્ન કરો.":["मिनट बाद फिर प्रयास करें।","minutes."],"મીઠાઈ ૧ પીસ":["मिठाई 1 पीस","Sweet 1 piece"],"મીઠાઈની ઈચ્છા થાય ત્યારે પહેલાં એક ગ્લાસ પાણી અને મુઠ્ઠી શેકેલા ચણા/મખાના લો.":["मिठाई की इच्छा हो तो पहले एक गिलास पानी और मुट्ठी भर भुने चने/मखाने लें।","When craving sweets, first have a glass of water and a handful of roasted chana/makhana."],"મીલ સ્લોટ":["मील स्लॉट","Meal slot"],"મૂળા":["मूली","radish"],"મેં 'Hi' મોકલ્યો, પોર્ટલ ખોલો 🚀":["मैंने 'Hi' भेज दिया, पोर्टल खोलें 🚀","I sent 'Hi', open the portal 🚀"],"મેદસ્વિતા":["मोटापा","Obesity"],"મેનોપોઝ/હોર્મોન":["मेनोपॉज़/हार्मोन","Menopause/Hormones"],"મેનોપોઝ / હોર્મોન્સ":["मेनोपॉज़ / हार्मोन","Menopause / Hormones"],"રજીસ્ટ્રેશનમાં સમસ્યા આવી. ઇન્ટરનેટ ચેક કરી ફરી પ્રયત્ન કરો.":["रजिस्ट्रेशन में समस्या आई। इंटरनेट जाँचकर फिर प्रयास करें।","Registration problem. Check your internet and try again."],"રવિવાર":["रविवार","Sunday"],"રાત્રિ પછી વોક":["रात के बाद वॉक","Post-dinner walk"],"રાત્રિ ભોજન (૮:૩૦ પહેલાં)":["रात का भोजन (8:30 से पहले)","Dinner (before 8:30)"],"રાત્રિ ભોજન પછી ૧૦-૧૫ મિનિટ વોક.":["रात के भोजन के बाद 10-15 मिनट वॉक।","10-15 minute walk after dinner."],"રાત્રિ ભોજન સૂવાના ૨-૩ કલાક પહેલાં પૂરું કરો, લિવર અને શુગર બંને માટે સારું.":["रात का भोजन सोने से 2-3 घंटे पहले पूरा करें, लिवर और शुगर दोनों के लिए अच्छा।","Finish dinner 2-3 hours before sleep; good for both liver and sugar."],"રાત્રિ ભોજન":["रात का भोजन","Dinner"],"રિપોર્ટ્સ":["रिपोर्ट्स","Reports"],"રિમાઇન્ડર મેળવવાની ૩ રીત":["रिमाइंडर पाने के 3 तरीके","3 ways to get reminders"],"રિમાઇન્ડર":["रिमाइंडर","Reminders"],"રીફ્રેશ 🔄":["रिफ्रेश 🔄","Refresh 🔄"],"રોટલી/ભાત નું પ્રમાણ તમારા પ્લાનમાં આપેલા ભાગ મુજબ જ રાખો, વધારે નહીં.":["रोटी/चावल की मात्रा आपके प्लान में दी गई मात्रा के अनुसार ही रखें, ज़्यादा नहीं।","Keep roti/rice quantity as per your plan, not more."],"લસણ":["लहसुन","garlic"],"લોગિન કરવામાં સમસ્યા આવી:":["लॉगिन में समस्या आई:","Login problem:"],"લોગિન":["लॉगिन","Login"],"વજન ટ્રેકર":["वज़न ट्रैकर","Weight tracker"],"વધારાની રોટલી ૧":["अतिरिक्त रोटी 1","1 extra roti"],"વધારાનું (જોખમની શરૂઆત)":["अतिरिक्त (जोखिम की शुरुआत)","Excess (start of risk)"],"વર્કઆઉટ પછી (૩૦-૬૦ મિનિટમાં)":["वर्कआउट के बाद (30-60 मिनट में)","After workout (within 30-60 minutes)"],"વર્કઆઉટ પહેલાં":["वर्कआउट से पहले","Before workout"],"વર્ષ":["वर्ष","yrs"],"વજન":["वज़न","Weight"],"વોટ્સએપ મોબાઈલ નંબર":["व्हाट्सऐप मोबाइल नंबर","WhatsApp mobile number"],"વ્હે":["व्हे","whey"],"શક્કરિયા":["शकरकंद","sweet potato"],"શનિવાર":["शनिवार","Saturday"],"શરીરમાં અનુભવાતી હળવાશ, નોંધ કે વિગત...":["शरीर में महसूस होने वाली हल्कापन, नोट या जानकारी...","How your body feels, notes or details..."],"શું તમે તમારું એકાઉન્ટ અને બધો ડેટા કાયમ માટે કાઢી નાખવા માંગો છો? આ પાછું નહીં આવે.":["क्या आप अपना अकाउंट और सारा डेटा हमेशा के लिए हटाना चाहते हैं? यह वापस नहीं आएगा।","Do you want to permanently delete your account and all data? This cannot be undone."],"શુક્રવાર":["शुक्रवार","Friday"],"શુગર ટ્રેકર":["शुगर ट्रैकर","Sugar tracker"],"શુભ બપોર":["शुभ दोपहर","Good afternoon"],"શુભ રાત્રિ":["शुभ रात्रि","Good night"],"શુભ સવાર":["शुभ प्रभात","Good morning"],"શુભ સાંજ":["शुभ संध्या","Good evening"],"શેર":["शेयर","Share"],"સરેરાશ કમ્પ્લાયન્સ":["औसत कम्प्लायंस","Average compliance"],"સવારનું ડિટોક્સ ડ્રિંક":["सुबह का डिटॉक्स ड्रिंक","Morning detox drink"],"સવારનો નાસ્તો":["सुबह का नाश्ता","Breakfast"],"સવારે ખાલી પેટે":["सुबह खाली पेट","Early morning, empty stomach"],"સાંજનો નાસ્તો અને પાણી. ક્રેવિંગ આવે તો પ્લાનનો નાસ્તો લો.":["शाम का नाश्ता और पानी। क्रेविंग हो तो प्लान का नाश्ता लें।","Evening snack and water. If you crave something, have the planned snack."],"સાંજનો નાસ્તો (૪-૫ PM)":["शाम का नाश्ता (4-5 PM)","Evening snack (4-5 PM)"],"સાંજનો નાસ્તો":["शाम का नाश्ता","Evening snack"],"સાચું વજન લખો (૩૦-૨૫૦ kg).":["सही वज़न लिखें (30-250 kg)।","Enter a valid weight (30-250 kg)."],"સાચો ૧૦-અંકનો મોબાઈલ નંબર અને ૪-અંકનો PIN નાખો.":["सही 10 अंकों का मोबाइल नंबर और 4 अंकों का PIN डालें।","Enter a valid 10-digit mobile number and a 4-digit PIN."],"સામાન્ય સ્વાસ્થ્ય":["सामान्य स्वास्थ्य","General Health"],"સામાન્ય":["सामान्य","Normal"],"સીંગ":["मूँगफली","groundnut"],"સુરણ":["जिमीकंद","yam"],"સેમી":["सेमी","cm"],"સેવ કરો":["सेव करें","Save"],"સોમવાર":["सोमवार","Monday"],"સોયા":["सोया","soy"],"સૌથી ભરોસાપાત્ર":["सबसे भरोसेमंद","Most reliable"],"સ્ટેપ ૧: હેલ્પલાઇન સેવ કરો":["स्टेप 1: हेल्पलाइन सेव करें","Step 1: Save the helpline"],"સ્ટેપ ૨: 'Hi' મોકલો":["स्टेप 2: 'Hi' भेजें","Step 2: Send 'Hi'"],"સ્માર્ટ સાપ્તાહિક ગ્રોસરી લિસ્ટ":["स्मार्ट साप्ताहिक ग्रोसरी लिस्ट","Smart weekly grocery list"],"સ્વાસ્થ્ય લક્ષ્યો પસંદ કરો":["स्वास्थ्य लक्ष्य चुनें","Choose your health goals"],"હજી ચાલુ નથી":["अभी चालू नहीं है","Not active yet"],"હજી સુધી કોઈ દૈનિક લોગ નોંધાયેલ નથી.":["अभी तक कोई दैनिक लॉग दर्ज नहीं है।","No daily log has been recorded yet."],"હળવી":["हल्की","Light"],"હળવું રાત્રિ ભોજન લઈ લો. સૂવાના ૨-૩ કલાક પહેલાં પૂરું કરવું.":["हल्का रात का भोजन ले लें। सोने से 2-3 घंटे पहले पूरा करें।","Have a light dinner. Finish 2-3 hours before sleep."],"હાઇડ્રેશન હીરો":["हाइड्रेशन हीरो","Hydration Hero"],"હાલનો PIN ખોટો છે.":["मौजूदा PIN गलत है।","Current PIN is wrong."],"હું સમજું છું કે આ એપ સામાન્ય પોષણ માર્ગદર્શન છે, ડૉક્ટરની સારવારનો વિકલ્પ નથી; દવા જાતે બંધ/બદલવી નહીં. મારી ઉંમર ૧૮+ છે અને મારો હેલ્થ ડેટા કોચ સાથે શેર થશે તેની સંમતિ આપું છું.":["मैं समझता/समझती हूँ कि यह ऐप सामान्य पोषण मार्गदर्शन है, डॉक्टर के इलाज का विकल्प नहीं; दवा खुद बंद/बदलूँगा/बदलूँगी नहीं। मेरी उम्र 18+ है और मेरा हेल्थ डेटा कोच के साथ शेयर होने की सहमति देता/देती हूँ।","I understand this app gives general nutrition guidance and is not a substitute for medical treatment; I will not stop or change medicines myself. I am 18+ and consent to my health data being shared with the coach."],"૧૪ દિવસ ≥૬૦% સ્કોર":["14 दिन ≥60% स्कोर","14 days ≥60% score"],"૩ દિવસ ≥૬૦% સ્કોર":["3 दिन ≥60% स्कोर","3 days ≥60% score"],"૩૦ દિવસ ≥૬૦% સ્કોર":["30 दिन ≥60% स्कोर","30 days ≥60% score"],"૭ દિવસ ≥૬૦% સ્કોર":["7 दिन ≥60% स्कोर","7 days ≥60% score"],"૩ દિવસ ૩ લિટર પાણી":["3 दिन 3 लीटर पानी","3 days of 3 litres water"],"૩ વાર વજન નોંધો":["3 बार वज़न दर्ज करें","Log weight 3 times"],"૫ દિવસ પ્રોટીન લક્ષ્ય":["5 दिन प्रोटीन लक्ष्य","5 days protein target"],"૫ દિવસ ફાસ્ટિંગ નોંધ":["5 दिन फ़ास्टिंग एंट्री","5 days fasting entries"],"પ્રી-વર્કઆઉટ:":["प्री-वर्कआउट:","Pre-workout:"],"સ્માર્ટ રિમાઇન્ડર્સ":["स्मार्ट रिमाइंडर","Smart reminders"],"કોચ તમારો WhatsApp નંબર વેરિફાય કરશે, ત્યારબાદ રિમાઇન્ડર અને પર્સનલ ગાઇડન્સ શરૂ થશે.":["कोच आपका WhatsApp नंबर वेरिफ़ाई करेंगे, उसके बाद रिमाइंडर और पर्सनल गाइडेंस शुरू होंगे।","The coach will verify your WhatsApp number, then reminders and personal guidance will start."],"ટ્રાયલના":["ट्रायल के","Trial:"],"તમારો ટ્રાયલ સમય પૂરો થયો છે. આગળ ચાલુ રાખવા કોચનો સંપર્ક કરો.":["आपका ट्रायल समय पूरा हो गया है। आगे जारी रखने के लिए कोच से संपर्क करें।","Your trial period has ended. Contact the coach to continue."],"વિનંતી મોકલાઈ છે, કોચ વેરિફાય કરશે":["अनुरोध भेजा गया है, कोच वेरिफ़ाई करेंगे","Request sent, the coach will verify"],"વજન અપડેટ":["वज़न अपडेट","Update weight"],"એકાઉન્ટ & સુવિધાઓ":["अकाउंट और सुविधाएँ","Account & features"],"કિડની: પ્રોટીન ઓછું, ડૉક્ટરની સલાહ":["किडनी: प्रोटीन कम, डॉक्टर की सलाह","Kidney: lower protein, doctor's advice"],"આ સામાન્ય પોષણ માર્ગદર્શન છે; પોષણ મૂલ્યો અંદાજિત છે. દવા/ઇન્સ્યુલિન ડૉક્ટરની સલાહ વિના બદલવી નહીં.":["यह सामान्य पोषण मार्गदर्शन है; पोषण मान अनुमानित हैं। दवा/इंसुलिन डॉक्टर की सलाह के बिना न बदलें।","This is general nutrition guidance; nutrition values are approximate. Do not change medicine/insulin without your doctor's advice."],"સૂચના: આ પ્લેટફોર્મ જીવનશૈલી અને મેટાબોલિક સુધારણા માટે છે. ડૉક્ટરની સલાહ વગર કોઈ દવા બંધ કરવી નહીં.":["सूचना: यह प्लेटफ़ॉर्म जीवनशैली और मेटाबोलिक सुधार के लिए है। डॉक्टर की सलाह के बिना कोई दवा बंद न करें।","Notice: This platform is for lifestyle and metabolic improvement. Do not stop any medicine without your doctor's advice."],"પ્રી-વર્કઆઉટ ફ્યુઅલ":["प्री-वर्कआउट फ्यूल","Pre-workout fuel"],"મૂડ / ઊર્જા સ્તર (૧-૫)":["मूड / ऊर्जा स्तर (1-5)","Mood / energy level (1-5)"],"PIN બદલાયો.":["PIN बदल गया।","PIN changed."],"WhatsApp રિમાઇન્ડર ચાલુ છે":["WhatsApp रिमाइंडर चालू है","WhatsApp reminders are on"],"ચાલુ (ટેબ ખુલ્લું હોય ત્યારે)":["चालू (टैब खुला होने पर)","On (while the tab is open)"],"ચાલુ થયું. આ સુવિધા ત્યારે જ કામ કરે જ્યારે એપનું ટેબ ખુલ્લું હોય. એપ બંધ હોય ત્યારે માટે \"ફોન કેલેન્ડર\" રીત વાપરો.":["चालू हो गया। यह सुविधा तभी काम करती है जब ऐप का टैब खुला हो। ऐप बंद होने पर \"फ़ोन कैलेंडर\" तरीका इस्तेमाल करें।","Enabled. This only works while the app tab is open. Use the \"Phone calendar\" way for when the app is closed."],"વજન અપડેટ થયું; લક્ષ્ય ફરી ગણાયું.":["वज़न अपडेट हुआ; लक्ष्य फिर से गिना गया।","Weight updated; targets recalculated."],"જિમ: મસલ રિકવરી પ્રોટીન":["जिम: मसल रिकवरी प्रोटीन","Gym: muscle recovery protein"],"ડાયાબિટીસ: ગ્લાયસેમિક લોડ (GL ≤ 10)":["डायबिटीज़: ग्लाइसेमिक लोड (GL ≤ 10)","Diabetes: glycaemic load (GL ≤ 10)"],"ફેટ લોસ: કેલરી ડેફિસિટ":["फैट लॉस: कैलोरी डेफिसिट","Fat loss: calorie deficit"],"લિવર: તેલ-ખાંડ મુક્ત ડિટોક્સ":["लिवर: तेल-चीनी मुक्त डिटॉक्स","Liver: oil-sugar-free detox"],"સામાન્ય સ્વાસ્થ્ય: સંતુલિત આહાર અને જાળવણી":["सामान्य स्वास्थ्य: संतुलित आहार और रखरखाव","General health: balanced diet and maintenance"],"હોર્મોન બેલેન્સ: કેલ્શિયમ + પ્રોટીન + ફાઇબર":["हार्मोन बैलेंस: कैल्शियम + प्रोटीन + फाइबर","Hormone balance: calcium + protein + fibre"],"નવું રજીસ્ટ્રેશન":["नया रजिस्ट्रेशन","New registration"],"ખૂબ નબળાઈ / સ્ટ્રેસ":["बहुत कमज़ोरी / स्ट्रेस","Very weak / stressed"],"તમારી શૈલી":["आपकी पसंद","Your style"],"થાક / સુસ્તી":["थकान / सुस्ती","Tired / sluggish"],"સારું":["अच्छा","Good"],"ઉત્તમ / તાજગી":["उत्तम / तरोताज़ा","Excellent / fresh"],"મોર્નિંગ ડિટોક્સ ઇન્ફ્યુઝન":["मॉर्निंग डिटॉक्स इन्फ्यूज़न","Morning detox infusion"],"અદભુત! આજનો પ્રોટોકોલ ખૂબ જ મજબૂતીથી જળવાઈ રહ્યો છે!":["शानदार! आज का प्रोटोकॉल बहुत मज़बूती से निभ रहा है!","Superb! Today's protocol is being followed very strongly!"],"આવતીકાલ (":["कल (","Tomorrow ("],"શાનદાર અઠવાડિયું! આ જ રીતે ચાલુ રાખો.":["शानदार हफ़्ता! इसी तरह जारी रखें।","Great week! Keep it up."],"ગુજરાતી / કાઠિયાવાડી":["गुजराती / काठियावाड़ी","Gujarati / Kathiyawadi"],"ગુજરાતી":["गुजराती","Gujarati"],"શુદ્ધ શાકાહારી":["शुद्ध शाकाहारी","Pure vegetarian"],"શાકાહારી":["शाकाहारी","Vegetarian"],"ગર્ભસંસ્કાર":["गर्भसंस्कार","Garbh Sanskar"],"મરાઠી":["मराठी","Marathi"],"સ્વસ્થ રહેવું / જાળવણી":["स्वस्थ रहना / रखरखाव","Stay healthy / maintenance"],"નોન-વેજ":["नॉन-वेज","Non-veg"],"સામાન્ય ઇન્ડિયન (મિક્સ)":["सामान्य इंडियन (मिक्स)","General Indian (mixed)"],"બપોરનું ગ્લાયસેમિક બેરિયર ભોજન":["दोपहर का ग्लाइसेमिक बैरियर भोजन","Midday glycaemic-barrier meal"],"આજના બધા મીલ્સ માર્ક થઈ ગયા. શાબાશ!":["आज के सारे मील मार्क हो गए। शाबाश!","All of today's meals are marked. Well done!"],"પ્લાન નિયમ:":["प्लान नियम:","Plan rule:"],"કસરત (મિનિટ)":["व्यायाम (मिनट)","Exercise (minutes)"],"સારું ચાલે છે. બાકી રહેતા મીલ્સ સમયસર માર્ક કરો તો સ્કોર વધશે.":["अच्छा चल रहा है। बाकी मील समय पर मार्क करें तो स्कोर बढ़ेगा।","Going well. Mark the remaining meals on time to raise your score."],"સારો પ્રયાસ! બાકી રહેલા મીલ્સ સમયસર પૂરા કરી લો.":["अच्छा प्रयास! बाकी मील समय पर पूरे कर लें।","Good effort! Complete the remaining meals on time."],"VIP / મેમ્બરશિપ":["VIP / मेंबरशिप","VIP / Membership"],"કોચ સ્પેશિયલ":["कोच स्पेशल","Coach special"],"જિમ / ફિટનેસ":["जिम / फिटनेस","Gym / Fitness"],"નિયમિતતા જાળવો, શરીર કુદરતી રીતે રીસેટ થશે!":["नियमितता बनाए रखें, शरीर प्राकृतिक रूप से रीसेट होगा!","Stay consistent, your body will reset naturally!"],"નિયમિતતા વધારો, નાના ફેરફારો પણ ફરક પાડે છે.":["नियमितता बढ़ाएँ, छोटे बदलाव भी फ़र्क़ डालते हैं।","Be more consistent; even small changes make a difference."],"પોસ્ટ-વર્કઆઉટ રિકવરી":["पोस्ट-वर्कआउट रिकवरी","Post-workout recovery"],"૩. WhatsApp રિમાઇન્ડર (કોચ તરફથી)":["3. WhatsApp रिमाइंडर (कोच की ओर से)","3. WhatsApp reminders (from coach)"],"૧. ફોન કેલેન્ડર / એલાર્મ":["1. फ़ोन कैलेंडर / अलार्म","1. Phone calendar / alarm"],"હેલ્પલાઇન સેવ":["हेल्पलाइन सेव","Save helpline"],"તમારો ટ્રેન્ડ":["आपका ट्रेंड","Your trend"],"કોચ સાથે WhatsApp જોડો, રિમાઇન્ડર અને પર્સનલ ગાઇડન્સ માટે.":["कोच के साथ WhatsApp जोड़ें, रिमाइंडर और पर्सनल गाइडेंस के लिए।","Connect WhatsApp with the coach for reminders and personal guidance."],"ફોનની હોમ સ્ક્રીન પર ઉમેરો":["फ़ोन की होम स्क्रीन पर जोड़ें","Add to phone home screen"],"PIN બદલો":["PIN बदलें","Change PIN"],"આગળના અઠવાડિયા લૉક છે.":["आगे के हफ़्ते लॉक हैं।","Future weeks are locked."],"જોડાવાની તારીખ પહેલાંનો રેકોર્ડ.":["जुड़ने की तारीख़ से पहले का रिकॉर्ड।","Record from before your joining date."],"૨. બ્રાઉઝર નોટિફિકેશન":["2. ब्राउज़र नोटिफ़िकेशन","2. Browser notifications"],"મિત્રને શેર કરો":["मित्र को शेयर करें","Share with a friend"],"રિપોર્ટ PDF/Print":["रिपोर्ट PDF/Print","Report PDF/Print"],"રાત્રિની ઊંઘ (કલાક)":["रात की नींद (घंटे)","Night sleep (hours)"],"જૈન":["जैन","Jain"],"શુદ્ધ જૈન (કાંદા, લસણ, કંદમૂળ વગર)":["शुद्ध जैन (प्याज़, लहसुन, कंदमूल के बिना)","Pure Jain (no onion, garlic or root vegetables)"],"વોક / સ્ટેપ્સ":["वॉक / स्टेप्स","Walk / steps"],"સાપ્તાહિક ગ્રોસરી":["साप्ताहिक ग्रोसरी","Weekly Grocery"],"પૌષ્ટિક સવારનો નાસ્તો":["पौष्टिक सुबह का नाश्ता","Nutritious breakfast"],"પંજાબી / ઉત્તર ભારતીય":["पंजाबी / उत्तर भारतीय","Punjabi / North Indian"],"પંજાબી":["पंजाबी","Punjabi"],"ઈંડા સાથે":["अंडे के साथ","With eggs"],"સાંજનો એન્ટિ-ક્રેવિંગ નાસ્તો":["शाम का एंटी-क्रेविंग नाश्ता","Evening anti-craving snack"],"હળવું સુપાચ્ય રાત્રિ ભોજન":["हल्का सुपाच्य रात का भोजन","Light, easy-to-digest dinner"],"દક્ષિણ ભારતીય":["दक्षिण भारतीय","South Indian"],"સાઉથ ઇન્ડિયન":["साउथ इंडियन","South Indian"],"શાકભાજી:":["सब्ज़ियाँ:","Vegetables:"],"યોગા & પ્રાણાયામ":["योगा और प्राणायाम","Yoga & Pranayama"],"મેડિટેશન":["मेडिटेशन","Meditation"],"છેલ્લા ૧૪ દિવસ":["पिछले 14 दिन","last 14 days"],"કઠોળ / પ્રોટીન:":["दालें / प्रोटीन:","Pulses / Protein:"],"મોકલો":["भेजें","Send"],"અંકનો":["अंकों का","-digit"],"અડધું":["आधा","half"],"અને":["और","and"],"અવિયલ":["अवियल","avial"],"આખા":["पूरे","whole"],"આખું":["पूरा","whole"],"આમટી":["आमटी","amti"],"ઇડલી":["इडली","idli"],"ઈડલી":["इडली","idli"],"ઉપમા":["उपमा","upma"],"ઉસળ":["उसल","usal"],"ઓછા":["कम","less"],"ઓછી":["कम","low"],"ઓમલેટ":["ऑमलेट","omelette"],"ઓસામણ":["ओसामण","osaman"],"કકડી":["ककड़ी","cucumber"],"કચુંબર":["कचुंबर","kachumber"],"કરી":["करी","curry"],"કાકડી":["खीरा","cucumber"],"કાચું":["कच्चा","raw"],"કાબુલી":["काबुली","kabuli"],"કાળા":["काली","black"],"કીરાઈ":["कीरै","keerai"],"કુળથી":["कुलथी","horse gram"],"કૂટુ":["कूटू","kootu"],"કેપ્સિકમ":["शिमला मिर्च","capsicum"],"કેળું":["केला","banana"],"કોડો":["कोदो","kodo"],"કોથમીર":["धनिया पत्ती","coriander"],"કોબી":["पत्ता गोभी","cabbage"],"કોળાનો":["कद्दू का","pumpkin"],"કોળું":["कद्दू","pumpkin"],"કોશિંબીર":["कोशिंबीर","koshimbir"],"ક્યુબ્સ":["क्यूब्स","cubes"],"ક્રીમ":["क्रीम","cream"],"ખજૂર":["खजूर","date"],"ખમણ":["खमण","khaman"],"ખીચડી":["खिचड़ी","khichdi"],"ગરમ":["गरम","hot"],"ગ્રીક":["ग्रीक","Greek"],"ગ્રીલ્ડ":["ग्रिल्ड","grilled"],"ગ્લાસ":["गिलास","glass"],"ઘઉંની":["गेहूँ की","whole wheat"],"ચટણી":["चटनी","chutney"],"ચણાનો":["चने का","gram"],"ચણા":["चना","chana"],"ચમચી":["चम्मच","tsp"],"ચાટ":["चाट","chaat"],"ચિકન":["चिकन","chicken"],"ચિયા":["चिया","chia"],"ચીલા":["चीला","chilla"],"ચીલો":["चीला","chilla"],"ચોળીનું":["लोबिया की","black-eyed bean"],"ચોળી":["लोबिया","black-eyed beans"],"છાશ":["छाछ","buttermilk"],"જવની":["जौ की","barley"],"જીરું":["जीरा","cumin"],"જુવાર":["ज्वार","jowar"],"ઝુણકા":["झुणका","zunka"],"ટામેટાં":["टमाटर","tomato"],"ટિક્કા":["टिक्का","tikka"],"ટીંડોળા":["टिंडोरा","ivy gourd"],"ટુકડા":["टुकड़े","pieces"],"ટોફૂ":["टोफू","tofu"],"ટોસ્ટ":["टोस्ट","toast"],"ડ્રમસ્ટિક":["सहजन","drumstick"],"ઢોકળા":["ढोकला","dhokla"],"ઢોસા":["डोसा","dosa"],"તંદૂરી":["तंदूरी","tandoori"],"તક":["ताक","buttermilk"],"તડકા":["तड़का","tadka"],"તુરિયા":["तुरई","ridge gourd"],"તુવેર":["तूर","toor"],"તેલમાં":["तेल में","oil"],"તેલ":["तेल","oil"],"દહીં":["दही","curd"],"દાળ":["दाल","dal"],"દૂધી":["लौकी","bottle gourd"],"દેશી":["देशी","desi"],"ધાણા":["धनिया","coriander"],"નંગ":["नग","pcs"],"નટ્સ":["नट्स","nuts"],"નાની":["छोटी","small"],"નાનો":["छोटा","small"],"નાળિયેર":["नारियल","coconut"],"પનીર":["पनीर","paneer"],"પલાળેલી":["भीगे हुए","soaked"],"પાણી":["पानी","Water"],"પાલક":["पालक","spinach"],"પીઠલા":["पिठला","pithla"],"પીસ":["पीस","pieces"],"પેસરટ્ટુ":["पेसरट्टू","pesarattu"],"પોરીયલ":["पोरियल","poriyal"],"ફણગાવેલા":["अंकुरित","sprouted"],"ફણસી":["फ्रेंच बीन्स","French beans"],"ફિશ":["फिश","fish"],"ફુદીના":["पुदीने की","mint"],"ફુદીનો":["पुदीना","mint"],"ફોક્સટેલ":["फॉक्सटेल","foxtail"],"બટર":["बटर","butter"],"બદામ":["बादाम","almonds"],"બાઉલ":["कटोरा","bowl"],"બાજરી":["बाजरा","bajra"],"બાફેલા":["उबले","boiled"],"બેક્ડ":["बेक्ड","baked"],"બેસન":["बेसन","besan"],"બ્રેસ્ટ":["ब्रेस्ट","breast"],"બ્રોકોલી":["ब्रोकली","broccoli"],"ભરલી":["भरली","stuffed"],"ભાકરી":["भाकरी","bhakri"],"ભાજી":["भाजी","bhaji"],"ભાત":["चावल","rice"],"ભીંડાનું":["भिंडी की","okra"],"ભીંડા":["भिंडी","okra"],"ભીંડી":["भिंडी","okra"],"ભુરજી":["भुर्जी","bhurji"],"મગનું":["मूँग का","moong"],"મગની":["मूँग की","moong"],"મગ":["मूँग","moong"],"મઠની":["मोठ की","moth bean"],"મઠ":["मोठ","moth beans"],"મરી":["काली मिर्च","pepper"],"મલ્ટીગ્રેઈન":["मल्टीग्रेन","multigrain"],"મલ્ટી":["मल्टी","multi"],"મશરૂમ":["मशरूम","mushroom"],"મસાલા":["मसाला","masala"],"મસિયલ":["मसियल","masiyal"],"મિક્સ":["मिक्स","mixed"],"મિર્ચ":["मिर्च","pepper"],"મિલેટ":["मिलेट","millet"],"મિસળ":["मिसल","misal"],"મિસી":["मिस्सी","missi"],"મુઠ્ઠી":["मुट्ठी","handful"],"મેથી":["मेथी","fenugreek"],"મોટો":["बड़ा","large"],"મોળી":["बिना नमक की","plain"],"રસમ":["रसम","rasam"],"રાગી":["रागी","ragi"],"રાજમા":["राजमा","rajma"],"રાયતા":["रायता","raita"],"રીંગણ":["बैंगन","brinjal"],"રોટલી":["रोटी","roti"],"રોટલો":["रोटला","rotla"],"રોટી":["रोटी","roti"],"લીંબુ":["नींबू","lemon"],"લીલા":["हरे","green"],"લીલી":["हरी","green"],"લોટ":["आटा","flour"],"વટાણા":["मटर","peas"],"વધારાની":["अतिरिक्त","extra"],"વધારાનું":["अतिरिक्त","extra"],"વાંગી":["बैंगन","brinjal"],"વાટકી":["कटोरी","bowl"],"વેજ":["वेज","veg"],"વ્હાઇટ":["सफ़ेद भाग","whites"],"શરબત":["शरबत","sharbat"],"શાકભાજી":["सब्ज़ियाँ","vegetables"],"શાક":["सब्ज़ी","vegetable curry"],"શિમલા":["शिमला","capsicum"],"શેક":["शेक","shake"],"શેકેલા":["भुने","roasted"],"શેકેલી":["भुनी","roasted"],"સત્તુનું":["सत्तू का","sattu"],"સત્તુ":["सत्तू","sattu"],"સફરજનના":["सेब के","apple"],"સફરજન":["सेब","apple"],"સબ્ઝી":["सब्ज़ी","sabzi"],"સરગવાની":["सहजन की","drumstick"],"સરગવો":["सहजन","drumstick"],"સલાડ":["सलाद","salad"],"સાંભાર":["सांभर","sambar"],"સાથે":["के साथ","with"],"સિંધવ":["सेंधा नमक","rock salt"],"સીડ્સ":["बीज","seeds"],"સુંદલ":["सुंदल","sundal"],"સૂપ":["सूप","soup"],"સૌતે":["सॉते","sautéed"],"સ્કૂપ":["स्कूप","scoop"],"સ્ટફ્ડ":["स्टफ्ड","stuffed"],"સ્ટાઇલ":["स्टाइल","style"],"હાંડવો":["हांडवो","handvo"],"પ્લેટ":["प्लेट","plate"],"તમારી શુગર":["आपकी शुगर","Your sugar"],"તમારો નવો Metabolic Pro PIN: *":["आपका नया Metabolic Pro PIN: *","Your new Metabolic Pro PIN: *"],"તમારો નવો Metabolic Pro PIN:":["आपका नया Metabolic Pro PIN:","Your new Metabolic Pro PIN:"],"સવારના નાસ્તાનો સમય થયો છે.":["सुबह के नाश्ते का समय हो गया है।","It's breakfast time."],"બપોરના ભોજનનો સમય થયો છે.":["दोपहर के भोजन का समय हो गया है।","It's lunch time."],"એક ગ્લાસ પાણી પી લો. આજનું લક્ષ્ય ~૩ લિટર છે, થોડું થોડું આખો દિવસ પીઓ.":["एक गिलास पानी पी लें। आज का लक्ष्य ~3 लीटर है, थोड़ा-थोड़ा पूरे दिन पिएँ।","Drink a glass of water. Today's target is ~3 litres; sip through the day."],"આજના મીલ્સ, પાણી":["आज के मील, पानी","today's meals, water"],"અને શુગર":["और शुगर","and sugar"],"પોર્ટલમાં નોંધવાનો સમય. ૧ મિનિટ લાગશે, તમારો સ્ટ્રીક જળવાઈ રહેશે 🔥":["पोर्टल में दर्ज करने का समय। 1 मिनट लगेगा, आपकी स्ट्रीक बनी रहेगी 🔥","log in the portal now. It takes 1 minute and keeps your streak alive 🔥"],"તમારી છેલ્લા ૭ દિવસની પ્રગતિ:":["आपकी पिछले 7 दिनों की प्रगति:","your progress over the last 7 days:"],"થોડા દિવસથી તમારો લોગ દેખાતો નથી. બધું બરાબર છે ને? ૧ મિનિટમાં આજનું ભોજન, પાણી અને લાઇફસ્ટાઇલ નોંધી દેશો તો હું તમારો પ્લાન સારી રીતે ગોઠવી શકીશ.":["कुछ दिनों से आपका लॉग नहीं दिख रहा। सब ठीक है ना? 1 मिनट में आज का भोजन, पानी और लाइफस्टाइल दर्ज कर देंगे तो मैं आपका प्लान अच्छे से सेट कर पाऊँगा।","I haven't seen your log for a few days. Is everything okay? If you log today's meals, water and lifestyle in 1 minute, I can fine-tune your plan."],"જમ્યા પછી ૧૦-૧૫ મિનિટ વૉકનો સમય!":["खाने के बाद 10-15 मिनट वॉक का समय!","Time for a 10-15 minute walk after your meal!"],"સાંજનો નાસ્તો & વોટર ચેક!":["शाम का नाश्ता और वॉटर चेक!","Evening snack & water check!"],"રાત્રિ ભોજનનો સમય થયો છે.":["रात के भोजन का समय हो गया है।","It's dinner time."],"(આ PIN ફરી જોઈ શકાશે નહીં, હવે નોંધી લો/મોકલો.)":["(यह PIN दोबारा नहीं दिखेगा, अभी नोट करें/भेजें।)","(This PIN cannot be shown again; note it down or send it now.)"],"(ઓછી)":["(कम)","(low)"],"(ઓટો-સેટ)":["(ऑटो-सेट)","(auto-set)"],"(વધુ)":["(ज़्यादा)","(high)"],"લોગિન પછી પ્રોફાઇલમાંથી બદલી શકશો.":["लॉगिन के बाद प्रोफ़ाइल से बदल सकेंगे।","You can change it from Profile after login."],"કોચ ઉમેરો":["कोच जोड़ें","Add coach"],"બનાવો":["बनाएँ","Create"],"સોંપણી બાકી":["असाइनमेंट बाकी","Unassigned"],"VIP એક્સેસ રદ કરવો છે?":["VIP एक्सेस रद्द करना है?","Cancel VIP access?"],"વેરિફાય બાકી":["वेरिफ़ाई बाकी","verification pending"],"રિક્વેસ્ટ આવી":["रिक्वेस्ट आई","request received"],"નંબર":["नंबर","number"],"અંક":["अंक","digits"],"WhatsApp પર નવો PIN મોકલવો છે?":["WhatsApp पर नया PIN भेजना है?","Send the new PIN on WhatsApp?"],"WhatsApp પર મોકલવો છે?":["WhatsApp पर भेजना है?","Send on WhatsApp?"],"નોંધાઈ છે. કેવું લાગે છે? કોઈ ચક્કર/ધ્રુજારી/વધુ તરસ હોય તો જણાવો, અને જરૂર પડે તો આજે જ તમારા ડૉક્ટરનો સંપર્ક કરો.":["दर्ज हुई है। कैसा लग रहा है? कोई चक्कर/कंपकंपी/ज़्यादा प्यास हो तो बताएँ, और ज़रूरत हो तो आज ही अपने डॉक्टर से संपर्क करें।","was recorded. How do you feel? If you have dizziness, shakiness or excess thirst, tell me, and contact your doctor today if needed."],"{name} = ક્લાયન્ટનું પહેલું નામ, {link} = પોર્ટલ લિંક. WhatsApp સ્પામથી બચવા ફક્ત તમારા ક્લાયન્ટ્સને અને ઓછી સંખ્યામાં મોકલો.":["{name} = क्लाइंट का पहला नाम, {link} = पोर्टल लिंक। WhatsApp स्पैम से बचने के लिए केवल अपने क्लाइंट्स को और कम संख्या में भेजें।","{name} = client's first name, {link} = portal link. To avoid WhatsApp spam, send only to your own clients and in small numbers."],"મેળ ખાતા નથી":["मेल नहीं खाते","do not match"],"ડિલીટ રદ":["डिलीट रद्द","delete cancelled"],"આ PIN કોઈને શેર ન કરો.":["यह PIN किसी को शेयर न करें।","Do not share this PIN with anyone."],"આ ઓડિયન્સમાં કોઈ નથી.":["इस ऑडियंस में कोई नहीं है।","No one in this audience."],"આ પાસવર્ડ સહેલો છે, બીજો પસંદ કરો.":["यह पासवर्ड आसान है, दूसरा चुनें।","This password is too easy, choose another."],"આ પૂલમાં કોઈ દર્દી નથી.":["इस पूल में कोई क्लाइंट नहीं है।","No clients in this pool."],"આજે લોગ કર્યો":["आज लॉग किया","Logged today"],"આજે લોગ ✓":["आज लॉग ✓","Logged today ✓"],"ઓનર કંટ્રોલ & સેટિંગ્સ":["ओनर कंट्रोल और सेटिंग्स","Owner control & settings"],"ઓનર પાસવર્ડ અથવા કોચ PIN દાખલ કરો.":["ओनर पासवर्ड या कोच PIN दर्ज करें।","Enter the owner password or coach PIN."],"ઓનર":["ओनर","owner"],"કુલ દર્દીઓ":["कुल क्लाइंट","Total clients"],"કોઈ દર્દી મળ્યા નથી.":["कोई क्लाइंट नहीं मिला।","No clients found."],"કોઈ લોગ નથી":["कोई लॉग नहीं","No log"],"કોઈ વધારાના કોચ ઉમેરેલા નથી.":["कोई अतिरिक्त कोच नहीं जोड़ा गया।","No extra coaches added."],"કોચનું પૂરું નામ":["कोच का पूरा नाम","Coach's full name"],"કોચ":["कोच","Coach"],"કોચનું પૂરું નામ અને ૧૦-અંકનો મોબાઈલ નંબર દાખલ કરો.":["कोच का पूरा नाम और 10 अंकों का मोबाइल नंबर दर्ज करें।","Enter the coach's full name and 10-digit mobile number."],"ક્લાયન્ટ ડેટા લોડ થયો નથી":["क्लाइंट डेटा लोड नहीं हुआ","Client data not loaded"],"ક્લાયન્ટ નોંધ:":["क्लाइंट नोट:","Client notes:"],"ક્લાયન્ટ પોર્ટલ લિંક (મેસેજમાં મૂકવા)":["क्लाइंट पोर्टल लिंक (मैसेज में डालने के लिए)","Client portal link (to put in messages)"],"ક્લાયન્ટે બંધ કર્યું":["क्लाइंट ने बंद किया","Turned off by client"],"ક્લાયન્ટનું":["क्लाइंट का","client's"],"ક્લાયન્ટ્સને":["क्लाइंट्स को","clients"],"ખોટો પાસવર્ડ/PIN છે!":["गलत पासवर्ड/PIN है!","Wrong password/PIN!"],"છેલ્લું":["आख़िरी","Last"],"જમ્યા પછી પોર્ટલમાં 'લીધું' ટીક કરી લેજો.":["खाने के बाद पोर्टल में 'लिया' टिक कर लेना।","After eating, please tick 'taken' in the portal."],"ટિપ: પહેલાં સલાડ, પછી દાળ/શાક, છેલ્લે રોટલી, તેનાથી જમ્યા પછી શુગર વધતી ઓછી રહે છે.":["टिप: पहले सलाद, फिर दाल/सब्ज़ी, आख़िर में रोटी; इससे खाने के बाद शुगर कम बढ़ती है।","Tip: salad first, then dal/vegetables, roti last; this keeps post-meal sugar rise lower."],"ટ્રાયલ ૫ દિવસમાં પૂરો":["ट्रायल 5 दिन में पूरा","Trial ends in 5 days"],"ટ્રાયલ":["ट्रायल","Trial"],"ટ્રેન્ડ માટે ≥૨ નોંધ જોઈએ":["ट्रेंड के लिए ≥2 एंट्री चाहिए","Need ≥2 entries for a trend"],"ડેશબોર્ડ":["डैशबोर्ड","Dashboard"],"તમને *Metabolic Pro* માં ક્લિનિકલ કોચ તરીકે એક્સેસ આપવામાં આવ્યો છે.":["आपको *Metabolic Pro* में क्लिनिकल कोच के रूप में एक्सेस दिया गया है।","You have been given access to *Metabolic Pro* as a clinical coach."],"દર્દીઓ":["क्लाइंट","Clients"],"દા.ત. ડૉ. પૂજા પટેલ":["जैसे डॉ. पूजा पटेल","e.g. Dr. Pooja Patel"],"ડૉ. પૂજા પટેલ":["डॉ. पूजा पटेल","Dr. Pooja Patel"],"દિવસ વધારવો છે?":["दिन बढ़ाने हैं?","days — extend?"],"દિવસથી લાઇફસ્ટાઇલ નથી":["दिन से लाइफस्टाइल नहीं","days without lifestyle log"],"દિવસથી લોગ નથી":["दिन से लॉग नहीं","days without a log"],"દિવસનું પાણીનું લક્ષ્ય પૂરું કરજો.":["दिन का पानी का लक्ष्य पूरा करना।","Please complete your water target for the day."],"ધ્યાન જોઈએ":["ध्यान चाहिए","Needs attention"],"નજ ક્યૂ":["नज क्यू","Nudge queue"],"નમસ્તે":["नमस्ते","Hello"],"નાનાં પગલાં પણ મોટો ફેરફાર લાવે છે. આજે બધા મીલ્સ પ્લાન મુજબ લો અને પોર્ટલમાં માર્ક કરો.":["छोटे कदम भी बड़ा बदलाव लाते हैं। आज सारे मील प्लान के अनुसार लें और पोर्टल में मार्क करें।","Small steps bring big change. Have all meals as per plan today and mark them in the portal."],"આજની ટિપ: જમ્યા પછી ૧૦-૧૫ મિનિટ ચાલવાની આદત પાડો. તેનાથી જમ્યા પછીની શુગર ઘટાડવામાં મદદ મળે છે.":["आज की टिप: खाने के बाद 10-15 मिनट चलने की आदत डालें। इससे खाने के बाद की शुगर घटाने में मदद मिलती है।","Today's tip: make a habit of walking 10-15 minutes after meals. It helps reduce post-meal sugar."],"આજે ~૩ લિટર પાણીનું લક્ષ્ય રાખજો. થોડું થોડું આખો દિવસ પીઓ.":["आज ~3 लीटर पानी का लक्ष्य रखें। थोड़ा-थोड़ा पूरे दिन पिएँ।","Aim for ~3 litres of water today. Sip through the day."],"Metabolic Pro નો અનુભવ કેવો રહ્યો? ૧ લીટીમાં જણાવશો તો અમે વધુ સારું કરી શકીશું.":["Metabolic Pro का अनुभव कैसा रहा? 1 लाइन में बताएँगे तो हम और बेहतर कर सकेंगे।","How was your Metabolic Pro experience? Tell us in one line and we can do better."],"આજે લાઈવ ક્લાસ છે. પોર્ટલ ખોલી \"VIP લાઈવ ક્લાસ\" બોક્સમાંથી જોડાઓ.":["आज लाइव क्लास है। पोर्टल खोलकर \"VIP लाइव क्लास\" बॉक्स से जुड़ें।","There is a live class today. Open the portal and join from the \"VIP Live Class\" box."],"તહેવારની શુભેચ્છાઓ! મીઠાઈ ખાવી હોય તો ૧ નાનો પીસ, જમ્યા પછી લો અને ૧૫ મિનિટ ચાલજો. પ્લાન બહારનું ખાધું હોય તો પોર્ટલમાં \"પ્લાન સિવાય\" માં નોંધી દેજો, કોઈ ટેન્શન નહીં. 🙏":["त्योहार की शुभकामनाएँ! मिठाई खानी हो तो 1 छोटा पीस खाने के बाद लें और 15 मिनट चलें। प्लान के बाहर खाया हो तो पोर्टल में \"प्लान के अलावा\" में दर्ज कर दें, कोई टेंशन नहीं। 🙏","Festival greetings! If you want a sweet, have 1 small piece after a meal and walk 15 minutes. Log anything outside the plan under \"Outside plan\" in the portal, no tension. 🙏"],"નવો ઓનર પાસવર્ડ બનાવો":["नया ओनर पासवर्ड बनाएँ","Create new owner password"],"નવો ક્લિનિકલ કોચ ઉમેરો":["नया क्लिनिकल कोच जोड़ें","Add new clinical coach"],"નવો પાસવર્ડ":["नया पासवर्ड","New password"],"૬+ અક્ષર":["6+ अक्षर","6+ characters"],"નો નવો PIN":["का नया PIN","— new PIN"],"નો બધો ડેટા કાયમ માટે ડિલીટ થશે. પુષ્ટિ માટે તેમના ફોનના છેલ્લા ૪ અંક લખો:":["का सारा डेटा हमेशा के लिए डिलीट हो जाएगा। पुष्टि के लिए उनके फ़ोन के आख़िरी 4 अंक लिखें:","— all data will be permanently deleted. Type the last 4 digits of their phone to confirm:"],"પછીનાને મોકલો":["अगले को भेजें","Send to next"],"પહેલાં મેસેજ લખો.":["पहले मैसेज लिखें।","Write the message first."],"પાસવર્ડ / PIN દાખલ કરો":["पासवर्ड / PIN दर्ज करें","Enter password / PIN"],"પાસવર્ડ ઓછામાં ઓછો ૬ અક્ષરનો રાખો.":["पासवर्ड कम से कम 6 अक्षर का रखें।","Keep the password at least 6 characters."],"પાસવર્ડ બદલવો હોય તો (ખાલી = ના બદલો)":["पासवर्ड बदलना हो तो (खाली = न बदलें)","To change the password (empty = keep)"],"પાસવર્ડ":["पासवर्ड","Password"],"પોર્ટલ ખોલો 🔐":["पोर्टल खोलें 🔐","Open portal 🔐"],"પ્રોટીન અને ફાઇબરથી ભરપૂર નાસ્તો લેજો.":["प्रोटीन और फाइबर से भरपूर नाश्ता लें।","Have a breakfast rich in protein and fibre."],"ફરી લખો":["फिर लिखें","Re-enter"],"બંને પાસવર્ડ સરખા નથી.":["दोनों पासवर्ड एक जैसे नहीं हैं।","The two passwords do not match."],"બધા સક્રિય":["सभी सक्रिय","All active"],"બધાને મોકલાઈ ગયું ✅":["सभी को भेज दिया गया ✅","Sent to everyone ✅"],"બધું સરસ ચાલે છે 🎉":["सब बढ़िया चल रहा है 🎉","Everything is going great 🎉"],"બધા":["सभी","All"],"બાકી":["बाकी","Pending"],"બ્રોડકાસ્ટ":["ब्रॉडकास्ट","Broadcast"],"માટે નવો PIN બનાવવો છે? જૂનો બંધ થઈ જશે.":["के लिए नया PIN बनाना है? पुराना बंद हो जाएगा।","— create a new PIN? The old one will stop working."],"માત્ર ઓનર VIP બદલી શકે છે.":["केवल ओनर VIP बदल सकते हैं।","Only the owner can change VIP."],"માત્ર ઓનર સેટિંગ્સ બદલી શકે છે.":["केवल ओनर सेटिंग्स बदल सकते हैं।","Only the owner can change settings."],"મિત્ર":["मित्र","friend"],"મુખ્ય હેલ્પલાઇન WhatsApp નંબર":["मुख्य हेल्पलाइन WhatsApp नंबर","Main helpline WhatsApp number"],"રદ કરો":["रद्द करें","Cancel"],"લાઇફસ્ટાઇલ બાકી":["लाइफस्टाइल बाकी","Lifestyle pending"],"શું તમે આ કોચનું એક્સેસ રદ કરવા માંગો છો? તેમના દર્દીઓ \"સોંપણી બાકી\" થશે.":["क्या आप इस कोच का एक्सेस रद्द करना चाहते हैं? उनके क्लाइंट \"असाइनमेंट बाकी\" हो जाएँगे।","Do you want to revoke this coach's access? Their clients will become \"Unassigned\"."],"સક્રિય કોચ લિસ્ટ":["सक्रिय कोच लिस्ट","Active coach list"],"સમય મુજબ સ્લોટ આપોઆપ પસંદ થાય છે. મેસેજમાં ક્લાયન્ટની આજની વાનગી આપોઆપ આવે છે.":["समय के अनुसार स्लॉट अपने आप चुना जाता है। मैसेज में क्लाइंट की आज की डिश अपने आप आती है।","The slot is picked automatically by time. The client's dish for today is added to the message automatically."],"સાચો ૧૦-અંકનો નંબર દાખલ કરો.":["सही 10 अंकों का नंबर दर्ज करें।","Enter a valid 10-digit number."],"સુરક્ષા માટે ઓછામાં ઓછા ૬ અક્ષરનો પાસવર્ડ બનાવો (અક્ષર + આંકડા વધુ સારા).":["सुरक्षा के लिए कम से कम 6 अक्षर का पासवर्ड बनाएँ (अक्षर + अंक बेहतर)।","For security, create a password of at least 6 characters (letters + numbers is better)."],"સેટ કરવો છે?":["सेट करना है?","— set it?"],"સેવ કરો 💾":["सेव करें 💾","Save 💾"],"સેવ કરો 🔒":["सेव करें 🔒","Save 🔒"],"સેવ/લોડ કરવામાં સમસ્યા આવી (ઇન્ટરનેટ ચેક કરો):":["सेव/लोड करने में समस्या आई (इंटरनेट जाँचें):","Save/load problem (check internet):"],"સ્કોર":["स्कोर","Score"],"સ્માર્ટ વોટ્સએપ નજ ક્યૂ":["स्मार्ट व्हाट्सऐप नज क्यू","Smart WhatsApp nudge queue"],"હજી પૂરતો ડેટા નથી.":["अभी पर्याप्त डेटा नहीं है।","Not enough data yet."],"હજી લોગ નથી":["अभी लॉग नहीं है","No log yet"],"હળવું ચાલવાથી જમ્યા પછીની શુગર ઘટાડવામાં અને પાચનમાં મદદ મળે છે.":["हल्का चलने से खाने के बाद की शुगर घटाने और पाचन में मदद मिलती है।","A light walk helps lower post-meal sugar and aids digestion."],"હળવું ભોજન સૂવાના ૨-૩ કલાક પહેલાં પૂરું કરી લેજો.":["हल्का भोजन सोने से 2-3 घंटे पहले पूरा कर लें।","Finish a light meal 2-3 hours before sleep."],"હેલ્પલાઇન/કોચનું નામ":["हेल्पलाइन/कोच का नाम","Helpline / coach name"],"કિડની":["किडनी","Kidney"],"મેન્યુઅલ સિલેક્શન":["मैनुअल चयन","Manual selection"],"જૂનો PIN: રીસેટ કરો":["पुराना PIN: रीसेट करें","Old PIN: reset"],"ધ્યાન જોઈએ (Needs Attention)":["ध्यान चाहिए (Needs Attention)","Needs Attention"],"PIN બદલાયો":["PIN बदल गया","PIN changed"],"VIP રદ":["VIP रद्द","VIP cancelled"],"કોચ દૂર કર્યા":["कोच हटाए गए","Coach removed"],"કોચ સોંપાયા":["कोच असाइन हुए","Coach assigned"],"ટ્રાયલ વધાર્યો":["ट्रायल बढ़ाया","Trial extended"],"નોટ સેવ થઈ":["नोट सेव हुआ","Note saved"],"પાસવર્ડ સેવ થયો":["पासवर्ड सेव हुआ","Password saved"],"મેનુ અપડેટ થયું":["मेनू अपडेट हुआ","Menu updated"],"વેરિફાય થયું":["वेरिफ़ाई हुआ","Verified"],"સરેરાશ સ્કોર:":["औसत स्कोर:","Average score:"],"સેટિંગ્સ સેવ થઈ":["सेटिंग्स सेव हुईं","Settings saved"],"કસ્ટમ":["कस्टम","Custom"],"નાસ્તો સ્લોટ":["नाश्ता स्लॉट","Breakfast slot"],"પ્રેરણા":["प्रेरणा","Motivation"],"શાનદાર! આ જ રીતે ચાલુ રાખો.":["शानदार! इसी तरह जारी रखें।","Great! Keep it up."],"મેનોપોઝ":["मेनोपॉज़","Menopause"],"લંચ સ્લોટ":["लंच स्लॉट","Lunch slot"],"આજે તમારા પ્લાનમાં: *":["आज आपके प्लान में: *","In your plan today: *"],"આજે તમારા પ્લાનમાં:":["आज आपके प्लान में:","In your plan today:"],"લેટેસ્ટ રેકોર્ડિંગ (YouTube Unlisted)":["लेटेस्ट रिकॉर्डिंग (YouTube Unlisted)","Latest recording (YouTube Unlisted)"],"ટોપ પર્ફોર્મર્સ (૭ દિવસ)":["टॉप परफ़ॉर्मर्स (7 दिन)","Top performers (7 days)"],"આજની ટિપ":["आज की टिप","Today's tip"],"પાણી યાદ":["पानी याद","Water reminder"],"પાણી રિમાઇન્ડર":["पानी रिमाइंडर","Water reminder"],"નિયમિતતા વધારશો તો સારું પરિણામ મળશે. હું સાથે છું.":["नियमितता बढ़ाएँगे तो अच्छा परिणाम मिलेगा। मैं साथ हूँ।","Be more consistent and you'll see better results. I'm with you."],"આજનો લોગ ભરવાનો":["आज का लॉग भरना है","Fill today's log"],"ફીડબેક":["फ़ीडबैक","Feedback"],"લોગ કરેલા દિવસ:":["लॉग किए गए दिन:","Days logged:"],"લોગ સ્લોટ":["लॉग स्लॉट","Log slot"],"બ્રોડકાસ્ટ મેસેજ":["ब्रॉडकास्ट मैसेज","Broadcast message"],"નામ / નંબર શોધો":["नाम / नंबर खोजें","Search name / number"],"તમારો લોગિન PIN: *":["आपका लॉगिन PIN: *","Your login PIN: *"],"PIN સુરક્ષિત":["PIN सुरक्षित","PIN secured"],"WA રિમાઇન્ડર":["WA रिमाइंडर","WA reminder"],"એડમિન લિંક:":["एडमिन लिंक:","Admin link:"],"લાઈવ ક્લાસ લિંક્સ (Google Meet / Zoom)":["लाइव क्लास लिंक (Google Meet / Zoom)","Live class links (Google Meet / Zoom)"],"શુગર":["शुगर","Sugar"],"ડિલીટ થયું":["हटाया गया","Deleted"],"પોસ્ટ-મીલ વોક":["पोस्ट-मील वॉक","Post-meal walk"],"વોક સ્લોટ":["वॉक स्लॉट","Walk slot"],"સ્નેક સ્લોટ":["स्नैक स्लॉट","Snack slot"],"ડિનર સ્લોટ":["डिनर स्लॉट","Dinner slot"],"લાઈવ ક્લાસ":["लाइव क्लास","Live class"],"છેલ્લું Fasting:":["आख़िरी Fasting:","Last Fasting:"],"તહેવાર ટિપ":["त्योहार टिप","Festival tip"],"ધ્યાન":["ध्यान","Meditation"],"યોગા":["योगा","Yoga"],"હું સાથે છું.":["मैं साथ हूँ।","I'm with you."],"હજી નોંધ નથી":["अभी एंट्री नहीं है","no entries yet"],"પછીનાને મોકલો (Next Unsent)":["अगले को भेजें (Next Unsent)","Send to next (Next Unsent)"],"કોચનું મેનુ:":["कोच का मेनू:","Coach's menu:"],"કોચનું મેનુ":["कोच का मेनू","Coach's menu"],"ફેટ લોસ / મેદસ્વિતા":["फैट लॉस / मोटापा","Fat Loss / Obesity"],"ફિટનેસ":["फिटनेस","Fitness"],"ભાષા":["भाषा","Language"],"જાન્યુઆરી":["जनवरी","January"],"ફેબ્રુઆરી":["फ़रवरी","February"],"માર્ચ":["मार्च","March"],"એપ્રિલ":["अप्रैल","April"],"મે":["मई","May"],"જૂન":["जून","June"],"જુલાઈ":["जुलाई","July"],"ઑગસ્ટ":["अगस्त","August"],"ઓગસ્ટ":["अगस्त","August"],"સપ્ટેમ્બર":["सितंबर","September"],"ઑક્ટોબર":["अक्टूबर","October"],"ઓક્ટોબર":["अक्टूबर","October"],"નવેમ્બર":["नवंबर","November"],"ડિસેમ્બર":["दिसंबर","December"],"હવે પછી •":["अगला •","Up next •"],"હવે પછી":["अगला","Up next"],"લાઈવ":["लाइव","Live"],"ક્લાસ":["क्लास","class"],"આ સેશન્સ ફક્ત VIP સભ્યો માટે છે.":["ये सेशन केवल VIP सदस्यों के लिए हैं।","These sessions are for VIP members only."],"VIP મેળવો":["VIP लें","Get VIP"],"વર્કઆઉટ પૂર્વે શુગર સુરક્ષા નિયમ":["वर्कआउट से पहले शुगर सुरक्षा नियम","Pre-workout sugar safety rule"],"કસરત શરૂ કરતાં પહેલાં શુગર તપાસો. જો શુગર":["व्यायाम शुरू करने से पहले शुगर जाँचें। अगर शुगर","Check your sugar before starting exercise. If sugar is"],"૧૦૦ mg/dl થી ઓછી":["100 mg/dl से कम","below 100 mg/dl"],"હોય, તો ૧૫ ગ્રામ ઝડપી કાર્બ્સ (૧ કેળું અથવા શેકેલા ચણા) અચૂક લો અને સાથે ગ્લુકોઝ હંમેશા રાખો.":["हो, तो 15 ग्राम तेज़ कार्ब्स (1 केला या भुने चने) ज़रूर लें और साथ में ग्लूकोज़ हमेशा रखें।","then take 15 g of fast carbs (1 banana or roasted chana) and always carry glucose with you."],"આખી રાત પલાળેલા મેથી દાણાનું પાણી":["रात भर भीगे मेथी दाने का पानी","Overnight-soaked fenugreek seed water"],"પ્રમાણ (Portion):":["मात्रा (Portion):","Portion:"],"લીધું":["लिया","Taken"],"૧ નાનું કેળું + શેકેલા ચણા":["1 छोटा केला + भुने चने","1 small banana + roasted chana"],"નાનું":["छोटा","small"],"આજનો પ્લાન લક્ષ્યથી":["आज का प्लान लक्ष्य से","Today's plan is below target by"],"ઓછો છે":["कम है",""],"ભૂખ હોય કે વર્કઆઉટ હોય તો આમાંથી ઉમેરો (ખાધા પછી \"ખાધું ✓\" દબાવો):":["भूख हो या वर्कआउट हो तो इनमें से जोड़ें (खाने के बाद \"खाया ✓\" दबाएँ):","If you are hungry or have a workout, add from these (press \"Eaten ✓\" after eating):"],"પ્લાન સિવાય કંઈ ખાધું?":["प्लान के अलावा कुछ खाया?","Ate anything outside the plan?"],"અઠવાડિયે":["हफ़्ते में","per week"],"વાર":["बार","time"],"વજનનો ટ્રેન્ડ \"રિપોર્ટ્સ\" ટેબમાં દેખાશે.":["वज़न का ट्रेंड \"रिपोर्ट्स\" टैब में दिखेगा।","The weight trend will show in the \"Reports\" tab."],"BMI સ્થિતિ:":["BMI स्थिति:","BMI status:"],"(ભારતીય માપદંડ). તમારી ઊંચાઈ માટે સ્વસ્થ વજન શ્રેણી ≈":["(भारतीय मानक)। आपकी ऊँचाई के लिए स्वस्थ वज़न सीमा ≈","(Indian standard). Healthy weight range for your height ≈"],"BMI માત્ર સંકેત છે, નિદાન નથી.":["BMI केवल एक संकेत है, निदान नहीं।","BMI is only an indicator, not a diagnosis."],"રોજનું કેલરી લક્ષ્ય":["रोज़ का कैलोरी लक्ष्य","Daily calorie target"],"રોજનું પ્રોટીન લક્ષ્ય":["रोज़ का प्रोटीन लक्ष्य","Daily protein target"],"મેમ્બરશિપ:":["मेंबरशिप:","Membership:"],"સિદ્ધિઓ":["उपलब्धियाँ","Achievements"],"મળ્યા":["मिले","earned"],"વરિયાળી":["सौंफ़","fennel"],"આદુંનું":["अदरक का","ginger"],"તુલસી":["तुलसी","tulsi"],"આમળાં":["आँवला","amla"],"આમળા":["आँवला","amla"],"એલોવેરા":["एलोवेरा","aloe vera"],"કાચી":["कच्ची","raw"],"હળદર":["हल्दी","turmeric"],"જીરા":["जीरा","cumin"],"પેઠું":["पेठा","ash gourd"],"પેઠાનો":["पेठे का","ash gourd"],"તાજો":["ताज़ा","fresh"],"તાજા":["ताज़े","fresh"],"તાજું":["ताज़ा","fresh"],"રસ":["रस","juice"],"મખાના":["मखाना","makhana"],"છેલ્લા ૭ દિવસની સમરી":["पिछले 7 दिनों की समरी","Last 7 days summary"],"દિવસ નોંધ":["दिन दर्ज","days logged"],"સરેરાશ સ્કોર":["औसत स्कोर","Average score"],"વજન ફેરફાર":["वज़न में बदलाव","Weight change"],"આવતીકાલ":["कल","Tomorrow"],"સવારે:":["सुबह:","Morning:"],"નાસ્તો:":["नाश्ता:","Snack:"],"બપોરે:":["दोपहर:","Afternoon:"],"સાંજે:":["शाम:","Evening:"],"રાત્રે:":["रात:","Night:"],"વરિયાળી-જીરું-ધાણાનું પાણી":["सौंफ़-जीरा-धनिया का पानी","Fennel-cumin-coriander water"],"ધાણાનું":["धनिया का","coriander"],"દાણાનું":["दाने का","seed"],"દાણા":["दाने","seeds"],"મેથીના":["मेथी के","fenugreek"],"સ્ટીમ્ડ":["स्टीम्ड","steamed"],"મુઠીયા":["मुठिया","muthia"],"દૂધીનો":["लौकी का","bottle gourd"],"દાળનો":["दाल का","dal"],"ઇન્ફ્યુઝન":["इन्फ्यूज़न","infusion"],"નવશેકું":["गुनगुना","lukewarm"],"કાળા મરી":["काली मिर्च","black pepper"],"મીઠાવાળા":["नमक वाले","salted"],"મીઠું":["नमक","salt"],"જામફળ":["अमरूद","guava"],"તાજા પપૈયાના":["ताज़े पपीते के","fresh papaya"],"પપૈયું":["पपीता","papaya"],"પપૈયાના":["पपीते के","papaya"],"લીંબુનું":["नींबू का","lemon"],"લીંબુનો":["नींबू का","lemon"],"બાફેલી":["उबली","boiled"],"સીંગદાણા":["मूँगफली के दाने","peanuts"],"આખી રાત પલાળેલા":["रात भर भीगे","overnight-soaked"],"રાત":["रात","night"],"આખી":["पूरी","whole"],"પલાળેલા":["भीगे हुए","soaked"],"ડિટોક્સ વોટર":["डिटॉक्स वॉटर","detox water"],"ડિટોક્સ":["डिटॉक्स","detox"],"વોટર":["वॉटर","water"],"ચંક્સ":["चंक्स","chunks"],"પોષક":["पौष्टिक","nutritious"],"આ":["यह","this"],"જીરાવાળું":["जीरे वाला","cumin-flavoured"],"વરિયાળીનું":["सौंफ़ का","fennel"],"કેટેગરી મુજબ મેનુ સેટ કરો":["श्रेणी (कैटेगरी) के अनुसार मेनू सेट करें","Set menu category-wise"],"ખાલી છોડેલા સ્લોટમાં બિલ્ટ-ઇન ઓટો મેનુ જ ચાલે છે. તમારું મેનુ ફક્ત તે કેટેગરીના ક્લાયન્ટ્સને લાગુ પડે છે. ક્લાયન્ટની એલર્જી/ડાયેટ કે બીમારીના નિયમ તોડતી વાનગી સુરક્ષા માટે આપોઆપ બિલ્ટ-ઇન વાનગીથી બદલાઈ જાય છે.":["खाली छोड़े गए स्लॉट में बिल्ट-इन ऑटो मेनू ही चलता है। आपका मेनू सिर्फ़ उसी कैटेगरी के क्लाइंट पर लागू होता है। क्लाइंट की एलर्जी/डाइट या बीमारी के नियम तोड़ने वाला व्यंजन सुरक्षा के लिए अपने आप बिल्ट-इन व्यंजन से बदल जाता है।","Empty slots keep using the built-in auto menu. Your menu applies only to clients in that category. A dish that breaks a client's allergy/diet/condition rules is automatically replaced by a built-in dish for safety."],"મારી વાનગીઓ":["मेरे व्यंजन","My dishes"],"નવી વાનગી ઉમેરો":["नया व्यंजन जोड़ें","Add a new dish"],"વાનગીનું નામ (ગુજરાતી)":["व्यंजन का नाम (गुजराती)","Dish name (Gujarati)"],"વાનગી સેવ કરો":["व्यंजन सेव करें","Save dish"],"ફેરફાર સેવ કરો":["बदलाव सेव करें","Save changes"],"ફોર્મ ખાલી કરો":["फ़ॉर्म खाली करें","Clear form"],"તળેલું":["तला हुआ","Fried"],"ખાંડ વધારે":["ज़्यादा चीनी","High sugar"],"રિફાઇન્ડ કાર્બ":["रिफाइंड कार्ब","refined carbs"],"એલર્જન (આ વાનગીમાં છે)":["एलर्जन (इस व्यंजन में हैं)","Allergens (present in this dish)"],"કંદમૂળ/ડુંગળી-લસણ (જૈન નહીં)":["कंदमूल/प्याज़-लहसुन (जैन नहीं)","Root veg / onion-garlic (not Jain)"],"ભાગ (દા.ત. ૧ વાટકી)":["मात्रा (जैसे 1 कटोरी)","Portion (e.g. 1 bowl)"],"૧ સર્વિંગ":["1 सर्विंग","1 serving"],"ઓટો (બિલ્ટ-ઇન) —":["ऑटो (बिल्ट-इन) —","Auto (built-in) —"],"આ કેટેગરી માટે મારું મેનુ વાપરો":["इस कैटेगरी के लिए मेरा मेनू इस्तेमाल करें","Use my menu for this category"],"મારું મેનુ ચાલુ":["मेरा मेनू चालू","My menu is ON"],"બિલ્ટ-ઇન ઓટો મેનુ ચાલુ":["बिल्ट-इन ऑटो मेनू चालू","Built-in auto menu is ON"],"આ દિવસનો કુલ:":["इस दिन का कुल:","This day's total:"],"ઓટો સ્લોટ:":["ऑटो स्लॉट:","Auto slots:"],"આ દિવસ બધા દિવસોમાં કૉપી કરો":["यह दिन सभी दिनों में कॉपी करें","Copy this day to all days"],"બિલ્ટ-ઇન પર પાછા જાઓ":["बिल्ट-इन पर वापस जाएँ","Back to built-in"],"એડિટ":["एडिट","Edit"],"ડિલીટ":["डिलीट","Delete"],"હજી કોઈ વાનગી ઉમેરી નથી.":["अभी कोई व्यंजन नहीं जोड़ा।","No dish added yet."],"સેવ ન કરેલા ફેરફારો છે. છોડી દેવા છે?":["बिना सेव किए बदलाव हैं। छोड़ देना है?","You have unsaved changes. Discard them?"],"કૉપી થયું":["कॉपी हुआ","Copied"],"ઓછામાં ઓછો એક સ્લોટ પસંદ કરો, અથવા \"મારું મેનુ વાપરો\" બંધ કરો.":["कम से कम एक स्लॉट चुनें, या \"मेरा मेनू इस्तेमाल करें\" बंद करें।","Pick at least one slot, or turn off \"Use my menu\"."],"આ વાનગીઓ કેટેગરીના નિયમ તોડે છે:":["ये व्यंजन कैटेगरी के नियम तोड़ते हैं:","These dishes break the category rules:"],"છતાં સેવ કરવું? (ડાયાબિટીસ ક્લાયન્ટને આવી વાનગી આપોઆપ બદલાઈ જશે.)":["फिर भी सेव करें? (डायबिटीज़ क्लाइंट को ऐसा व्यंजन अपने आप बदलकर दिया जाएगा।)","Save anyway? (For diabetes clients such a dish will be swapped automatically.)"],"મેનુ સેવ થયું":["मेनू सेव हुआ","Menu saved"],"આ કેટેગરીનું મારું મેનુ ડિલીટ કરી બિલ્ટ-ઇન ઓટો મેનુ પર પાછા જવું છે?":["इस कैटेगरी का मेरा मेनू हटाकर बिल्ट-इन ऑटो मेनू पर लौटना है?","Delete my menu for this category and go back to the built-in auto menu?"],"બિલ્ટ-ઇન મેનુ ચાલુ":["बिल्ट-इन मेनू चालू","Built-in menu is ON"],"નામ અને કેલરી (20-1500) જરૂરી છે.":["नाम और कैलोरी (20-1500) ज़रूरी हैं।","Name and calories (20-1500) are required."],"પ્રોટીન (0-120) અને GL (0-60) ચકાસો.":["प्रोटीन (0-120) और GL (0-60) जाँचें।","Check protein (0-120) and GL (0-60)."],"વાનગી સેવ થઈ":["व्यंजन सेव हुआ","Dish saved"],"ખરેખર ડિલીટ કરવું? મેનુમાં વપરાયેલી હોય તો ત્યાંથી પણ નીકળી જશે.":["सच में हटाना है? मेनू में इस्तेमाल हुआ हो तो वहाँ से भी हट जाएगा।","Really delete? It will also be removed from any menu using it."],"મેનુ":["मेनू","Menu"],"શુગર જોખમી સ્તરે નીચું છે! તાત્કાલિક ૧૫ ગ્રામ ઝડપી ગ્લુકોઝ (૩ ચમચી ખાંડ/ગ્લુકોઝ પાણી અથવા જ્યુસ) લો, ૧૫ મિનિટ પછી ફરી માપો અને આજે જ ડૉક્ટરને જણાવો. લક્ષણો ગંભીર હોય (બેભાન, ઝાંખું, ખેંચ) તો તરત તબીબી મદદ લો.":["शुगर ख़तरनाक स्तर तक कम है! तुरंत 15 ग्राम तेज़ ग्लूकोज़ (3 चम्मच चीनी/ग्लूकोज़ पानी या जूस) लें, 15 मिनट बाद फिर मापें और आज ही डॉक्टर को बताएँ। लक्षण गंभीर हों (बेहोशी, धुंधला दिखना, ऐंठन) तो तुरंत चिकित्सा सहायता लें।","Sugar is dangerously low! Immediately take 15 g of fast-acting glucose (3 teaspoons sugar / glucose water or juice), re-check after 15 minutes and tell your doctor today. If symptoms are severe (fainting, blurred vision, seizure) get medical help at once."],"બ્લડ શુગર ઘણું ઊંચું છે. પૂરતું પાણી પીઓ અને આજે જ ડૉક્ટરનો સંપર્ક કરો.":["ब्लड शुगर बहुत ऊँचा है। पर्याप्त पानी पिएँ और आज ही डॉक्टर से संपर्क करें।","Blood sugar is very high. Drink enough water and contact your doctor today."],"તમારી ફાસ્ટિંગ શુગર છેલ્લા ૫ નોંધ દરમિયાન સતત ૧૦૦ થી નીચે છે. જો તમે ડાયાબિટીસની દવા કે ઇન્સ્યુલિન લેતા હોવ, તો ડૉક્ટરને મળીને દવાની":["आपकी फ़ास्टिंग शुगर पिछली 5 एंट्री में लगातार 100 से नीचे है। अगर आप डायबिटीज़ की दवा या इंसुलिन लेते हैं, तो डॉक्टर से मिलकर दवा की","Your fasting sugar has stayed below 100 for the last 5 entries. If you take diabetes medicine or insulin, please meet your doctor for a"],"સમીક્ષા":["समीक्षा","review of the medication"],"કરાવો. દવા જાતે બંધ કે ઓછી ન કરો.":["करवाएँ। दवा खुद बंद या कम न करें।","Do not stop or reduce medicines on your own."],"મેડિકેશન રિવ્યુ સૂચના (શાનદાર સુધારો)":["मेडिकेशन रिव्यू सूचना (शानदार सुधार)","Medication review notice (great improvement)"],"સુગર એલર્ટ: હાઈપોગ્લાયસેમિયા (< 70 mg/dl)":["शुगर अलर्ट: हाइपोग्लाइसीमिया (< 70 mg/dl)","Sugar alert: Hypoglycaemia (< 70 mg/dl)"],"હાઈ સુગર એલર્ટ (> 300 mg/dl)":["हाई शुगर अलर्ट (> 300 mg/dl)","High sugar alert (> 300 mg/dl)"],"કોચને જાણ કરો 📲":["कोच को सूचित करें 📲","Inform coach 📲"],"તમારા ડાયેટ/એલર્જી/હેલ્થ નિયમો મુજબ આ સ્લોટ માટે સલામત વાનગી મળી નથી. કોચને જણાવો, તેઓ કસ્ટમ વિકલ્પ આપશે.":["आपके डाइट/एलर्जी/हेल्थ नियमों के अनुसार इस स्लॉट के लिए सुरक्षित व्यंजन नहीं मिला। कोच को बताएँ, वे कस्टम विकल्प देंगे।","No safe dish was found for this slot under your diet/allergy/health rules. Tell your coach and they will give a custom option."],"છેલ્લો લોગ":["आख़िरी लॉग","Last log"],"આજનું લાઇફસ્ટાઇલ (Day Lifestyle)":["आज की लाइफस्टाइल (Day Lifestyle)","Today's lifestyle (Day Lifestyle)"],"ઊંઘ":["नींद","Sleep"],"વોક/સ્ટેપ્સ":["वॉक/स्टेप्स","Walk/steps"],"કસરત":["व्यायाम","Exercise"],"મૂડ/સ્ટ્રેસ":["मूड/स्ट्रेस","Mood/stress"],"આજનું મેનુ સેટ કરો (કોચ કંટ્રોલ)":["आज का मेनू सेट करें (कोच कंट्रोल)","Set today's menu (coach control)"],"ઓટો / કસ્ટમ":["ऑटो / कस्टम","Auto / custom"],"-- ઓટો સિલેક્શન (":["-- ऑटो चयन (","-- Auto selection ("],"તારીખ":["तारीख़","Date"],"કોચ નોટ (ફક્ત સ્ટાફને દેખાશે)":["कोच नोट (सिर्फ़ स्टाफ़ को दिखेगा)","Coach note (visible to staff only)"],"નોટ સેવ કરો":["नोट सेव करें","Save note"],"પ્રોગ્રેસ મેસેજ":["प्रोग्रेस मैसेज","Progress message"],"ચેક-ઇન":["चेक-इन","Check-in"],"ઓનર કંટ્રોલ્સ":["ओनर कंट्रोल्स","Owner controls"],"PIN રીસેટ":["PIN रीसेट","Reset PIN"],"નવો PIN":["नया PIN","New PIN"],"ઓટો સિલેક્શન":["ऑटो चयन","Auto selection"]};
+    // ============ I18N (Gujarati / Hindi / English) ============
+    // Display-only translation layer. Internal data (dish names, ids, allergen keywords) always stays Gujarati.
+    const I18N_LANGS = { gu: 'ગુજરાતી', hi: 'हिन्दी', en: 'English' };
+    let CUR_LANG = 'gu';
+    try { const sv = localStorage.getItem(I18N_KEY); if (sv && I18N_LANGS[sv]) CUR_LANG = sv; } catch (e) {}
+    let I18N_RE = null;
+    const I18N_GU = /[઀-૿]/;
+    const GU_DIGITS = { '૦': '0', '૧': '1', '૨': '2', '૩': '3', '૪': '4', '૫': '5', '૬': '6', '૭': '7', '૮': '8', '૯': '9' };
+    function i18nBuild() {
+      const keys = Object.keys(I18N_DICT).sort((a, b) => b.length - a.length);
+      const esc = k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      I18N_RE = new RegExp('(?<![\\u0A80-\\u0AFF])(?:' + keys.map(esc).join('|') + ')(?![\\u0A80-\\u0AFF])', 'g');
+    }
+    function i18nAdd(gu, hi, en) { if (!gu) return; I18N_DICT[gu] = [hi || gu, en || hi || gu]; I18N_RE = null; }
+    function tr(s, lang) {
+      lang = lang || CUR_LANG;
+      if (lang === 'gu' || s == null) return s;
+      s = String(s);
+      if (!I18N_GU.test(s) && !I18N_DICT[s.trim()]) return s;
+      if (!I18N_RE) i18nBuild();
+      const idx = lang === 'hi' ? 0 : 1;
+      const ex = I18N_DICT[s.trim()];
+      let out;
+      if (ex) out = s.replace(s.trim(), ex[idx]);
+      else out = s.replace(I18N_RE, m => I18N_DICT[m][idx]);
+      out = out.replace(/[૦-૯]/g, d => GU_DIGITS[d]);
+      if (/^[a-z]/.test(out) && I18N_GU.test(s.charAt(0))) out = out.charAt(0).toUpperCase() + out.slice(1);
+      return out;
+    }
+
+    // ---- DOM translator: translates visible text + placeholders live; the original Gujarati is remembered so any language can be switched back and forth. ----
+    const I18N_ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
+    function i18nSkip(el, attr) { return !!(el && el.closest && el.closest(attr ? '[data-notr],script,style' : '[data-notr],script,style,textarea')); }
+    function i18nText(n) {
+      const cur = n.nodeValue;
+      const src = (n.__tv !== undefined && cur === n.__tv) ? n.__gu : cur;
+      if (n.__gu === undefined && !I18N_GU.test(src) && !I18N_DICT[String(src).trim()]) return;
+      if (i18nSkip(n.parentElement)) return;
+      n.__gu = src;
+      const out = CUR_LANG === 'gu' ? src : tr(src);
+      n.__tv = out;
+      if (out !== cur) n.nodeValue = out;
+    }
+    function i18nAttrs(el) {
+      if (!el.getAttribute || i18nSkip(el, true)) return;
+      el.__ga = el.__ga || {};
+      I18N_ATTRS.forEach(a => {
+        if (!el.hasAttribute(a)) return;
+        const cur = el.getAttribute(a);
+        const rec = el.__ga[a];
+        const src = (rec && cur === rec.tv) ? rec.gu : cur;
+        if (!rec && !I18N_GU.test(src)) return;
+        const out = CUR_LANG === 'gu' ? src : tr(src);
+        el.__ga[a] = { gu: src, tv: out };
+        if (out !== cur) el.setAttribute(a, out);
+      });
+    }
+    function i18nWalk(root) {
+      if (!root) return;
+      if (root.nodeType === 3) return i18nText(root);
+      if (root.nodeType !== 1) return;
+      i18nAttrs(root);
+      const w = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
+      let n; while ((n = w.nextNode())) { if (n.nodeType === 3) i18nText(n); else i18nAttrs(n); }
+    }
+    let I18N_OBS = null;
+    function i18nStart() {
+      if (I18N_OBS || !document.body) return;
+      I18N_OBS = new MutationObserver(muts => {
+        for (const m of muts) {
+          if (m.type === 'childList') m.addedNodes.forEach(i18nWalk);
+          else if (m.type === 'characterData') i18nText(m.target);
+          else if (m.type === 'attributes') i18nAttrs(m.target);
+        }
+      });
+      I18N_OBS.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: I18N_ATTRS });
+    }
+    function i18nApplyAll() { document.documentElement.lang = CUR_LANG; i18nWalk(document.body); }
+    function cycleLang() { const ks = Object.keys(I18N_LANGS); setLang(ks[(ks.indexOf(CUR_LANG) + 1) % ks.length]); }
+    function renderLangPickers() {
+      const bt = document.getElementById('langBtnTxt'); if (bt) bt.textContent = CUR_LANG.toUpperCase();
+      document.querySelectorAll('.lang-picker').forEach(box => {
+        box.setAttribute('data-notr', '1');
+        box.innerHTML = Object.keys(I18N_LANGS).map(k => `<button type="button" onclick="setLang('${k}')" class="px-3 py-1.5 rounded-xl text-[11px] font-extrabold border ${k === CUR_LANG ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-slate-600 border-slate-300'}">${I18N_LANGS[k]}</button>`).join('');
+      });
+    }
+    function setLang(l, silent) {
+      if (!I18N_LANGS[l]) return;
+      CUR_LANG = l;
+      try { localStorage.setItem(I18N_KEY, l); } catch (e) {}
+      i18nApplyAll(); renderLangPickers();
+      if (typeof onLangChanged === 'function') onLangChanged(l, !!silent);
+    }
+    ['alert', 'confirm', 'prompt'].forEach(fn => { const o = window[fn].bind(window); window[fn] = (m, d) => o(tr(m), d); });
+    document.addEventListener('DOMContentLoaded', () => { renderLangPickers(); i18nStart(); i18nApplyAll(); });
+  </script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyC7HLpZIEayOfmUuHVK_8Fm34Un73i33KE",
@@ -470,8 +608,9 @@
 
     function dishAllergens(dish) {
       if (dish._alg) return dish._alg;
-      const text = (dish.name + ' ' + (dish.proteinItem || '') + ' ' + (dish.vegItem || '')).toLowerCase();
-      dish._alg = Object.keys(ALLERGEN_KEYWORDS).filter(a => ALLERGEN_KEYWORDS[a].some(k => text.includes(k.toLowerCase())));
+      const text = (dish.name + ' ' + (dish.proteinItem || '') + ' ' + (dish.vegItem || '') + ' ' + (dish._xt || '')).toLowerCase();
+      const det = Object.keys(ALLERGEN_KEYWORDS).filter(a => ALLERGEN_KEYWORDS[a].some(k => text.includes(k.toLowerCase())));
+      dish._alg = Array.from(new Set(det.concat(dish.algs || [])));
       return dish._alg;
     }
 
@@ -525,16 +664,69 @@
       return ['morning'].concat(gym ? ['pre_workout'] : [], ['breakfast', 'lunch', 'snack'], gym ? ['post_workout'] : [], ['dinner']);
     }
 
-    function generateDayMenu(dateKey, client) {
+    // ===== Category menus set from Admin (Firestore: settings/menus). If nothing is set, the built-in engine below runs exactly as before. =====
+    let MENU_CFG = { cats: {}, customDishes: {} };
+    let MENU_CUSTOM = [];
+    const MENU_CAT_ORDER = ['diabetes', 'fatty_liver', 'fat_loss', 'menopause', 'gym', 'general'];
+    const MENU_CAT_LABELS = { diabetes: '🩺 ડાયાબિટીસ', fatty_liver: '🥒 ફેટી લિવર', fat_loss: '⚖️ ફેટ લોસ / મેદસ્વિતા', menopause: '🌸 મેનોપોઝ / હોર્મોન્સ', gym: '💪 જિમ / ફિટનેસ', general: '🌿 સામાન્ય સ્વાસ્થ્ય' };
+    function setMenuCfg(d) {
+      MENU_CFG = { cats: (d && d.cats) || {}, customDishes: (d && d.customDishes) || {} };
+      MENU_CUSTOM = Object.values(MENU_CFG.customDishes).filter(cd => cd && cd.id && cd.slot && cd.name).map(cd => {
+        const nm = cd.name || {};
+        const guName = nm.gu || nm.hi || nm.en || cd.id;
+        i18nAdd(guName, nm.hi || nm.en || guName, nm.en || nm.hi || guName);
+        return { id: cd.id, slot: cd.slot, name: guName, baseCal: Number(cd.baseCal) || 0, baseP: Number(cd.baseP) || 0, gl: Number(cd.gl) || 0,
+          basePortion: cd.basePortion || '૧ સર્વિંગ', tags: Array.isArray(cd.tags) ? cd.tags : ['veg'], vegItem: cd.vegItem || '-', proteinItem: cd.proteinItem || '-',
+          algs: Array.isArray(cd.algs) ? cd.algs : [], _custom: true, _xt: ((nm.hi || '') + ' ' + (nm.en || '')) };
+      });
+    }
+    function dishById(id) { return CLINICAL_FOOD_DB.find(d => d.id === id) || MENU_CUSTOM.find(d => d.id === id) || null; }
+    function menuCategoryFor(goals) {
+      for (const c of MENU_CAT_ORDER) if (goals.includes(c) && MENU_CFG.cats[c] && MENU_CFG.cats[c].enabled && MENU_CFG.cats[c].grid) return c;
+      return null;
+    }
+    // Safety net: a coach-set menu is never served to a client whose diet / allergy / condition rules it breaks (the built-in dish is used instead).
+    function dishSafeForClient(item, goals, prefs) {
+      const tags = item.tags || [];
+      if (tags.includes('nonveg') && prefs.diet !== 'nonveg') return false;
+      if (tags.includes('egg') && !['egg', 'nonveg'].includes(prefs.diet)) return false;
+      if (dishAllergens(item).some(a => prefs.allergenSet.has(a))) return false;
+      if (prefs.allergyText.some(a => a.length > 2 && item.name.toLowerCase().includes(a))) return false;
+      if (goals.includes('diabetes')) {
+        if (item.gl > PROTOCOL_RULES.diabetes.maxMealGL) return false;
+        if (tags.some(t => PROTOCOL_RULES.diabetes.forbiddenTags.includes(t))) return false;
+      }
+      if (goals.includes('fatty_liver') && tags.some(t => PROTOCOL_RULES.fatty_liver.forbiddenTags.includes(t))) return false;
+      if (goals.includes('fat_loss') && tags.some(t => PROTOCOL_RULES.fat_loss.forbiddenTags.includes(t))) return false;
+      return true;
+    }
+    function menuDishFor(cat, slot, dateKey, goals, prefs) {
+      const cfg = MENU_CFG.cats[cat]; if (!cfg || !cfg.grid) return null;
+      const wd = String(parseDateKey(dateKey).getDay());
+      const id = cfg.grid[wd] && cfg.grid[wd][slot];
+      if (!id) return null;
+      const dish = dishById(id);
+      if (!dish || dish.slot !== slot) return null;
+      return dishSafeForClient(dish, goals, prefs) ? dish : null;
+    }
+
+    function generateDayMenu(dateKey, client, skipMenu) {
       const goals = (client.conditions && client.conditions.length) ? client.conditions : ['general'];
       const prefs = getClientPrefs(client);
       const targets = calculateClientTargets(client);
       const dayIdx = getDayIndex(dateKey, client);
+      const cat = skipMenu ? null : menuCategoryFor(goals);
+      let menuHits = 0;
 
       const chosen = {};
       slotsForClient(goals).forEach((slot, sIdx) => {
-        const pool = getCandidatesForSlot(slot, goals, prefs);
-        chosen[slot] = pool.length ? pool[(dayIdx + sIdx * 3) % pool.length] : null;
+        let pick = cat ? menuDishFor(cat, slot, dateKey, goals, prefs) : null;
+        if (pick) menuHits++;
+        else {
+          const pool = getCandidatesForSlot(slot, goals, prefs);
+          pick = pool.length ? pool[(dayIdx + sIdx * 3) % pool.length] : null;
+        }
+        chosen[slot] = pick;
       });
 
       const baseTotal = Object.values(chosen).reduce((s, d) => s + (d ? d.baseCal : 0), 0) || 1;
@@ -544,6 +736,7 @@
       const plan = {};
       Object.keys(chosen).forEach(slot => { plan[slot] = chosen[slot] ? scaleDishPortion(chosen[slot], scale) : null; });
       Object.defineProperty(plan, '__scale', { value: scale, enumerable: false });
+      Object.defineProperty(plan, '__menuCat', { value: menuHits ? cat : null, enumerable: false });
       return plan;
     }
 
@@ -556,7 +749,7 @@
       const prefs = getClientPrefs(client);
       const applyId = (slot, id) => {
         if (!(slot in plan) || !id) return;
-        const dish = CLINICAL_FOOD_DB.find(d => d.id === id);
+        const dish = dishById(id);
         if (dish && dish.slot === slot) {
           plan[slot] = scaleDishPortion(dish, scale);
         }
@@ -614,7 +807,11 @@
       if (currentUserRole === 'owner') return clean;
       return clean.length >= 10 ? clean.substring(0, 5) + ' •••••' : '••••••••••';
     }
-    function waLink(phone, msg) { return `https://api.whatsapp.com/send?phone=${formatWaPhone(phone)}&text=${encodeURIComponent(msg)}`; }
+    function waLink(phone, msg, lang) {
+      if (!lang) { const c = (typeof liveClients !== 'undefined' ? liveClients : []).find(x => formatWaPhone(x.phone) === formatWaPhone(phone)); lang = c && c.lang; }
+      const out = (lang && lang !== 'gu') ? tr(msg, lang) : msg;
+      return `https://api.whatsapp.com/send?phone=${formatWaPhone(phone)}&text=${encodeURIComponent(out)}`;
+    }
     function dateKeyOf(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
     function pkLocal(k) { const [a, b, c] = String(k).split('-').map(Number); return new Date(a, (b || 1) - 1, c || 1); }
     function daysBetween(aKey, bKey) { return Math.round((pkLocal(bKey) - pkLocal(aKey)) / 86400000); }
@@ -676,6 +873,7 @@
         $('headerCoachDisplay').innerText = `Helpline: ${activeCoachPhone}`;
         setAdminTab('dash');
         autoApplyTimeSlot();
+        await loadMenuCfg();
         initBroadcast();
         listenToCoaches();
         listenToClients();
@@ -762,6 +960,7 @@
 
         setAdminTab('dash');
         autoApplyTimeSlot();
+        await loadMenuCfg();
         initBroadcast();
         listenToCoaches();
         listenToClients();
@@ -800,7 +999,7 @@
     // ===================== NAVIGATION =====================
     function setAdminTab(tab) {
       if (tab === 'coaches' && currentUserRole !== 'owner') tab = 'dash';
-      ['dash', 'nudge', 'clients', 'broadcast', 'coaches'].forEach(t => {
+      ['dash', 'nudge', 'clients', 'menus', 'broadcast', 'coaches'].forEach(t => {
         const v = $('aview-' + t), b = $('atab-' + t);
         if (v) v.classList.add('hidden');
         if (b) b.className = "px-3 py-2 rounded-xl bg-slate-100 text-slate-600 whitespace-nowrap";
@@ -808,6 +1007,181 @@
       $('aview-' + tab).classList.remove('hidden');
       $('atab-' + tab).className = "tab-active px-3 py-2 rounded-xl whitespace-nowrap";
       if (tab === 'broadcast') renderBroadcast();
+      if (tab === 'menus') renderMenuTab();
+    }
+
+    // ============ CATEGORY MENU EDITOR (writes Firestore settings/menus; the client portal reads it) ============
+    const MENU_SLOT_LABELS = { morning: 'સવારનું ડિટોક્સ ડ્રિંક', pre_workout: 'વર્કઆઉટ પહેલાં', breakfast: 'સવારનો નાસ્તો', lunch: 'બપોરનું ભોજન', snack: 'સાંજનો નાસ્તો', post_workout: 'વર્કઆઉટ પછી (૩૦-૬૦ મિનિટમાં)', dinner: 'રાત્રિ ભોજન' };
+    const MENU_WEEK = [1, 2, 3, 4, 5, 6, 0];
+    const MENU_DAY_GU = ['રવિવાર', 'સોમવાર', 'મંગળવાર', 'બુધવાર', 'ગુરુવાર', 'શુક્રવાર', 'શનિવાર'];
+    const MENU_ALG_LIST = [['peanut', 'મગફળી'], ['soy', 'સોયા'], ['dairy', 'ડેરી'], ['gluten', 'ગ્લુટેન'], ['nuts', 'બદામ-અખરોટ'], ['egg', 'ઈંડા'], ['fish', 'માછલી'], ['mushroom', 'મશરૂમ'], ['jain', 'કંદમૂળ/ડુંગળી-લસણ (જૈન નહીં)']];
+    let menuSelCat = 'diabetes', menuSelDay = 1, menuDraft = null, menuDirty = false, cdEditId = null;
+
+    function menuSlotsFor(cat) { return ['morning'].concat(cat === 'gym' ? ['pre_workout'] : [], ['breakfast', 'lunch', 'snack'], cat === 'gym' ? ['post_workout'] : [], ['dinner']); }
+    function menuCloneCat(c) {
+      const src = MENU_CFG.cats[c];
+      const g = {};
+      if (src && src.grid) Object.keys(src.grid).forEach(d => { g[d] = Object.assign({}, src.grid[d]); });
+      return { enabled: !!(src && src.enabled), grid: g };
+    }
+    function menuRuleIssues(cat, d) {
+      const tags = d.tags || [], out = [];
+      const R = PROTOCOL_RULES[cat] || {};
+      if (cat === 'diabetes' && d.gl > PROTOCOL_RULES.diabetes.maxMealGL) out.push('GL ' + d.gl + ' > ' + PROTOCOL_RULES.diabetes.maxMealGL);
+      (R.forbiddenTags || []).forEach(t => { if (tags.includes(t)) out.push(t === 'fried' ? 'તળેલું' : t === 'high_sugar' ? 'ખાંડ વધારે' : t === 'refined_carbs' ? 'રિફાઇન્ડ કાર્બ' : t); });
+      return out;
+    }
+    function menuAllDishes(slot) { return CLINICAL_FOOD_DB.filter(d => d.slot === slot).concat(MENU_CUSTOM.filter(d => d.slot === slot)); }
+    function menuDishIcon(d) { const t = d.tags || []; return t.includes('nonveg') ? '🍗 ' : t.includes('egg') ? '🥚 ' : ''; }
+
+    function renderMenuTab() {
+      if (!menuDraft) menuDraft = menuCloneCat(menuSelCat);
+      // category chips
+      $('menuCats').innerHTML = MENU_CAT_ORDER.map(c => {
+        const on = MENU_CFG.cats[c] && MENU_CFG.cats[c].enabled;
+        return `<button onclick="selectMenuCat('${c}')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold whitespace-nowrap border ${c === menuSelCat ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-slate-700 border-slate-300'}">${MENU_CAT_LABELS[c]}${on ? ' ✓' : ''}</button>`;
+      }).join('');
+      const slots = menuSlotsFor(menuSelCat);
+      const grid = menuDraft.grid;
+      const day = grid[menuSelDay] || {};
+      let kcal = 0, prot = 0, autoCnt = 0;
+      const rows = slots.map(slot => {
+        const id = day[slot] || '';
+        const cur = id ? dishById(id) : null;
+        if (cur) { kcal += cur.baseCal; prot += cur.baseP; } else autoCnt++;
+        const opts = menuAllDishes(slot).map(d => {
+          const iss = menuRuleIssues(menuSelCat, d);
+          return `<option value="${esc(d.id)}" ${id === d.id ? 'selected' : ''}>${iss.length ? '⚠ ' : ''}${menuDishIcon(d)}${d._custom ? '✍️ ' : ''}${esc(d.name)} · ${d.baseCal} kcal · P${d.baseP}</option>`;
+        }).join('');
+        const iss = cur ? menuRuleIssues(menuSelCat, cur) : [];
+        return `<div class="space-y-0.5">
+          <div class="text-[10px] font-bold text-slate-600">${MENU_SLOT_LABELS[slot]}</div>
+          <select onchange="setMenuCell('${slot}', this.value)" class="w-full p-2 bg-slate-50 border ${iss.length ? 'border-rose-400' : 'border-slate-300'} rounded-xl text-[11px] font-semibold">
+            <option value="">— ઓટો (બિલ્ટ-ઇન) —</option>${opts}
+          </select>
+          ${iss.length ? `<div class="text-[10px] text-rose-700 font-bold">⚠ ${iss.join(', ')}</div>` : ''}
+        </div>`;
+      }).join('');
+      const dayTabs = MENU_WEEK.map(d => `<button onclick="selectMenuDay(${d})" class="px-2.5 py-1.5 rounded-lg text-[10px] font-extrabold whitespace-nowrap ${d === menuSelDay ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'}">${MENU_DAY_GU[d]}${Object.keys(grid[d] || {}).length ? ' •' : ''}</button>`).join('');
+      $('menuEditor').innerHTML = `
+        <div class="flex items-center justify-between gap-2">
+          <label class="flex items-center gap-2 text-xs font-extrabold text-slate-900"><input type="checkbox" ${menuDraft.enabled ? 'checked' : ''} onchange="toggleMenuEnabled(this.checked)" class="w-4 h-4"> આ કેટેગરી માટે મારું મેનુ વાપરો</label>
+          <span class="text-[10px] font-black px-2 py-0.5 rounded-full ${menuDraft.enabled ? 'bg-purple-100 text-purple-800' : 'bg-slate-100 text-slate-600'}">${menuDraft.enabled ? 'મારું મેનુ ચાલુ' : 'બિલ્ટ-ઇન ઓટો મેનુ ચાલુ'}</span>
+        </div>
+        <div class="flex gap-1 overflow-x-auto pb-1">${dayTabs}</div>
+        <div class="space-y-2">${rows}</div>
+        <div class="text-[11px] bg-teal-50 border border-teal-200 rounded-xl p-2 font-bold text-teal-900">આ દિવસનો કુલ: ${Math.round(kcal)} kcal · P ${Math.round(kcal ? prot : 0)} g · ઓટો સ્લોટ: ${autoCnt}</div>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="copyMenuDayToAll()" class="py-2 rounded-xl bg-slate-100 text-slate-700 text-[11px] font-bold">આ દિવસ બધા દિવસોમાં કૉપી કરો</button>
+          <button onclick="resetMenuCat()" class="py-2 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 text-[11px] font-bold">બિલ્ટ-ઇન પર પાછા જાઓ</button>
+        </div>
+        <button onclick="saveMenuCat()" class="w-full py-2.5 rounded-xl bg-teal-600 text-white font-extrabold text-xs">સેવ કરો 💾${menuDirty ? ' *' : ''}</button>`;
+      renderCustomDishes();
+    }
+    function selectMenuCat(c) {
+      if (menuDirty && !confirm('સેવ ન કરેલા ફેરફારો છે. છોડી દેવા છે?')) return;
+      menuSelCat = c; menuDraft = menuCloneCat(c); menuDirty = false; renderMenuTab();
+    }
+    function selectMenuDay(d) { menuSelDay = d; renderMenuTab(); }
+    function setMenuCell(slot, id) {
+      const g = menuDraft.grid; g[menuSelDay] = g[menuSelDay] || {};
+      if (id) g[menuSelDay][slot] = id; else delete g[menuSelDay][slot];
+      menuDirty = true; renderMenuTab();
+    }
+    function toggleMenuEnabled(v) { menuDraft.enabled = !!v; menuDirty = true; renderMenuTab(); }
+    function copyMenuDayToAll() {
+      const src = menuDraft.grid[menuSelDay] || {};
+      MENU_WEEK.forEach(d => { menuDraft.grid[d] = Object.assign({}, src); });
+      menuDirty = true; renderMenuTab(); toast('✅ કૉપી થયું');
+    }
+    async function menuDocUpdate(mutator) {
+      const ref = db.collection('settings').doc('menus');
+      const snap = await ref.get();
+      const d = snap.exists ? snap.data() : {};
+      d.cats = d.cats || {}; d.customDishes = d.customDishes || {};
+      mutator(d);
+      d.updatedAt = Date.now(); d.updatedBy = (loggedInCoach && loggedInCoach.name) || '';
+      await ref.set(d);
+      setMenuCfg(d);
+    }
+    async function saveMenuCat() {
+      const grid = {};
+      const bad = [];
+      Object.keys(menuDraft.grid).forEach(d => {
+        const row = {};
+        Object.keys(menuDraft.grid[d] || {}).forEach(s => {
+          const id = menuDraft.grid[d][s]; if (!id) return;
+          row[s] = id;
+          const dish = dishById(id);
+          if (dish && menuRuleIssues(menuSelCat, dish).length) bad.push(dish.name);
+        });
+        if (Object.keys(row).length) grid[d] = row;
+      });
+      if (menuDraft.enabled && !Object.keys(grid).length) return alert('ઓછામાં ઓછો એક સ્લોટ પસંદ કરો, અથવા "મારું મેનુ વાપરો" બંધ કરો.');
+      if (bad.length && !confirm('આ વાનગીઓ કેટેગરીના નિયમ તોડે છે:\n' + Array.from(new Set(bad)).join('\n') + '\n\nછતાં સેવ કરવું? (ડાયાબિટીસ ક્લાયન્ટને આવી વાનગી આપોઆપ બદલાઈ જશે.)')) return;
+      const enabled = !!menuDraft.enabled;
+      const ok = await safe(() => menuDocUpdate(d => { d.cats[menuSelCat] = { enabled, grid }; }), '✅ મેનુ સેવ થયું');
+      if (ok !== null) { menuDirty = false; menuDraft = menuCloneCat(menuSelCat); renderMenuTab(); }
+    }
+    async function resetMenuCat() {
+      if (!confirm('આ કેટેગરીનું મારું મેનુ ડિલીટ કરી બિલ્ટ-ઇન ઓટો મેનુ પર પાછા જવું છે?')) return;
+      await safe(() => menuDocUpdate(d => { delete d.cats[menuSelCat]; }), '✅ બિલ્ટ-ઇન મેનુ ચાલુ');
+      menuDirty = false; menuDraft = menuCloneCat(menuSelCat); renderMenuTab();
+    }
+    async function loadMenuCfg() {
+      try { const s = await db.collection('settings').doc('menus').get(); setMenuCfg(s.exists ? s.data() : null); } catch (e) { console.error(e); setMenuCfg(null); }
+    }
+
+    // ---- Custom dishes ----
+    function renderCustomDishes() {
+      const list = MENU_CUSTOM.map(d => `<div class="flex items-center justify-between gap-2 bg-white border rounded-xl p-2 text-[11px]">
+        <div class="min-w-0"><div class="font-bold truncate">${menuDishIcon(d)}${esc(d.name)}</div><div class="text-[10px] text-slate-500">${MENU_SLOT_LABELS[d.slot] || d.slot} · ${d.baseCal} kcal · P${d.baseP} · GL ${d.gl}</div></div>
+        <div class="flex gap-1 shrink-0"><button onclick="editCustomDish('${esc(d.id)}')" class="px-2 py-1 bg-slate-100 rounded-lg font-bold">એડિટ</button><button onclick="deleteCustomDish('${esc(d.id)}')" class="px-2 py-1 bg-rose-50 text-rose-700 rounded-lg font-bold">ડિલીટ</button></div></div>`).join('');
+      $('menuCustomList').innerHTML = list || '<div class="text-[11px] text-slate-400 py-2">હજી કોઈ વાનગી ઉમેરી નથી.</div>';
+    }
+    function cdVal(id) { return ($(id).value || '').trim(); }
+    function resetCustomForm() {
+      cdEditId = null;
+      ['cdNameGu', 'cdNameHi', 'cdNameEn', 'cdCal', 'cdProt', 'cdGl', 'cdPortion'].forEach(i => $(i).value = '');
+      $('cdDiet').value = 'veg'; $('cdFried').checked = false; $('cdSugar').checked = false;
+      document.querySelectorAll('.cdAlg').forEach(c => c.checked = false);
+      $('cdSaveBtn').textContent = 'વાનગી સેવ કરો';
+    }
+    function editCustomDish(id) {
+      const raw = MENU_CFG.customDishes[id]; if (!raw) return;
+      cdEditId = id; const nm = raw.name || {};
+      $('cdNameGu').value = nm.gu || ''; $('cdNameHi').value = nm.hi || ''; $('cdNameEn').value = nm.en || '';
+      $('cdSlot').value = raw.slot; $('cdCal').value = raw.baseCal; $('cdProt').value = raw.baseP; $('cdGl').value = raw.gl; $('cdPortion').value = raw.basePortion || '';
+      const t = raw.tags || [];
+      $('cdDiet').value = t.includes('nonveg') ? 'nonveg' : t.includes('egg') ? 'egg' : 'veg';
+      $('cdFried').checked = t.includes('fried'); $('cdSugar').checked = t.includes('high_sugar');
+      document.querySelectorAll('.cdAlg').forEach(c => c.checked = (raw.algs || []).includes(c.value));
+      $('cdSaveBtn').textContent = 'ફેરફાર સેવ કરો';
+      $('cdNameGu').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    async function saveCustomDish() {
+      const gu = cdVal('cdNameGu'), hi = cdVal('cdNameHi'), en = cdVal('cdNameEn');
+      const cal = Number(cdVal('cdCal')), prot = Number(cdVal('cdProt') || 0), gl = Number(cdVal('cdGl') || 0);
+      if (!(gu || hi || en) || !(cal >= 20 && cal <= 1500)) return alert('નામ અને કેલરી (20-1500) જરૂરી છે.');
+      if (!(prot >= 0 && prot <= 120) || !(gl >= 0 && gl <= 60)) return alert('પ્રોટીન (0-120) અને GL (0-60) ચકાસો.');
+      const diet = $('cdDiet').value;
+      const tags = [diet];
+      if ($('cdFried').checked) tags.push('fried');
+      if ($('cdSugar').checked) tags.push('high_sugar');
+      if (prot >= 10) tags.push('high_protein');
+      const algs = Array.from(document.querySelectorAll('.cdAlg')).filter(c => c.checked).map(c => c.value);
+      const id = cdEditId || ('cd_' + Date.now().toString(36));
+      const rec = { id, slot: $('cdSlot').value, name: { gu: gu || hi || en, hi: hi || en || gu, en: en || hi || gu }, baseCal: cal, baseP: prot, gl, basePortion: cdVal('cdPortion') || '૧ સર્વિંગ', tags, algs };
+      const ok = await safe(() => menuDocUpdate(d => { d.customDishes[id] = rec; }), '✅ વાનગી સેવ થઈ');
+      if (ok !== null) { resetCustomForm(); renderMenuTab(); }
+    }
+    async function deleteCustomDish(id) {
+      if (!confirm('ખરેખર ડિલીટ કરવું? મેનુમાં વપરાયેલી હોય તો ત્યાંથી પણ નીકળી જશે.')) return;
+      await safe(() => menuDocUpdate(d => {
+        delete d.customDishes[id];
+        Object.keys(d.cats).forEach(c => { const g = (d.cats[c] || {}).grid || {}; Object.keys(g).forEach(day => { Object.keys(g[day]).forEach(s => { if (g[day][s] === id) delete g[day][s]; }); }); });
+      }), '🗑 ડિલીટ થયું');
+      menuDraft = menuCloneCat(menuSelCat); renderMenuTab();
     }
 
     function listenToCoaches() {
@@ -1155,7 +1529,7 @@
                 <div class="flex items-center justify-between gap-1 bg-white p-1.5 border rounded-xl">
                   <span class="font-bold text-[10px] w-20 shrink-0">${slotLabels[slot]}:</span>
                   <select onchange="setClientCustomDish('${esc(cl.id)}', '${todayKey}', '${slot}', this.value)" class="flex-1 bg-slate-50 border rounded-lg p-1 text-[10px] font-semibold">
-                    <option value="">-- ઓટો સિલેક્શન (${currentDish ? esc(currentDish.name.slice(0, 18)) : 'Empty'}...) --</option>
+                    <option value="">-- ઓટો સિલેક્શન (${currentDish ? esc(currentDish.name) : 'Empty'}) --</option>
                     ${pool.map(d => `<option value="${d.id}" ${adminPlan[slot] === d.id ? 'selected' : ''}>${esc(d.name)}</option>`).join('')}
                   </select>
                 </div>
