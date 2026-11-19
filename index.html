@@ -2656,5 +2656,351 @@ ${(comp.extras && comp.extras.length) ? 'Extra food: ' + comp.extras.map(e => e.
     }
   </script>
 
+<script>
+/*
+ * Metabolic Pro - mp-addons.js
+ * ક્લાયન્ટ પોર્ટલ અને એડમિન બંનેમાં વપરાય છે (એક જ ફાઇલ, પેજ જોઈને પોતે ઓળખી લે છે).
+ * બંને HTML ફાઇલમાં </body> ની ઠીક પહેલાં આ લાઇન ઉમેરો:
+ *     <script src="mp-addons.js"><\/script>
+ *
+ * પોર્ટલમાં:
+ *   - દરેક ભોજન કાર્ડ પર "➕ ઉમેરો" (અથવા વાનગીના બોક્સ પર ટેપ) → નીચે પેનલ ખુલે.
+ *   - પેનલમાં ફક્ત સુરક્ષિત હેલ્ધી વિકલ્પો (ક્લાયન્ટના ડાયેટ / એલર્જી / બીમારી મુજબ ફિલ્ટર).
+ *   - ઉમેરેલું કાર્ડ પર "+ દહીં" તરીકે દેખાય; કેલરી, પ્રોટીન, GL દિવસના ટોટલમાં ગણાય.
+ *   - ફેમિલી મેનુ: કેટલા સભ્યો જમે છે તે પસંદ કરો → આજનું મેનુ ×સભ્યો + WhatsApp શેર.
+ *   - સ્વેપ અને ફિક્સ મેનુ જેમ હતા તેમ જ રહે છે.
+ *   - ફોન કેલેન્ડર (.ics) માં ; અક્ષરની નાની ભૂલ સુધારી.
+ * એડમિનમાં:
+ *   - ઓનર માટે "સંદેશ મોકલો" બટન અનંત લૂપમાં જતું હતું, તે સુધાર્યું.
+ *   - ક્લાયન્ટ વિગતમાં છેલ્લા ૩ દિવસના એડ-ઓન દેખાય.
+ * એડમિન પાસવર્ડમાં કોઈ ફેરફાર નથી.
+ */
+(function () {
+  'use strict';
+  if (window.__mpAddonsLoaded) return;
+  window.__mpAddonsLoaded = true;
+
+  var isPortal = !!document.getElementById('clientPortalView');
+  var isAdmin = !!document.getElementById('adminMainView');
+  if (isPortal) initPortal();
+  if (isAdmin) initAdmin();
+
+  /* ======================================================================
+   *  PORTAL
+   * ==================================================================== */
+  function initPortal() {
+    // [id, gu, hi, en, kcal, protein, GL, tags, group, proteinItem]
+    var RAW = [
+      ['ad_curd', 'દહીં ૧ વાટકી', 'दही 1 कटोरी', 'Curd 1 bowl', 70, 4, 2, ['veg', 'low_gi'], 'pro', 'દહીં'],
+      ['ad_greek', 'ગ્રીક-સ્ટાઇલ દહીં ૧ વાટકી', 'ग्रीक-स्टाइल दही 1 कटोरी', 'Greek-style curd 1 bowl', 100, 9, 3, ['veg', 'low_gi'], 'pro', 'દહીં'],
+      ['ad_chaas', 'મોળી છાશ ૧ ગ્લાસ', 'बिना नमक की छाछ 1 गिलास', 'Plain buttermilk 1 glass', 40, 2, 1, ['veg', 'low_gi'], 'pro', 'છાશ'],
+      ['ad_paneer', 'પનીર ૫૦g', 'पनीर 50g', 'Paneer 50g', 130, 10, 1, ['veg', 'low_gi'], 'pro', 'પનીર'],
+      ['ad_tofu', 'ટોફૂ ૧૦૦g', 'टोफू 100g', 'Tofu 100g', 80, 8, 1, ['veg', 'low_gi'], 'pro', 'ટોફૂ'],
+      ['ad_sattu', 'સત્તુ છાશ ૧ ગ્લાસ', 'सत्तू छाछ 1 गिलास', 'Sattu buttermilk 1 glass', 130, 8, 5, ['veg', 'low_gi'], 'pro', 'સત્તુ, છાશ'],
+      ['ad_sprouts', 'ફણગાવેલા મગ ૧ નાની વાટકી', 'अंकुरित मूँग 1 छोटी कटोरी', 'Sprouted moong 1 small bowl', 60, 5, 2, ['veg', 'low_gi'], 'pro', 'ફણગાવેલા મગ'],
+      ['ad_chana', 'શેકેલા ચણા ૨૫g', 'भुने चने 25g', 'Roasted chana 25g', 95, 5, 4, ['veg', 'low_gi'], 'pro', 'ચણા'],
+      ['ad_peanut', 'શેકેલી સીંગ ૨૦g', 'भुनी मूँगफली 20g', 'Roasted peanuts 20g', 115, 5, 2, ['veg', 'low_gi'], 'pro', 'સીંગદાણા'],
+      ['ad_eggs', 'બાફેલા ઈંડા ×૨', 'उबले अंडे ×2', 'Boiled eggs ×2', 140, 12, 1, ['egg', 'low_gi'], 'pro', 'ઈંડા'],
+      ['ad_chicken', '૧૦૦g ગ્રીલ્ડ ચિકન', '100g ग्रिल्ड चिकन', '100g grilled chicken', 165, 31, 0, ['nonveg', 'low_gi'], 'pro', 'ચિકન'],
+      ['ad_whey', 'વ્હે પ્રોટીન શેક (૧ સ્કૂપ)', 'व्हे प्रोटीन शेक (1 स्कूप)', 'Whey protein shake (1 scoop)', 120, 24, 1, ['veg', 'low_gi', 'gym_only'], 'pro', 'વ્હે પ્રોટીન'],
+      ['ad_nuts', '૫ બદામ + ૨ અખરોટ', '5 बादाम + 2 अखरोट', '5 almonds + 2 walnuts', 90, 3, 1, ['veg', 'low_gi'], 'fat', 'બદામ, અખરોટ'],
+      ['ad_chia', 'ચિયા સીડ્સ ૧ ચમચી', 'चिया सीड्स 1 चम्मच', 'Chia seeds 1 tsp', 50, 2, 0, ['veg', 'low_gi'], 'fat', 'ચિયા'],
+      ['ad_flax', 'અળસીનો પાવડર ૧ ચમચી', 'अलसी पाउडर 1 चम्मच', 'Flaxseed powder 1 tsp', 35, 1.5, 0, ['veg', 'low_gi'], 'fat', 'અળસી'],
+      ['ad_salad', 'કાકડી-ટામેટાં સલાડ ૧ બાઉલ', 'खीरा-टमाटर सलाद 1 कटोरा', 'Cucumber-tomato salad 1 bowl', 40, 1.5, 2, ['veg', 'low_gi'], 'lite', ''],
+      ['ad_makhana', 'શેકેલા મખાના ૨૫g', 'भुने मखाने 25g', 'Roasted makhana 25g', 110, 3.5, 5, ['veg', 'low_gi'], 'lite', 'મખાના'],
+      ['ad_apple', 'અડધું સફરજન', 'आधा सेब', 'Half an apple', 45, 0.3, 4, ['veg', 'low_gi'], 'lite', ''],
+      ['ad_guava', 'જામફળ ૧ નાનું', 'अमरूद 1 छोटा', 'Guava 1 small', 50, 2, 3, ['veg', 'low_gi'], 'lite', ''],
+      ['ad_papaya', 'પપૈયું ૧૦૦g', 'पपीता 100g', 'Papaya 100g', 40, 0.5, 3, ['veg', 'low_gi'], 'lite', ''],
+      ['ad_banana', 'કેળું ૧ નાનું', 'केला 1 छोटा', 'Banana 1 small', 90, 1, 12, ['veg'], 'lite', ''],
+      ['ad_lemon', 'લીંબુ પાણી (ખાંડ વગર)', 'नींबू पानी (बिना चीनी)', 'Lemon water (no sugar)', 8, 0, 1, ['veg', 'low_gi'], 'lite', ''],
+      ['ad_roti', '૧ વધારાની મલ્ટી-મિલેટ રોટલી', '1 अतिरिक्त मल्टी-मिलेट रोटी', '1 extra multi-millet roti', 110, 3.5, 8, ['veg'], 'lite', '']
+    ];
+    var GROUPS = [['pro', '💪 પ્રોટીન'], ['fat', '🥜 હેલ્ધી ફેટ'], ['lite', '🥗 ફળ / સલાડ / હળવું']];
+    var MAX_PER_SLOT = 5;
+
+    var T = {
+      add: 'ઉમેરો',
+      hint: 'ટેપ કરીને ઉમેરો. અહીં ફક્ત તમારા ડાયેટ, એલર્જી અને હેલ્થ નિયમ મુજબ સુરક્ષિત વિકલ્પો દેખાય છે.',
+      note: 'ઉમેરેલાની કેલરી, પ્રોટીન અને GL દિવસના ટોટલમાં ગણાશે.',
+      close: 'બંધ કરો',
+      empty: 'તમારા નિયમો મુજબ ઉમેરવા માટે કોઈ વિકલ્પ નથી.',
+      max: 'એક ભોજનમાં વધુમાં વધુ ૫ વસ્તુઓ ઉમેરી શકાય.'
+    };
+    var TR = [
+      [T.add, 'जोड़ें', 'Add'],
+      [T.hint, 'टैप करके जोड़ें। यहाँ सिर्फ़ आपके डाइट, एलर्जी और हेल्थ नियमों के अनुसार सुरक्षित विकल्प दिखते हैं।', 'Tap to add. Only options that are safe for your diet, allergies and health rules are shown here.'],
+      [T.note, 'जोड़े गए की कैलोरी, प्रोटीन और GL दिन के टोटल में गिने जाएँगे।', 'Calories, protein and GL of what you add count toward the day total.'],
+      [T.close, 'बंद करें', 'Close'],
+      [T.empty, 'आपके नियमों के अनुसार जोड़ने के लिए कोई विकल्प नहीं है।', 'No options are available to add under your rules.'],
+      [T.max, 'एक भोजन में ज़्यादा से ज़्यादा 5 चीज़ें जोड़ी जा सकती हैं।', 'You can add at most 5 items to one meal.'],
+      ['💪 પ્રોટીન', '💪 प्रोटीन', '💪 Protein'],
+      ['🥜 હેલ્ધી ફેટ', '🥜 हेल्दी फैट', '🥜 Healthy fats'],
+      ['🥗 ફળ / સલાડ / હળવું', '🥗 फल / सलाद / हल्का', '🥗 Fruit / salad / light']
+    ];
+
+    var ITEMS = RAW.map(function (r) {
+      return { id: r[0], name: r[1], cal: r[4], p: r[5], gl: r[6], tags: r[7], group: r[8], proteinItem: r[9] || '-', vegItem: '-' };
+    });
+    RAW.forEach(function (r) { i18nAdd(r[1], r[2], r[3]); });
+    TR.forEach(function (t) { i18nAdd(t[0], t[1], t[2]); });
+
+    var openSlot = null;
+
+    function goalsOf(c) { return (c.conditions && c.conditions.length) ? c.conditions : ['general']; }
+
+    // ક્લાયન્ટના ડાયેટ / એલર્જી / બીમારી મુજબ સુરક્ષિત વિકલ્પો જ
+    function allowed(item) {
+      var c = currentClient; if (!c) return false;
+      var goals = goalsOf(c), prefs = getClientPrefs(c), tags = item.tags;
+      if (tags.indexOf('nonveg') >= 0 && prefs.diet !== 'nonveg') return false;
+      if (tags.indexOf('egg') >= 0 && ['egg', 'nonveg'].indexOf(prefs.diet) < 0) return false;
+      if (tags.indexOf('gym_only') >= 0 && goals.indexOf('gym') < 0) return false;
+      if (dishAllergens(item).some(function (a) { return prefs.allergenSet.has(a); })) return false;
+      if (prefs.allergyText.some(function (a) { return a.length > 2 && item.name.toLowerCase().indexOf(a) >= 0; })) return false;
+      var inList = function (rules) { return tags.some(function (t) { return (rules.forbiddenTags || []).indexOf(t) >= 0; }); };
+      if (goals.indexOf('diabetes') >= 0 && (item.gl > PROTOCOL_RULES.diabetes.maxMealGL || inList(PROTOCOL_RULES.diabetes))) return false;
+      if (goals.indexOf('fatty_liver') >= 0 && inList(PROTOCOL_RULES.fatty_liver)) return false;
+      if (goals.indexOf('fat_loss') >= 0 && inList(PROTOCOL_RULES.fat_loss)) return false;
+      if (prefs.kidney && item.p >= 15) return false;
+      return true;
+    }
+    function allowedItems() { return ITEMS.filter(allowed); }
+
+    function slotArr(comp, slot) { return (comp.addons && Array.isArray(comp.addons[slot])) ? comp.addons[slot] : []; }
+    function addonSum(comp) {
+      var s = { cal: 0, p: 0, gl: 0, count: 0 };
+      Object.keys(comp.addons || {}).forEach(function (slot) {
+        slotArr(comp, slot).forEach(function (a) {
+          s.cal += Number(a.cal) || 0; s.p += Number(a.p) || 0; s.gl += Number(a.gl) || 0; s.count++;
+        });
+      });
+      return s;
+    }
+
+    function chipsHtml(slot, arr) {
+      return arr.map(function (a, i) {
+        return '<span class="inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-[10px] font-bold">+ <span>' + esc(a.n) + '</span>' +
+          '<button type="button" onclick="mpAddonRemove(\'' + slot + '\',' + i + ')" class="px-1 text-rose-600 font-black" aria-label="remove">✕</button></span>';
+      }).join('');
+    }
+
+    function panelHtml(slot, arr) {
+      var opts = allowedItems();
+      if (!opts.length) return '<div class="p-2.5 rounded-2xl border bg-amber-50 border-amber-200 text-[11px] text-amber-900 font-semibold">' + T.empty + '</div>';
+      var chosen = {}; arr.forEach(function (a) { chosen[a.id] = 1; });
+      var h = '<div class="p-2.5 rounded-2xl border border-teal-200 bg-teal-50/60 space-y-2"><div class="text-[10px] text-teal-900 font-semibold leading-snug">' + T.hint + '</div>';
+      GROUPS.forEach(function (g) {
+        var list = opts.filter(function (o) { return o.group === g[0]; });
+        if (!list.length) return;
+        h += '<div><div class="text-[10px] font-extrabold text-slate-700 mb-1">' + g[1] + '</div><div class="flex flex-wrap gap-1.5">';
+        h += list.map(function (o) {
+          var on = !!chosen[o.id];
+          return '<button type="button" onclick="mpAddonAdd(\'' + slot + '\',\'' + o.id + '\')" class="px-2 py-1 rounded-xl border text-[10px] font-bold text-left ' +
+            (on ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-800 border-slate-300') + '">' + (on ? '✓ ' : '+ ') + '<span>' + esc(o.name) + '</span> ' +
+            '<span class="' + (on ? 'text-emerald-100' : 'text-slate-400') + ' font-semibold" data-notr>' + o.cal + ' kcal · ' + o.p + 'g</span></button>';
+        }).join('');
+        h += '</div></div>';
+      });
+      h += '<div class="text-[10px] text-slate-500">' + T.note + '</div>' +
+        '<button type="button" onclick="mpAddonToggle(\'' + slot + '\')" class="w-full py-1.5 rounded-xl bg-white border text-slate-600 text-[11px] font-bold">' + T.close + '</button></div>';
+      return h;
+    }
+
+    function wrapHtml(slot, arr) {
+      var open = openSlot === slot;
+      return '<div class="mp-addon-wrap space-y-1.5"><div class="flex flex-wrap items-center gap-1.5">' + chipsHtml(slot, arr) +
+        '<button type="button" onclick="mpAddonToggle(\'' + slot + '\')" class="px-2.5 py-1 rounded-xl border text-[10px] font-extrabold ' +
+        (open ? 'bg-teal-600 text-white border-teal-600' : 'bg-teal-50 text-teal-800 border-teal-200') + '">' + (open ? '▲ ' : '➕ ') + '<span>' + T.add + '</span></button></div>' +
+        (open ? panelHtml(slot, arr) : '') + '</div>';
+    }
+
+    // ટોટલ: પ્લાનની વાનગીઓ + પ્લાન સિવાય ખાધું + એડ-ઓન (મૂળ કોડ જેવી જ ગણતરી)
+    function applyTotals(comp) {
+      var targets = calculateClientTargets(currentClient);
+      var plan = {}; try { plan = getDayPlan(selectedDateKey, currentClient); } catch (e) { }
+      var cal = 0, p = 0, gl = 0;
+      Object.keys(plan).forEach(function (s) { var d = plan[s]; if (d) { cal += d.cal || 0; p += d.p || 0; gl += d.gl || 0; } });
+      (comp.extras || []).forEach(function (e) { cal += Number(e.cal) || 0; p += Number(e.p) || 0; gl += Number(e.gl) || 0; });
+      var add = addonSum(comp); cal += add.cal; p += add.p; gl += add.gl;
+      var calPct = Math.min(Math.round(cal / targets.targetCal * 100), 100);
+      var proPct = Math.min(Math.round(p / targets.targetProtein * 100), 100);
+      var set = function (id, fn) { var el = document.getElementById(id); if (el) fn(el); };
+      set('cpConsumedCal', function (el) { el.innerText = Math.round(cal) + ' / ' + targets.targetCal; });
+      set('cpProteinStats', function (el) { el.innerText = Math.round(p) + 'g / ' + targets.targetProtein + 'g'; });
+      set('cpDailyGi', function (el) { el.innerText = 'GL: ' + Math.round(gl); });
+      set('cpCalProgress', function (el) { el.style.width = calPct + '%'; });
+      set('cpProteinProgress', function (el) { el.style.width = proPct + '%'; });
+      set('cpCalProgressText', function (el) { el.innerText = calPct + '%'; });
+      set('cpProteinProgressText', function (el) { el.innerText = proPct + '%'; });
+      try { renderTopUps(goalsOf(currentClient), getClientPrefs(currentClient), targets, cal, p); } catch (e) { }
+    }
+
+    function render() {
+      if (!currentClient) return;
+      document.querySelectorAll('#cpTodayMealCards .mp-addon-wrap').forEach(function (n) { n.remove(); });
+      var comp = ensureDay(selectedDateKey);
+      document.querySelectorAll('#cpTodayMealCards > div').forEach(function (card) {
+        var m = card.innerHTML.match(/(?:setCheck|swapCurrentDish)\('([a-z_]+)'/);
+        if (!m) return;
+        var slot = m[1];
+        var grid = card.querySelector('.grid.grid-cols-3');
+        if (!grid) return;
+        var box = card.querySelector('.bg-slate-50');
+        if (box) { box.style.cursor = 'pointer'; box.setAttribute('onclick', "mpAddonToggle('" + slot + "')"); }
+        grid.insertAdjacentHTML('beforebegin', wrapHtml(slot, slotArr(comp, slot)));
+      });
+      applyTotals(comp);
+    }
+
+    function save(dateKey, slot, arr) {
+      var upd = {}; upd['compliance.' + dateKey + '.addons.' + slot] = arr;
+      return db.collection('clients').doc(docId()).update(upd).catch(function (e) { console.error('addon save', e); });
+    }
+
+    window.mpAddonToggle = function (slot) { openSlot = (openSlot === slot) ? null : slot; render(); };
+    window.mpAddonAdd = function (slot, id) {
+      var it = ITEMS.filter(function (x) { return x.id === id; })[0];
+      if (!it || !currentClient) return;
+      var key = selectedDateKey, comp = ensureDay(key);
+      comp.addons = comp.addons || {};
+      var arr = slotArr(comp, slot).slice();
+      var idx = -1; arr.forEach(function (a, i) { if (a.id === id) idx = i; });
+      if (idx >= 0) arr.splice(idx, 1);
+      else {
+        if (arr.length >= MAX_PER_SLOT) { alert(T.max); return; }
+        if (!allowed(it)) return;
+        arr.push({ id: it.id, n: it.name, cal: it.cal, p: it.p, gl: it.gl });
+      }
+      comp.addons[slot] = arr;
+      render();
+      return save(key, slot, arr);
+    };
+    window.mpAddonRemove = function (slot, i) {
+      var key = selectedDateKey, comp = ensureDay(key);
+      var arr = slotArr(comp, slot).slice(); arr.splice(i, 1);
+      comp.addons = comp.addons || {}; comp.addons[slot] = arr;
+      render();
+      return save(key, slot, arr);
+    };
+
+    // મૂળ રેન્ડર પછી એડ-ઓન ચલાવો
+    var origLoad = window.loadTodayClientView;
+    window.loadTodayClientView = function () {
+      origLoad.apply(this, arguments);
+      try { render(); } catch (e) { console.error('addon render', e); }
+      try { renderFamily(); } catch (e) { console.error('family render', e); }
+    };
+
+    /* ---------- ફેમિલી મેનુ ---------- */
+    [
+      ['👨‍👩‍👧 ફેમિલી મેનુ', '👨‍👩‍👧 फैमिली मेन्यू', '👨‍👩‍👧 Family menu'],
+      ['ઘરમાં તમારા સિવાય કેટલા સભ્યો જમે છે?', 'घर में आपके अलावा कितने सदस्य खाते हैं?', 'How many other family members eat with you?'],
+      ['આજે આખા પરિવાર માટે રાંધવાનું', 'आज पूरे परिवार के लिए पकाना', 'Cooking for the whole family today'],
+      ['કુલ ભાગ', 'कुल हिस्से', 'Total portions'],
+      ['ફેમિલી માટે WhatsApp પર મોકલો', 'फैमिली के लिए WhatsApp पर भेजें', 'Share family menu on WhatsApp'],
+      ['તમારા માટે ઉપર મુજબ માપ જ રાખો. બાકીના સભ્યો ઇચ્છે તો રોટલી/ભાત થોડા વધુ લઈ શકે.', 'आपके लिए ऊपर के माप ही रखें। बाकी सदस्य चाहें तो रोटी/चावल थोड़ा ज़्यादा ले सकते हैं।', 'Keep your own portion as above. Others may take a little more roti/rice if they wish.'],
+      ['કોઈ નહીં (ફક્ત હું)', 'कोई नहीं (सिर्फ मैं)', 'None (just me)']
+    ].forEach(function (t) { try { i18nAdd(t[0], t[1], t[2]); } catch (e) {} });
+
+    function famN() {
+      var n = currentClient && parseInt(currentClient.familySize, 10);
+      return isFinite(n) && n > 0 ? Math.min(n, 10) : 0;
+    }
+    window.mpFamilySet = function (v) {
+      var n = Math.max(0, Math.min(10, parseInt(v, 10) || 0));
+      currentClient.familySize = n;
+      try { db.collection('clients').doc(docId()).update({ familySize: n }).catch(function (e) { console.error(e); }); } catch (e) {}
+      renderFamily();
+    };
+    function famText() {
+      var plan = getDayPlan(selectedDateKey, currentClient), n = famN() + 1, out = [];
+      Object.keys(plan).forEach(function (k) {
+        var d = plan[k]; if (!d || k === 'morning' || k === 'pre_workout' || k === 'post_workout') return;
+        var m = SLOT_LABELS[k] || { label: k };
+        out.push(m.label + ': ' + d.name + (d.basePortion ? ' (' + d.basePortion + ')' : '') + ' ×' + n);
+      });
+      return '👨‍👩‍👧 ' + tr('ફેમિલી મેનુ') + ' - ' + selectedDateKey + '\n' + out.join('\n');
+    }
+    window.mpFamilyShare = function () {
+      window.open('https://wa.me/?text=' + encodeURIComponent(famText()), '_blank');
+    };
+    function renderFamily() {
+      var host = document.getElementById('cpExtrasBox'); if (!host || !currentClient) return;
+      var old = document.getElementById('mpFamilyBox'); if (old) old.remove();
+      var n = famN(), plan = getDayPlan(selectedDateKey, currentClient);
+      var opts = '<option value="0">' + tr('કોઈ નહીં (ફક્ત હું)') + '</option>';
+      for (var i = 1; i <= 10; i++) opts += '<option value="' + i + '"' + (i === n ? ' selected' : '') + '>+' + i + '</option>';
+      var rows = '';
+      if (n > 0) {
+        Object.keys(plan).forEach(function (k) {
+          var d = plan[k]; if (!d || k === 'morning' || k === 'pre_workout' || k === 'post_workout') return;
+          var m = SLOT_LABELS[k] || { time: '', label: k };
+          rows += '<div class="flex justify-between gap-2 py-1.5 border-b border-slate-100 text-[11px]"><div><div class="font-bold text-slate-800">' + m.label + '</div><div class="text-slate-600">' + d.name + '</div></div><div class="text-teal-700 font-extrabold whitespace-nowrap">' + (d.basePortion || '') + ' ×' + (n + 1) + '</div></div>';
+        });
+        rows = '<div class="text-[11px] font-bold text-slate-700 mt-2">' + tr('આજે આખા પરિવાર માટે રાંધવાનું') + ' (' + tr('કુલ ભાગ') + ': ' + (n + 1) + ')</div>' + rows +
+          '<div class="text-[10px] text-slate-500 mt-2">' + tr('તમારા માટે ઉપર મુજબ માપ જ રાખો. બાકીના સભ્યો ઇચ્છે તો રોટલી/ભાત થોડા વધુ લઈ શકે.') + '</div>' +
+          '<button onclick="mpFamilyShare()" class="mt-2 w-full bg-emerald-600 text-white font-bold text-xs py-2.5 rounded-xl"><i class="fa-brands fa-whatsapp"></i> ' + tr('ફેમિલી માટે WhatsApp પર મોકલો') + '</button>';
+      }
+      var box = document.createElement('div');
+      box.id = 'mpFamilyBox';
+      box.className = 'card-clean p-3.5 rounded-2xl border border-slate-200 mt-3';
+      box.innerHTML = '<div class="font-bold text-slate-800 text-xs mb-1.5">' + tr('👨‍👩‍👧 ફેમિલી મેનુ') + '</div>' +
+        '<div class="flex items-center justify-between gap-2"><span class="text-[11px] text-slate-600">' + tr('ઘરમાં તમારા સિવાય કેટલા સભ્યો જમે છે?') + '</span>' +
+        '<select onchange="mpFamilySet(this.value)" class="border border-slate-300 rounded-lg text-xs p-1.5 bg-white">' + opts + '</select></div>' + rows;
+      host.parentNode.insertBefore(box, host.nextSibling);
+    }
+
+    // ફોન કેલેન્ડર (.ics): ";" ને સાચી રીતે escape કરો
+    window.icsEscape = function (t) {
+      return String(t).replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
+    };
+  }
+
+  /* ======================================================================
+   *  ADMIN
+   * ==================================================================== */
+  function initAdmin() {
+    // ઓનર માટે sendToClient પોતાને જ બોલાવતું હતું (અનંત લૂપ). હવે ઓનર → સીધું WhatsApp; કોચ → ક્લાયન્ટના ઇનબોક્સ + ઓનરની કતાર.
+    window.sendToClient = function (cl, msg) {
+      if (currentUserRole === 'owner') { window.open(waLink(cl.phone, msg, cl.lang), '_blank'); return; }
+      queueForClient(cl, msg);
+    };
+
+    function addonHtml(cl) {
+      var comp = cl.compliance || {}, lines = [];
+      for (var i = 0; i < 3; i++) {
+        var d = new Date(); d.setDate(d.getDate() - i);
+        var k = dateKeyOf(d), ad = (comp[k] || {}).addons || {};
+        Object.keys(ad).forEach(function (slot) {
+          var arr = Array.isArray(ad[slot]) ? ad[slot] : [];
+          if (!arr.length) return;
+          lines.push('<div class="flex gap-1.5"><span class="font-mono text-slate-500" data-notr>' + esc(k.slice(5)) + '</span><span class="font-bold">' +
+            esc(MENU_SLOT_LABELS[slot] || slot) + ':</span><span>' + arr.map(function (a) { return esc(a.n); }).join(', ') + '</span></div>');
+        });
+      }
+      if (!lines.length) return '';
+      return '<div class="mp-admin-addons bg-emerald-50/60 border border-emerald-200 rounded-2xl p-2.5 text-[11px] space-y-1">' +
+        '<div class="font-extrabold text-emerald-900">➕ ક્લાયન્ટે ઉમેરેલું (છેલ્લા ૩ દિવસ)</div>' + lines.join('') + '</div>';
+    }
+
+    var origOpen = window.openClientModal;
+    window.openClientModal = function (id) {
+      origOpen.apply(this, arguments);
+      try {
+        var cl = liveClients.filter(function (c) { return c.id === id; })[0];
+        var body = document.getElementById('mcBody');
+        if (!cl || !body) return;
+        var html = addonHtml(cl);
+        if (!html) return;
+        var tbl = body.querySelector('table');
+        var host = tbl && tbl.closest('.overflow-x-auto');
+        if (host) host.insertAdjacentHTML('beforebegin', html);
+        else body.insertAdjacentHTML('beforeend', html);
+      } catch (e) { console.error('admin addons', e); }
+    };
+  }
+})();
+
+</script>
 </body>
 </html>
