@@ -3021,6 +3021,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       try { renderFamily(); } catch (e) { console.error('family render', e); }
       try { renderThaliCard(); } catch (e) { console.error('thali render', e); }
       try { renderSathi(); } catch (e) { console.error('sathi render', e); }
+      try { renderJourney(); } catch (e) { console.error('journey render', e); }
       try { tidyToday(); } catch (e) { console.error('tidy', e); }
     };
 
@@ -3071,7 +3072,23 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     var SA_TITLES = ['નવો સાથી', 'ઉત્સાહી', 'નિયમિત', 'સંયમી'];
     var PREM = { m: [['pagdi', 'પાઘડી-બંડી'], ['bandi', 'બંડી'], ['nehru', 'નહેરુ જેકેટ'], ['sporty', 'સ્પોર્ટી'], ['sherwani', 'શેરવાની']], f: [['salwar', 'સલવાર'], ['saree', 'સાડી'], ['kurti', 'કુર્તી'], ['chaniyacholi', 'ચણિયાચોળી'], ['yoga', 'યોગા']] };
     var PREM_BAD = {};
-    function premSrc(a, pose) { return 'avatars/' + a.g + '_' + a.prem + '_' + pose + '.webp'; }
+    var PK = {}, GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    function premUri(g, id, pose) {
+      var pk = g + '_' + id, key = pk + '_' + pose;
+      if (window.MPAV && MPAV[key]) return MPAV[key];
+      if (!PK[pk]) {
+        PK[pk] = 'loading';
+        var sc = document.createElement('script'); sc.src = 'av_' + pk + '.js';
+        sc.onload = function () { PK[pk] = 'ok'; try { renderSathi(); } catch (e) { } try { if (SE) seRender(); } catch (e) { } };
+        sc.onerror = function () { PK[pk] = 'fail'; try { renderSathi(); } catch (e) { } try { if (SE) seRender(); } catch (e) { } };
+        document.head.appendChild(sc); return GIF;
+      }
+      if (PK[pk] === 'loading') return GIF;
+      if (PK[pk] === 'fail') return 'avatars/' + key + '.webp';
+      if (pose !== 'idle') return premUri(g, id, 'idle');
+      PREM_BAD[pk] = true; return GIF;
+    }
+    function premSrc(a, pose) { return premUri(a.g, a.prem, pose); }
     window.mpPremErr = function (el, g, pr, pose) {
       if (pose !== 'idle') { el.onerror = function () { window.mpPremErr(el, g, pr, 'idle'); }; el.src = 'avatars/' + g + '_' + pr + '_idle.webp'; return; }
       PREM_BAD[g + '_' + pr] = true; try { renderSathi(); } catch (e) { } try { if (SE) seRender(); } catch (e) { }
@@ -3111,7 +3128,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var box = document.createElement('div'); box.id = 'mpSathi';
       box.style.cssText = 'border-radius:28px;background:linear-gradient(160deg,#1c2f55,#0f2140);box-shadow:0 14px 34px rgba(15,42,74,.35);padding:12px;display:flex;gap:8px;align-items:center;color:#fff;border:1px solid rgba(255,255,255,.14)';
       var pct = Math.min(100, Math.round(s.pts / s.nxt * 100));
-      var usePrem = a.prem && !PREM_BAD[a.g + '_' + a.prem], pose = s.today.done >= 3 ? 'cheer' : (new Date().getHours() < 7 ? 'sleepy' : 'idle');
+      var usePrem = a.prem && !PREM_BAD[a.g + '_' + a.prem], pose = s.today.done >= 3 ? 'cheer' : (new Date().getHours() < 7 ? 'sleepy' : 'talk');
       var figure = usePrem ? '<img alt="" src="' + premSrc(a, pose) + '" onerror="mpPremErr(this,\'' + a.g + '\',\'' + a.prem + '\',\'' + pose + '\')" style="width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(0,0,0,.35))" class="s3-float">' : S3.avatar({ g: a.g, hair: a.hair, outfit: a.outfit, col: a.col, hc: a.hc, beard: a.beard, acc: a.acc, lvl: s.lvl, mood: saMood(s) }).replace('<svg ', '<svg style="width:100%;height:100%" ');
       box.innerHTML = '<div style="flex:0 0 112px;height:190px">' + figure + '</div>' +
         '<div style="flex:1;min-width:0"><div style="display:flex;gap:6px;align-items:center;margin-bottom:6px"><span style="background:linear-gradient(180deg,#7ff0dc,#14b8a6);color:#052e2b;font-weight:900;font-size:11px;padding:3px 10px;border-radius:99px">લેવલ ' + (s.lvl + 1) + '</span><span style="font-size:11px;font-weight:800;opacity:.85">' + SA_TITLES[s.lvl] + '</span><span style="margin-left:auto;background:rgba(255,200,61,.18);color:#ffd98a;font-size:11px;font-weight:900;padding:3px 9px;border-radius:99px" data-notr>🪙 ' + (currentClient.coins || 0) + '</span></div>' +
@@ -3131,7 +3148,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       return head + '<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px"><button type="button" onclick="mpSe(\'prem\',\'none\')" style="flex:0 0 auto;width:70px;padding:6px 4px;border-radius:14px;border:2px solid ' + (!cur ? '#5eead4' : 'rgba(255,255,255,.2)') + ';background:rgba(255,255,255,.08);color:#fff;font-size:10px;font-weight:800">🎨 સાદો<br>કસ્ટમ</button>' +
         list.map(function (o) {
           var open = isUnlocked(SE.g, o[0]), pr = PRICE[o[0]] || 0;
-          return '<button type="button" onclick="mpSe(\'prem\',\'' + o[0] + '\')" style="position:relative;flex:0 0 auto;width:70px;padding:4px;border-radius:14px;border:2px solid ' + (cur === o[0] ? '#5eead4' : 'rgba(255,255,255,.2)') + ';background:rgba(255,255,255,.08);color:#fff;font-size:10px;font-weight:800"><img alt="" src="avatars/' + SE.g + '_' + o[0] + '_idle.webp" onerror="mpPremErr(this,\'' + SE.g + '\',\'' + o[0] + '\',\'idle\')" style="width:100%;height:84px;object-fit:contain;' + (open ? '' : 'filter:grayscale(.6) brightness(.7)') + '">' + o[1] +
+          return '<button type="button" onclick="mpSe(\'prem\',\'' + o[0] + '\')" style="position:relative;flex:0 0 auto;width:70px;padding:4px;border-radius:14px;border:2px solid ' + (cur === o[0] ? '#5eead4' : 'rgba(255,255,255,.2)') + ';background:rgba(255,255,255,.08);color:#fff;font-size:10px;font-weight:800"><img alt="" src="' + premUri(SE.g, o[0], 'idle') + '" onerror="mpPremErr(this,\'' + SE.g + '\',\'' + o[0] + '\',\'idle\')" style="width:100%;height:84px;object-fit:contain;' + (open ? '' : 'filter:grayscale(.6) brightness(.7)') + '">' + o[1] +
             (open ? '' : '<span style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.65);border-radius:99px;padding:1px 6px;font-size:9px" data-notr>🔒 ' + pr + '</span>') + '</button>';
         }).join('') + '</div>';
     }
@@ -3204,7 +3221,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         accWrap(vitals, 'vitals', '🩸 વાઇટલ્સ અને સુગર'),
         accWrap(get('cpPlanReasonChips'), 'plan', 'ℹ️ આ પ્લાન કેમ?')
       ];
-      var order = [get('mpSathi'), get('offlineBanner'), get('cpInboxBox'), get('cpNextMealBox'), get('cpLiveBox'), macro, get('cpMedicationReviewBox'), get('cpWorkoutSugarGuardBox'), cal, get('cpTodayMealCards'), get('mpThaliCard'), get('cpTopUpBox'), get('cpDailyTip')].concat(accs, [get('cpGreetBox'), rep]);
+      var order = [get('mpSathi'), get('mpJourney'), get('offlineBanner'), get('cpInboxBox'), get('cpNextMealBox'), get('cpLiveBox'), macro, get('cpMedicationReviewBox'), get('cpWorkoutSugarGuardBox'), cal, get('cpTodayMealCards'), get('mpThaliCard'), get('cpTopUpBox'), get('cpDailyTip')].concat(accs, [get('cpGreetBox'), rep]);
       var fam = get('mpFamilyBox'), ex = get('cpExtrasBox');
       if (fam && ex && fam.parentNode !== ex.parentNode) ex.parentNode.insertBefore(fam, ex.nextSibling);
       order.forEach(function (el) { if (el && el.parentNode === root) root.appendChild(el); });
@@ -3250,6 +3267,80 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         return p;
       };
     })();
+
+    /* ---------- ગુજરાત દર્શન: 30-દિવસની યાત્રા ---------- */
+    var JN = [
+      ['st_dwarka', '🛕', 'દ્વારકા', 1, 20, 'ગોમતી કિનારે દ્વારકાધીશનું મંદિર. શુભ શરૂઆત! રોજનું પહેલું પગલું જ સૌથી મોટું.'],
+      ['st_somnath', '🌊', 'સોમનાથ', 4, 20, 'બાર જ્યોતિર્લિંગમાંનું પ્રથમ, દરિયાકાંઠે અડગ ઊભું. તમારા નિયમની જેમ.'],
+      ['st_gir', '🦁', 'ગીર', 8, 25, 'એશિયાઈ સિંહોનું એકમાત્ર ઘર. શાંત તાકાત.'],
+      ['st_girnar', '⛰️', 'ગિરનાર', 11, 25, 'હજારો પગથિયાં, એક-એક કરીને ચડાય. આદત પણ એમ જ બને છે.'],
+      ['st_rann', '🐪', 'રણ ઉત્સવ', 14, 30, 'સફેદ રણમાં પૂનમની રાત. આ સ્ટેશન પર ફ્રી લાઇવ ક્લાસની ઝલકની ભેટ!'],
+      ['st_ranki', '🏛️', 'રાણકી વાવ', 18, 30, 'પાટણની કલાત્મક વાવ, યુનેસ્કોની વિશ્વ ધરોહર.'],
+      ['st_modhera', '☀️', 'મોઢેરા', 22, 35, 'સૂર્યને સમર્પિત ભવ્ય મંદિર. સવારનો પ્રકાશ, નવી ઊર્જા.'],
+      ['st_sabarmati', '🕊️', 'સાબરમતી આશ્રમ', 26, 40, 'સંયમ અને નિયમની ભૂમિ. તમે સાચા રસ્તે છો.'],
+      ['st_unity', '🗿', 'સ્ટેચ્યુ ઑફ યુનિટી', 30, 100, 'વિશ્વની સૌથી ઊંચી પ્રતિમા (182 મીટર). 30 દિવસની યાત્રા પૂર્ણ! VIP ભેટ તમારી રાહ જુએ છે.']
+    ];
+    function jnDays(comp) {
+      var n = 0; comp = comp || {};
+      Object.keys(comp).forEach(function (k) {
+        var ch = (comp[k] || {}).checks || {}, p = 0;
+        Object.keys(ch).forEach(function (s) { p += ch[s] === 'done' ? 1 : ch[s] === 'half' ? .5 : 0; });
+        if (p >= 2) n++;
+      });
+      return Math.min(30, n);
+    }
+    function jnState() {
+      var d = jnDays(currentClient.compliance), cl = currentClient.journeyClaimed || [], cur = 0;
+      JN.forEach(function (s, i) { if (d >= s[3]) cur = i + 1; });
+      var next = JN[cur] || null;
+      return { d: d, claimed: cl, cur: cur, next: next };
+    }
+    function renderJourney() {
+      var root = document.getElementById('tabContentToday'); if (!root || !currentClient) return;
+      var old = document.getElementById('mpJourney'); if (old) old.remove();
+      if (currentClient.avatarOff === true) return;
+      var j = jnState(), pct = Math.round(j.d / 30 * 100), unclaimed = JN.filter(function (s) { return j.d >= s[3] && j.claimed.indexOf(s[0]) < 0; }).length;
+      var box = document.createElement('div'); box.id = 'mpJourney';
+      box.style.cssText = 'border-radius:22px;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;padding:12px 14px;box-shadow:0 10px 26px rgba(76,29,149,.3);display:flex;align-items:center;gap:12px';
+      box.innerHTML = '<div style="font-size:30px">' + (j.cur ? JN[j.cur - 1][1] : '🗺️') + '</div><div style="flex:1;min-width:0"><div style="font-weight:900;font-size:13px">ગુજરાત દર્શન' + (unclaimed ? ' <span style="background:#ffd43b;color:#3b2a00;border-radius:99px;padding:1px 8px;font-size:10px">' + unclaimed + ' ભેટ 🎁</span>' : '') + '</div>' +
+        '<div style="font-size:11px;opacity:.9;margin:2px 0 6px">' + (j.next ? 'આગળ: ' + j.next[2] + ' (' + Math.max(0, j.next[3] - j.d) + ' દિવસ બાકી)' : 'યાત્રા પૂર્ણ! 🎉') + '</div>' +
+        '<div style="height:7px;border-radius:9px;background:rgba(0,0,0,.3);overflow:hidden"><i style="display:block;height:100%;width:' + pct + '%;background:linear-gradient(90deg,#ffe28a,#fff)"></i></div><div style="font-size:9px;opacity:.8;margin-top:3px" data-notr>' + j.d + ' / 30</div></div>' +
+        '<button type="button" onclick="mpJnOpen()" style="padding:9px 14px;border-radius:14px;background:#fff;color:#4c1d95;font-weight:900;font-size:12px;box-shadow:0 3px 0 rgba(0,0,0,.25)">જુઓ</button>';
+      var sa = document.getElementById('mpSathi');
+      if (sa && sa.parentNode === root) root.insertBefore(box, sa.nextSibling); else root.insertBefore(box, root.firstChild);
+    }
+    function jnOvRender() {
+      var ov = document.getElementById('mpJnOv');
+      if (!JN_OPEN) { if (ov) ov.remove(); document.body.style.overflow = ''; return; }
+      if (!ov) { ov = document.createElement('div'); ov.id = 'mpJnOv'; ov.style.cssText = 'position:fixed;inset:0;z-index:92;background:linear-gradient(180deg,#1e1b4b,#0b1220);overflow-y:auto;color:#fff;-webkit-overflow-scrolling:touch'; document.body.appendChild(ov); document.body.style.overflow = 'hidden'; }
+      var keep = ov.scrollTop, j = jnState();
+      var cards = JN.map(function (s, i) {
+        var open = j.d >= s[3], got = j.claimed.indexOf(s[0]) >= 0;
+        var img = '<div style="height:120px;border-radius:16px;overflow:hidden;background:' + (open ? 'linear-gradient(135deg,#f59e0b,#7c3aed)' : '#2b2f4a') + ';display:flex;align-items:center;justify-content:center;font-size:44px;position:relative">' + (open ? s[1] : '🔒') +
+          '<img alt="" src="journey/' + s[0] + '.webp" onerror="this.remove()" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;' + (open ? '' : 'filter:grayscale(1) brightness(.4)') + '"></div>';
+        var btn = open ? (got ? '<div style="margin-top:8px;font-size:12px;font-weight:800;color:#86efac">✓ ભેટ મળી</div>' : '<button type="button" onclick="mpJnClaim(\'' + s[0] + '\')" style="margin-top:8px;width:100%;padding:10px;border-radius:14px;background:linear-gradient(180deg,#ffe28a,#f5a623);color:#3b2a00;font-weight:900;font-size:13px;box-shadow:0 3px 0 #a96a05">🎁 ભેટ લો (+' + s[4] + ' 🪙' + (s[0] === 'st_rann' ? ' + ફ્રી ક્લાસ ઝલક' : s[0] === 'st_unity' ? ' + VIP ભેટ' : '') + ')</button>') : '<div style="margin-top:8px;font-size:11px;opacity:.7" data-notr>' + s[3] + ' દિવસ પૂરા કરો ( ' + Math.max(0, s[3] - j.d) + ' બાકી)</div>';
+        return '<div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:22px;padding:10px;opacity:' + (open ? 1 : .85) + '">' + img + '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><b style="font-size:14px">' + (i + 1) + '. ' + s[2] + '</b><span style="font-size:10px;opacity:.7" data-notr>દિવસ ' + s[3] + '</span></div><div style="font-size:12px;opacity:.85;line-height:1.55;margin-top:3px">' + s[5] + '</div>' + btn + '</div>';
+      }).join('<div style="text-align:center;opacity:.4;font-size:18px;line-height:1">⋮</div>');
+      ov.innerHTML = '<div style="max-width:30rem;margin:0 auto;padding:14px 14px 40px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b style="font-size:16px">🗺️ ગુજરાત દર્શન</b><button type="button" onclick="mpJnClose()" style="padding:6px 12px;border-radius:12px;background:rgba(255,255,255,.14);color:#fff;font-size:12px;font-weight:800">બંધ</button></div>' +
+        '<div style="font-size:11px;opacity:.8;margin-bottom:10px;line-height:1.5">રોજ ઓછામાં ઓછા 2 ભોજન "લીધું" કરો એટલે એક દિવસ પૂરો ગણાય. દિવસ ચૂકી જાવ તો કંઈ ગુમાવતા નથી, યાત્રા ત્યાંથી જ આગળ ચાલે.</div>' +
+        '<div style="display:flex;flex-direction:column;gap:8px">' + cards + '</div>' +
+        (j.d >= 30 ? '<div style="margin-top:14px;padding:12px;border-radius:18px;background:rgba(255,255,255,.1);text-align:center;font-weight:800;font-size:13px">🎉 ગુજરાત દર્શન પૂર્ણ! નવી યાત્રા "ભારત દર્શન" જલ્દી આવી રહી છે.</div>' : '') + '</div>';
+      ov.scrollTop = keep;
+    }
+    var JN_OPEN = false;
+    window.mpJnOpen = function () { JN_OPEN = true; jnOvRender(); };
+    window.mpJnClose = function () { JN_OPEN = false; jnOvRender(); try { renderJourney(); tidyToday(); } catch (e) { } };
+    window.mpJnClaim = function (id) {
+      var s = JN.filter(function (x) { return x[0] === id; })[0], j = jnState(); if (!s || j.d < s[3] || j.claimed.indexOf(id) >= 0) return;
+      var F = firebase.firestore.FieldValue, upd = { journeyClaimed: F.arrayUnion(id), coins: F.increment(s[4]) };
+      currentClient.journeyClaimed = (currentClient.journeyClaimed || []).concat([id]); currentClient.coins = (currentClient.coins || 0) + s[4];
+      if (id === 'st_rann') { upd.journeyClassPass = true; currentClient.journeyClassPass = true; }
+      if (id === 'st_unity') { upd.journeyVipGift = true; currentClient.journeyVipGift = true; }
+      try { db.collection('clients').doc(docId()).update(upd).catch(function (e) { console.error(e); }); } catch (e) { }
+      jnOvRender();
+      if (id === 'st_rann') alert('🎉 ફ્રી લાઇવ ક્લાસ ઝલક અનલૉક! કોચ તમને તેની લિંક WhatsApp પર મોકલશે.');
+      if (id === 'st_unity') alert('🎉 અભિનંદન! 30 દિવસની યાત્રા પૂર્ણ. કોચ તમને VIP ભેટ વિશે WhatsApp કરશે.');
+    };
 
     /* ---------- મારી થાળી બનાવો (શાક ½ • પ્રોટીન ¼ • અનાજ ¼) ---------- */
     // [id, gu, hi, en, unit, plate-grams, kcal, protein, carbs, fibre, GI, category, allergens, diet]
@@ -3715,6 +3806,14 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       } catch (e) { console.error('slots save', e); alert('સમય સ્લોટ સેવ ન થયા. ફરી પ્રયત્ન કરો.'); }
     };
 
+    function jnAdminHtml(cl) {
+      var n = 0, comp = cl.compliance || {};
+      Object.keys(comp).forEach(function (k) { var ch = (comp[k] || {}).checks || {}, p = 0; Object.keys(ch).forEach(function (x) { p += ch[x] === 'done' ? 1 : ch[x] === 'half' ? .5 : 0; }); if (p >= 2) n++; });
+      var g = [];
+      if (cl.journeyClassPass) g.push('🎁 ફ્રી ક્લાસ ઝલક અનલૉક (લિંક મોકલો)');
+      if (cl.journeyVipGift) g.push('👑 VIP ભેટ માટે તૈયાર (WhatsApp કરો)');
+      return '<div class="bg-violet-50 border border-violet-200 rounded-2xl p-2.5 text-[11px]"><div class="font-extrabold text-violet-900">🗺️ ગુજરાત દર્શન: <span data-notr>' + Math.min(30, n) + ' / 30</span> દિવસ</div>' + (g.length ? '<div class="font-bold text-violet-800 mt-1">' + g.join('<br>') + '</div>' : '') + '</div>';
+    }
     function avSwitchHtml(cl) {
       var off = cl.avatarOff === true;
       return '<div id="mpAvSw" class="flex items-center justify-between gap-2 bg-indigo-50 border border-indigo-200 rounded-2xl p-2.5 text-[11px]"><div class="font-extrabold text-indigo-900">🧑 સાથી (અવતાર): <span id="mpAvState">' + (off ? 'બંધ' : 'ચાલુ') + '</span></div>' +
@@ -3735,7 +3834,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         var cl = liveClients.filter(function (c) { return c.id === id; })[0];
         var body = document.getElementById('mcBody');
         if (!cl || !body) return;
-        var html = (currentUserRole === 'owner' ? avSwitchHtml(cl) : '') + addonHtml(cl);
+        var html = (currentUserRole === 'owner' ? avSwitchHtml(cl) : '') + jnAdminHtml(cl) + addonHtml(cl);
         if (!html) return;
         var tbl = body.querySelector('table');
         var host = tbl && tbl.closest('.overflow-x-auto');
