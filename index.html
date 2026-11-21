@@ -3098,9 +3098,9 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       try { db.collection('clients').doc(docId()).update({ avatar: a }).catch(function (e) { console.error(e); }); } catch (e) { }
     }
     function saAvatar() {
-      var a = currentClient.avatar; if (a && a.g) return a;
+      var a = currentClient.avatar; if (a && a.g) { if (a.prem === undefined) { a = Object.assign({}, a, { prem: a.g === 'f' ? 'salwar' : 'pagdi' }); } return a; }
       var f = /female|સ્ત્રી|f/i.test(String(currentClient.gender || '')) && !/^male$/i.test(String(currentClient.gender || ''));
-      return { g: f ? 'f' : 'm', hair: f ? 'open' : 'crop', outfit: 'bandi', col: 'teal', hc: 'black', beard: 'none', acc: null };
+      return { g: f ? 'f' : 'm', hair: f ? 'open' : 'crop', outfit: 'bandi', col: 'teal', hc: 'black', beard: 'none', acc: null, prem: f ? 'salwar' : 'pagdi' };
     }
     function saStats() {
       var pts = 0, today = { done: 0, marked: 0 }, comp = currentClient.compliance || {};
