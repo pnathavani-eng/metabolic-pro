@@ -2852,13 +2852,23 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       note: 'ઉમેરેલાની કેલરી, પ્રોટીન અને GL દિવસના ટોટલમાં ગણાશે.',
       close: 'બંધ કરો',
       empty: 'તમારા નિયમો મુજબ ઉમેરવા માટે કોઈ વિકલ્પ નથી.',
-      max: 'એક ભોજનમાં વધુમાં વધુ ૫ વસ્તુઓ ઉમેરી શકાય.'
+      max: 'એક ભોજનમાં વધુમાં વધુ ૫ વસ્તુઓ ઉમેરી શકાય.',
+      subHint: '✏️ કોઈ વસ્તુ ઘરે ન હોય તો તેના પર ટેપ કરીને બદલો',
+      subQ: 'આજે આની જગ્યાએ શું લીધું?',
+      subPh: 'દા.ત. ધાણાનું પાણી / ગુવાર',
+      subSave: 'સેવ',
+      subReset: 'મૂળ'
     };
     var TR = [
       [T.add, 'जोड़ें', 'Add'],
       [T.hint, 'टैप करके जोड़ें। यहाँ सिर्फ़ आपके डाइट, एलर्जी और हेल्थ नियमों के अनुसार सुरक्षित विकल्प दिखते हैं।', 'Tap to add. Only options that are safe for your diet, allergies and health rules are shown here.'],
       [T.note, 'जोड़े गए की कैलोरी, प्रोटीन और GL दिन के टोटल में गिने जाएँगे।', 'Calories, protein and GL of what you add count toward the day total.'],
       [T.close, 'बंद करें', 'Close'],
+      [T.subHint, '✏️ कोई चीज़ घर पर न हो तो उस पर टैप करके बदलें', '✏️ Out of an item? Tap it to swap'],
+      [T.subQ, 'आज इसकी जगह क्या लिया?', 'What did you take instead today?'],
+      [T.subPh, 'जैसे धनिया का पानी / ग्वार', 'e.g. coriander water / cluster beans'],
+      [T.subSave, 'सेव', 'Save'],
+      [T.subReset, 'मूल', 'Original'],
       [T.empty, 'आपके नियमों के अनुसार जोड़ने के लिए कोई विकल्प नहीं है।', 'No options are available to add under your rules.'],
       [T.max, 'एक भोजन में ज़्यादा से ज़्यादा 5 चीज़ें जोड़ी जा सकती हैं।', 'You can add at most 5 items to one meal.'],
       ['💪 પ્રોટીન', '💪 प्रोटीन', '💪 Protein'],
@@ -2965,6 +2975,40 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       try { renderTopUps(goalsOf(currentClient), getClientPrefs(currentClient), targets, cal, p); } catch (e) { }
     }
 
+
+    var DISH = {}, SUBSEP = /(\s\+\s|\s*[-–,]\s*|\s*\/\s*)/;
+    function subFor(comp, slot, dish) { var x = (comp.subs || {})[slot]; return (x && x.d === dish && x.r) ? x.r : []; }
+    function dishHtml(slot, dish, rep) {
+      var parts = dish.split(SUBSEP);
+      return parts.map(function (p, i) {
+        if (i % 2 === 1 || !p.trim()) return esc(p);
+        var ti = i / 2, r = rep[ti];
+        return '<span onclick="event.stopPropagation();mpSubOpen(\'' + slot + '\',' + ti + ')" style="border-bottom:1.5px dashed #14b8a6;cursor:pointer;' + (r ? 'color:#047857;' : '') + '">' + esc(r || p) + (r ? ' ✎' : '') + '</span>';
+      }).join('');
+    }
+    window.mpSubOpen = function (slot, ti) {
+      var dish = DISH[slot]; if (!dish) return;
+      var orig = dish.split(SUBSEP)[ti * 2], comp = ensureDay(selectedDateKey), cur = subFor(comp, slot, dish)[ti] || '';
+      window.__sub = { slot: slot, ti: ti };
+      var ov = document.createElement('div'); ov.id = 'mpSubOv'; ov.style.cssText = 'position:fixed;inset:0;z-index:99;background:rgba(15,23,42,.6);display:flex;align-items:flex-end;justify-content:center';
+      ov.onclick = function (e) { if (e.target === ov) ov.remove(); };
+      ov.innerHTML = '<div style="width:100%;max-width:30rem;background:#fff;border-radius:24px 24px 0 0;padding:16px 16px 24px"><div style="font-size:12px;font-weight:800;color:#475569">' + T.subQ + '</div><div style="font-size:16px;font-weight:900;margin:4px 0 10px">' + esc(orig.trim()) + ' → ?</div>' +
+        '<input id="mpSubIn" type="text" maxlength="40" value="' + esc(cur) + '" placeholder="' + T.subPh + '" style="width:100%;padding:12px;border:2px solid #14b8a6;border-radius:14px;font-size:15px;font-weight:700;outline:none">' +
+        '<div style="display:flex;gap:8px;margin-top:12px"><button type="button" onclick="mpSubSave()" style="flex:2;padding:12px;border-radius:14px;background:#0d9488;color:#fff;font-weight:900">✔ ' + T.subSave + '</button><button type="button" onclick="mpSubSave(1)" style="flex:1;padding:12px;border-radius:14px;background:#e2e8f0;font-weight:800;font-size:12px">↩ ' + T.subReset + '</button></div></div>';
+      document.body.appendChild(ov); setTimeout(function () { var i = document.getElementById('mpSubIn'); if (i) i.focus(); }, 80);
+    };
+    window.mpSubSave = function (reset) {
+      var q = window.__sub; if (!q) return;
+      var inp = document.getElementById('mpSubIn'), v = reset ? '' : ((inp && inp.value) || '').trim().slice(0, 40);
+      var key = selectedDateKey, comp = ensureDay(key), dish = DISH[q.slot], rep = subFor(comp, q.slot, dish).slice();
+      rep[q.ti] = v; for (var i = 0; i < rep.length; i++) if (rep[i] == null) rep[i] = '';
+      comp.subs = comp.subs || {}; comp.subs[q.slot] = { d: dish, r: rep };
+      var ov = document.getElementById('mpSubOv'); if (ov) ov.remove();
+      render();
+      var upd = {}; upd['compliance.' + key + '.subs.' + q.slot] = comp.subs[q.slot];
+      return db.collection('clients').doc(docId()).update(upd).catch(function (e) { console.error('sub save', e); });
+    };
+
     function render() {
       if (!currentClient) return;
       document.querySelectorAll('#cpTodayMealCards .mp-addon-wrap').forEach(function (n) { n.remove(); });
@@ -2975,9 +3019,21 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         var slot = m[1];
         var grid = card.querySelector('.grid.grid-cols-3');
         if (!grid) return;
-        var box = card.querySelector('.bg-slate-50');
-        if (box) { box.style.cursor = 'pointer'; box.setAttribute('onclick', "mpAddonToggle('" + slot + "')"); }
-        grid.insertAdjacentHTML('beforebegin', wrapHtml(slot, slotArr(comp, slot)));
+        var box = card.querySelector('.bg-slate-50'), arr = slotArr(comp, slot);
+        if (box) {
+          box.removeAttribute('onclick'); box.style.cursor = '';
+          var nm = box.querySelector('.font-bold');
+          if (nm) {
+            if (!nm.hasAttribute('data-orig')) nm.setAttribute('data-orig', nm.textContent.trim());
+            var dish = nm.getAttribute('data-orig'); DISH[slot] = dish;
+            nm.innerHTML = dishHtml(slot, dish, subFor(comp, slot, dish));
+            box.querySelectorAll('.mp-box-add').forEach(function (n) { n.remove(); });
+            nm.insertAdjacentHTML('afterend', '<div class="mp-box-add space-y-0.5">' + arr.map(function (x, i) {
+              return '<div class="font-bold text-emerald-800 flex items-center gap-1">+ <span>' + esc(x.n) + '</span> <span class="text-[10px] text-emerald-600 font-semibold" data-notr>' + x.cal + ' kcal</span><button type="button" onclick="event.stopPropagation();mpAddonRemove(\'' + slot + '\',' + i + ')" class="px-1 text-rose-600 font-black" aria-label="remove">✕</button></div>';
+            }).join('') + '<div class="text-[9px] text-slate-400 font-semibold">' + T.subHint + '</div></div>');
+          }
+        }
+        grid.insertAdjacentHTML('beforebegin', wrapHtml(slot, []));
       });
       applyTotals(comp);
     }
@@ -3120,23 +3176,47 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       return 'ચાલો ' + n + ', આજનું ભોજન માર્ક કરીએ. હું સાથે છું 🙏';
     }
     function saMood(s) { return s.today.done >= 3 ? 'cheer' : (new Date().getHours() < 7 ? 'sleepy' : 'happy'); }
+    var AVBG = {"f_chaniyacholi": ["#5fa2a9", "#458086"], "f_kurti": ["#528498", "#3a6272"], "f_salwar": ["#476384", "#30455e"], "f_saree": ["#5fa2a9", "#458086"], "f_yoga": ["#5fa994", "#458673"], "m_nehru": ["#476284", "#30445e"], "m_pagdi": ["#529398", "#3a6e72"], "m_sherwani": ["#5fa981", "#458663"], "m_sporty": ["#a9a75f", "#868545"]};
+    var sathiObs = null;
+    function sathiSync() {
+      [['cpConsumedCal', 'mpSCal'], ['cpProteinStats', 'mpSPro'], ['cpDailyGi', 'mpSGl'], ['cpScoreBadge', 'mpSSc']].forEach(function (m) {
+        var src = document.getElementById(m[0]), dst = document.getElementById(m[1]); if (!src || !dst) return;
+        var t = (src.innerText || '').replace('GL:', '').replace(/\s+/g, '').trim(), x = t.split('/');
+        dst.innerHTML = x.length > 1 ? esc(x[0]) + '<i style="font-size:8px;font-style:normal;opacity:.75;font-weight:700">/' + esc(x[1]) + '</i>' : esc(t);
+      });
+    }
     function renderSathi() {
       var host = document.getElementById('tabContentToday'); if (!host || !currentClient || !window.S3) return;
       var old = document.getElementById('mpSathi'); if (old) old.remove();
       if (currentClient.avatarOff === true) return;
       var a = saAvatar(), s = saStats();
-      var box = document.createElement('div'); box.id = 'mpSathi';
-      box.style.cssText = 'border-radius:28px;background:linear-gradient(160deg,#1c2f55,#0f2140);box-shadow:0 14px 34px rgba(15,42,74,.35);padding:12px;display:flex;gap:8px;align-items:center;color:#fff;border:1px solid rgba(255,255,255,.14)';
-      var pct = Math.min(100, Math.round(s.pts / s.nxt * 100));
       var usePrem = a.prem && !PREM_BAD[a.g + '_' + a.prem], pose = s.today.done >= 3 ? 'cheer' : (new Date().getHours() < 7 ? 'sleepy' : 'talk');
-      var figure = usePrem ? '<img alt="" src="' + premSrc(a, pose) + '" onerror="mpPremErr(this,\'' + a.g + '\',\'' + a.prem + '\',\'' + pose + '\')" style="width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(0,0,0,.35))" class="s3-float">' : S3.avatar({ g: a.g, hair: a.hair, outfit: a.outfit, col: a.col, hc: a.hc, beard: a.beard, acc: a.acc, lvl: s.lvl, mood: saMood(s) }).replace('<svg ', '<svg style="width:100%;height:100%" ');
-      box.innerHTML = '<div style="flex:0 0 112px;height:190px">' + figure + '</div>' +
-        '<div style="flex:1;min-width:0"><div style="display:flex;gap:6px;align-items:center;margin-bottom:6px"><span style="background:linear-gradient(180deg,#7ff0dc,#14b8a6);color:#052e2b;font-weight:900;font-size:11px;padding:3px 10px;border-radius:99px">લેવલ ' + (s.lvl + 1) + '</span><span style="font-size:11px;font-weight:800;opacity:.85">' + SA_TITLES[s.lvl] + '</span><span style="margin-left:auto;background:rgba(255,200,61,.18);color:#ffd98a;font-size:11px;font-weight:900;padding:3px 9px;border-radius:99px" data-notr>🪙 ' + (currentClient.coins || 0) + '</span></div>' +
-        '<div style="background:rgba(255,255,255,.1);border-radius:16px 16px 16px 4px;padding:8px 10px;font-size:12px;font-weight:700;line-height:1.5">' + esc(saMsg(s)) + '</div>' +
-        '<div style="margin-top:8px"><div style="height:8px;border-radius:9px;background:rgba(0,0,0,.35);overflow:hidden"><i style="display:block;height:100%;width:' + pct + '%;background:linear-gradient(90deg,#5eead4,#3b82f6)"></i></div><div style="font-size:9px;opacity:.7;margin-top:3px" data-notr>' + (s.lvl < 3 ? s.pts + ' / ' + s.nxt + ' ' : '') + 'અઠવાડિયાના પોઇન્ટ</div></div>' +
-        '<div style="display:flex;gap:6px;margin-top:8px"><button type="button" onclick="mpSathiEdit()" style="flex:1;padding:7px 4px;border-radius:12px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:11px;font-weight:800">✏️ બદલો</button><button type="button" onclick="mpThaliNew()" style="flex:1;padding:7px 4px;border-radius:12px;background:linear-gradient(180deg,#7ff0dc,#14b8a6);color:#052e2b;font-size:11px;font-weight:900;box-shadow:0 3px 0 #0b6f64">🍽️ થાળી</button></div></div>';
+      var bgc = usePrem && AVBG[a.g + '_' + a.prem] ? AVBG[a.g + '_' + a.prem] : ['#2b4270', '#16254a'];
+      var box = document.createElement('div'); box.id = 'mpSathi';
+      box.style.cssText = 'border-radius:26px;background:linear-gradient(165deg,' + bgc[0] + ',' + bgc[1] + ');box-shadow:0 12px 28px rgba(15,42,74,.25);padding:10px;display:flex;gap:6px;align-items:center;color:#fff;border:1px solid rgba(255,255,255,.25)';
+      var pct = Math.min(100, Math.round(s.pts / s.nxt * 100));
+      var figure = usePrem ? '<img alt="" src="' + premSrc(a, pose) + '" onerror="mpPremErr(this,\'' + a.g + '\',\'' + a.prem + '\',\'' + pose + '\')" style="width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 8px 8px rgba(0,0,0,.3))" class="s3-float">' : S3.avatar({ g: a.g, hair: a.hair, outfit: a.outfit, col: a.col, hc: a.hc, beard: a.beard, acc: a.acc, lvl: s.lvl, mood: saMood(s) }).replace('<svg ', '<svg style="width:100%;height:100%" ');
+      var chip = function (l, id) { return '<div style="background:rgba(0,0,0,.24);border-radius:10px;padding:4px 2px;text-align:center"><small style="display:block;font-size:8px;opacity:.8;font-weight:700">' + l + '</small><b id="' + id + '" style="font-size:12px;font-weight:900" data-notr>-</b></div>'; };
+      var btn = 'flex:1;padding:7px 2px;border-radius:12px;font-size:10.5px;font-weight:800;border:0;color:#fff;font-family:inherit;white-space:nowrap';
+      box.innerHTML = '<div style="flex:0 0 108px;height:176px">' + figure + '</div>' +
+        '<div style="flex:1;min-width:0"><div style="display:flex;gap:5px;align-items:center;margin-bottom:5px"><span style="background:#14b8a6;color:#052e2b;font-weight:900;font-size:10px;padding:2px 8px;border-radius:99px">લેવલ ' + (s.lvl + 1) + '</span><span style="font-size:11px;font-weight:800;flex:1">' + SA_TITLES[s.lvl] + '</span><span style="background:rgba(0,0,0,.28);color:#ffd98a;font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px" data-notr>🪙 ' + (currentClient.coins || 0) + '</span></div>' +
+        '<div style="background:rgba(0,0,0,.22);border-radius:14px 14px 14px 4px;padding:6px 9px;font-size:11px;font-weight:700;line-height:1.45">' + esc(saMsg(s)) + '</div>' +
+        '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:7px">' + chip('કેલરી', 'mpSCal') + chip('પ્રોટીન', 'mpSPro') + chip('GL', 'mpSGl') + chip('સ્કોર', 'mpSSc') + '</div>' +
+        '<div style="height:6px;border-radius:9px;background:rgba(0,0,0,.3);margin-top:7px;overflow:hidden"><i style="display:block;height:100%;width:' + pct + '%;background:linear-gradient(90deg,#5eead4,#fde68a)"></i></div><div style="font-size:9px;opacity:.8;margin-top:2px" data-notr>' + (s.lvl < 3 ? s.pts + ' / ' + s.nxt + ' ' : '') + 'અઠવાડિયાના પોઇન્ટ</div>' +
+        '<div style="display:flex;gap:5px;margin-top:6px"><button type="button" onclick="mpSathiEdit()" style="' + btn + ';background:rgba(255,255,255,.2)">✏️ બદલો</button><button type="button" onclick="mpThaliNew()" style="' + btn + ';background:#14b8a6;color:#052e2b">🍽️ થાળી</button><button type="button" onclick="mpLiveOpen()" style="' + btn + ';background:#dc2626;box-shadow:0 0 0 2px rgba(255,255,255,.25)">🔴 લાઈવ</button></div></div>';
       host.insertBefore(box, host.firstChild);
+      sathiSync();
+      try { if (sathiObs) sathiObs.disconnect(); sathiObs = new MutationObserver(sathiSync);
+        ['cpConsumedCal', 'cpProteinStats', 'cpDailyGi', 'cpScoreBadge'].forEach(function (id) { var el = document.getElementById(id); if (el) sathiObs.observe(el, { childList: true, characterData: true, subtree: true }); }); } catch (e) { }
     }
+    window.mpLiveOpen = function () {
+      var src = document.getElementById('cpLiveBox'), html = src ? src.innerHTML.trim() : '';
+      if (!html) { alert('હમણાં કોઈ લાઈવ ક્લાસ સેટ નથી. કોચ સમય જણાવશે ત્યારે અહીં દેખાશે.'); return; }
+      var ov = document.createElement('div'); ov.id = 'mpLiveOv'; ov.style.cssText = 'position:fixed;inset:0;z-index:99;background:rgba(15,23,42,.6);display:flex;align-items:flex-end;justify-content:center';
+      ov.onclick = function (e) { if (e.target === ov) ov.remove(); };
+      ov.innerHTML = '<div style="width:100%;max-width:30rem;max-height:80vh;overflow:auto;background:#fff;border-radius:24px 24px 0 0;padding:14px 14px 24px"><div style="display:flex;justify-content:flex-end"><button type="button" onclick="document.getElementById(\'mpLiveOv\').remove()" style="padding:4px 12px;border-radius:12px;background:#e2e8f0;font-size:12px;font-weight:800">બંધ</button></div>' + html + '</div>';
+      document.body.appendChild(ov);
+    };
     var SE = null;
     var PRICE = { pagdi: 0, salwar: 0, bandi: 150, nehru: 150, kurti: 150, sporty: 200, yoga: 200, saree: 250, sherwani: 250, chaniyacholi: 300 };
     function isVipC() { var c = currentClient || {}; return (c.isVip === true && (!c.vipExpiryDate || String(c.vipExpiryDate) >= dateKeyOf(new Date()))) || Number(c.trialDays) >= 900; }
@@ -3222,6 +3302,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var fam = get('mpFamilyBox'), ex = get('cpExtrasBox');
       if (fam && ex && fam.parentNode !== ex.parentNode) ex.parentNode.insertBefore(fam, ex.nextSibling);
       order.forEach(function (el) { if (el && el.parentNode === root) root.appendChild(el); });
+      [macro, get('cpLiveBox'), get('mpThaliCard')].forEach(function (el) { if (el) el.style.display = 'none'; });
     }
 
     /* ---------- સિક્કા અને રિએક્શન ---------- */
