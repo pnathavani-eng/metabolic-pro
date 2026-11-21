@@ -3098,7 +3098,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       try { db.collection('clients').doc(docId()).update({ avatar: a }).catch(function (e) { console.error(e); }); } catch (e) { }
     }
     function saAvatar() {
-      var a = currentClient.avatar; if (a && a.g) { if (a.prem === undefined) { a = Object.assign({}, a, { prem: a.g === 'f' ? 'salwar' : 'pagdi' }); } return a; }
+      var a = currentClient.avatar; if (a && a.g) { if (!a.prem && !a.custom) { a = Object.assign({}, a, { prem: a.g === 'f' ? 'salwar' : 'pagdi' }); } return a; }
       var f = /female|સ્ત્રી|f/i.test(String(currentClient.gender || '')) && !/^male$/i.test(String(currentClient.gender || ''));
       return { g: f ? 'f' : 'm', hair: f ? 'open' : 'crop', outfit: 'bandi', col: 'teal', hc: 'black', beard: 'none', acc: null, prem: f ? 'salwar' : 'pagdi' };
     }
@@ -3145,7 +3145,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var list = PREM[SE.g].filter(function (o) { return !PREM_BAD[SE.g + '_' + o[0]]; });
       var cur = SE.prem, coins = currentClient.coins || 0;
       var head = '<div style="font-size:11px;font-weight:800;opacity:.75;margin:14px 0 6px;display:flex;justify-content:space-between"><span>⭐ પ્રીમિયમ પાત્રો (દુકાન)</span><span style="background:rgba(255,200,61,.18);color:#ffd98a;padding:2px 10px;border-radius:99px" data-notr>🪙 ' + coins + '</span></div>';
-      return head + '<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px"><button type="button" onclick="mpSe(\'prem\',\'none\')" style="flex:0 0 auto;width:70px;padding:6px 4px;border-radius:14px;border:2px solid ' + (!cur ? '#5eead4' : 'rgba(255,255,255,.2)') + ';background:rgba(255,255,255,.08);color:#fff;font-size:10px;font-weight:800">🎨 સાદો<br>કસ્ટમ</button>' +
+      return head + '<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px">' +
         list.map(function (o) {
           var open = isUnlocked(SE.g, o[0]), pr = PRICE[o[0]] || 0;
           return '<button type="button" onclick="mpSe(\'prem\',\'' + o[0] + '\')" style="position:relative;flex:0 0 auto;width:70px;padding:4px;border-radius:14px;border:2px solid ' + (cur === o[0] ? '#5eead4' : 'rgba(255,255,255,.2)') + ';background:rgba(255,255,255,.08);color:#fff;font-size:10px;font-weight:800"><img alt="" src="' + premUri(SE.g, o[0], 'idle') + '" onerror="mpPremErr(this,\'' + SE.g + '\',\'' + o[0] + '\',\'idle\')" style="width:100%;height:84px;object-fit:contain;' + (open ? '' : 'filter:grayscale(.6) brightness(.7)') + '">' + o[1] +
@@ -3170,10 +3170,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var sw = Object.keys(S3.COL).map(function (k) { var c = S3.COL[k]; return '<button type="button" onclick="mpSe(\'col\',\'' + k + '\')" style="width:36px;height:36px;border-radius:50%;border:3px solid ' + (SE.col === k ? '#5eead4' : 'rgba(255,255,255,.35)') + ';background:radial-gradient(circle at 30% 25%,' + c[0] + ',' + c[1] + ' 55%,' + c[2] + ')"></button>'; }).join('');
       ov.innerHTML = '<div style="max-width:30rem;margin:0 auto;padding:14px 14px 100px"><div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:15px">✏️ તમારો સાથી</b><button type="button" onclick="mpSathiClose()" style="padding:6px 12px;border-radius:12px;background:rgba(255,255,255,.14);color:#fff;font-size:12px;font-weight:800">બંધ</button></div>' +
         '<div style="height:260px;margin:8px 0;border-radius:24px;background:radial-gradient(60% 50% at 50% 42%,rgba(160,190,255,.18),transparent 70%),linear-gradient(180deg,#223152,#141d33);display:flex;justify-content:center">' + (SE.prem && !PREM_BAD[SE.g + '_' + SE.prem] ? '<img alt="" src="' + premSrc(SE, 'idle') + '" onerror="mpPremErr(this,\'' + SE.g + '\',\'' + SE.prem + '\',\'idle\')" style="height:100%;object-fit:contain">' : S3.avatar(Object.assign({}, SE, { lvl: lv, mood: 'happy' })).replace('<svg ', '<svg style="height:100%" ')) + '</div>' + premRow() +
-        sec('છોકરો / છોકરી') + seg([['m', '👨 છોકરો'], ['f', '👩 છોકરી']], 'g', SE.g) + sec('હેરસ્ટાઇલ') + seg(HL, 'hair', SE.hair) +
-        sec('વાળનો રંગ') + seg([['black', 'કાળા'], ['brown', 'બ્રાઉન'], ['maroon', 'મરૂન']], 'hc', SE.hc) +
-        (f ? '' : sec('દાઢી-મૂછ') + seg([['none', 'સાફ'], ['moustache', 'મૂછ'], ['mooch', 'જાડી મૂછ'], ['beard', 'દાઢી']], 'beard', SE.beard) + sec('પાઘડી') + seg([['auto', 'આપોઆપ'], ['pagdi', 'પાઘડી'], ['none', 'વગર']], 'acc', SE.acc == null ? 'auto' : SE.acc)) +
-        sec('કપડાં') + seg(SA_OUT, 'outfit', SE.outfit) + sec('રંગ') + '<div style="display:flex;gap:8px;flex-wrap:wrap">' + sw + '</div></div>' +
+        sec('છોકરો / છોકરી') + seg([['m', '👨 છોકરો'], ['f', '👩 છોકરી']], 'g', SE.g) + '</div>' +
         '<div style="position:fixed;bottom:0;left:0;right:0;padding:12px;background:rgba(11,18,32,.95);border-top:1px solid rgba(255,255,255,.12)"><button type="button" onclick="mpSathiSave()" style="display:block;width:100%;max-width:30rem;margin:0 auto;padding:13px;border-radius:16px;background:linear-gradient(180deg,#7ff0dc,#14b8a6);color:#052e2b;font-weight:900;font-size:14px;box-shadow:0 3px 0 #0b6f64">✔ સેવ કરો</button></div>';
       ov.scrollTop = keep;
     }
@@ -3181,9 +3178,9 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     window.mpSathiClose = function () { SE = null; seRender(); };
     window.mpSe = function (k, v) {
       if (!SE) return;
-      if (k === 'prem') { if (v !== 'none' && !isUnlocked(SE.g, v) && !buyPrem(SE.g, v)) return; SE.prem = v === 'none' ? null : v; }
+      if (k === 'prem') { if (v !== 'none' && !isUnlocked(SE.g, v) && !buyPrem(SE.g, v)) return; SE.prem = v === 'none' ? null : v; SE.custom = v === 'none'; }
       else if (k === 'acc') SE.acc = v === 'auto' ? null : v;
-      else if (k === 'g') { if (SE.g !== v) { SE.g = v; SE.hair = v === 'f' ? 'open' : 'crop'; SE.beard = 'none'; SE.acc = null; SE.prem = null; } }
+      else if (k === 'g') { if (SE.g !== v) { SE.g = v; SE.hair = v === 'f' ? 'open' : 'crop'; SE.beard = 'none'; SE.acc = null; SE.prem = v === 'f' ? 'salwar' : 'pagdi'; SE.custom = false; } }
       else SE[k] = v;
       seRender();
     };
