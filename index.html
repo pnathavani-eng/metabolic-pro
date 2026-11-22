@@ -3453,12 +3453,12 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       (window.__mpAnn || []).forEach(function (a) { if (a && a.title && (!a.expires || a.expires >= k)) out.push({ id: 'ann_' + (a.id || a.title), kind: 'ann', ann: true, icon: a.icon || '📣', badge: a.badge || L('કોચ તરફથી', 'कोच की ओर से', 'From coach'), t: a.title, m: a.metric || '', s: a.sub || '', b: a.body || '', chips: a.chips || [], grad: a.grad, pct: a.pct }); });
       return out;
     }
-    function mpAnnLoad() { if (window.__mpAnnLd) return; window.__mpAnnLd = 1; try { db.collection('settings').doc('announcements').get().then(function (d) { window.__mpAnn = (d.exists && d.data().cards) || []; try { mpAnnBar(); } catch (e) { } }).catch(function () { }); } catch (e) { } }
+    function mpAnnLoad() { if (window.__mpAnnLd) return; window.__mpAnnLd = 1; try { db.collection('settings').doc('announcements').get().then(function (d) { window.__mpAnn = ((d.exists && d.data().cards) || []).filter(function (a) { var dia = ((currentClient && currentClient.goals) || []).indexOf('diabetes') >= 0; return !(a.aud === 'nodia' && dia) && !(a.aud === 'dia' && !dia); }); try { mpAnnBar(); } catch (e) { } }).catch(function () { }); } catch (e) { } }
     function mpAnnBar() {
       var old = document.getElementById('mpAnnBar'); if (old) old.remove();
       var a = (window.__mpAnn || []).filter(function (x) { return x && x.title && (!x.expires || x.expires >= dateKeyOf(new Date())); })[0], root = document.getElementById('tabContentToday'); if (!a || !root || !currentClient) return;
       var b = document.createElement('div'); b.id = 'mpAnnBar'; b.style.cssText = 'display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,#fff7ed,#ffedd5);border:1px solid #fed7aa;border-radius:18px;padding:9px 12px';
-      b.innerHTML = '<div style="font-size:22px" data-notr>' + (/^[a-z_0-9]+$/.test(a.icon || '') ? ic(a.icon, 26) : esc(a.icon || '📣')) + '</div><div style="flex:1;min-width:0"><div style="font-size:9px;font-weight:900;color:#c2410c" data-notr>📣 ' + esc(a.badge || 'કોચ તરફથી') + '</div><div data-notr style="font-size:12.5px;font-weight:900;color:#431407;line-height:1.3">' + esc(a.title) + '</div></div><button type="button" onclick="mpCardsOpen(\'ann_' + String(a.id || a.title).replace(/[\\\']/g, '') + '\')" style="padding:8px 12px;border-radius:12px;background:#ea580c;color:#fff;font-weight:900;font-size:11px;border:0">જુઓ</button>';
+      b.innerHTML = '<div style="font-size:22px" data-notr>' + esc(a.em || (/^[a-z_0-9]+$/.test(a.icon || '') ? '📣' : a.icon) || '📣') + '</div><div style="flex:1;min-width:0"><div style="font-size:9px;font-weight:900;color:#c2410c" data-notr>📣 ' + esc(a.badge || 'કોચ તરફથી') + '</div><div data-notr style="font-size:12.5px;font-weight:900;color:#431407;line-height:1.3">' + esc(a.title) + '</div></div><button type="button" onclick="mpCardsOpen(\'ann_' + String(a.id || a.title).replace(/[\\\']/g, '') + '\')" style="padding:8px 12px;border-radius:12px;background:#ea580c;color:#fff;font-weight:900;font-size:11px;border:0">જુઓ</button>';
       var jn = document.getElementById('mpJourney'), sa = document.getElementById('mpSathi'), ref = jn || sa; if (ref && ref.parentNode === root) root.insertBefore(b, ref.nextSibling); else root.insertBefore(b, root.firstChild);
     }
     function mpCardCanvas(card, opt) {
@@ -4292,6 +4292,11 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     }
 
 
+    function habitHtml(cl) {
+      var sb = cl.streakBest || 0, sh = cl.shields || 0, cw = cl.cravingWins || 0, used = Object.keys(cl.shieldUsed || {}).length;
+      if (!sb && !sh && !cw && !used) return '';
+      return '<div class="bg-orange-50 border border-orange-200 rounded-2xl p-2.5 text-[11px] flex flex-wrap gap-x-4 gap-y-1"><span class="font-extrabold text-orange-900 w-full">🔥 સ્ટ્રીક & આદતો</span><span>શ્રેષ્ઠ સ્ટ્રીક: <b>' + sb + ' દિવસ</b></span><span>🛡️ શીલ્ડ: <b>' + sh + '</b> (વપરાયેલ ' + used + ')</span><span>🧘 ક્રેવિંગ જીત: <b>' + cw + '</b></span></div>';
+    }
     /* ---------- લાઈવ ક્લાસ સમય સ્લોટ (સેટિંગ્સમાં) ---------- */
     var SV = [['yoga', 'setYogaLink'], ['garbh', 'setGarbhLink'], ['med', 'setMedLink']];
     var DN = ['રવિ', 'સોમ', 'મંગળ', 'બુધ', 'ગુરુ', 'શુક્ર', 'શનિ'];
@@ -4330,10 +4335,45 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       });
       return out;
     }
+    /* ---------- જાહેરાત કાર્ડ (ઓનર → ક્લાયન્ટ) ---------- */
+    var ANN_ICONS = [['sticker_party_popper', '🎉', 'પાર્ટી'], ['sticker_diya_lit', '🪔', 'દીવો'], ['sticker_namaste_hands', '🙏', 'નમસ્તે'], ['sticker_heart_fire', '❤️‍🔥', 'હાર્ટ'], ['sticker_muscle_arm', '💪', 'તાકાત'], ['sticker_water_drop_smile', '💧', 'પાણી'], ['sticker_steaming_thali', '🍽️', 'થાળી'], ['sticker_kite', '🪁', 'પતંગ'], ['sticker_gold_medal', '🏅', 'મેડલ'], ['sticker_crown', '👑', 'તાજ'], ['sticker_sparkle_burst', '✨', 'ચમક'], ['sticker_rainbow_star', '🌟', 'તારો']];
+    var ANN = [];
+    function annRender() {
+      var el = document.getElementById('mpAnnList'); if (!el) return;
+      el.innerHTML = ANN.length ? ANN.map(function (a, i) { return '<div class="flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-xl p-2"><div class="text-lg">' + esc(a.em || '📣') + '</div><div class="flex-1 min-w-0"><div class="font-bold truncate">' + esc(a.title) + '</div><div class="text-[10px] text-slate-500">' + (a.aud === 'nodia' ? 'ડાયાબિટીસ સિવાય' : a.aud === 'dia' ? 'ફક્ત ડાયાબિટીસ' : 'બધા') + ' • ' + esc(a.expires || '') + ' સુધી</div></div><button type="button" onclick="mpAnnDel(' + i + ')" class="text-red-600 font-bold px-2">✕</button></div>'; }).join('') : '<div class="text-[11px] text-slate-400">હાલ કોઈ જાહેરાત નથી</div>';
+    }
+    function annLoad() { db.collection('settings').doc('announcements').get().then(function (d) { ANN = (d.exists && d.data().cards) || []; annRender(); }).catch(function () { }); }
+    function annSave(cb) { var k = dateKeyOf(new Date()); ANN = ANN.filter(function (a) { return !a.expires || a.expires >= k; }).slice(-6); return db.collection('settings').doc('announcements').set({ cards: ANN, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }).then(function () { annRender(); if (cb) cb(); }).catch(function (e) { console.error(e); alert('જાહેરાત સેવ ન થઈ. ફરી પ્રયત્ન કરો.'); }); }
+    window.mpAnnDel = function (i) { if (!confirm('આ જાહેરાત કાઢી નાખવી?')) return; ANN.splice(i, 1); annSave(); };
+    window.mpAnnAdd = function () {
+      var g = function (id) { return ((document.getElementById(id) || {}).value || '').trim(); }, title = g('mpAnT');
+      if (!title) { alert('શીર્ષક લખો'); return; }
+      var ic0 = g('mpAnI').split('|'), exp = g('mpAnX');
+      if (!exp) { var d = new Date(); d.setDate(d.getDate() + 7); exp = dateKeyOf(d); }
+      ANN.push({ id: String(Date.now()), title: title, metric: g('mpAnM'), sub: g('mpAnS'), body: g('mpAnB'), chips: g('mpAnC').split(',').map(function (x) { return x.trim(); }).filter(Boolean).slice(0, 3), icon: ic0[0], em: ic0[1], aud: g('mpAnA') || 'all', expires: exp, badge: 'કોચ તરફથી' });
+      annSave(function () { ['mpAnT', 'mpAnM', 'mpAnS', 'mpAnB', 'mpAnC', 'mpAnX'].forEach(function (id) { var e = document.getElementById(id); if (e) e.value = ''; }); toast('જાહેરાત પ્રકાશિત થઈ ✅'); });
+    };
+    function injectAnnUi() {
+      var host = document.querySelector('#modalCoachSettings > div'); if (!host || document.getElementById('mpAnnBox')) return;
+      var inp = 'w-full border rounded-xl px-2.5 py-2 text-xs';
+      var b = document.createElement('div'); b.id = 'mpAnnBox'; b.className = 'border-t pt-3 space-y-2';
+      b.innerHTML = '<div class="font-extrabold text-sm text-slate-900">📣 જાહેરાત કાર્ડ (ક્લાયન્ટની એપમાં)</div><div class="text-[10px] text-slate-500">ઉપવાસ, ઑફર, તહેવાર કે સલાહ મૂકો. ક્લાયન્ટ એને પોતાની સ્ટોરીમાં શેર પણ કરી શકે.</div><div id="mpAnnList" class="space-y-1.5"></div>' +
+        '<input id="mpAnT" class="' + inp + '" placeholder="શીર્ષક (જેમ કે: અગિયારસ ઉપવાસ — સાત્વિક ફરાળ)">' +
+        '<input id="mpAnM" class="' + inp + '" placeholder="મોટું લખાણ (જેમ કે: ફરાળી થાળી)">' +
+        '<input id="mpAnS" class="' + inp + '" placeholder="નાનું લખાણ">' +
+        '<textarea id="mpAnB" rows="2" class="' + inp + '" placeholder="વિગત / સલાહ (ડાયાબિટીસ માટે સાવચેતી લખો)"></textarea>' +
+        '<input id="mpAnC" class="' + inp + '" placeholder="ચિપ્સ (કોમાથી અલગ, વધુમાં વધુ 3): 🙏 એકાદશી, 🥗 ફરાળ">' +
+        '<div class="grid grid-cols-2 gap-2"><select id="mpAnI" class="' + inp + '">' + ANN_ICONS.map(function (x) { return '<option value="' + x[0] + '|' + x[1] + '">' + x[1] + ' ' + x[2] + '</option>'; }).join('') + '</select>' +
+        '<select id="mpAnA" class="' + inp + '"><option value="all">બધા ક્લાયન્ટ</option><option value="nodia">ડાયાબિટીસ સિવાય (સુરક્ષિત)</option><option value="dia">ફક્ત ડાયાબિટીસ</option></select></div>' +
+        '<div class="flex items-center gap-2"><span class="text-[11px] text-slate-600">ક્યાં સુધી:</span><input id="mpAnX" type="date" class="' + inp + '"></div>' +
+        '<button type="button" onclick="mpAnnAdd()" class="w-full py-2.5 rounded-xl bg-orange-600 text-white font-extrabold">➕ પ્રકાશિત કરો</button>';
+      host.appendChild(b); annLoad();
+    }
     var origOpenSet = window.openCoachSettingsModal;
     window.openCoachSettingsModal = function () {
       origOpenSet.apply(this, arguments);
       try { fillSlotUi(); } catch (e) { console.error('slot ui', e); }
+      try { if (currentUserRole === 'owner') injectAnnUi(); } catch (e) { console.error('ann ui', e); }
     };
     var origSaveSet = window.saveCoachSettingsToCloud;
     window.saveCoachSettingsToCloud = async function () {
@@ -4375,7 +4415,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         var cl = liveClients.filter(function (c) { return c.id === id; })[0];
         var body = document.getElementById('mcBody');
         if (!cl || !body) return;
-        var html = (currentUserRole === 'owner' ? avSwitchHtml(cl) : '') + jnAdminHtml(cl) + addonHtml(cl);
+        var html = (currentUserRole === 'owner' ? avSwitchHtml(cl) : '') + jnAdminHtml(cl) + habitHtml(cl) + addonHtml(cl);
         if (!html) return;
         var tbl = body.querySelector('table');
         var host = tbl && tbl.closest('.overflow-x-auto');
