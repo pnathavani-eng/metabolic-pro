@@ -3172,6 +3172,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       }
       else if (k === 'diary' || k === 'vit') { var dn = document.getElementById('mpStash') && Array.prototype.filter.call(document.getElementById('mpStash').children, function (x) { return x.getAttribute('data-mpkey') === k; })[0]; if (!dn) { alert('ડાયરી હમણાં ઉપલબ્ધ નથી.'); return; } sheetOpen(k === 'vit' ? '🩸 વાઇટલ્સ અને સુગર' : '🧘 આજની ડાયરી', '', [dn]); }
       else if (k === 'cards') { mpCardsOpen(); }
+      else if (k === 'crave') { mpCraveOpen(); }
       else if (k === 'rep') { var a = document.getElementById('cpWeeklySummary'), tb = document.getElementById('cpTrendBox'), t2 = tb && tb.closest('.card-clean'); sheetOpen('📊 7 દિવસનો રિપોર્ટ', '', [a, t2].filter(Boolean)); }
     };
     function renderProgBtns() {
@@ -3179,10 +3180,9 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var old = document.getElementById('mpProgBtns'); if (old) old.remove();
       var gro = document.getElementById('weeklyGroceryDisplay'), fc = document.getElementById('upcomingForecastContainer'), tb = document.getElementById('cpTrendBox');
       [gro && gro.closest('.card-clean'), fc && fc.closest('.card-clean'), document.getElementById('cpWeeklySummary'), tb && tb.closest('.card-clean')].forEach(function (n) { if (n && n.parentNode !== document.getElementById('mpSheetBody') && n.parentNode !== stash()) stash().appendChild(n); });
-      var it = [['📅', 'આવતીકાલનું મેનુ', 'tom'], ['🗓', 'આખું અઠવાડિયું', 'week'], ['🛒', 'કરિયાણું', 'gro'], ['🧘', 'આજની ડાયરી', 'diary'], ['📊', '7 દિવસનો રિપોર્ટ', 'rep'], ['🩸', 'વાઇટલ્સ અને સુગર', 'vit'], ['🎴', 'શેર કાર્ડ્સ (Instagram/WhatsApp)', 'cards']];
+      var it = [['📅', 'આવતીકાલનું મેનુ', 'tom'], ['🗓', 'આખું અઠવાડિયું', 'week'], ['🛒', 'કરિયાણું', 'gro'], ['🧘', 'આજની ડાયરી', 'diary'], ['📊', '7 દિવસનો રિપોર્ટ', 'rep'], ['🩸', 'વાઇટલ્સ અને સુગર', 'vit'], ['🧘', 'ક્રેવિંગ બસ્ટર (5 મિનિટ)', 'crave'], ['🎴', 'શેર કાર્ડ્સ', 'cards']];
       var box = document.createElement('div'); box.id = 'mpProgBtns'; box.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px';
       box.innerHTML = it.map(function (x, i) { return '<button type="button" onclick="mpProgOpen(\'' + x[2] + '\')" style="' + '' + 'background:#fff;border-radius:18px;padding:12px 8px;text-align:center;font-size:12px;font-weight:900;box-shadow:0 4px 12px rgba(30,58,138,.08);border:1px solid #e2e8f0"><span style="display:block;font-size:22px;margin-bottom:2px">' + x[0] + '</span>' + x[1] + '</button>'; }).join('');
-      try { box.lastChild.style.gridColumn = '1 / -1'; } catch (e) { }
       root.insertBefore(box, root.firstChild);
       var old2 = document.getElementById('mpSendRow'); if (old2) old2.remove();
       var sr = document.createElement('div'); sr.id = 'mpSendRow'; sr.style.cssText = 'background:#fff;border-radius:18px;padding:10px 12px;box-shadow:0 4px 12px rgba(15,42,74,.08);margin-top:8px;display:flex;align-items:center;gap:8px';
@@ -3344,9 +3344,10 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     function mpStreakCanvas(fmt) {
       var t = mpStreakCalc(), a = saAvatar(), W = 1080, H = fmt === 'sq' ? 1080 : 1920, fe = mpFest(), st = stkStage(t.n);
       var usePrem = a.prem && !PREM_BAD[a.g + '_' + a.prem], bgc = usePrem && AVBG[a.g + '_' + a.prem] ? AVBG[a.g + '_' + a.prem] : ['#2b4270', '#16254a'];
-      return Promise.all([mpImg(usePrem ? premSrc(a, 'cheer') : null), mpImg(window.MPSTK && window.MPSTK['diya_' + st]), mpImg(window.MPSTK && window.MPSTK['tulsi_' + st]), mpImg(fe && window.MPFEST && window.MPFEST[fe.k]), mpFonts()]).then(function (im) {
+      return Promise.all([mpImg(usePrem ? premSrc(a, 'cheer') : null), mpImg(window.MPSTK && window.MPSTK['diya_' + st]), mpImg(window.MPSTK && window.MPSTK['tulsi_' + st]), mpImg(fe && window.MPFEST && window.MPFEST[fe.k]), mpFonts(), mpImg(window.MPCBG && window.MPCBG.bg_streak)]).then(function (im) {
         var c = document.createElement('canvas'); c.width = W; c.height = H; var x = mpCtx(c), F = "'Noto Sans Gujarati','Shruti','Inter',sans-serif";
         var g = x.createLinearGradient(0, 0, W * .4, H); g.addColorStop(0, bgc[0]); g.addColorStop(1, bgc[1]); x.fillStyle = g; x.fillRect(0, 0, W, H);
+        if (im[5] && !im[3]) { var r5 = Math.max(W / im[5].width, H / im[5].height); x.drawImage(im[5], (W - im[5].width * r5) / 2, (H - im[5].height * r5) / 2, im[5].width * r5, im[5].height * r5); x.fillStyle = 'rgba(0,0,0,.2)'; x.fillRect(0, 0, W, H); }
         if (im[3]) { var r = Math.max(W / im[3].width, H / im[3].height); x.globalAlpha = .55; x.drawImage(im[3], (W - im[3].width * r) / 2, 0, im[3].width * r, im[3].height * r); x.globalAlpha = 1; var ov = x.createLinearGradient(0, 0, 0, H); ov.addColorStop(0, 'rgba(0,0,0,.25)'); ov.addColorStop(1, 'rgba(0,0,0,.6)'); x.fillStyle = ov; x.fillRect(0, 0, W, H); }
         x.textAlign = 'center'; x.fillStyle = '#fff';
         var top = fmt === 'sq' ? 40 : 150; mpBrand(x, W, top + 50, 50);
@@ -3358,6 +3359,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         else { if (im[1]) x.drawImage(im[1], 40, 560, 260, 260); if (im[0]) { var ar2 = im[0].width / im[0].height; x.drawImage(im[0], (W - 640 * ar2) / 2, 440, 640 * ar2, 640); } if (im[2]) x.drawImage(im[2], W - 300, 560, 260, 260); }
         x.fillStyle = '#fff'; x.font = '800 46px ' + F; var nm = (currentClient.name || '').split(' ')[0]; x.fillText(nm + ' નો હેલ્ધી સ્ટ્રેક', W / 2, H - (fmt === 'sq' ? 70 : 170));
         x.font = '600 34px ' + F; x.globalAlpha = .8; x.fillText('રોજ નિયમ, રોજ સંયમ 🙏', W / 2, H - (fmt === 'sq' ? 25 : 110)); x.globalAlpha = 1;
+        mpDrawSticker(x, W, H);
         return c;
       });
     }
@@ -3386,12 +3388,12 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     function mpFonts() {
       try { if (!document.fonts || !document.fonts.load) return Promise.resolve(); return Promise.race([Promise.all([document.fonts.load("800 40px 'Noto Sans Gujarati'", 'નિયમ સંયમ આજની'), document.fonts.load("600 40px 'Noto Sans Gujarati'", 'નિયમ સંયમ'), document.fonts.load("400 40px 'Noto Sans Gujarati'", 'નિયમ')]), new Promise(function (r) { setTimeout(r, 1800); })]).catch(function () { }); } catch (e) { return Promise.resolve(); }
     }
-    function mpBrand(x, W, y, sz) {
+    function mpBrand(x, W, y, sz, col) {
       sz = sz || 40; var lg = sz * 1.25, tw; x.font = '800 ' + sz + 'px ' + CFONT; tw = x.measureText('નિયમ સંયમ').width; var tot = lg + 14 + tw, sx = W / 2 - tot / 2, cx = sx + lg / 2, cy = y - sz * .32;
       var g = x.createLinearGradient(sx, cy - lg / 2, sx + lg, cy + lg / 2); g.addColorStop(0, '#5eead4'); g.addColorStop(1, '#0f766e'); x.fillStyle = g; x.beginPath(); x.arc(cx, cy, lg / 2, 0, 7); x.fill();
       x.fillStyle = '#fff'; x.beginPath(); x.moveTo(cx, cy - lg * .3); x.bezierCurveTo(cx + lg * .3, cy - lg * .08, cx + lg * .24, cy + lg * .3, cx, cy + lg * .3); x.bezierCurveTo(cx - lg * .24, cy + lg * .3, cx - lg * .3, cy - lg * .08, cx, cy - lg * .3); x.fill();
       x.fillStyle = '#0f766e'; x.beginPath(); x.moveTo(cx, cy - lg * .14); x.bezierCurveTo(cx + lg * .1, cy, cx + lg * .08, cy + lg * .18, cx, cy + lg * .2); x.bezierCurveTo(cx - lg * .08, cy + lg * .18, cx - lg * .1, cy, cx, cy - lg * .14); x.fill();
-      x.fillStyle = '#fff'; var al = x.textAlign; x.textAlign = 'left'; x.fillText('નિયમ સંયમ', sx + lg + 14, y); x.textAlign = al;
+      x.fillStyle = col || '#fff'; var al = x.textAlign; x.textAlign = 'left'; x.fillText('નિયમ સંયમ', sx + lg + 14, y); x.textAlign = al;
     }
     function mpSaveBlob(bl, name) { var u = URL.createObjectURL(bl), l = document.createElement('a'); l.href = u; l.download = name; document.body.appendChild(l); l.click(); l.remove(); setTimeout(function () { URL.revokeObjectURL(u); }, 4000); }
     function mpShareBlob(bl, name, title, ask) {
@@ -3410,7 +3412,19 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var c = m(g('cpConsumedCal')), p = m(g('cpProteinStats')), w = m(g('cpWaterCount'));
       return { cal: Math.round(c[0]), calGoal: Math.round(c[1]), pro: Math.round(p[0]), proGoal: Math.round(p[1]), wat: w[0], watGoal: w[1] };
     }
+    var BGMAP = { streak: 'streak', protein: 'protein', water: 'water', weekly: 'weekly', shield: 'shield', comeback: 'comeback', active: 'comeback', sleep: 'weekly', family: 'family', fullday: 'gold', fest: 'gold', ann: 'gold', journey: 'journey' };
     var CGR = { fullday: ['#0f766e', '#134e4a'], protein: ['#1e3a8a', '#1e40af'], water: ['#0369a1', '#0c4a6e'], weekly: ['#0f172a', '#1e293b'], shield: ['#334155', '#1e293b'], journey: ['#4338ca', '#312e81'], comeback: ['#1e40af', '#1e3a8a'], active: ['#0f766e', '#115e59'], sleep: ['#1e1b4b', '#0f172a'], family: ['#065f46', '#064e3b'], fest: ['#9a3412', '#7c2d12'], streak: ['#b45309', '#78350f'], ann: ['#7c2d12', '#431407'] };
+    var STK = { id: null, pos: 0, img: null };
+    function mpDrawSticker(x, W, H) {
+      if (!STK.img || STK.pos > 3) return; var sz = 270, pts = [[W - sz - 50, 215], [50, 215], [W - sz - 50, H - 640], [50, H - 640]], p = pts[STK.pos];
+      x.save(); x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 24; x.shadowOffsetY = 8; x.translate(p[0] + sz / 2, p[1] + sz / 2); x.rotate(STK.pos % 2 ? -.1 : .1); x.drawImage(STK.img, -sz / 2, -sz / 2, sz, sz); x.restore();
+    }
+    window.mpSticker = function (id) {
+      if (STK.id === id) { STK.pos++; if (STK.pos > 3) { STK.pos = 0; STK.id = null; STK.img = null; mpStickerRefresh(); return; } mpStickerRefresh(); return; }
+      STK.id = id; STK.pos = 0; var src = window.MPSTKR && window.MPSTKR[id]; mpImg(src).then(function (im) { STK.img = im; mpStickerRefresh(); });
+    };
+    function mpStickerRefresh() { if (CST.photoMode) mpPhotoShow(); else mpCardShow(CST.cur); document.querySelectorAll('#mpCvSt [data-st]').forEach(function (b) { b.style.outline = b.getAttribute('data-st') === STK.id ? '3px solid #14b8a6' : 'none'; }); }
+    function mpStickerRow() { var el = document.getElementById('mpCvSt'); if (!el || !window.MPSTKR) return; el.innerHTML = Object.keys(window.MPSTKR).map(function (k) { return '<button type="button" data-st="' + k + '" onclick="mpSticker(\'' + k + '\')" style="flex:0 0 auto;width:46px;height:46px;border-radius:12px;background:#fff;border:1px solid #e2e8f0;padding:3px;' + (k === STK.id ? 'outline:3px solid #14b8a6' : '') + '"><img alt="" src="' + window.MPSTKR[k] + '" style="width:100%;height:100%;object-fit:contain"></button>'; }).join(''); }
     function mpCardList() {
       var cl = currentClient, k = dateKeyOf(new Date()), sc = dayScorePct(k), stk = mpStreakCalc(), nm = mpNums(), comp = (cl.compliance || {})[k] || {}, ls = comp.lifestyle || {}, out = [], fe = mpFest();
       var done = Object.keys(comp.checks || {}).filter(function (s) { return comp.checks[s] === 'done'; });
@@ -3430,6 +3444,12 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       if (Number(ls.steps) >= 6000 || Number(ls.workoutMins) >= 15) out.push({ id: 'active', kind: 'active', icon: 'walk', badge: 'ACTIVE DAY', t: L('એક્ટિવ ડે!', 'एक्टिव डे!', 'Active day!'), m: Number(ls.steps) >= 6000 ? ls.steps + ' ' + L('પગલાં', 'कदम', 'steps') : ls.workoutMins + ' ' + L('મિનિટ', 'मिनट', 'min'), s: L('ચાલવું/કસરત પૂર્ણ', 'चलना/कसरत पूरी', 'Movement done'), b: L('નાની આદત, મોટો ફરક!', 'छोटी आदत, बड़ा फ़र्क़!', 'Small habit, big difference!'), chips: ['🚶', '⚡'], pct: 90 });
       if (Number(ls.sleepHours) >= 7) out.push({ id: 'sleep', kind: 'sleep', icon: 'lotus', badge: 'SLEEP', t: L('ઊંડી ઊંઘ', 'गहरी नींद', 'Good sleep'), m: ls.sleepHours + ' ' + L('કલાક', 'घंटे', 'hrs'), s: L('ફ્રેશ સવાર', 'ताज़ा सुबह', 'Fresh morning'), b: L('પૂરતી ઊંઘ = ઓછી ક્રેવિંગ.', 'पूरी नींद = कम क्रेविंग।', 'Enough sleep means fewer cravings.'), chips: ['🌙', '✨'], pct: 95 });
       if ((Number(cl.familySize) || 0) > 1 && sc !== null && sc >= 60) out.push({ id: 'family', kind: 'family', icon: '👨‍👩‍👧‍👦', badge: 'FAMILY WIN', t: L('ફૂલ ફેમિલી હેલ્ધી થાળી!', 'पूरे परिवार की हेल्दी थाली!', 'Healthy thali for the whole family!'), m: L('આખો પરિવાર', 'पूरा परिवार', 'Whole family'), s: L('સાથે હેલ્ધી ભોજન', 'साथ में हेल्दी भोजन', 'Eating healthy together'), b: L('ઘરના બધાએ સાથે મળીને હેલ્ધી થાળી માણી.', 'घर में सबने साथ मिलकर हेल्दी थाली खाई।', 'The whole family enjoyed a healthy thali.'), chips: ['🏡', '❤️'], pct: 100 });
+      var host = location.host || 'metabolic-pro-app.vercel.app', fn0 = (cl.name || '').split(' ')[0];
+      out.push({ id: 'invite', kind: 'invite', frame: 'fr_invite', icon: 'sticker_party_popper', badge: 'INVITE', t: L('મારી સાથે જોડાઓ!', 'मेरे साथ जुड़ें!', 'Join me!'), m: stk.n ? '🔥 ' + stk.n + ' ' + tr('દિવસ') : '🥗', s: L('ગુજરાતી ડાયટ અને ડાયાબિટીસ કોચિંગ એપ', 'गुजराती डाइट और डायबिटीज़ कोचिंग ऐप', 'Gujarati diet & diabetes coaching app'), b: L(fn0 + ' રોજ હેલ્ધી રહે છે — તમે પણ શરૂ કરો!', fn0 + ' रोज़ हेल्दी रहता/रहती है — आप भी शुरू करें!', fn0 + ' stays healthy every day — start yours too!'), chips: ['📲 ' + host], noAv: true });
+      out.push({ id: 'challenge', kind: 'challenge', frame: 'fr_challenge', icon: 'sticker_diya_lit', badge: 'CHALLENGE', t: L('7 દિવસ ચેલેન્જ', '7 दिन चैलेंज', '7-day challenge'), m: L('મારી સાથે જોડાઓ', 'मेरे साथ जुड़ें', 'Join me'), s: L('રોજ નિયમ, રોજ સંયમ', 'रोज़ नियम, रोज़ संयम', 'Daily discipline'), b: L('7 દિવસ સુધી હેલ્ધી ખાઈએ અને સ્ટ્રેક બનાવીએ!', '7 दिन हेल्दी खाएँ और स्ट्रीक बनाएँ!', "Let's eat healthy for 7 days and build a streak!"), chips: ['📲 ' + host], noAv: true });
+      out.push({ id: 'review', kind: 'review', frame: 'fr_review', dark: true, icon: 'sticker_namaste_hands', badge: 'MY STORY', t: L('મારો અનુભવ', 'मेरा अनुभव', 'My experience'), m: '', s: '', b: '', chips: ['⭐⭐⭐⭐⭐'], noAv: true, needText: true });
+      if (done.length) out.push({ id: 'thalifr', kind: 'thalifr', frame: 'fr_thali', dark: true, icon: 'sticker_steaming_thali', badge: 'MY THALI', t: L('મારી આજની થાળી', 'मेरी आज की थाली', "My thali today"), m: nm.cal + ' kcal', s: nm.pro ? nm.pro + 'g ' + L('પ્રોટીન', 'प्रोटीन', 'protein') : '', b: done.map(function (s2) { return plan[s2] && plan[s2].name; }).filter(Boolean).slice(0, 3).join(' • '), chips: ['🕒 ' + done.length + ' ' + L('ભોજન', 'भोजन', 'meals')], noAv: true });
+      if (fe && ['diwali', 'navratri', 'uttarayan'].indexOf(fe.k) >= 0) out.push({ id: 'fest2', kind: 'fest2', frame: 'fr_' + fe.k, dark: fe.k === 'uttarayan', icon: fe.k === 'uttarayan' ? 'sticker_kite' : 'sticker_diya_lit', badge: 'FESTIVAL', t: fe.g, m: L('સ્વસ્થ રહો, મસ્ત રહો', 'स्वस्थ रहें, मस्त रहें', 'Stay healthy, stay happy'), s: L('સંયમ સાથે તહેવારની મજા', 'संयम के साथ त्योहार की खुशी', 'Enjoy mindfully'), b: '', chips: ['💚'], noAv: true });
       (window.__mpAnn || []).forEach(function (a) { if (a && a.title && (!a.expires || a.expires >= k)) out.push({ id: 'ann_' + (a.id || a.title), kind: 'ann', ann: true, icon: a.icon || '📣', badge: a.badge || L('કોચ તરફથી', 'कोच की ओर से', 'From coach'), t: a.title, m: a.metric || '', s: a.sub || '', b: a.body || '', chips: a.chips || [], grad: a.grad, pct: a.pct }); });
       return out;
     }
@@ -3444,22 +3464,25 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     function mpCardCanvas(card, opt) {
       if (card.kind === 'streak') return mpStreakCanvas('story');
       opt = opt || {}; var a = saAvatar(), usePrem = a.prem && !PREM_BAD[a.g + '_' + a.prem], iconSrc = null;
-      if (card.icon && /^[a-z_0-9]+$/.test(card.icon)) iconSrc = (window.MPSVG && window.MPSVG[card.icon]) || (window.MPIC && window.MPIC['ic_' + card.icon]) || null;
-      var bgSrc = card.bgJn ? (window.MPJN && window.MPJN[card.bgJn]) : card.bgFest ? (window.MPFEST && window.MPFEST[card.bgFest]) : null;
-      return Promise.all([mpImg(usePrem ? premSrc(a, 'cheer') : null), mpImg(iconSrc), mpImg(bgSrc), mpFonts()]).then(function (im) {
+      if (card.icon && /^[a-z_0-9]+$/.test(card.icon)) iconSrc = (window.MPSVG && window.MPSVG[card.icon]) || (window.MPSTKR && window.MPSTKR[card.icon]) || (window.MPIC && window.MPIC['ic_' + card.icon]) || null;
+      var bgSrc = card.frame ? (window.MPFR && window.MPFR[card.frame]) : card.bgJn ? (window.MPJN && window.MPJN[card.bgJn]) : card.bgFest ? (window.MPFEST && window.MPFEST[card.bgFest]) : null, plainBg = !bgSrc && window.MPCBG && window.MPCBG['bg_' + BGMAP[card.kind]];
+      return Promise.all([mpImg(usePrem ? premSrc(a, 'cheer') : null), mpImg(iconSrc), mpImg(bgSrc), mpFonts(), mpImg(plainBg)]).then(function (im) {
         var W = 1080, H = 1920, c = document.createElement('canvas'); c.width = W; c.height = H; var x = mpCtx(c), g = card.grad || CGR[card.kind] || CGR.fullday;
         var gg = x.createLinearGradient(0, 0, W * .3, H); gg.addColorStop(0, g[0]); gg.addColorStop(1, g[1]); x.fillStyle = gg; x.fillRect(0, 0, W, H);
-        if (im[2]) { var r = Math.max(W / im[2].width, H / im[2].height); x.globalAlpha = .5; x.drawImage(im[2], (W - im[2].width * r) / 2, 0, im[2].width * r, im[2].height * r); x.globalAlpha = 1; var ov = x.createLinearGradient(0, 0, 0, H); ov.addColorStop(0, 'rgba(0,0,0,.3)'); ov.addColorStop(1, 'rgba(0,0,0,.65)'); x.fillStyle = ov; x.fillRect(0, 0, W, H); }
-        x.textAlign = 'center'; x.fillStyle = 'rgba(255,255,255,.18)'; var bw = 460; x.beginPath(); x.roundRect ? x.roundRect(W / 2 - bw / 2, 110, bw, 70, 35) : x.rect(W / 2 - bw / 2, 110, bw, 70); x.fill();
-        x.fillStyle = '#fff'; x.font = '800 34px ' + CFONT; x.fillText(card.badge || 'નિયમ સંયમ', W / 2, 157);
-        if (im[1]) { var iw = 300, ih = iw * im[1].height / im[1].width; x.drawImage(im[1], W / 2 - iw / 2, 230, iw, ih); } else { x.font = '230px ' + CFONT; x.fillText(card.icon || '🌟', W / 2, 460); }
-        x.fillStyle = '#fff'; x.font = '900 64px ' + CFONT; var tl = mpWrap(x, card.t, 900, 2), y = 640; tl.forEach(function (l) { x.fillText(l, W / 2, y); y += 78; });
-        if (card.m) { var fs = 150; do { x.font = '900 ' + fs + 'px ' + CFONT; fs -= 6; } while (x.measureText(card.m).width > 940 && fs > 50); x.fillStyle = '#fde047'; x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 20; y += 70; x.fillText(card.m, W / 2, y); x.shadowBlur = 0; }
-        if (card.s) { x.fillStyle = 'rgba(255,255,255,.92)'; x.font = '700 44px ' + CFONT; y += 78; mpWrap(x, card.s, 900, 2).forEach(function (l) { x.fillText(l, W / 2, y); y += 54; }); y -= 54; }
-        if (card.b) { x.fillStyle = 'rgba(255,255,255,.9)'; x.font = '600 38px ' + CFONT; y += 70; mpWrap(x, card.b, 860, 4).forEach(function (l) { x.fillText(l, W / 2, y); y += 52; }); y -= 52; }
-        if (card.chips && card.chips.length) { y += 70; x.font = '800 34px ' + CFONT; var cw = card.chips.map(function (t) { return x.measureText(t).width + 56; }), tot = cw.reduce(function (a, b) { return a + b + 16; }, -16), cx = W / 2 - tot / 2; card.chips.forEach(function (t, i) { x.fillStyle = 'rgba(255,255,255,.2)'; x.beginPath(); x.roundRect ? x.roundRect(cx, y - 44, cw[i], 64, 32) : x.rect(cx, y - 44, cw[i], 64); x.fill(); x.fillStyle = '#fff'; x.textAlign = 'left'; x.fillText(t, cx + 28, y); x.textAlign = 'center'; cx += cw[i] + 16; }); }
-        if (im[0]) { var ah = Math.min(560, 1790 - (y + 40)), aw = ah * im[0].width / im[0].height; if (ah > 260) x.drawImage(im[0], W / 2 - aw / 2, 1800 - ah, aw, ah); }
-        x.fillStyle = '#fff'; x.globalAlpha = .95; mpBrand(x, W, 1855, 40); x.font = '600 28px ' + CFONT; x.globalAlpha = .75; x.fillText((currentClient.name || '').split(' ')[0] + ' • ' + L('રોજ નિયમ, રોજ સંયમ 🙏', 'रोज़ नियम, रोज़ संयम 🙏', 'Daily discipline, daily balance 🙏'), W / 2, 1895); x.globalAlpha = 1;
+        if (im[4]) { var r4 = Math.max(W / im[4].width, H / im[4].height); x.drawImage(im[4], (W - im[4].width * r4) / 2, (H - im[4].height * r4) / 2, im[4].width * r4, im[4].height * r4); x.fillStyle = 'rgba(0,0,0,.2)'; x.fillRect(0, 0, W, H); }
+        if (im[2] && card.frame) { var rf = Math.max(W / im[2].width, H / im[2].height); x.drawImage(im[2], (W - im[2].width * rf) / 2, (H - im[2].height * rf) / 2, im[2].width * rf, im[2].height * rf); } else if (im[2]) { var r = Math.max(W / im[2].width, H / im[2].height); x.globalAlpha = .5; x.drawImage(im[2], (W - im[2].width * r) / 2, 0, im[2].width * r, im[2].height * r); x.globalAlpha = 1; var ov = x.createLinearGradient(0, 0, 0, H); ov.addColorStop(0, 'rgba(0,0,0,.3)'); ov.addColorStop(1, 'rgba(0,0,0,.65)'); x.fillStyle = ov; x.fillRect(0, 0, W, H); }
+        var TC = card.dark ? '#1f2937' : '#fff', MC = card.dark ? '#c2410c' : '#fde047', SC = card.dark ? 'rgba(31,41,55,.9)' : 'rgba(255,255,255,.92)', CHB = card.dark ? 'rgba(0,0,0,.09)' : 'rgba(255,255,255,.2)', OFF = card.noAv ? 230 : 0;
+        x.textAlign = 'center'; x.fillStyle = card.dark ? 'rgba(0,0,0,.08)' : 'rgba(255,255,255,.18)'; var bw = 460; x.beginPath(); x.roundRect ? x.roundRect(W / 2 - bw / 2, 110, bw, 70, 35) : x.rect(W / 2 - bw / 2, 110, bw, 70); x.fill();
+        x.fillStyle = TC; x.font = '800 34px ' + CFONT; x.fillText(card.badge || 'નિયમ સંયમ', W / 2, 157);
+        if (im[1]) { var iw = 300, ih = iw * im[1].height / im[1].width; x.drawImage(im[1], W / 2 - iw / 2, 230 + OFF * .6, iw, ih); } else { x.font = '230px ' + CFONT; x.fillText(card.icon || '🌟', W / 2, 460); }
+        x.fillStyle = TC; x.font = '900 64px ' + CFONT; var tl = mpWrap(x, card.t, 900, 2), y = 640 + OFF; tl.forEach(function (l) { x.fillText(l, W / 2, y); y += 78; });
+        if (card.m) { var fs = 150; do { x.font = '900 ' + fs + 'px ' + CFONT; fs -= 6; } while (x.measureText(card.m).width > 940 && fs > 50); x.fillStyle = MC; x.shadowColor = card.dark ? 'rgba(0,0,0,0)' : 'rgba(0,0,0,.35)'; x.shadowBlur = 20; y += 70; x.fillText(card.m, W / 2, y); x.shadowBlur = 0; }
+        if (card.s) { x.fillStyle = SC; x.font = '700 44px ' + CFONT; y += 78; mpWrap(x, card.s, 900, 2).forEach(function (l) { x.fillText(l, W / 2, y); y += 54; }); y -= 54; }
+        if (card.b) { x.fillStyle = SC; x.font = '600 38px ' + CFONT; y += 70; mpWrap(x, card.b, 860, 4).forEach(function (l) { x.fillText(l, W / 2, y); y += 52; }); y -= 52; }
+        if (card.chips && card.chips.length) { y += 70; x.font = '800 34px ' + CFONT; var cw = card.chips.map(function (t) { return x.measureText(t).width + 56; }), tot = cw.reduce(function (a, b) { return a + b + 16; }, -16), cx = W / 2 - tot / 2; card.chips.forEach(function (t, i) { x.fillStyle = CHB; x.beginPath(); x.roundRect ? x.roundRect(cx, y - 44, cw[i], 64, 32) : x.rect(cx, y - 44, cw[i], 64); x.fill(); x.fillStyle = TC; x.textAlign = 'left'; x.fillText(t, cx + 28, y); x.textAlign = 'center'; cx += cw[i] + 16; }); }
+        if (im[0] && !card.noAv) { var ah = Math.min(560, 1790 - (y + 40)), aw = ah * im[0].width / im[0].height; if (ah > 260) x.drawImage(im[0], W / 2 - aw / 2, 1800 - ah, aw, ah); }
+        if (card.frame) { x.fillStyle = card.dark ? 'rgba(255,255,255,.88)' : 'rgba(0,0,0,.45)'; x.beginPath(); x.roundRect ? x.roundRect(W / 2 - 360, 1788, 720, 124, 40) : x.rect(W / 2 - 360, 1788, 720, 124); x.fill(); }
+        x.fillStyle = TC; x.globalAlpha = .95; mpBrand(x, W, 1855, 40, TC); x.fillStyle = TC; x.font = '600 28px ' + CFONT; x.globalAlpha = .75; x.fillText((currentClient.name || '').split(' ')[0] + ' • ' + L('રોજ નિયમ, રોજ સંયમ 🙏', 'रोज़ नियम, रोज़ संयम 🙏', 'Daily discipline, daily balance 🙏'), W / 2, 1895); x.globalAlpha = 1; mpDrawSticker(x, W, H);
         return c;
       });
     }
@@ -3469,7 +3492,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var r = Math.max(W / img.width, H / img.height); x.drawImage(img, (W - img.width * r) / 2, (H - img.height * r) / 2, img.width * r, img.height * r);
       var ov = x.createLinearGradient(0, 0, 0, H); ov.addColorStop(0, 'rgba(0,0,0,.45)'); ov.addColorStop(.35, 'rgba(0,0,0,0)'); ov.addColorStop(.55, 'rgba(0,0,0,.05)'); ov.addColorStop(1, 'rgba(0,0,0,.85)'); x.fillStyle = ov; x.fillRect(0, 0, W, H);
       x.textAlign = 'center'; x.fillStyle = '#fff'; x.font = '800 46px ' + CFONT; x.fillText('🍽️ ' + L('મારી થાળી', 'मेरी थाली', 'My thali'), W / 2, 130);
-      x.font = '600 32px ' + CFONT; x.globalAlpha = .9; x.fillText(new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }), W / 2, 180); x.globalAlpha = 1;
+      x.font = '600 32px ' + CFONT; x.globalAlpha = .9; var scp = dayScorePct(k), stp = mpStreakCalc(); x.fillText(new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) + (scp !== null ? '  •  ' + L('સ્કોર', 'स्कोर', 'Score') + ' ' + scp + '%' : '') + (stp.n ? '  •  🔥 ' + stp.n : ''), W / 2, 180); x.globalAlpha = 1;
       var items = String(d.name || '').split(/\s\+\s|\s*[,/]\s*/).filter(Boolean).slice(0, 6), ph = 290 + items.length * 66, py = 1790 - ph;
       x.fillStyle = 'rgba(8,15,35,.62)'; x.beginPath(); x.roundRect ? x.roundRect(50, py, 980, ph, 44) : x.rect(50, py, 980, ph); x.fill();
       x.textAlign = 'left'; x.fillStyle = '#5eead4'; x.font = '800 36px ' + CFONT; x.fillText(SL.label.replace(/\s+$/, ''), 90, py + 70);
@@ -3477,10 +3500,12 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       if (d.portion) { x.fillStyle = '#fde68a'; x.font = '700 38px ' + CFONT; x.fillText('📏 ' + d.portion, 90, yy + 10); yy += 70; }
       x.fillStyle = '#fde047'; x.font = '900 52px ' + CFONT; x.fillText('🔥 ' + (d.cal || '-') + ' kcal    💪 ' + (d.p != null ? d.p : '-') + ' g ' + L('પ્રોટીન', 'प्रोटीन', 'protein'), 90, yy + 20);
       x.textAlign = 'center'; x.fillStyle = '#fff'; x.globalAlpha = .95; mpBrand(x, W, 1850, 38); x.font = '600 28px ' + CFONT; x.globalAlpha = .8; x.fillText((currentClient.name || '').split(' ')[0], W / 2, 1893); x.globalAlpha = 1;
+      mpDrawSticker(x, W, H);
       return c;
     }
     function mpCardShow(i) {
       CST.cur = i; CST.photoMode = false; var card = CST.list[i], pv = document.getElementById('mpCvPrev'); if (!card || !pv) return;
+      if (card.needText && !card.b) { var tx = prompt(L('તમારો અનુભવ ટૂંકમાં લખો (જેમ કે: "ગુજરાતીમાં હોવાથી સમજવું સહેલું પડ્યું")', 'अपना अनुभव संक्षेप में लिखें', 'Write your experience in a line or two'), ''); if (!tx) { card.b = L('હેલ્ધી સફર ચાલુ છે 🌿', 'हेल्दी सफ़र जारी है 🌿', 'My healthy journey continues 🌿'); } else card.b = tx.slice(0, 170); }
       document.querySelectorAll('#mpCvList [data-i]').forEach(function (b) { b.style.outline = (+b.getAttribute('data-i') === i) ? '3px solid #14b8a6' : 'none'; });
       pv.style.opacity = .4; mpCardCanvas(card).then(function (cv) { CST.canvas = cv; pv.src = cv.toDataURL('image/jpeg', .85); pv.style.opacity = 1; CST.name = 'card-' + card.id + '.png'; });
       var sl = document.getElementById('mpCvSlots'); if (sl) sl.style.display = 'none';
@@ -3525,7 +3550,8 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       if (!currentClient) return; mpAnnLoad();
       if (!window.MPJN && !window.__ldJN) { window.__ldJN = 1; var sc = document.createElement('script'); sc.src = 'journey.js'; sc.async = true; document.head.appendChild(sc); window.addEventListener('mpjn', function () { if (document.getElementById('mpCvPrev') && !CST.photoMode) mpCardShow(CST.cur); }); }
       var fe = mpFest(); if (fe) mpLoad('fest-bg.js', 'MPFEST', 'mpfest'); mpLoad('streak-icons.js', 'MPSTK', 'mpstk'); mpLoad('streak-svg.js', 'MPSVG', 'mpsvg');
-      mpFonts(); CST.list = mpCardList(); CST.photo = null; CST.photoMode = false;
+      mpFonts(); mpLoad('stickers.js', 'MPSTKR', 'mpstkr'); mpLoad('frames.js', 'MPFR', 'mpfr'); if (!window.__stkL) { window.__stkL = 1; window.addEventListener('mpstkr', function () { mpStickerRow(); }); window.addEventListener('mpfr', function () { if (document.getElementById('mpCvPrev') && !CST.photoMode) mpCardShow(CST.cur); }); }
+      mpLoad('card-bg.js', 'MPCBG', 'mpcbg'); if (!window.__cbgL) { window.__cbgL = 1; window.addEventListener('mpcbg', function () { if (document.getElementById('mpCvPrev') && !CST.photoMode) mpCardShow(CST.cur); }); } CST.list = mpCardList(); CST.photo = null; CST.photoMode = false;
       var idx = Math.max(0, CST.list.map(function (x) { return x.id; }).indexOf(focusId));
       var lst = CST.list.map(function (cd, i) { return '<button type="button" data-i="' + i + '" onclick="mpCardShow(' + i + ')" style="flex:0 0 auto;display:flex;align-items:center;gap:6px;padding:7px 11px;border-radius:14px;background:#fff;border:1px solid #e2e8f0;font-size:11.5px;font-weight:800;color:#0f172a" data-notr><span>' + (/^[a-z_0-9]+$/.test(cd.icon || '') ? ic(cd.icon, 20) : esc(cd.icon || '')) + '</span>' + esc(cd.t.length > 22 ? cd.t.slice(0, 21) + '…' : cd.t) + '</button>'; }).join('');
       var b = 'flex:1;min-width:0;padding:11px 2px;border-radius:14px;font-weight:900;font-size:12px;border:0;color:#fff;font-family:inherit';
@@ -3533,14 +3559,46 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         '<div style="display:flex;gap:6px;margin-top:12px"><button type="button" onclick="mpCardShare()" style="' + b + ';flex:1.5;background:linear-gradient(90deg,#f97316,#db2777)">📲 ' + L('શેર કરો', 'शेयर करें', 'Share') + '</button><button type="button" onclick="mpCardSave()" style="' + b + ';background:#0f766e">💾 ' + L('સેવ', 'सेव', 'Save') + '</button><button type="button" id="mpCvVid" onclick="mpCardVideo()" style="' + b + ';background:#4338ca">🎬 ' + L('વિડીયો', 'वीडियो', 'Video') + '</button></div>' +
         '<div style="font-size:10.5px;line-height:1.5;color:#475569;margin-top:8px;font-weight:700">' + L('Instagram સ્ટોરી: "શેર કરો" દબાવી યાદીમાંથી Instagram → Story પસંદ કરો, અથવા "સેવ" કરી Instagram માં ગેલેરીમાંથી મૂકો. WhatsApp સ્ટેટસ: યાદીમાં WhatsApp → My Status.', 'Instagram स्टोरी: "शेयर करें" दबाकर Instagram → Story चुनें, या "सेव" करके Instagram में गैलरी से लगाएँ। WhatsApp स्टेटस: WhatsApp → My Status।', 'Instagram story: tap Share, pick Instagram → Story, or Save and add it from the gallery. WhatsApp status: pick WhatsApp → My Status.') + '</div>' +
         '<div style="font-size:12px;font-weight:900;margin:14px 0 6px">' + L('કાર્ડ પસંદ કરો', 'कार्ड चुनें', 'Pick a card') + '</div><div id="mpCvList" style="display:flex;gap:6px;overflow-x:auto;max-width:100%;padding-bottom:6px">' + lst + '</div>' +
-        '<label style="display:block;margin-top:10px;padding:11px;border-radius:14px;background:#fef3c7;color:#92400e;font-weight:900;font-size:12.5px;text-align:center">📷 ' + L('મારી થાળીનો ફોટો (ગ્રામ + કેલરી સાથે)', 'मेरी थाली की फोटो (ग्राम + कैलोरी के साथ)', 'My thali photo (with grams + calories)') + '<input type="file" accept="image/*" capture="environment" onchange="mpCardPhoto(this)" style="display:none"></label>' +
+        '<div style="font-size:12px;font-weight:900;margin:12px 0 6px">✨ ' + L('સ્ટિકર ઉમેરો (ફરી દબાવો = જગ્યા બદલો)', 'स्टिकर जोड़ें (फिर दबाएँ = जगह बदलें)', 'Add a sticker (tap again = move)') + '</div><div id="mpCvSt" style="display:flex;gap:6px;overflow-x:auto;max-width:100%;padding-bottom:6px"></div>' +
+        '<label style="display:block;margin-top:10px;padding:11px;border-radius:14px;background:#fef3c7;color:#92400e;font-weight:900;font-size:12.5px;text-align:center">📷 ' + L('મારી થાળીનો ફોટો (ગ્રામ + કેલરી સાથે)', 'मेरी थाली की फोटो (ग्राम + कैलोरी के साथ)', 'My thali photo (with grams + calories)') + '<input type="file" accept="image/*" onchange="mpCardPhoto(this)" style="display:none"></label>' +
         '<div id="mpCvSlots" style="display:none;gap:6px;overflow-x:auto;margin-top:8px"></div>' +
         '<div style="font-size:10px;color:#64748b;margin-top:6px;font-weight:700">' + L('ફોટો તમારા ફોનમાં જ રહે છે, સર્વર પર જતો નથી.', 'फोटो आपके फ़ोन में ही रहती है, सर्वर पर नहीं जाती।', 'Your photo stays on your phone, it is never uploaded.') + '</div>' +
         (CST.list.length <= 1 ? '<div style="margin-top:10px;font-size:11px;color:#475569;font-weight:700;background:#f1f5f9;border-radius:12px;padding:9px">' + L('વધુ કાર્ડ ખુલવા માટે આજના ભોજન માર્ક કરો, પાણી પીઓ અને પ્રોટીન ગોલ પૂરો કરો.', 'और कार्ड खुलने के लिए आज के भोजन मार्क करें, पानी पिएँ और प्रोटीन लक्ष्य पूरा करें।', 'Mark meals, drink water and hit your protein goal to unlock more cards.') + '</div>' : '');
       sheetOpen('🎴 ' + L('શેર કાર્ડ્સ', 'शेयर कार्ड्स', 'Share cards'), h);
+      mpStickerRow(); STK.id = null; STK.img = null; STK.pos = 0;
       if (CST.list.length) mpCardShow(idx); else { var pv = document.getElementById('mpCvPrev'); if (pv) pv.style.display = 'none'; }
     };
     window.mpCardShow = mpCardShow;
+    /* ---------- ક્રેવિંગ બસ્ટર (5 મિનિટ) ---------- */
+    window.mpCraveOpen = function () {
+      if (!currentClient) return;
+      var T = [
+        ['🍬', L('ગળ્યું ખાવાની ઈચ્છા', 'मीठा खाने की इच्छा', 'Sweet craving'), L('એક ગ્લાસ પાણી પીઓ, 5 મિનિટ ઊંડા શ્વાસ લો, પછી ભૂખ હોય તો થોડા બદામ/શેકેલા ચણા કે છાશ લો.', 'एक गिलास पानी पिएँ, 5 मिनट गहरी साँस लें, फिर भूख हो तो थोड़े बादाम/भुने चने या छाछ लें।', 'Drink a glass of water, breathe deeply for 5 minutes, then if still hungry have a few almonds, roasted chana or buttermilk.')],
+        ['🍟', L('તળેલું/ફરસાણ', 'तला हुआ/फरसाण', 'Fried snack craving'), L('દાંત સાફ કરો કે વરિયાળી/એલચી ચાવો, કચુંબર કે શેકેલા મખાના લો અને 10 મિનિટ ચાલો.', 'दाँत साफ़ करें या सौंफ/इलायची चबाएँ, सलाद या भुने मखाने लें और 10 मिनट चलें।', 'Brush your teeth or chew fennel/cardamom, have salad or roasted makhana and walk 10 minutes.')],
+        ['☕', L('ચા-કોફીની તલપ', 'चाय-कॉफी की तलब', 'Tea/coffee craving'), L('હુંફાળું પાણી કે જીરા/ફુદીનાનું પાણી પીઓ, ચાને 30 મિનિટ પાછી ઠેલો.', 'गुनगुना पानी या जीरा/पुदीना पानी पिएँ, चाय को 30 मिनट टालें।', 'Sip warm water or jeera/mint water and delay the tea by 30 minutes.')],
+        ['🌙', L('રાત્રે ભૂખ', 'रात की भूख', 'Late-night hunger'), L('પાણી પીઓ, થોડું ચાલો; ભૂખ સાચી હોય તો છાશ કે હળવું પ્રોટીન (દહીં/પનીર) લો, ભારે કંઈ નહીં.', 'पानी पिएँ, थोड़ा चलें; भूख सच में हो तो छाछ या हल्का प्रोटीन (दही/पनीर) लें, भारी कुछ नहीं।', 'Drink water, take a short walk; if truly hungry have buttermilk or light protein (curd/paneer), nothing heavy.')]
+      ];
+      var h = '<div id="mpCT"><div style="font-size:12px;font-weight:800;color:#475569;margin-bottom:8px">' + L('શેની ઈચ્છા થાય છે?', 'किसकी इच्छा हो रही है?', 'What are you craving?') + '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">' + T.map(function (t, i) { return '<button type="button" onclick="mpCraveGo(' + i + ')" style="padding:12px 6px;border-radius:14px;background:#fff;border:1px solid #e2e8f0;font-size:12.5px;font-weight:900;color:#0f172a" data-notr>' + t[0] + ' ' + esc(t[1]) + '</button>'; }).join('') + '</div>' +
+        '<div style="margin-top:12px;font-size:10.5px;line-height:1.5;color:#92400e;background:#fffbeb;border-radius:12px;padding:9px;font-weight:700">' + L('ચક્કર, ધ્રુજારી કે પરસેવો થાય તો એ ભૂખ નહીં, સુગર ઘટવાનું (લો સુગર) હોઈ શકે — તરત સુગર ચેક કરો અને કોચને પૂછો.', 'चक्कर, कंपकंपी या पसीना आए तो यह भूख नहीं, लो शुगर हो सकता है — तुरंत शुगर चेक करें और कोच से पूछें।', 'Dizziness, shakiness or sweating may be low sugar, not hunger — check sugar and ask your coach.') + '</div>' +
+        '<div style="margin-top:8px;font-size:10.5px;color:#64748b;font-weight:700">🏆 ' + L('અત્યાર સુધી જીતેલી ક્રેવિંગ: ', 'अब तक जीती क्रेविंग: ', 'Cravings beaten so far: ') + '<b data-notr>' + (Number(currentClient.cravingWins) || 0) + '</b></div></div>';
+      window.mpCraveT = T; sheetOpen('🧘 ' + L('ક્રેવિંગ બસ્ટર', 'क्रेविंग बस्टर', 'Craving buster'), h);
+    };
+    window.mpCraveGo = function (i) {
+      var t = window.mpCraveT[i], box = document.getElementById('mpCT'); if (!box) return; var left = 300, tick = null;
+      box.innerHTML = '<style>@keyframes mpBr{0%,100%{transform:scale(.7)}50%{transform:scale(1.08)}}</style><div style="text-align:center"><div style="font-size:12px;font-weight:800;color:#475569" data-notr>' + t[0] + ' ' + esc(t[1]) + '</div>' +
+        '<div style="width:150px;height:150px;border-radius:50%;margin:16px auto;background:radial-gradient(circle,#5eead4,#0f766e);display:flex;align-items:center;justify-content:center;animation:mpBr 8s ease-in-out infinite;box-shadow:0 0 40px rgba(20,184,166,.5)"><div style="color:#fff;font-weight:900;font-size:13px" id="mpCBr">' + L('શ્વાસ લો…', 'साँस लें…', 'Breathe in…') + '</div></div>' +
+        '<div id="mpCClk" style="font-size:34px;font-weight:900;color:#0f766e" data-notr>5:00</div>' +
+        '<div style="font-size:12px;line-height:1.55;color:#334155;font-weight:700;background:#f0fdfa;border-radius:14px;padding:10px;margin-top:10px">' + esc(t[2]) + '</div>' +
+        '<button type="button" onclick="mpSheetClose()" style="margin-top:10px;padding:8px 16px;border-radius:12px;background:#e2e8f0;font-size:11px;font-weight:800;color:#334155;border:0">' + L('રદ કરો', 'रद्द करें', 'Cancel') + '</button></div>';
+      tick = setInterval(function () {
+        var clk = document.getElementById('mpCClk'); if (!clk) { clearInterval(tick); return; }
+        left--; var br = document.getElementById('mpCBr'); if (br) br.textContent = (Math.floor((300 - left) / 4) % 2 === 0) ? L('શ્વાસ લો…', 'साँस लें…', 'Breathe in…') : L('છોડો…', 'छोड़ें…', 'Breathe out…');
+        clk.textContent = Math.floor(left / 60) + ':' + ('0' + (left % 60)).slice(-2);
+        if (left <= 0) { clearInterval(tick); try { db.collection('clients').doc(docId()).update({ cravingWins: firebase.firestore.FieldValue.increment(1) }).catch(function () { }); currentClient.cravingWins = (Number(currentClient.cravingWins) || 0) + 1; } catch (e) { }
+          box.innerHTML = '<div style="text-align:center;padding:14px 0"><div style="font-size:56px">🎉</div><div style="font-size:18px;font-weight:900;color:#0f766e;margin-top:6px">' + L('શાબાશ! ક્રેવિંગ જીતી લીધી', 'शाबाश! क्रेविंग जीत ली', 'Well done! Craving beaten') + '</div><div style="font-size:12px;font-weight:700;color:#475569;margin-top:6px">' + L('હવે જો ભૂખ સાચી લાગે તો પ્લાન મુજબનું ખાઓ.', 'अब अगर सच में भूख लगे तो प्लान के अनुसार खाएँ।', 'If you are truly hungry now, eat as per your plan.') + '</div><button type="button" onclick="mpSheetClose()" style="margin-top:12px;padding:10px 22px;border-radius:14px;background:#14b8a6;color:#fff;font-weight:900;border:0">OK</button></div>'; }
+      }, 1000);
+    };
     window.mpStreakOpen = function () {
       if (!currentClient) return; var t = mpStreakCalc(), cl = { ok: '#22c55e', sh: '#38bdf8', miss: '#cbd5e1', today: '#fde68a', none: '#f1f5f9' };
       var dots = t.days.slice().reverse().map(function (x) { return '<span style="width:20px;height:20px;border-radius:50%;background:' + cl[x] + ';display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:900" data-notr>' + (x === 'ok' ? '✓' : x === 'sh' ? ic('shield', 14) : '') + '</span>'; }).join('');
@@ -4390,6 +4448,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     ['દિવસનો સ્ટ્રેક બચાવવા આજનું ભોજન માર્ક કરો!', 'दिन की स्ट्रीक बचाने के लिए आज का भोजन मार्क करें!', "-day streak: mark today's meals to save it!"],
     ['શુભ દિવાળી', 'शुभ दीपावली', 'Happy Diwali'], ['શુભ નવરાત્રિ', 'शुभ नवरात्रि', 'Happy Navratri'], ['હેપ્પી ઉત્તરાયણ', 'हैप्पी उत्तरायण', 'Happy Uttarayan'], ['હેપ્પી હોળી', 'हैप्पी होली', 'Happy Holi'], ['આજે પણ સંયમથી ખાઈએ', 'आज भी संयम से खाएँ', "let's eat mindfully today"],
     ['શેર કાર્ડ્સ (Instagram/WhatsApp)', 'शेयर कार्ड्स (Instagram/WhatsApp)', 'Share cards (Instagram/WhatsApp)'], ['શેર કાર્ડ્સ', 'शेयर कार्ड्स', 'Share cards'],
+    ['ક્રેવિંગ બસ્ટર (5 મિનિટ)', 'क्रेविंग बस्टर (5 मिनट)', 'Craving buster (5 min)'],
     ['📤 કોચને', '📤 कोच को', '📤 Send to'], ['મોકલો', 'भेजें', 'coach'],
     ['💬 1 દિવસ', '💬 1 दिन', '💬 1 day'], ['💬 7 દિવસ', '💬 7 दिन', '💬 7 days'],
     ['🔥 તમારો સ્ટ્રેક', '🔥 आपकी स्ट्रीक', '🔥 Your streak'], ['લાગલગાટ દિવસ', 'लगातार दिन', 'days in a row'],
