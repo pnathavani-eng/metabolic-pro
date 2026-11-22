@@ -1368,13 +1368,19 @@
       const pending = items.filter(i => !(comp.checks && comp.checks[i.s]));
       if (!items.length) { box.innerHTML = ''; return; }
       if (!pending.length) { box.innerHTML = `<div class="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-900">🎉 આજના બધા મીલ્સ માર્ક થઈ ગયા. શાબાશ!</div>`; return; }
-      const next = pending.find(i => i.min >= nm - 45) || pending[0];
+      let next = pending.find(i => i.min >= nm - 45), nextDay = false, tmName = '';
+      if (!next) {
+        nextDay = true; next = items[0];
+        try { const d = new Date(); d.setDate(d.getDate() + 1); const tp = getDayPlan(dateKeyOf(d), currentClient);
+          const ts = Object.keys(tp).filter(s => tp[s]).map(s => { const t = r.times[s] || SLOT_DEFAULT_TIME[s] || '12:00'; const [h, m] = t.split(':').map(Number); return { s, min: h * 60 + m, t, dish: tp[s] }; }).sort((a, b) => a.min - b.min);
+          if (ts.length) { next = ts[0]; tmName = ts[0].dish.name; } } catch (e) {}
+      }
       const meta = SLOT_LABELS[next.s] || { label: 'ભોજન' };
       box.innerHTML = `<div class="p-3 rounded-2xl bg-gradient-to-r from-teal-600 to-sky-600 text-white shadow-md flex items-center justify-between gap-2">
-        <div class="min-w-0"><div class="text-[10px] font-bold text-teal-100 uppercase tracking-wide">⏭ હવે પછી • ${fmt12(next.t)}</div>
+        <div class="min-w-0"><div class="text-[10px] font-bold text-teal-100 uppercase tracking-wide">${nextDay ? '🌙 કાલે સવારે' : '⏭ હવે પછી'} • ${fmt12(next.t)}</div>
         <div class="font-extrabold text-xs truncate">${esc(meta.label)}</div>
-        <div class="text-[11px] text-teal-50 truncate">${esc(next.dish.name)}</div></div>
-        <button onclick="setCheck('${next.s}','done')" class="px-3 py-2 bg-white text-teal-800 rounded-xl text-[11px] font-black whitespace-nowrap">ખાધું ✓</button></div>`;
+        <div class="text-[11px] text-teal-50 truncate">${esc(nextDay && tmName ? tmName : next.dish.name)}</div></div>
+        ${nextDay ? '<span class="px-3 py-2 bg-white/25 text-white rounded-xl text-[11px] font-black whitespace-nowrap">🌙 કાલે</span>' : `<button onclick="setCheck('${next.s}','done')" class="px-3 py-2 bg-white text-teal-800 rounded-xl text-[11px] font-black whitespace-nowrap">ખાધું ✓</button>`}</div>`;
     }
 
     function computeStats() {
@@ -3004,7 +3010,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       rep[q.ti] = v; for (var i = 0; i < rep.length; i++) if (rep[i] == null) rep[i] = '';
       comp.subs = comp.subs || {}; comp.subs[q.slot] = { d: dish, r: rep };
       var ov = document.getElementById('mpSubOv'); if (ov) ov.remove();
-      render();
+      ROWOPEN[q.slot] = true; refreshToday();
       var upd = {}; upd['compliance.' + key + '.subs.' + q.slot] = comp.subs[q.slot];
       return db.collection('clients').doc(docId()).update(upd).catch(function (e) { console.error('sub save', e); });
     };
@@ -3043,7 +3049,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       return db.collection('clients').doc(docId()).update(upd).catch(function (e) { console.error('addon save', e); });
     }
 
-    window.mpAddonToggle = function (slot) { openSlot = (openSlot === slot) ? null : slot; render(); };
+    window.mpAddonToggle = function (slot) { openSlot = (openSlot === slot) ? null : slot; ROWOPEN[slot] = true; refreshToday(); };
     window.mpAddonAdd = function (slot, id) {
       var it = ITEMS.filter(function (x) { return x.id === id; })[0];
       if (!it || !currentClient) return;
@@ -3058,14 +3064,14 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         arr.push({ id: it.id, n: it.name, cal: it.cal, p: it.p, gl: it.gl });
       }
       comp.addons[slot] = arr;
-      render();
+      refreshToday();
       return save(key, slot, arr);
     };
     window.mpAddonRemove = function (slot, i) {
       var key = selectedDateKey, comp = ensureDay(key);
       var arr = slotArr(comp, slot).slice(); arr.splice(i, 1);
       comp.addons = comp.addons || {}; comp.addons[slot] = arr;
-      render();
+      refreshToday();
       return save(key, slot, arr);
     };
 
@@ -3074,12 +3080,113 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     window.loadTodayClientView = function () {
       origLoad.apply(this, arguments);
       try { render(); } catch (e) { console.error('addon render', e); }
+      try { compactCards(); } catch (e) { console.error('compact', e); }
       try { renderFamily(); } catch (e) { console.error('family render', e); }
       try { renderThaliCard(); } catch (e) { console.error('thali render', e); }
       try { renderSathi(); } catch (e) { console.error('sathi render', e); }
       try { renderJourney(); } catch (e) { console.error('journey render', e); }
       try { tidyToday(); } catch (e) { console.error('tidy', e); }
     };
+
+
+    /* ---------- ટૂંકી ભોજન લાઈનો ---------- */
+    var ROWOPEN = {};
+    (function () {
+      var st = document.createElement('style'); st.id = 'mpRowCss';
+      st.textContent = '.mpRow{background:#fff!important;border-radius:18px!important;padding:8px 10px!important;box-shadow:0 4px 12px rgba(30,58,138,.08)!important;border:1px solid #e8eef7!important}.mpRow.mpOpen{border:2px solid #5eead4!important}.mpTop{display:flex;align-items:center;gap:8px}.mpIc{font-size:22px;width:30px;text-align:center;cursor:pointer;flex:0 0 30px}.mpTx{flex:1;min-width:0;cursor:pointer}.mpTx small{display:block;font-size:9px;font-weight:800;color:#0f766e}.mpTx b{font-size:12px;font-weight:800;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.mpRow.mpOpen .mpTx b{-webkit-line-clamp:unset;display:block}.mpCk .grid{display:flex!important;gap:4px}.mpCk button{width:32px;height:32px;padding:0!important;font-size:14px!important;border-radius:10px!important;line-height:1;box-shadow:0 2px 0 rgba(0,0,0,.15)}.mpExp{margin-top:8px;border-top:1px dashed #e2e8f0;padding-top:8px;display:flex;flex-direction:column;gap:8px}';
+      document.head.appendChild(st);
+      document.body.classList.add('mpAnim'); setTimeout(function () { document.body.classList.remove('mpAnim'); }, 1200);
+    })();
+    function refreshToday() { try { window.loadTodayClientView(); } catch (e) { console.error('refresh', e); } }
+    function compactCards() {
+      var host = document.getElementById('cpTodayMealCards'); if (!host) return;
+      Array.prototype.forEach.call(host.children, function (card) {
+        if (card.classList.contains('mpRow')) return;
+        var m = card.innerHTML.match(/(?:setCheck|swapCurrentDish)\('([a-z_]+)'/); if (!m) return;
+        var slot = m[1], lab = (card.querySelector('span.uppercase') || {}).textContent || '', h3 = (card.querySelector('h3') || {}).textContent || '';
+        var em = (h3.match(/\p{Extended_Pictographic}/u) || ['🍽️'])[0];
+        var chips = card.querySelector('.flex.items-center.gap-1\\.5.flex-wrap'), box = card.querySelector('.bg-slate-50'), wrap = card.querySelector('.mp-addon-wrap'), grid = card.querySelector('.grid.grid-cols-3');
+        if (!grid || !box) return;
+        var nm = box.querySelector('.font-bold'), dish = nm ? nm.textContent.replace(/✎/g, '').replace(/\s+/g, ' ').trim() : h3;
+        var kc = chips ? Array.prototype.filter.call(chips.querySelectorAll('span'), function (x) { return /kcal/.test(x.textContent); })[0] : null;
+        var open = !!ROWOPEN[slot];
+        var top = document.createElement('div'); top.className = 'mpTop';
+        top.innerHTML = '<div class="mpIc" onclick="mpRowToggle(\'' + slot + '\')">' + em + '</div><div class="mpTx" onclick="mpRowToggle(\'' + slot + '\')"><small>' + esc(lab) + (kc ? ' <span data-notr>• ' + esc(kc.textContent.replace('🔥', '').trim()) + '</span>' : '') + '</small><b>' + esc(dish) + '</b></div><div class="mpCk"></div>';
+        var btns = grid.querySelectorAll('button'), sym = ['✓', '½', '✗'];
+        Array.prototype.forEach.call(btns, function (b, i) { b.textContent = sym[i] || b.textContent; b.setAttribute('data-notr', '1'); });
+        top.querySelector('.mpCk').appendChild(grid);
+        var exp = document.createElement('div'); exp.className = 'mpExp'; if (!open) exp.style.display = 'none';
+        if (chips) exp.appendChild(chips); exp.appendChild(box); if (wrap) exp.appendChild(wrap);
+        while (card.firstChild) card.removeChild(card.firstChild);
+        card.className = 'mpRow' + (open ? ' mpOpen' : ''); card.setAttribute('data-slot', slot);
+        card.appendChild(top); card.appendChild(exp);
+      });
+    }
+    window.mpRowToggle = function (slot) {
+      ROWOPEN[slot] = !ROWOPEN[slot];
+      var c = document.querySelector('.mpRow[data-slot="' + slot + '"]'); if (!c) return;
+      c.classList.toggle('mpOpen', ROWOPEN[slot]); var e = c.querySelector('.mpExp'); if (e) e.style.display = ROWOPEN[slot] ? '' : 'none';
+    };
+
+    /* ---------- પ્રોગ્રેસ: બટન + શીટ ---------- */
+    var SHEET = null;
+    function stash() {
+      var s = document.getElementById('mpStash');
+      if (!s) { s = document.createElement('div'); s.id = 'mpStash'; s.style.display = 'none'; (document.getElementById('tabContentReports') || document.body).appendChild(s); }
+      return s;
+    }
+    window.mpSheetClose = function () {
+      var ov = document.getElementById('mpSheet'); if (!ov) return;
+      (SHEET || []).forEach(function (n) { try { stash().appendChild(n); } catch (e) { } });
+      ov.remove(); SHEET = null; document.body.style.overflow = '';
+    };
+    function sheetOpen(title, html, nodes) {
+      window.mpSheetClose();
+      var ov = document.createElement('div'); ov.id = 'mpSheet'; ov.style.cssText = 'position:fixed;inset:0;z-index:96;background:rgba(15,23,42,.55);display:flex;align-items:flex-end;justify-content:center';
+      ov.onclick = function (e) { if (e.target === ov) window.mpSheetClose(); };
+      ov.innerHTML = '<div style="width:100%;max-width:32rem;max-height:86vh;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#f8fafc;border-radius:24px 24px 0 0;padding:14px 12px calc(22px + env(safe-area-inset-bottom))"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b style="font-size:14px;font-weight:900">' + title + '</b><button type="button" onclick="mpSheetClose()" style="padding:5px 14px;border-radius:99px;background:#14b8a6;color:#fff;font-size:11px;font-weight:900">બંધ</button></div><div id="mpSheetBody">' + (html || '') + '</div></div>';
+      document.body.appendChild(ov); document.body.style.overflow = 'hidden';
+      SHEET = nodes || [];
+      var body = ov.querySelector('#mpSheetBody'); SHEET.forEach(function (n) { body.appendChild(n); });
+    }
+    var SLOT_ORDER = ['morning', 'pre_workout', 'breakfast', 'lunch', 'snack', 'post_workout', 'dinner'];
+    function dayKeyPlus(n) { var d = new Date(); d.setDate(d.getDate() + n); return d; }
+    function dayRowsHtml(d) {
+      var plan = generateDayMenu(dateKeyOf(d), currentClient);
+      return SLOT_ORDER.filter(function (s) { return plan[s]; }).map(function (s) {
+        var L = SLOT_LABELS[s] || { time: '', label: '' }, em = (L.label.match(/\p{Extended_Pictographic}/u) || ['🍽️'])[0];
+        return '<div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:7px 9px;margin-bottom:5px"><div style="font-size:20px;width:28px;text-align:center">' + em + '</div><div style="min-width:0"><div style="font-size:9px;font-weight:800;color:#0f766e">' + esc(L.time) + '</div><div style="font-size:12px;font-weight:800;line-height:1.3">' + esc(plan[s].name) + '</div></div></div>';
+      }).join('');
+    }
+    function dayHead(d, i) { return DAY_NAMES_GUJ[d.getDay()] + ', ' + d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); }
+    window.mpProgOpen = function (k) {
+      if (!currentClient) return;
+      if (k === 'tom') { var d = dayKeyPlus(1); sheetOpen('🌟 આવતીકાલ • ' + dayHead(d), dayRowsHtml(d)); }
+      else if (k === 'week') { var h = ''; for (var i = 1; i <= 7; i++) { var dd = dayKeyPlus(i); h += '<div style="font-size:12px;font-weight:900;margin:10px 2px 5px;color:' + (i === 1 ? '#0f766e' : '#334155') + '">' + (i === 1 ? '🌟 ' : '🗓 ') + dayHead(dd) + '</div>' + dayRowsHtml(dd); } sheetOpen('🗓 આખું અઠવાડિયું', h); }
+      else if (k === 'gro') {
+        try { generateWeeklyGroceryList(); } catch (e) { }
+        var chipsOf = function (id, st) { var seen = {}, out = []; Array.prototype.forEach.call(document.querySelectorAll('#' + id + ' li'), function (li) { li.textContent.split(/\s*[,/]\s*/).forEach(function (t) { t = t.trim(); var kk = t.toLowerCase(); if (t && !seen[kk]) { seen[kk] = 1; out.push(t); } }); }); return { n: out.length, html: out.map(function (t) { return '<span style="display:inline-block;' + st + ';font-size:11px;font-weight:800;padding:4px 10px;border-radius:12px;margin:3px 3px 0 0">' + esc(t) + '</span>'; }).join('') }; };
+        var v = chipsOf('groceryVegList', 'background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46'), p = chipsOf('groceryProteinList', 'background:#fff7ed;border:1px solid #fed7aa;color:#9a3412');
+        sheetOpen('🛒 આ અઠવાડિયાનું કરિયાણું', '<div style="font-size:12px;font-weight:900;margin:4px 0">🥦 શાકભાજી <span style="color:#64748b" data-notr>(' + v.n + ')</span></div>' + v.html + '<div style="font-size:12px;font-weight:900;margin:12px 0 4px">🫘 કઠોળ / પ્રોટીન <span style="color:#64748b" data-notr>(' + p.n + ')</span></div>' + p.html +
+          '<div style="margin-top:14px"><button type="button" onclick="shareGroceryWhatsApp()" style="width:100%;padding:11px;border-radius:14px;background:#16a34a;color:#fff;font-weight:900;font-size:13px">💬 WhatsApp પર મોકલો</button></div>');
+      }
+      else if (k === 'diary') { var dn = document.getElementById('mpStash') && Array.prototype.filter.call(document.getElementById('mpStash').children, function (x) { return (x.textContent || '').indexOf('ડાયરી') >= 0; })[0]; if (!dn) { alert('ડાયરી હમણાં ઉપલબ્ધ નથી.'); return; } sheetOpen('🧘 આજની ડાયરી', '', [dn]); }
+      else if (k === 'rep') { var a = document.getElementById('cpWeeklySummary'), tb = document.getElementById('cpTrendBox'), t2 = tb && tb.closest('.card-clean'); sheetOpen('📊 7 દિવસનો રિપોર્ટ', '', [a, t2].filter(Boolean)); }
+    };
+    function renderProgBtns() {
+      var root = document.getElementById('tabContentReports'); if (!root || !currentClient) return;
+      var old = document.getElementById('mpProgBtns'); if (old) old.remove();
+      var gro = document.getElementById('weeklyGroceryDisplay'), fc = document.getElementById('upcomingForecastContainer'), tb = document.getElementById('cpTrendBox');
+      [gro && gro.closest('.card-clean'), fc && fc.closest('.card-clean'), document.getElementById('cpWeeklySummary'), tb && tb.closest('.card-clean')].forEach(function (n) { if (n && n.parentNode !== document.getElementById('mpSheetBody') && n.parentNode !== stash()) stash().appendChild(n); });
+      var it = [['📅', 'આવતીકાલનું મેનુ', 'tom'], ['🗓', 'આખું અઠવાડિયું', 'week'], ['🛒', 'કરિયાણું', 'gro'], ['🧘', 'આજની ડાયરી', 'diary'], ['📊', '7 દિવસનો રિપોર્ટ', 'rep']];
+      var box = document.createElement('div'); box.id = 'mpProgBtns'; box.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px';
+      box.innerHTML = it.map(function (x, i) { return '<button type="button" onclick="mpProgOpen(\'' + x[2] + '\')" style="' + (i === 4 ? 'grid-column:span 2;' : '') + 'background:#fff;border-radius:18px;padding:12px 8px;text-align:center;font-size:12px;font-weight:900;box-shadow:0 4px 12px rgba(30,58,138,.08);border:1px solid #e2e8f0"><span style="display:block;font-size:22px;margin-bottom:2px">' + x[0] + '</span>' + x[1] + '</button>'; }).join('');
+      root.insertBefore(box, root.firstChild);
+    }
+    (function () {
+      var o = window.switchPortalTab; if (typeof o !== 'function') return;
+      window.switchPortalTab = function (tab) { var r = o.apply(this, arguments); if (tab === 'reports') { try { renderProgBtns(); } catch (e) { console.error('prog', e); } } return r; };
+    })();
 
     /* ---------- નવો લુક (થીમ) ---------- */
     (function () {
@@ -3109,8 +3216,8 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         '#clientPortalView button:active{transform:translateY(2px);box-shadow:none!important}',
         '#clientPortalView .brand-gradient{background:linear-gradient(135deg,#14b8a6,#0284c7)}',
         '@keyframes mpUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}',
-        '#tabContentToday>*{animation:mpUp .45s ease both}',
-        '#tabContentToday>*:nth-child(2){animation-delay:.04s}#tabContentToday>*:nth-child(3){animation-delay:.08s}#tabContentToday>*:nth-child(4){animation-delay:.12s}#tabContentToday>*:nth-child(5){animation-delay:.16s}#tabContentToday>*:nth-child(6){animation-delay:.2s}',
+        'body.mpAnim #tabContentToday>*{animation:mpUp .45s ease both}',
+        'body.mpAnim #tabContentToday>*:nth-child(2){animation-delay:.04s}#tabContentToday>*:nth-child(3){animation-delay:.08s}#tabContentToday>*:nth-child(4){animation-delay:.12s}#tabContentToday>*:nth-child(5){animation-delay:.16s}#tabContentToday>*:nth-child(6){animation-delay:.2s}',
         '#cpCalProgress,#cpProteinProgress{box-shadow:0 0 10px rgba(94,234,212,.6)}',
         '#clientPortalView main{padding-bottom:96px}'
       ].join('\n');
@@ -3179,9 +3286,9 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     var AVBG = {"f_chaniyacholi": ["#5fa2a9", "#458086"], "f_kurti": ["#528498", "#3a6272"], "f_salwar": ["#476384", "#30455e"], "f_saree": ["#5fa2a9", "#458086"], "f_yoga": ["#5fa994", "#458673"], "m_nehru": ["#476284", "#30445e"], "m_pagdi": ["#529398", "#3a6e72"], "m_sherwani": ["#5fa981", "#458663"], "m_sporty": ["#a9a75f", "#868545"]};
     var sathiObs = null;
     function sathiSync() {
-      [['cpConsumedCal', 'mpSCal'], ['cpProteinStats', 'mpSPro'], ['cpDailyGi', 'mpSGl'], ['cpScoreBadge', 'mpSSc']].forEach(function (m) {
+      [['cpConsumedCal', 'mpSCal'], ['cpProteinStats', 'mpSPro'], ['cpWaterCount', 'mpSGl'], ['cpScoreBadge', 'mpSSc']].forEach(function (m) {
         var src = document.getElementById(m[0]), dst = document.getElementById(m[1]); if (!src || !dst) return;
-        var t = (src.innerText || '').replace('GL:', '').replace(/\s+/g, '').trim(), x = t.split('/');
+        var t = (src.innerText || '').replace('GL:', '').replace(/Liters?/i, 'L').replace(/\s+/g, '').trim(), x = t.split('/');
         dst.innerHTML = x.length > 1 ? esc(x[0]) + '<i style="font-size:8px;font-style:normal;opacity:.75;font-weight:700">/' + esc(x[1]) + '</i>' : esc(t);
       });
     }
@@ -3197,17 +3304,18 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var pct = Math.min(100, Math.round(s.pts / s.nxt * 100));
       var figure = usePrem ? '<img alt="" src="' + premSrc(a, pose) + '" onerror="mpPremErr(this,\'' + a.g + '\',\'' + a.prem + '\',\'' + pose + '\')" style="width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 8px 8px rgba(0,0,0,.3))" class="s3-float">' : S3.avatar({ g: a.g, hair: a.hair, outfit: a.outfit, col: a.col, hc: a.hc, beard: a.beard, acc: a.acc, lvl: s.lvl, mood: saMood(s) }).replace('<svg ', '<svg style="width:100%;height:100%" ');
       var chip = function (l, id) { return '<div style="background:rgba(0,0,0,.24);border-radius:10px;padding:4px 2px;text-align:center"><small style="display:block;font-size:8px;opacity:.8;font-weight:700">' + l + '</small><b id="' + id + '" style="font-size:12px;font-weight:900" data-notr>-</b></div>'; };
+      var chipW = function (l, id) { return '<div onclick="addWater(0.25)" style="background:rgba(0,0,0,.24);border-radius:10px;padding:4px 2px;text-align:center;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(125,211,252,.55)"><small style="display:block;font-size:8px;opacity:.9;font-weight:700">' + l + ' +</small><b id="' + id + '" style="font-size:12px;font-weight:900" data-notr>-</b></div>'; };
       var btn = 'flex:1;padding:7px 2px;border-radius:12px;font-size:10.5px;font-weight:800;border:0;color:#fff;font-family:inherit;white-space:nowrap';
       box.innerHTML = '<div style="flex:0 0 108px;height:176px">' + figure + '</div>' +
         '<div style="flex:1;min-width:0"><div style="display:flex;gap:5px;align-items:center;margin-bottom:5px"><span style="background:#14b8a6;color:#052e2b;font-weight:900;font-size:10px;padding:2px 8px;border-radius:99px">લેવલ ' + (s.lvl + 1) + '</span><span style="font-size:11px;font-weight:800;flex:1">' + SA_TITLES[s.lvl] + '</span><span style="background:rgba(0,0,0,.28);color:#ffd98a;font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px" data-notr>🪙 ' + (currentClient.coins || 0) + '</span></div>' +
         '<div style="background:rgba(0,0,0,.22);border-radius:14px 14px 14px 4px;padding:6px 9px;font-size:11px;font-weight:700;line-height:1.45">' + esc(saMsg(s)) + '</div>' +
-        '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:7px">' + chip('કેલરી', 'mpSCal') + chip('પ્રોટીન', 'mpSPro') + chip('GL', 'mpSGl') + chip('સ્કોર', 'mpSSc') + '</div>' +
-        '<div style="height:6px;border-radius:9px;background:rgba(0,0,0,.3);margin-top:7px;overflow:hidden"><i style="display:block;height:100%;width:' + pct + '%;background:linear-gradient(90deg,#5eead4,#fde68a)"></i></div><div style="font-size:9px;opacity:.8;margin-top:2px" data-notr>' + (s.lvl < 3 ? s.pts + ' / ' + s.nxt + ' ' : '') + 'અઠવાડિયાના પોઇન્ટ</div>' +
+        '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:7px">' + chip('કેલરી', 'mpSCal') + chip('પ્રોટીન', 'mpSPro') + chipW('💧 પાણી', 'mpSGl') + chip('સ્કોર', 'mpSSc') + '</div>' +
+        '<div style="height:6px;border-radius:9px;background:rgba(0,0,0,.3);margin-top:7px;overflow:hidden"><i style="display:block;height:100%;width:' + pct + '%;background:linear-gradient(90deg,#5eead4,#fde68a)"></i></div><div style="font-size:9px;opacity:.8;margin-top:2px" data-notr>' + (s.lvl < 3 ? s.pts + ' / ' + s.nxt + ' ' : '') + tr('અઠવાડિયાના પોઇન્ટ') + '</div>' +
         '<div style="display:flex;gap:5px;margin-top:6px"><button type="button" onclick="mpSathiEdit()" style="' + btn + ';background:rgba(255,255,255,.2)">✏️ બદલો</button><button type="button" onclick="mpThaliNew()" style="' + btn + ';background:#14b8a6;color:#052e2b">🍽️ થાળી</button><button type="button" onclick="mpLiveOpen()" style="' + btn + ';background:#dc2626;box-shadow:0 0 0 2px rgba(255,255,255,.25)">🔴 લાઈવ</button></div></div>';
       host.insertBefore(box, host.firstChild);
       sathiSync();
       try { if (sathiObs) sathiObs.disconnect(); sathiObs = new MutationObserver(sathiSync);
-        ['cpConsumedCal', 'cpProteinStats', 'cpDailyGi', 'cpScoreBadge'].forEach(function (id) { var el = document.getElementById(id); if (el) sathiObs.observe(el, { childList: true, characterData: true, subtree: true }); }); } catch (e) { }
+        ['cpConsumedCal', 'cpProteinStats', 'cpWaterCount', 'cpScoreBadge'].forEach(function (id) { var el = document.getElementById(id); if (el) sathiObs.observe(el, { childList: true, characterData: true, subtree: true }); }); } catch (e) { }
     }
     window.mpLiveOpen = function () {
       var src = document.getElementById('cpLiveBox'), html = src ? src.innerHTML.trim() : '';
@@ -3291,10 +3399,10 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var macro = root.querySelector('#tabContentToday > [class*="from-slate-900"]');
       var water = byText('Water Target'), diary = byText('ડાયરી'), vitals = byText('Daily Vitals');
       var rep = root.querySelector('[onclick*="submitClientReport(\'daily\')"]'); rep = rep ? rep.closest('#tabContentToday > *') : null;
+      if (diary) stash().appendChild(diary);
       var accs = [
         accWrap(get('cpExtrasBox'), 'extras', '➕ વધારાનું ખાધું / ફેમિલી'),
         accWrap(water, 'water', '💧 પાણી'),
-        accWrap(diary, 'diary', '🧘 આજની લાઇફસ્ટાઇલ ડાયરી'),
         accWrap(vitals, 'vitals', '🩸 વાઇટલ્સ અને સુગર'),
         accWrap(get('cpPlanReasonChips'), 'plan', 'ℹ️ આ પ્લાન કેમ?')
       ];
@@ -3396,8 +3504,8 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         var open = j.d >= s[3], got = j.claimed.indexOf(s[0]) >= 0;
         var img = '<div style="height:120px;border-radius:16px;overflow:hidden;background:' + (open ? 'linear-gradient(135deg,#f59e0b,#7c3aed)' : '#2b2f4a') + ';display:flex;align-items:center;justify-content:center;font-size:44px;position:relative">' + (open ? s[1] : '🔒') +
           '<img alt="" src="journey/' + s[0] + '.webp" onerror="this.remove()" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;' + (open ? '' : 'filter:grayscale(1) brightness(.4)') + '"></div>';
-        var btn = open ? (got ? '<div style="margin-top:8px;font-size:12px;font-weight:800;color:#86efac">✓ ભેટ મળી</div>' : '<button type="button" onclick="mpJnClaim(\'' + s[0] + '\')" style="margin-top:8px;width:100%;padding:10px;border-radius:14px;background:linear-gradient(180deg,#ffe28a,#f5a623);color:#3b2a00;font-weight:900;font-size:13px;box-shadow:0 3px 0 #a96a05">🎁 ભેટ લો (+' + s[4] + ' 🪙' + (s[0] === 'st_rann' ? ' + ફ્રી ક્લાસ ઝલક' : s[0] === 'st_unity' ? ' + VIP ભેટ' : '') + ')</button>') : '<div style="margin-top:8px;font-size:11px;opacity:.7" data-notr>' + s[3] + ' દિવસ પૂરા કરો ( ' + Math.max(0, s[3] - j.d) + ' બાકી)</div>';
-        return '<div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:22px;padding:10px;opacity:' + (open ? 1 : .85) + '">' + img + '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><b style="font-size:14px">' + (i + 1) + '. ' + s[2] + '</b><span style="font-size:10px;opacity:.7" data-notr>દિવસ ' + s[3] + '</span></div><div style="font-size:12px;opacity:.85;line-height:1.55;margin-top:3px">' + s[5] + '</div>' + btn + '</div>';
+        var btn = open ? (got ? '<div style="margin-top:8px;font-size:12px;font-weight:800;color:#86efac">✓ ભેટ મળી</div>' : '<button type="button" onclick="mpJnClaim(\'' + s[0] + '\')" style="margin-top:8px;width:100%;padding:10px;border-radius:14px;background:linear-gradient(180deg,#ffe28a,#f5a623);color:#3b2a00;font-weight:900;font-size:13px;box-shadow:0 3px 0 #a96a05">🎁 ભેટ લો (+' + s[4] + ' 🪙' + (s[0] === 'st_rann' ? ' + ફ્રી ક્લાસ ઝલક' : s[0] === 'st_unity' ? ' + VIP ભેટ' : '') + ')</button>') : '<div style="margin-top:8px;font-size:11px;opacity:.7" data-notr>' + s[3] + ' ' + tr('દિવસ પૂરા કરો') + ' (' + Math.max(0, s[3] - j.d) + ' ' + tr('બાકી') + ')</div>';
+        return '<div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:22px;padding:10px;opacity:' + (open ? 1 : .85) + '">' + img + '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><b style="font-size:14px">' + (i + 1) + '. ' + s[2] + '</b><span style="font-size:10px;opacity:.7" data-notr>' + tr('દિવસ') + ' ' + s[3] + '</span></div><div style="font-size:12px;opacity:.85;line-height:1.55;margin-top:3px">' + s[5] + '</div>' + btn + '</div>';
       }).join('<div style="text-align:center;opacity:.4;font-size:18px;line-height:1">⋮</div>');
       ov.innerHTML = '<div style="max-width:30rem;margin:0 auto;padding:14px 14px 40px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b style="font-size:16px">🗺️ ગુજરાત દર્શન</b><button type="button" onclick="mpJnClose()" style="padding:6px 12px;border-radius:12px;background:rgba(255,255,255,.14);color:#fff;font-size:12px;font-weight:800">બંધ</button></div>' +
         '<div style="font-size:11px;opacity:.8;margin-bottom:10px;line-height:1.5">રોજ ઓછામાં ઓછા 2 ભોજન "લીધું" કરો એટલે એક દિવસ પૂરો ગણાય. દિવસ ચૂકી જાવ તો કંઈ ગુમાવતા નથી, યાત્રા ત્યાંથી જ આગળ ચાલે.</div>' +
@@ -3568,6 +3676,23 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     }
     var GOOD = 'bg-emerald-50 border-emerald-300 text-emerald-900', WARN = 'bg-amber-50 border-amber-300 text-amber-900', BAD = 'bg-rose-50 border-rose-300 text-rose-900';
 
+    var FOODSTATE = 0;
+    function foodLoad() {
+      if (FOODSTATE || window.MPFOOD) return; FOODSTATE = 1;
+      var sc = document.createElement('script'); sc.src = 'food-icons.js';
+      sc.onload = function () { try { if (TH.open) thRender(); } catch (e) { } };
+      document.head.appendChild(sc);
+    }
+    function foodImg(id, px) { var d = window.MPFOOD && window.MPFOOD[id]; return d ? '<img alt="" src="' + d + '" style="width:' + px + 'px;height:' + px + 'px;object-fit:contain;flex:0 0 ' + px + 'px">' : ''; }
+    function habitRow(slot) {
+      var h = ((currentClient && currentClient.habits) || {})[slot] || {};
+      var ids = Object.keys(h).filter(function (id) { return h[id] >= 3; }).sort(function (a, b) { return h[b] - h[a]; });
+      var list = ids.map(function (id) { return TI.filter(function (x) { return x.id === id; })[0]; }).filter(function (it) { return it && thAllowed(it); }).slice(0, 6);
+      if (!list.length) return '';
+      return '<div><div class="text-[11px] font-extrabold text-amber-700 mb-1.5">⭐ તમારી રોજની પસંદ</div><div class="grid grid-cols-3 gap-1.5">' + list.map(function (it) {
+        return '<button type="button" onclick="mpThAdd(\'' + it.id + '\')" class="text-left p-2 rounded-xl border border-amber-300 bg-amber-50 text-[10.5px] leading-tight font-bold"><div style="height:36px;display:flex;align-items:center;justify-content:center;margin-bottom:3px">' + (foodImg(it.id, 36) || '') + '</div>' + esc(it.n) + '</button>';
+      }).join('') + '</div></div>';
+    }
     function thRender() {
       var ov = document.getElementById('mpThaliOv');
       if (!TH.open) { if (ov) ov.remove(); document.body.style.overflow = ''; return; }
@@ -3581,7 +3706,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var slotBtns = TH_SLOTS.map(function (t) { return '<button type="button" onclick="mpThSlot(\'' + t[0] + '\')" class="px-2.5 py-1.5 rounded-xl border text-[11px] font-bold ' + (TH.slot === t[0] ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-slate-700 border-slate-300') + '">' + t[1] + '</button>'; }).join('');
       var sel = TI.filter(function (it) { return TH.q[it.id]; }).map(function (it) {
         var n = TH.q[it.id];
-        return '<div class="flex items-center gap-2 py-1.5 border-b border-slate-100 last:border-0"><div class="flex-1 min-w-0"><div class="text-[12px] font-bold text-slate-800 truncate">' + esc(it.n) + '</div><div class="text-[10px] text-slate-500" data-notr>' + esc(it.u) + ' × ' + n + ' = ' + Math.round(it.g * n) + ' g • ' + Math.round(it.k * n) + ' kcal</div></div>' +
+        return '<div class="flex items-center gap-2 py-1.5 border-b border-slate-100 last:border-0">' + foodImg(it.id, 34) + '<div class="flex-1 min-w-0"><div class="text-[12px] font-bold text-slate-800 truncate">' + esc(it.n) + '</div><div class="text-[10px] text-slate-500" data-notr>' + esc(it.u) + ' × ' + n + ' = ' + Math.round(it.g * n) + ' g • ' + Math.round(it.k * n) + ' kcal</div></div>' +
           '<button type="button" onclick="mpThDec(\'' + it.id + '\')" class="w-8 h-8 rounded-lg border bg-white font-black text-slate-700" aria-label="ઓછું">−</button><span class="w-6 text-center font-black text-sm" data-notr>' + n + '</span>' +
           '<button type="button" onclick="mpThAdd(\'' + it.id + '\')" class="w-8 h-8 rounded-lg border bg-teal-600 text-white font-black" aria-label="વધારે">+</button>' +
           '<button type="button" onclick="mpThDel(\'' + it.id + '\')" class="w-7 h-8 text-rose-500 font-black" aria-label="કાઢો">✕</button></div>';
@@ -3596,7 +3721,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
           var n = TH.q[it.id] || 0;
           return '<button type="button" onclick="mpThAdd(\'' + it.id + '\')" class="relative text-left p-2 rounded-xl border text-[10.5px] leading-tight font-bold ' + (n ? (c[0] === 'bad' ? 'bg-rose-50 border-rose-400 text-rose-900' : 'bg-emerald-50 border-emerald-500 text-emerald-900') : 'bg-white border-slate-200 text-slate-800') + '">' +
             (n ? '<span class="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full bg-teal-600 text-white text-[10px] font-black flex items-center justify-center" data-notr>' + n + '</span>' : '') +
-            esc(it.n) + '<div class="text-[9px] font-semibold text-slate-400 mt-0.5" data-notr>' + esc(it.u) + '</div></button>';
+            '<div style="height:44px;display:flex;align-items:center;justify-content:center;margin-bottom:3px">' + (foodImg(it.id, 44) || '') + '</div>' + esc(it.n) + '<div class="text-[9px] font-semibold text-slate-400 mt-0.5" data-notr>' + esc(it.u) + '</div></button>';
         }).join('') + '</div></div>';
       }).join('');
       ov.innerHTML =
@@ -3609,12 +3734,12 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         (s.tot && gd.ok ? '<div class="mt-2 p-2 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-[11px] font-bold text-center">🎉 સંતુલિત થાળી!</div>' : '') + '</div>' +
         (tiles ? '<div class="bg-white rounded-2xl border border-slate-200 p-3">' + tiles + '</div>' : '') +
         '<div class="bg-white rounded-2xl border border-slate-200 p-3"><div class="text-[11px] font-extrabold text-slate-700 mb-1">પસંદ કરેલું (' + s.n + ')</div>' + (sel || '<div class="text-[11px] text-slate-500">ઉપરથી વસ્તુ ટેપ કરો. ફરી ટેપ કરો તો સંખ્યા વધશે (1, 2, 3...).</div>') + '</div>' +
-        '<div class="bg-white rounded-2xl border border-slate-200 p-3 space-y-3">' + groups + '</div></div>' +
+        '<div class="bg-white rounded-2xl border border-slate-200 p-3 space-y-3">' + habitRow(TH.slot) + groups + '</div></div>' +
         '<div class="fixed bottom-0 inset-x-0 z-10 bg-white/95 border-t border-slate-200 p-3 flex gap-2 max-w-lg mx-auto"><button type="button" onclick="mpThClear()" class="px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-700 text-xs font-bold">સાફ કરો</button>' +
         '<button type="button" onclick="mpThSave()" ' + (s.n ? '' : 'disabled') + ' class="flex-1 py-3 rounded-xl bg-teal-600 text-white text-xs font-black disabled:opacity-40">✔ આ થાળી ખાધી (સેવ)</button></div>';
       ov.scrollTop = keepScroll;
     }
-    window.mpThOpen = function (slot) { if (!currentClient) return; TH.open = true; if (slot) TH.slot = slot; thRender(); };
+    window.mpThOpen = function (slot) { if (!currentClient) return; foodLoad(); TH.open = true; if (slot) TH.slot = slot; thRender(); };
     window.mpThClose = function () { TH.open = false; thRender(); };
     window.mpThSlot = function (s) { TH.slot = s; thRender(); };
     window.mpThAdd = function (id) {
@@ -3628,8 +3753,11 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var s = thCalc(TH.q); if (!s.n || !currentClient) return;
       var key = selectedDateKey, comp = ensureDay(key);
       var rec = { items: TI.filter(function (it) { return TH.q[it.id]; }).map(function (it) { return { id: it.id, n: it.n, q: TH.q[it.id] }; }), cal: s.k, p: s.p, gl: s.gl, cb: s.cb, gi: s.gi, v: s.pv, pr: s.pp, g: s.pg };
+      var prevIds = {}; ((comp.thalis || {})[TH.slot] || { items: [] }).items.forEach(function (i) { prevIds[i.id] = 1; });
       comp.thalis = comp.thalis || {}; comp.thalis[TH.slot] = rec;
       var upd = {}; upd['compliance.' + key + '.thalis.' + TH.slot] = rec;
+      currentClient.habits = currentClient.habits || {}; currentClient.habits[TH.slot] = currentClient.habits[TH.slot] || {};
+      rec.items.forEach(function (i) { if (prevIds[i.id]) return; currentClient.habits[TH.slot][i.id] = (currentClient.habits[TH.slot][i.id] || 0) + 1; upd['habits.' + TH.slot + '.' + i.id] = firebase.firestore.FieldValue.increment(1); });
       db.collection('clients').doc(docId()).update(upd).catch(function (e) { console.error('thali save', e); });
       TH.open = false; thRender(); render();
     };
@@ -3920,7 +4048,103 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         else body.insertAdjacentHTML('beforeend', html);
       } catch (e) { console.error('admin addons', e); }
     };
+
   }
+})();
+;(function () {
+  if (typeof i18nAdd !== 'function') return;
+  var T = [
+    ['લેવલ', 'लेवल', 'Level'], ['નવો સાથી', 'नया साथी', 'New buddy'], ['ઉત્સાહી', 'उत्साही', 'Enthusiast'], ['નિયમિત', 'नियमित', 'Regular'], ['સંયમી', 'संयमी', 'Disciplined'],
+    ['અઠવાડિયાના પોઇન્ટ', 'साप्ताहिक पॉइंट', 'weekly points'], ['બદલો', 'बदलें', 'Change'], ['થાળી', 'थाली', 'Thali'], ['લાઈવ', 'लाइव', 'Live'],
+    ['ચાલો', 'चलो', "Let's go"], ['આજનું ભોજન માર્ક કરીએ. હું સાથે છું', 'आज का भोजन मार्क करें। मैं साथ हूँ', "let's mark today's meals. I'm with you"],
+    ['વાહ', 'वाह', 'Wow'], ['વાહ!', 'वाह!', 'Wow!'], ['આજે બહુ સરસ ચાલી રહ્યું છે', 'आज बहुत अच्छा चल रहा है', 'today is going great'],
+    ['સુપ્રભાત', 'सुप्रभात', 'Good morning'], ['સવારનું પહેલું ભોજન માર્ક કરીએ', 'सुबह का पहला भोजन मार्क करें', "let's mark the first meal of the day"],
+    ['સરસ શરૂઆત', 'बढ़िया शुरुआत', 'Great start'], ['આગળનું ભોજન પણ સમયસર લઈએ', 'अगला भोजन भी समय पर लें', "let's take the next meal on time too"],
+    ['આજનો દિવસ પૂરો થવામાં છે. પાણી પીઓ અને શાંતિથી સૂઈ જઈએ', 'आज का दिन पूरा होने को है। पानी पिएँ और शांति से सोएँ', 'The day is almost over. Drink water and sleep peacefully'],
+    ['સરસ ચાલે છે!', 'बढ़िया चल रहा है!', 'Going well!'], ['સરસ! થોડું પણ ચાલે.', 'बढ़िया! थोड़ा भी चलेगा।', 'Nice! A little counts too.'], ['થોડું પણ ચાલે', 'थोड़ा भी चलेगा', 'A little is fine too'],
+    ['કંઈ નહીં', 'कोई बात नहीं', 'No worries'], ['આગળનું ભોજન સમયસર લઈએ.', 'अगला भोजन समय पर लें।', "Let's take the next meal on time."],
+    ['તમારો સાથી', 'आपका साथी', 'Your buddy'], ['બંધ', 'बंद', 'Close'], ['પ્રીમિયમ પાત્રો (દુકાન)', 'प्रीमियम पात्र (दुकान)', 'Premium characters (shop)'],
+    ['સલવાર', 'सलवार', 'Salwar'], ['સાડી', 'साड़ी', 'Saree'], ['કુર્તી', 'कुर्ती', 'Kurti'], ['ચણિયાચોળી', 'चनिया चोली', 'Chaniya choli'], ['યોગા', 'योगा', 'Yoga'],
+    ['પાઘડી-બંડી', 'पगड़ी-बंडी', 'Pagdi-bandi'], ['નહેરુ જેકેટ', 'नेहरू जैकेट', 'Nehru jacket'], ['સ્પોર્ટી', 'स्पोर्टी', 'Sporty'], ['શેરવાની', 'शेरवानी', 'Sherwani'], ['બંડી', 'बंडी', 'Bandi'],
+    ['છોકરો / છોકરી', 'लड़का / लड़की', 'Boy / Girl'], ['છોકરો', 'लड़का', 'Boy'], ['છોકરી', 'लड़की', 'Girl'], ['સેવ', 'सेव', 'Save'], ['સેવ ન થયું', 'सेव नहीं हुआ', 'Not saved'], ['મૂળ', 'मूल', 'Original'],
+    ['જોઈએ. રોજ ભોજન માર્ક કરીને સિક્કા કમાઓ.', 'चाहिए। रोज़ भोजन मार्क करके सिक्के कमाएँ।', 'needed. Earn coins by marking your meals daily.'], ['માં આ પાત્ર ખોલવું?', 'में यह पात्र खोलें?', 'to unlock this character?'], ['હજી', 'अभी', 'Still'],
+    ['ગુજરાત દર્શન', 'गुजरात दर्शन', 'Gujarat Darshan'], ['ભેટ', 'उपहार', 'gift'], ['ભેટ લો', 'उपहार लें', 'Claim gift'], ['ભેટ મળી', 'उपहार मिला', 'Gift claimed'], ['આગળ', 'अगला', 'Next'], ['દિવસ બાકી', 'दिन बाकी', 'days left'],
+    ['જુઓ', 'देखें', 'View'], ['યાત્રા પૂર્ણ!', 'यात्रा पूरी!', 'Journey complete!'], ['દિવસ પૂરા કરો', 'दिन पूरे करें', 'Complete days'],
+    ['ગુજરાત દર્શન: 30-દિવસની યાત્રા', 'गुजरात दर्शन: 30 दिन की यात्रा', 'Gujarat Darshan: a 30-day journey'],
+    ['રોજ ઓછામાં ઓછા 2 ભોજન "લીધું" કરો એટલે એક દિવસ પૂરો ગણાય. દિવસ ચૂકી જાવ તો કંઈ ગુમાવતા નથી, યાત્રા ત્યાંથી જ આગળ ચાલે.', 'रोज़ कम से कम 2 भोजन "लिया" करें तो एक दिन पूरा गिना जाता है। दिन चूक जाएँ तो कुछ नहीं खोते, यात्रा वहीं से आगे चलती है।', 'Mark at least 2 meals as "taken" daily to complete a day. Missing a day loses nothing; the journey simply continues from where you were.'],
+    ['દ્વારકા', 'द्वारका', 'Dwarka'], ['સોમનાથ', 'सोमनाथ', 'Somnath'], ['ગીર', 'गिर', 'Gir'], ['ગિરનાર', 'गिरनार', 'Girnar'], ['રણ ઉત્સવ', 'रण उत्सव', 'Rann Utsav'], ['રાણકી વાવ', 'रानी की वाव', 'Rani ki Vav'], ['મોઢેરા', 'मोढेरा', 'Modhera'], ['સાબરમતી આશ્રમ', 'साबरमती आश्रम', 'Sabarmati Ashram'], ['સ્ટેચ્યુ ઑફ યુનિટી', 'स्टैच्यू ऑफ यूनिटी', 'Statue of Unity'],
+    ['ગોમતી કિનારે દ્વારકાધીશનું મંદિર. શુભ શરૂઆત! રોજનું પહેલું પગલું જ સૌથી મોટું.', 'गोमती किनारे द्वारकाधीश का मंदिर। शुभ शुरुआत! रोज़ का पहला कदम ही सबसे बड़ा है।', 'Dwarkadhish temple on the Gomti shore. A good start! The daily first step is the biggest.'],
+    ['બાર જ્યોતિર્લિંગમાંનું પ્રથમ, દરિયાકાંઠે અડગ ઊભું. તમારા નિયમની જેમ.', 'बारह ज्योतिर्लिंगों में पहला, समुद्र किनारे अडिग खड़ा। आपके नियम की तरह।', 'First of the twelve Jyotirlingas, standing firm by the sea, like your discipline.'],
+    ['એશિયાઈ સિંહોનું એકમાત્ર ઘર. શાંત તાકાત.', 'एशियाई शेरों का एकमात्र घर। शांत ताकत।', 'The only home of Asiatic lions. Quiet strength.'],
+    ['હજારો પગથિયાં, એક-એક કરીને ચડાય. આદત પણ એમ જ બને છે.', 'हज़ारों सीढ़ियाँ, एक-एक करके चढ़ी जाती हैं। आदत भी ऐसे ही बनती है।', 'Thousands of steps, climbed one by one. Habits are built the same way.'],
+    ['સફેદ રણમાં પૂનમની રાત. આ સ્ટેશન પર ફ્રી લાઇવ ક્લાસની ઝલકની ભેટ!', 'सफ़ेद रण में पूनम की रात। इस स्टेशन पर फ्री लाइव क्लास की झलक का उपहार!', 'A full-moon night in the white desert. A free live-class preview gift at this station!'],
+    ['પાટણની કલાત્મક વાવ, યુનેસ્કોની વિશ્વ ધરોહર.', 'पाटण की कलात्मक बावड़ी, यूनेस्को की विश्व धरोहर।', "Patan's artistic stepwell, a UNESCO World Heritage Site."],
+    ['સૂર્યને સમર્પિત ભવ્ય મંદિર. સવારનો પ્રકાશ, નવી ઊર્જા.', 'सूर्य को समर्पित भव्य मंदिर। सुबह की रोशनी, नई ऊर्जा।', 'A grand temple dedicated to the Sun. Morning light, new energy.'],
+    ['સંયમ અને નિયમની ભૂમિ. તમે સાચા રસ્તે છો.', 'संयम और नियम की भूमि। आप सही रास्ते पर हैं।', 'The land of restraint and discipline. You are on the right path.'],
+    ['વિશ્વની સૌથી ઊંચી પ્રતિમા (182 મીટર). 30 દિવસની યાત્રા પૂર્ણ! VIP ભેટ તમારી રાહ જુએ છે.', 'दुनिया की सबसे ऊँची प्रतिमा (182 मीटर)। 30 दिन की यात्रा पूरी! VIP उपहार आपका इंतज़ार कर रहा है।', "The world's tallest statue (182 m). 30-day journey complete! A VIP gift awaits you."],
+    ['અભિનંદન! 30 દિવસની યાત્રા પૂર્ણ. કોચ તમને VIP ભેટ વિશે WhatsApp કરશે.', 'बधाई! 30 दिन की यात्रा पूरी। कोच आपको VIP उपहार के बारे में WhatsApp करेंगे।', 'Congratulations! 30-day journey complete. Your coach will WhatsApp you about the VIP gift.'],
+    ['ફ્રી લાઇવ ક્લાસ ઝલક અનલૉક! કોચ તમને તેની લિંક WhatsApp પર મોકલશે.', 'फ्री लाइव क्लास झलक अनलॉक! कोच आपको उसका लिंक WhatsApp पर भेजेंगे।', 'Free live-class preview unlocked! Your coach will send you the link on WhatsApp.'],
+    ['ગુજરાત દર્શન પૂર્ણ! નવી યાત્રા "ભારત દર્શન" જલ્દી આવી રહી છે.', 'गुजरात दर्शन पूरा! नई यात्रा "भारत दर्शन" जल्द आ रही है।', 'Gujarat Darshan complete! A new journey, "Bharat Darshan", is coming soon.'],
+    ['મારી થાળી', 'मेरी थाली', 'My thali'], ['થાળી બનાવો', 'थाली बनाएँ', 'Build thali'], ['મારી થાળી બનાવો', 'मेरी थाली बनाएँ', 'Build my thali'],
+    ['વજન મુજબ ભાગ', 'वज़न के अनुसार हिस्सा', 'Portion by weight'], ['શાક-ફળ', 'सब्ज़ी-फल', 'Veg & fruit'], ['શાક-સલાડ', 'सब्ज़ी-सलाद', 'Veg & salad'], ['અનાજ', 'अनाज', 'Grain'],
+    ['ઉપરથી શાક-સલાડ, પ્રોટીન અને અનાજ પસંદ કરો. દરેકનું વજન (ગ્રામ) આપોઆપ ગણાશે.', 'ऊपर से सब्ज़ी-सलाद, प्रोटीन और अनाज चुनें। हर एक का वज़न (ग्राम) अपने आप गिना जाएगा।', 'Pick veg/salad, protein and grain above. Each weight (grams) is calculated automatically.'],
+    ['કયા ભોજન માટે?', 'किस भोजन के लिए?', 'For which meal?'], ['સંતુલિત થાળી!', 'संतुलित थाली!', 'Balanced thali!'], ['સરેરાશ GI', 'औसत GI', 'Average GI'], ['પસંદ કરેલું', 'चुना हुआ', 'Selected'],
+    ['ઉપરથી વસ્તુ ટેપ કરો. ફરી ટેપ કરો તો સંખ્યા વધશે (1, 2, 3...).', 'ऊपर से चीज़ टैप करें। फिर टैप करें तो संख्या बढ़ेगी (1, 2, 3...)।', 'Tap an item above. Tap again to increase the count (1, 2, 3...).'],
+    ['આ થાળી ખાધી (સેવ)', 'यह थाली खाई (सेव)', 'Ate this thali (save)'], ['કાર્બ', 'कार्ब', 'Carbs'], ['ફાઇબર', 'फ़ाइबर', 'Fibre'], ['કેલરી', 'कैलोरी', 'Calories'],
+    ['ઓછામાં ઓછું', 'कम से कम', 'At least'], ['લો.', 'लें।', 'take.'], ['ઉમેરો:', 'जोड़ें:', 'Add:'], ['લક્ષ્ય', 'लक्ष्य', 'Target'], ['મર્યાદા', 'सीमा', 'Limit'], ['વધારે ખાવ તો છૂટ છે.', 'ज़्यादा खाएँ तो भी छूट है।', 'More is fine.'],
+    ['અનાજ ઓછું કરો:', 'अनाज कम करें:', 'Reduce grain:'], ['અથવા', 'या', 'or'], ['સલાડ વધારો:', 'सलाद बढ़ाएँ:', 'Add more salad:'],
+    ['હજી ભૂખ લાગે તો સલાડ-શાક વધુ ખાઓ. કેલરી લગભગ વધશે નહીં.', 'अभी भूख लगे तो सलाद-सब्ज़ी ज़्यादा खाएँ। कैलोरी लगभग नहीं बढ़ेगी।', 'If still hungry, eat more salad/veg. Calories barely rise.'],
+    ['ન લઈએ.', 'न लें।', 'avoid.'], ['કાઢો:', 'हटाएँ:', 'Remove:'], ['આંકડા અંદાજિત છે (સામાન્ય ઘરગથ્થુ માપ).', 'आँकड़े अनुमानित हैं (सामान्य घरेलू माप)।', 'Figures are approximate (common household measures).'],
+    ['આંકડા અંદાજિત (સામાન્ય ઘરગથ્થુ માપ). કોચ સાથે મળીને તપાસી સુધારી શકાય.', 'आँकड़े अनुमानित (सामान्य घरेलू माप)। कोच के साथ जाँचकर सुधारे जा सकते हैं।', 'Approximate figures; can be reviewed with your coach.'],
+    ['આવતીકાલનું મેનુ', 'कल का मेन्यू', "Tomorrow's menu"], ['આખું અઠવાડિયું', 'पूरा सप्ताह', 'Whole week'], ['કરિયાણું', 'किराना', 'Groceries'], ['આજની ડાયરી', 'आज की डायरी', "Today's diary"], ['7 દિવસનો રિપોર્ટ', '7 दिन की रिपोर्ट', '7-day report'],
+    ['આ અઠવાડિયાનું કરિયાણું', 'इस सप्ताह का किराना', "This week's groceries"], ['કઠોળ / પ્રોટીન', 'दालें / प्रोटीन', 'Pulses / protein'], ['શાકભાજી', 'सब्ज़ियाँ', 'Vegetables'], ['WhatsApp પર મોકલો', 'WhatsApp पर भेजें', 'Send on WhatsApp'],
+    ['આવતીકાલ', 'कल', 'Tomorrow'], ['ડાયરી', 'डायरी', 'Diary'], ['ડાયરી હમણાં ઉપલબ્ધ નથી.', 'डायरी अभी उपलब्ध नहीं है।', 'Diary is not available right now.'], ['ડેટા લોડ થઈ રહ્યો છે… થોડી રાહ જુઓ', 'डेटा लोड हो रहा है… थोड़ा रुकें', 'Loading data… please wait'],
+    ['હમણાં કોઈ લાઈવ ક્લાસ સેટ નથી. કોચ સમય જણાવશે ત્યારે અહીં દેખાશે.', 'अभी कोई लाइव क्लास सेट नहीं है। कोच समय बताएँगे तब यहाँ दिखेगा।', 'No live class is set right now. It will appear here once your coach sets a time.'],
+    ['સમયે જ ખુલશે', 'समय पर ही खुलेगा', 'Opens only at class time'], ['હમણાં ચાલુ છે', 'अभी चालू है', 'Live now'],
+    ['વધારાનું ખાધું / ફેમિલી', 'अतिरिक्त खाया / फ़ैमिली', 'Extra eaten / Family'], ['વાઇટલ્સ અને સુગર', 'वाइटल्स और शुगर', 'Vitals & sugar'], ['આ પ્લાન કેમ?', 'यह प्लान क्यों?', 'Why this plan?'],
+    ['ફેમિલી મેનુ', 'फ़ैमिली मेन्यू', 'Family menu'], ['ઘરમાં તમારા સિવાય કેટલા સભ્યો જમે છે?', 'घर में आपके अलावा कितने सदस्य खाते हैं?', 'How many members eat at home besides you?'], ['કોઈ નહીં (ફક્ત હું)', 'कोई नहीं (सिर्फ़ मैं)', 'None (just me)'],
+    ['આજે આખા પરિવાર માટે રાંધવાનું', 'आज पूरे परिवार के लिए पकाना', "Cooking for the whole family today"], ['કુલ ભાગ', 'कुल हिस्से', 'Total portions'], ['ફેમિલી માટે WhatsApp પર મોકલો', 'फ़ैमिली के लिए WhatsApp पर भेजें', 'Send to family on WhatsApp'],
+    ['તમારા માટે ઉપર મુજબ માપ જ રાખો. બાકીના સભ્યો ઇચ્છે તો રોટલી/ભાત થોડા વધુ લઈ શકે.', 'आपके लिए ऊपर के अनुसार माप ही रखें। बाकी सदस्य चाहें तो रोटी/चावल थोड़े ज़्यादा ले सकते हैं।', 'Keep your own portions as above. Others may take a bit more roti/rice if they wish.'],
+    ['ક્લાયન્ટે ઉમેરેલું (છેલ્લા ૩ દિવસ)', 'क्लाइंट ने जोड़ा (पिछले ३ दिन)', 'Added by client (last 3 days)'],
+    ['⭐ તમારી રોજની પસંદ', '⭐ आपकी रोज़ की पसंद', '⭐ Your daily favourites'], ['તમારી રોજની પસંદ', 'आपकी रोज़ की पसंद', 'Your daily favourites'], ['🌙 કાલે', '🌙 कल', '🌙 Tomorrow'], ['બાકી', 'बाकी', 'left'], ['દિવસ', 'दिन', 'Day'], ['ટૂંકી ભોજન લાઈનો', 'छोटी भोजन पंक्तियाँ', 'Compact meal rows'], ['વસ્તુ બદલો', 'चीज़ बदलें', 'Swap item'], ['ઉમેરો', 'जोड़ें', 'Add']
+  ];
+  T.forEach(function (t) { try { i18nAdd(t[0], t[1], t[2]); } catch (e) { } });
+  try { if (typeof CUR_LANG !== 'undefined' && CUR_LANG !== 'gu' && typeof i18nApplyAll === 'function') i18nApplyAll(); } catch (e) { }
+})();
+
+;(function () {
+  var tries = 0, iv = setInterval(function () {
+    tries++; if (tries > 100) clearInterval(iv);
+    if (typeof window.renderNextMeal !== 'function' || window.renderNextMeal.__mp) return;
+    clearInterval(iv);
+    var o = window.renderNextMeal;
+    window.renderNextMeal = function () {
+      var r = o.apply(this, arguments);
+      try {
+        var box = document.getElementById('cpNextMealBox'), b = box && box.querySelector('button[onclick^="setCheck("]'); if (!b) return r;
+        var sl = (b.getAttribute('onclick').match(/setCheck\('([^']+)'/) || [])[1], rm = getReminders(), tt = String(rm.times[sl] || SLOT_DEFAULT_TIME[sl] || '12:00').split(':').map(Number);
+        var now = new Date(), nm = now.getHours() * 60 + now.getMinutes();
+        if (tt[0] * 60 + tt[1] < nm - 45) { b.outerHTML = '<span class="px-3 py-2 bg-white/25 text-white rounded-xl text-[11px] font-black whitespace-nowrap">🌙 કાલે</span>'; var lab = box.querySelector('.uppercase'); if (lab) lab.textContent = '🌙 કાલે'; }
+      } catch (e) { }
+      return r;
+    };
+    window.renderNextMeal.__mp = 1;
+  }, 200);
+})();
+
+;(function () {
+  var tries = 0, iv = setInterval(function () {
+    tries++; if (tries > 100) clearInterval(iv);
+    if (typeof window.setLang !== 'function' || window.setLang.__mp) return;
+    clearInterval(iv);
+    var o = window.setLang;
+    window.setLang = function (l, silent) {
+      var r = o.apply(this, arguments);
+      setTimeout(function () { try { if (window.currentClient || (typeof currentClient !== 'undefined' && currentClient)) { if (typeof loadTodayClientView === 'function') loadTodayClientView(); } } catch (e) { } }, 40);
+      return r;
+    };
+    window.setLang.__mp = 1;
+  }, 200);
 })();
 
 </script>
