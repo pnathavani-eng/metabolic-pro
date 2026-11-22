@@ -3182,6 +3182,11 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var box = document.createElement('div'); box.id = 'mpProgBtns'; box.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px';
       box.innerHTML = it.map(function (x, i) { return '<button type="button" onclick="mpProgOpen(\'' + x[2] + '\')" style="' + '' + 'background:#fff;border-radius:18px;padding:12px 8px;text-align:center;font-size:12px;font-weight:900;box-shadow:0 4px 12px rgba(30,58,138,.08);border:1px solid #e2e8f0"><span style="display:block;font-size:22px;margin-bottom:2px">' + x[0] + '</span>' + x[1] + '</button>'; }).join('');
       root.insertBefore(box, root.firstChild);
+      var old2 = document.getElementById('mpSendRow'); if (old2) old2.remove();
+      var sr = document.createElement('div'); sr.id = 'mpSendRow'; sr.style.cssText = 'background:#fff;border-radius:18px;padding:10px 12px;box-shadow:0 4px 12px rgba(15,42,74,.08);margin-top:8px;display:flex;align-items:center;gap:8px';
+      var sb = 'flex:1;padding:9px 4px;border-radius:12px;font-size:11.5px;font-weight:900;color:#fff;border:0;font-family:inherit;white-space:nowrap';
+      sr.innerHTML = '<div style="font-size:12px;font-weight:900;flex:0 0 auto;line-height:1.25">📤 કોચને<br>મોકલો</div><button type="button" onclick="submitClientReport(\'daily\')" style="' + sb + ';background:#16a34a">💬 1 દિવસ</button><button type="button" onclick="submitClientReport(\'summary\')" style="' + sb + ';background:#0f172a">💬 7 દિવસ</button>';
+      box.parentNode.insertBefore(sr, box.nextSibling);
     }
     (function () {
       var o = window.switchPortalTab; if (typeof o !== 'function') return;
@@ -3291,14 +3296,52 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       [['cpConsumedCal', 'mpSCal'], ['cpProteinStats', 'mpSPro'], ['cpWaterCount', 'mpSGl'], ['cpScoreBadge', 'mpSSc']].forEach(function (m) {
         var src = document.getElementById(m[0]), dst = document.getElementById(m[1]); if (!src || !dst) return;
         var t = (src.innerText || '').replace('GL:', '').replace(/Liters?/i, 'L').replace(/\s+/g, '').trim(), x = t.split('/');
+        if (m[1] === 'mpSGl') { var bx = document.getElementById('mpSGlBox'), wp = x.length > 1 && parseFloat(x[1]) > 0 ? Math.max(0, Math.min(100, Math.round(parseFloat(x[0]) / parseFloat(x[1]) * 100))) : 0; if (bx) bx.style.background = 'linear-gradient(to top,rgba(56,189,248,.75) ' + wp + '%,rgba(0,0,0,.24) ' + wp + '%)'; }
         dst.innerHTML = x.length > 1 ? esc(x[0]) + '<i style="font-size:8px;font-style:normal;opacity:.75;font-weight:700">/' + esc(x[1]) + '</i>' : esc(t);
       });
     }
+
+    /* ---------- સ્ટ્રેક + શિલ્ડ ---------- */
+    function mpStreakCalc() {
+      var c = currentClient || {}, used = Object.assign({}, c.shieldUsed || {}), total = (c.shields === undefined || c.shields === null) ? 1 : Number(c.shields) || 0;
+      var days = [], n = 0, d = new Date(), brk = false, upd = {}, left = total - Object.keys(used).length;
+      for (var i = 0; i < 120 && !brk; i++) {
+        var k = dateKeyOf(d), sc = dayScorePct(k), ok = sc !== null && sc >= 60;
+        if (ok) { n++; if (i < 14) days.push('ok'); }
+        else if (used[k]) { if (i < 14) days.push('sh'); }
+        else if (i === 0) { if (i < 14) days.push('today'); }
+        else {
+          var pk = dateKeyOf(new Date(d.getTime() - 864e5)), psc = dayScorePct(pk);
+          if (left > 0 && psc !== null && psc >= 60) { left--; used[k] = true; upd['shieldUsed.' + k] = true; if (i < 14) days.push('sh'); }
+          else { if (i < 14) days.push('miss'); brk = true; }
+        }
+        d.setDate(d.getDate() - 1);
+      }
+      var fill = days.length; while (days.length < 14) days.push('none');
+      var best = Math.max(Number(c.streakBest) || 0, n), ms = Number(c.shieldMilestone) || 0, got = Math.floor(n / 7);
+      if (got > ms) { if (left < 2) { total++; left++; upd.shields = total; } upd.shieldMilestone = got; c.shieldMilestone = got; }
+      if (best > (Number(c.streakBest) || 0)) { upd.streakBest = best; c.streakBest = best; }
+      if (Object.keys(upd).length) { c.shieldUsed = used; if (upd.shields !== undefined) c.shields = total; try { db.collection('clients').doc(docId()).update(upd).catch(function (e) { console.error(e); }); } catch (e) { } }
+      return { n: n, best: best, sh: left, days: days };
+    }
+    window.mpStreakOpen = function () {
+      if (!currentClient) return; var t = mpStreakCalc(), cl = { ok: '#22c55e', sh: '#38bdf8', miss: '#cbd5e1', today: '#fde68a', none: '#f1f5f9' };
+      var dots = t.days.slice().reverse().map(function (x) { return '<span style="width:20px;height:20px;border-radius:50%;background:' + cl[x] + ';display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:900" data-notr>' + (x === 'ok' ? '✓' : x === 'sh' ? '🛡' : '') + '</span>'; }).join('');
+      var MS = [[3, 'medal1', 'કાંસ્ય'], [7, 'medal2', 'ચાંદી'], [14, 'medal3', 'સોનું'], [30, 'vip', 'તાજ']];
+      var med = MS.map(function (m) { var on = t.best >= m[0]; return '<div style="text-align:center;opacity:' + (on ? 1 : .35) + ';filter:' + (on ? 'none' : 'grayscale(1)') + '">' + ic(m[1], 40) + '<div style="font-size:10px;font-weight:900;margin-top:2px">' + m[0] + ' <span data-notr>' + tr('દિવસ') + '</span></div></div>'; }).join('');
+      var nextM = [3, 7, 14, 30, 60].filter(function (x) { return x > t.n; })[0];
+      var h = '<div style="text-align:center;padding:6px 0 2px"><div style="font-size:50px;line-height:1" data-notr>' + ic('streak', 54) + '</div><div style="font-size:38px;font-weight:900;color:#ea580c;line-height:1.1" data-notr>' + t.n + '</div><div style="font-size:12px;font-weight:800;color:#64748b">લાગલગાટ દિવસ</div></div>' +
+        '<div style="display:flex;gap:8px;margin:10px 0"><div style="flex:1;background:#fff7ed;border-radius:14px;padding:8px;text-align:center"><div style="font-size:10px;font-weight:800;color:#9a3412">શ્રેષ્ઠ</div><b data-notr>' + t.best + '</b></div><div style="flex:1;background:#eff6ff;border-radius:14px;padding:8px;text-align:center"><div style="font-size:10px;font-weight:800;color:#1d4ed8">🛡 શિલ્ડ</div><b data-notr>' + t.sh + '/2</b></div></div>' +
+        '<div style="font-size:12px;font-weight:900;margin:6px 0">છેલ્લા 14 દિવસ</div><div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center">' + dots + '</div>' +
+        '<div style="font-size:12px;font-weight:900;margin:14px 0 6px">🏅 મેડલ</div><div style="display:flex;justify-content:space-around">' + med + '</div>' +
+        '<div style="margin-top:12px;background:#f0fdfa;border-radius:14px;padding:9px;font-size:11px;font-weight:700;color:#0f766e;line-height:1.5">' + (nextM ? 'હજી ' + (nextM - t.n) + ' દિવસ પછી ' + nextM + ' દિવસનો મેડલ! ' : '') + 'એક દિવસ ચૂકી જાઓ તો 🛡 શિલ્ડ સ્ટ્રેક બચાવે. દર 7 દિવસે નવી શિલ્ડ મળે (વધુમાં વધુ 2). દિવસ ગણાવા માટે સ્કોર 60% કે વધુ જોઈએ.</div>';
+      sheetOpen('🔥 તમારો સ્ટ્રેક', h);
+    };
     function renderSathi() {
       var host = document.getElementById('tabContentToday'); if (!host || !currentClient || !window.S3) return;
       var old = document.getElementById('mpSathi'); if (old) old.remove();
       if (currentClient.avatarOff === true) return;
-      var a = saAvatar(), s = saStats();
+      var a = saAvatar(), s = saStats(), stk = mpStreakCalc();
       var usePrem = a.prem && !PREM_BAD[a.g + '_' + a.prem], pose = s.today.done >= 3 ? 'cheer' : (new Date().getHours() < 7 ? 'sleepy' : 'talk');
       var bgc = usePrem && AVBG[a.g + '_' + a.prem] ? AVBG[a.g + '_' + a.prem] : ['#2b4270', '#16254a'];
       var box = document.createElement('div'); box.id = 'mpSathi';
@@ -3306,10 +3349,10 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var pct = Math.min(100, Math.round(s.pts / s.nxt * 100));
       var figure = usePrem ? '<img alt="" src="' + premSrc(a, pose) + '" onerror="mpPremErr(this,\'' + a.g + '\',\'' + a.prem + '\',\'' + pose + '\')" style="width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 8px 8px rgba(0,0,0,.3))" class="s3-float">' : S3.avatar({ g: a.g, hair: a.hair, outfit: a.outfit, col: a.col, hc: a.hc, beard: a.beard, acc: a.acc, lvl: s.lvl, mood: saMood(s) }).replace('<svg ', '<svg style="width:100%;height:100%" ');
       var chip = function (l, id) { return '<div style="background:rgba(0,0,0,.24);border-radius:10px;padding:4px 2px;text-align:center"><small style="display:block;font-size:8px;opacity:.8;font-weight:700">' + l.replace('💪', ic('muscle', 12)) + '</small><b id="' + id + '" style="font-size:12px;font-weight:900" data-notr>-</b></div>'; };
-      var chipW = function (l, id) { return '<div onclick="addWater(0.25)" style="background:rgba(0,0,0,.24);border-radius:10px;padding:4px 2px;text-align:center;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(125,211,252,.55)"><small style="display:block;font-size:8px;opacity:.9;font-weight:700">' + l.replace('💧', ic('water', 12)) + ' +</small><b id="' + id + '" style="font-size:12px;font-weight:900" data-notr>-</b></div>'; };
+      var chipW = function (l, id) { return '<div id="mpSGlBox" onclick="addWater(0.25)" style="background:rgba(0,0,0,.24);border-radius:10px;padding:4px 2px;text-align:center;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(125,211,252,.55)"><small style="display:block;font-size:8px;opacity:.9;font-weight:700">' + l.replace('💧', ic('water', 12)) + ' +</small><b id="' + id + '" style="font-size:12px;font-weight:900" data-notr>-</b></div>'; };
       var btn = 'flex:1;padding:7px 2px;border-radius:12px;font-size:10.5px;font-weight:800;border:0;color:#fff;font-family:inherit;white-space:nowrap';
-      box.innerHTML = '<div style="flex:0 0 128px;height:206px;margin-left:-4px">' + figure + '</div>' +
-        '<div style="flex:1;min-width:0"><div style="display:flex;gap:5px;align-items:center;margin-bottom:5px"><span style="background:#14b8a6;color:#052e2b;font-weight:900;font-size:10px;padding:2px 8px;border-radius:99px">લેવલ ' + (s.lvl + 1) + '</span><span style="font-size:11px;font-weight:800;flex:1">' + SA_TITLES[s.lvl] + '</span><span style="background:rgba(0,0,0,.28);color:#ffd98a;font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px;display:inline-flex;align-items:center;gap:3px" data-notr>' + ic('coin', 15) + ' ' + (currentClient.coins || 0) + '</span></div>' +
+      box.innerHTML = '<div style="flex:0 0 142px;height:224px;margin-left:-6px">' + figure + '</div>' +
+        '<div style="flex:1;min-width:0"><div style="display:flex;gap:5px;align-items:center;margin-bottom:5px"><span style="background:#14b8a6;color:#052e2b;font-weight:900;font-size:10px;padding:2px 8px;border-radius:99px">લેવલ ' + (s.lvl + 1) + '</span><span style="font-size:11px;font-weight:800;flex:1">' + SA_TITLES[s.lvl] + '</span><span style="background:rgba(0,0,0,.28);color:#ffd98a;font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px;display:inline-flex;align-items:center;gap:3px" data-notr>' + ic('coin', 15) + ' ' + (currentClient.coins || 0) + '</span><span onclick="mpStreakOpen()" style="background:rgba(0,0,0,.28);color:#fdba74;font-size:11px;font-weight:900;padding:2px 8px;border-radius:99px;display:inline-flex;align-items:center;gap:2px;cursor:pointer" data-notr>' + ic('streak', 15) + ' ' + stk.n + (stk.sh && stk.n ? ' <span style="font-size:10px">🛡' + stk.sh + '</span>' : '') + '</span></div>' +
         '<div style="background:rgba(0,0,0,.22);border-radius:14px 14px 14px 4px;padding:6px 9px;font-size:11px;font-weight:700;line-height:1.45">' + esc(saMsg(s)) + '</div>' +
         '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:7px">' + chip('કેલરી', 'mpSCal') + chip('💪 પ્રોટીન', 'mpSPro') + chipW('💧 પાણી', 'mpSGl') + chip('સ્કોર', 'mpSSc') + '</div>' +
         '<div style="height:6px;border-radius:9px;background:rgba(0,0,0,.3);margin-top:7px;overflow:hidden"><i style="display:block;height:100%;width:' + pct + '%;background:linear-gradient(90deg,#5eead4,#fde68a)"></i></div><div style="font-size:9px;opacity:.8;margin-top:2px" data-notr>' + (s.lvl < 3 ? s.pts + ' / ' + s.nxt + ' ' : '') + tr('અઠવાડિયાના પોઇન્ટ') + '</div>' +
@@ -4113,6 +4156,12 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     ['તમારા માટે ઉપર મુજબ માપ જ રાખો. બાકીના સભ્યો ઇચ્છે તો રોટલી/ભાત થોડા વધુ લઈ શકે.', 'आपके लिए ऊपर के अनुसार माप ही रखें। बाकी सदस्य चाहें तो रोटी/चावल थोड़े ज़्यादा ले सकते हैं।', 'Keep your own portions as above. Others may take a bit more roti/rice if they wish.'],
     ['ક્લાયન્ટે ઉમેરેલું (છેલ્લા ૩ દિવસ)', 'क्लाइंट ने जोड़ा (पिछले ३ दिन)', 'Added by client (last 3 days)'],
     ['⭐ તમારી રોજની પસંદ', '⭐ आपकी रोज़ की पसंद', '⭐ Your daily favourites'], ['તમારી રોજની પસંદ', 'आपकी रोज़ की पसंद', 'Your daily favourites'], ['🌙 કાલે', '🌙 कल', '🌙 Tomorrow'], ['બાકી', 'बाकी', 'left'], ['દિવસ', 'दिन', 'Day'], ['ટૂંકી ભોજન લાઈનો', 'छोटी भोजन पंक्तियाँ', 'Compact meal rows'], ['વસ્તુ બદલો', 'चीज़ बदलें', 'Swap item'], ['ઉમેરો', 'जोड़ें', 'Add']
+    ['📤 કોચને', '📤 कोच को', '📤 Send to'], ['મોકલો', 'भेजें', 'coach'],
+    ['💬 1 દિવસ', '💬 1 दिन', '💬 1 day'], ['💬 7 દિવસ', '💬 7 दिन', '💬 7 days'],
+    ['🔥 તમારો સ્ટ્રેક', '🔥 आपकी स्ट्रीक', '🔥 Your streak'], ['લાગલગાટ દિવસ', 'लगातार दिन', 'days in a row'],
+    ['શ્રેષ્ઠ', 'सर्वश्रेष्ठ', 'Best'], ['🛡 શિલ્ડ', '🛡 शील्ड', '🛡 Shield'], ['છેલ્લા 14 દિવસ', 'पिछले 14 दिन', 'Last 14 days'], ['🏅 મેડલ', '🏅 मेडल', '🏅 Medals'],
+    ['દિવસનો મેડલ', 'दिन का मेडल', 'day medal'], ['દિવસ પછી', 'दिन बाद', 'more days →'], ['હજી', 'अभी', 'Only'], [' દિવસ પછી ', ' दिन बाद ', ' more days to the '], [' દિવસનો મેડલ! ', ' दिन का मेडल! ', '-day medal! '],
+    ['એક દિવસ ચૂકી જાઓ તો 🛡 શિલ્ડ સ્ટ્રેક બચાવે. દર 7 દિવસે નવી શિલ્ડ મળે (વધુમાં વધુ 2). દિવસ ગણાવા માટે સ્કોર 60% કે વધુ જોઈએ.', 'एक दिन चूक जाएँ तो 🛡 शील्ड स्ट्रीक बचाती है। हर 7 दिन पर नई शील्ड मिलती है (अधिकतम 2)। दिन गिने जाने के लिए स्कोर 60% या अधिक चाहिए।', 'If you miss a day, a 🛡 shield saves your streak. You earn a new shield every 7 days (max 2). A day counts when your score is 60% or more.'],
   ];
   T.forEach(function (t) { try { i18nAdd(t[0], t[1], t[2]); } catch (e) { } });
   try { if (typeof CUR_LANG !== 'undefined' && CUR_LANG !== 'gu' && typeof i18nApplyAll === 'function') i18nApplyAll(); } catch (e) { }
@@ -4156,6 +4205,8 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
 ;(function () {
   try { var st = document.createElement('style'); st.textContent = '#tabContentProfile div:has(> .lang-picker){display:none!important}#tabContentProfile .border-t:has(.lang-picker){display:none!important}'; document.head.appendChild(st); } catch (e) { }
 })();
+
+(function(){ if(document.getElementById('mpHideSend'))return; var st=document.createElement('style'); st.id='mpHideSend'; st.textContent="#tabContentToday .brand-gradient[onclick*=\"submitClientReport('daily')\"]{display:none!important}#tabContentReports .bg-slate-900[onclick*=\"submitClientReport('summary')\"]{display:none!important}"; document.head.appendChild(st); })();
 
 </script>
 </body>
