@@ -3171,6 +3171,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
           '<div style="margin-top:14px"><button type="button" onclick="shareGroceryWhatsApp()" style="width:100%;padding:11px;border-radius:14px;background:#16a34a;color:#fff;font-weight:900;font-size:13px">💬 WhatsApp પર મોકલો</button></div>');
       }
       else if (k === 'diary' || k === 'vit') { var dn = document.getElementById('mpStash') && Array.prototype.filter.call(document.getElementById('mpStash').children, function (x) { return x.getAttribute('data-mpkey') === k; })[0]; if (!dn) { alert('ડાયરી હમણાં ઉપલબ્ધ નથી.'); return; } sheetOpen(k === 'vit' ? '🩸 વાઇટલ્સ અને સુગર' : '🧘 આજની ડાયરી', '', [dn]); }
+      else if (k === 'cards') { mpCardsOpen(); }
       else if (k === 'rep') { var a = document.getElementById('cpWeeklySummary'), tb = document.getElementById('cpTrendBox'), t2 = tb && tb.closest('.card-clean'); sheetOpen('📊 7 દિવસનો રિપોર્ટ', '', [a, t2].filter(Boolean)); }
     };
     function renderProgBtns() {
@@ -3178,9 +3179,10 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var old = document.getElementById('mpProgBtns'); if (old) old.remove();
       var gro = document.getElementById('weeklyGroceryDisplay'), fc = document.getElementById('upcomingForecastContainer'), tb = document.getElementById('cpTrendBox');
       [gro && gro.closest('.card-clean'), fc && fc.closest('.card-clean'), document.getElementById('cpWeeklySummary'), tb && tb.closest('.card-clean')].forEach(function (n) { if (n && n.parentNode !== document.getElementById('mpSheetBody') && n.parentNode !== stash()) stash().appendChild(n); });
-      var it = [['📅', 'આવતીકાલનું મેનુ', 'tom'], ['🗓', 'આખું અઠવાડિયું', 'week'], ['🛒', 'કરિયાણું', 'gro'], ['🧘', 'આજની ડાયરી', 'diary'], ['📊', '7 દિવસનો રિપોર્ટ', 'rep'], ['🩸', 'વાઇટલ્સ અને સુગર', 'vit']];
+      var it = [['📅', 'આવતીકાલનું મેનુ', 'tom'], ['🗓', 'આખું અઠવાડિયું', 'week'], ['🛒', 'કરિયાણું', 'gro'], ['🧘', 'આજની ડાયરી', 'diary'], ['📊', '7 દિવસનો રિપોર્ટ', 'rep'], ['🩸', 'વાઇટલ્સ અને સુગર', 'vit'], ['🎴', 'શેર કાર્ડ્સ (Instagram/WhatsApp)', 'cards']];
       var box = document.createElement('div'); box.id = 'mpProgBtns'; box.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px';
       box.innerHTML = it.map(function (x, i) { return '<button type="button" onclick="mpProgOpen(\'' + x[2] + '\')" style="' + '' + 'background:#fff;border-radius:18px;padding:12px 8px;text-align:center;font-size:12px;font-weight:900;box-shadow:0 4px 12px rgba(30,58,138,.08);border:1px solid #e2e8f0"><span style="display:block;font-size:22px;margin-bottom:2px">' + x[0] + '</span>' + x[1] + '</button>'; }).join('');
+      try { box.lastChild.style.gridColumn = '1 / -1'; } catch (e) { }
       root.insertBefore(box, root.firstChild);
       var old2 = document.getElementById('mpSendRow'); if (old2) old2.remove();
       var sr = document.createElement('div'); sr.id = 'mpSendRow'; sr.style.cssText = 'background:#fff;border-radius:18px;padding:10px 12px;box-shadow:0 4px 12px rgba(15,42,74,.08);margin-top:8px;display:flex;align-items:center;gap:8px';
@@ -3290,7 +3292,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       return 'ચાલો ' + n + ', આજનું ભોજન માર્ક કરીએ. હું સાથે છું 🙏';
     }
     function saMood(s) { return s.today.done >= 3 ? 'cheer' : (new Date().getHours() < 7 ? 'sleepy' : 'happy'); }
-    function ic(n, px) { var u = window.MPIC && window.MPIC['ic_' + n]; return u ? '<img alt="" src="' + u + '" style="display:inline-block;width:' + px + 'px;height:' + px + 'px;vertical-align:-' + Math.round(px * 0.2) + 'px">' : ({ coin: '🪙', water: '💧', muscle: '💪', gift: '🎁', streak: '🔥', vip: '👑' }[n] || ''); }
+    function ic(n, px) { var u = (window.MPSVG && window.MPSVG[n]) || (window.MPIC && window.MPIC['ic_' + n]); return u ? '<img alt="" src="' + u + '" style="display:inline-block;width:' + px + 'px;height:' + px + 'px;vertical-align:-' + Math.round(px * 0.2) + 'px">' : ({ coin: '🪙', water: '💧', muscle: '💪', gift: '🎁', streak: '🔥', vip: '👑' }[n] || ''); }
     (function () { if (window.MPIC || window.__mpicLoading) return; window.__mpicLoading = 1; var sc = document.createElement('script'); sc.src = 'icons.js'; sc.async = true; document.head.appendChild(sc); window.addEventListener('mpic', function () { try { renderSathi(); renderJourney(); } catch (e) { } }); })();
     var AVBG = {"f_chaniyacholi": ["#5fa2a9", "#458086"], "f_kurti": ["#528498", "#3a6272"], "f_salwar": ["#476384", "#30455e"], "f_saree": ["#5fa2a9", "#458086"], "f_yoga": ["#5fa994", "#458673"], "m_nehru": ["#476284", "#30445e"], "m_pagdi": ["#529398", "#3a6e72"], "m_sherwani": ["#5fa981", "#458663"], "m_sporty": ["#a9a75f", "#868545"]};
     var sathiObs = null;
@@ -3298,7 +3300,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       [['cpConsumedCal', 'mpSCal'], ['cpProteinStats', 'mpSPro'], ['cpWaterCount', 'mpSGl'], ['cpScoreBadge', 'mpSSc']].forEach(function (m) {
         var src = document.getElementById(m[0]), dst = document.getElementById(m[1]); if (!src || !dst) return;
         var t = (src.innerText || '').replace('GL:', '').replace(/Liters?/i, 'L').replace(/\s+/g, '').trim(), x = t.split('/');
-        if (m[1] === 'mpSGl') { var bx = document.getElementById('mpSGlBox'), wp = x.length > 1 && parseFloat(x[1]) > 0 ? Math.max(0, Math.min(100, Math.round(parseFloat(x[0]) / parseFloat(x[1]) * 100))) : 0; if (bx) bx.style.background = 'linear-gradient(to top,rgba(56,189,248,.75) ' + wp + '%,rgba(0,0,0,.24) ' + wp + '%)'; }
+        if (m[1] === 'mpSGl') { var bx = document.getElementById('mpSGlBox'), wp = x.length > 1 && parseFloat(x[1]) > 0 ? Math.max(0, Math.min(100, Math.round(parseFloat(x[0]) / parseFloat(x[1]) * 100))) : 0; if (bx) bx.style.background = 'linear-gradient(to top,rgba(56,189,248,.75) ' + wp + '%,rgba(0,0,0,.24) ' + wp + '%)'; var wl = document.getElementById('mpWater'); if (wl) wl.style.height = Math.max(4, Math.round(wp * 0.62)) + '%'; }
         dst.innerHTML = x.length > 1 ? esc(x[0]) + '<i style="font-size:8px;font-style:normal;opacity:.75;font-weight:700">/' + esc(x[1]) + '</i>' : esc(t);
       });
     }
@@ -3330,6 +3332,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     /* ---------- દીવો/તુલસી, તહેવાર, શેર કાર્ડ ---------- */
     function mpLoad(src, flag, ev) { if (window[flag]) return; var k = '__ld' + flag; if (window[k]) return; window[k] = 1; var sc = document.createElement('script'); sc.src = src; sc.async = true; document.head.appendChild(sc); window.addEventListener(ev, function () { try { renderSathi(); } catch (e) { } }); }
     function sk(n, px) { var u = window.MPSTK && window.MPSTK[n]; return u ? '<img alt="" src="' + u + '" style="width:' + px + 'px;height:' + px + 'px;object-fit:contain">' : ''; }
+    function flN(n) { return n >= 60 ? 'flame5' : n >= 30 ? 'flame4' : n >= 14 ? 'flame3' : n >= 7 ? 'flame2' : 'flame1'; }
     function stkStage(n) { return n < 3 ? 1 : n < 7 ? 2 : n < 14 ? 3 : 4; }
     var FEST = [['2026-10-11', '2026-10-20', 'navratri', 'શુભ નવરાત્રિ'], ['2026-11-05', '2026-11-12', 'diwali', 'શુભ દિવાળી'], ['2027-01-12', '2027-01-15', 'uttarayan', 'હેપ્પી ઉત્તરાયણ'], ['2027-03-20', '2027-03-23', 'holi', 'હેપ્પી હોળી'], ['2027-10-01', '2027-10-10', 'navratri', 'શુભ નવરાત્રિ'], ['2027-10-27', '2027-11-03', 'diwali', 'શુભ દિવાળી']];
     function mpFest() {
@@ -3338,10 +3341,10 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       return null;
     }
     function mpImg(src) { return new Promise(function (res) { if (!src) return res(null); var i = new Image(); i.onload = function () { res(i); }; i.onerror = function () { res(null); }; i.src = src; }); }
-    window.mpStreakShare = function (fmt) {
+    function mpStreakCanvas(fmt) {
       var t = mpStreakCalc(), a = saAvatar(), W = 1080, H = fmt === 'sq' ? 1080 : 1920, fe = mpFest(), st = stkStage(t.n);
       var usePrem = a.prem && !PREM_BAD[a.g + '_' + a.prem], bgc = usePrem && AVBG[a.g + '_' + a.prem] ? AVBG[a.g + '_' + a.prem] : ['#2b4270', '#16254a'];
-      Promise.all([mpImg(usePrem ? premSrc(a, 'cheer') : null), mpImg(window.MPSTK && window.MPSTK['diya_' + st]), mpImg(window.MPSTK && window.MPSTK['tulsi_' + st]), mpImg(fe && window.MPFEST && window.MPFEST[fe.k])]).then(function (im) {
+      return Promise.all([mpImg(usePrem ? premSrc(a, 'cheer') : null), mpImg(window.MPSTK && window.MPSTK['diya_' + st]), mpImg(window.MPSTK && window.MPSTK['tulsi_' + st]), mpImg(fe && window.MPFEST && window.MPFEST[fe.k])]).then(function (im) {
         var c = document.createElement('canvas'); c.width = W; c.height = H; var x = c.getContext('2d'), F = "'Noto Sans Gujarati','Shruti','Inter',sans-serif";
         var g = x.createLinearGradient(0, 0, W * .4, H); g.addColorStop(0, bgc[0]); g.addColorStop(1, bgc[1]); x.fillStyle = g; x.fillRect(0, 0, W, H);
         if (im[3]) { var r = Math.max(W / im[3].width, H / im[3].height); x.globalAlpha = .55; x.drawImage(im[3], (W - im[3].width * r) / 2, 0, im[3].width * r, im[3].height * r); x.globalAlpha = 1; var ov = x.createLinearGradient(0, 0, 0, H); ov.addColorStop(0, 'rgba(0,0,0,.25)'); ov.addColorStop(1, 'rgba(0,0,0,.6)'); x.fillStyle = ov; x.fillRect(0, 0, W, H); }
@@ -3355,13 +3358,10 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         else { if (im[1]) x.drawImage(im[1], 40, 560, 260, 260); if (im[0]) { var ar2 = im[0].width / im[0].height; x.drawImage(im[0], (W - 640 * ar2) / 2, 440, 640 * ar2, 640); } if (im[2]) x.drawImage(im[2], W - 300, 560, 260, 260); }
         x.fillStyle = '#fff'; x.font = '800 46px ' + F; var nm = (currentClient.name || '').split(' ')[0]; x.fillText(nm + ' નો હેલ્ધી સ્ટ્રેક', W / 2, H - (fmt === 'sq' ? 70 : 170));
         x.font = '600 34px ' + F; x.globalAlpha = .8; x.fillText('રોજ નિયમ, રોજ સંયમ 🙏', W / 2, H - (fmt === 'sq' ? 25 : 110)); x.globalAlpha = 1;
-        c.toBlob(function (bl) {
-          if (!bl) return; var f; try { f = new File([bl], 'streak-' + t.n + '.png', { type: 'image/png' }); } catch (e) { f = null; }
-          if (f && navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], title: 'મારો સ્ટ્રેક ' + t.n + ' દિવસ' }).catch(function () { }); }
-          else { var u = URL.createObjectURL(bl), l = document.createElement('a'); l.href = u; l.download = 'streak-' + t.n + '.png'; document.body.appendChild(l); l.click(); l.remove(); alert('ઇમેજ સેવ થઈ ગઈ. હવે Instagram/WhatsApp માં ગેલેરીમાંથી મૂકો.'); }
-        }, 'image/png');
+        return c;
       });
-    };
+    }
+    window.mpStreakShare = function (fmt) { mpStreakCanvas(fmt).then(function (c) { mpShareCanvas(c, 'streak.png', 'નિયમ સંયમ'); }); };
     function mpCelebrate(n) {
       var key = 'mpCel_' + n + '_' + dateKeyOf(new Date()); try { if (localStorage.getItem(key)) return; localStorage.setItem(key, '1'); } catch (e) { }
       if (document.getElementById('mpCel')) return;
@@ -3369,21 +3369,172 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var em = ['🎉', '✨', '🪔', '🌟', '🎊', '🔥'], cf = ''; for (var i = 0; i < 24; i++) cf += '<i style="position:absolute;top:-30px;left:' + (Math.random() * 100) + '%;font-size:' + (16 + Math.random() * 18) + 'px;font-style:normal;animation:mpFall ' + (2.5 + Math.random() * 2.5) + 's linear ' + (Math.random() * 1.5) + 's infinite">' + em[i % em.length] + '</i>';
       var mm = n >= 30 ? 'vip' : n >= 14 ? 'medal3' : n >= 7 ? 'medal2' : 'medal1';
       ov.innerHTML = '<style>@keyframes mpFall{to{transform:translateY(110vh) rotate(360deg)}}@keyframes mpPop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}</style>' + cf +
-        '<div style="position:relative;background:#fff;border-radius:28px;padding:22px 20px;width:84%;max-width:21rem;text-align:center;animation:mpPop .4s ease-out"><div data-notr>' + ic(mm, 80) + '</div><div style="font-size:22px;font-weight:900;color:#ea580c;margin-top:4px" data-notr>🔥 ' + n + ' <span>' + tr('દિવસ') + '</span></div><div style="font-size:12px;font-weight:700;color:#475569;margin:6px 0 14px">વાહ! તમારો સ્ટ્રેક નવા મુકામ પર પહોંચ્યો. આ સફળતા શેર કરો!</div>' +
-        '<button type="button" onclick="mpStreakShare(\'story\')" style="width:100%;padding:11px;border-radius:14px;background:linear-gradient(90deg,#f97316,#db2777);color:#fff;font-weight:900;font-size:13px;border:0">📲 Instagram / WhatsApp સ્ટોરી</button>' +
+        '<div style="position:relative;background:#fff;border-radius:28px;padding:22px 20px;width:84%;max-width:21rem;text-align:center;animation:mpPop .4s ease-out"><div data-notr style="display:flex;justify-content:center;align-items:center;gap:6px">' + ic('confetti', 56) + ic(mm, 80) + ic(flN(n), 56) + '</div><div style="font-size:22px;font-weight:900;color:#ea580c;margin-top:4px" data-notr>🔥 ' + n + ' <span>' + tr('દિવસ') + '</span></div><div style="font-size:12px;font-weight:700;color:#475569;margin:6px 0 14px">વાહ! તમારો સ્ટ્રેક નવા મુકામ પર પહોંચ્યો. આ સફળતા શેર કરો!</div>' +
+        '<button type="button" onclick="document.getElementById(\'mpCel\').remove();mpCardsOpen(\'streak\')" style="width:100%;padding:11px;border-radius:14px;background:linear-gradient(90deg,#f97316,#db2777);color:#fff;font-weight:900;font-size:13px;border:0">📲 Instagram / WhatsApp સ્ટોરી</button>' +
         '<button type="button" onclick="document.getElementById(\'mpCel\').remove()" style="margin-top:8px;width:100%;padding:9px;border-radius:14px;background:#f1f5f9;color:#334155;font-weight:800;font-size:12px;border:0">પછી</button></div>';
       document.body.appendChild(ov);
     }
+    /* ---------- શેર કાર્ડ્સ (અસલી ડેટા), થાળી ફોટો, વિડીયો, કોચની જાહેરાત ---------- */
+    function L(gu, hi, en) { return CUR_LANG === 'hi' ? hi : CUR_LANG === 'en' ? en : gu; }
+    var CFONT = "'Noto Sans Gujarati','Shruti','Noto Sans Devanagari','Inter',sans-serif";
+    function mpSaveBlob(bl, name) { var u = URL.createObjectURL(bl), l = document.createElement('a'); l.href = u; l.download = name; document.body.appendChild(l); l.click(); l.remove(); setTimeout(function () { URL.revokeObjectURL(u); }, 4000); }
+    function mpShareBlob(bl, name, title, ask) {
+      if (!bl) return; var f = null; try { f = new File([bl], name, { type: bl.type }); } catch (e) { }
+      if (f && navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], title: title }).catch(function () { }); }
+      else { mpSaveBlob(bl, name); alert(L('ફાઇલ સેવ થઈ ગઈ. હવે Instagram/WhatsApp ખોલી ગેલેરીમાંથી પસંદ કરો.', 'फ़ाइल सेव हो गई। अब Instagram/WhatsApp खोलकर गैलरी से चुनें।', 'Saved. Now open Instagram/WhatsApp and pick it from your gallery.')); }
+    }
+    function mpShareCanvas(c, name, title) { c.toBlob(function (bl) { mpShareBlob(bl, name, title); }, 'image/png'); }
+    function mpWrap(x, text, maxW, maxLines) {
+      var words = String(text || '').split(/\s+/), lines = [], cur = '';
+      words.forEach(function (w) { var t = cur ? cur + ' ' + w : w; if (x.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t; });
+      if (cur) lines.push(cur); if (lines.length > maxLines) { lines = lines.slice(0, maxLines); lines[maxLines - 1] += '…'; } return lines;
+    }
+    function mpNums() {
+      var g = function (id) { var e = document.getElementById(id); return e ? (e.innerText || '') : ''; }, m = function (s) { var r = s.match(/([\d.]+)\s*[a-zA-Z]*\s*\/\s*([\d.]+)/); return r ? [parseFloat(r[1]), parseFloat(r[2])] : [0, 0]; };
+      var c = m(g('cpConsumedCal')), p = m(g('cpProteinStats')), w = m(g('cpWaterCount'));
+      return { cal: Math.round(c[0]), calGoal: Math.round(c[1]), pro: Math.round(p[0]), proGoal: Math.round(p[1]), wat: w[0], watGoal: w[1] };
+    }
+    var CGR = { fullday: ['#0f766e', '#134e4a'], protein: ['#1e3a8a', '#1e40af'], water: ['#0369a1', '#0c4a6e'], weekly: ['#0f172a', '#1e293b'], shield: ['#334155', '#1e293b'], journey: ['#4338ca', '#312e81'], comeback: ['#1e40af', '#1e3a8a'], active: ['#0f766e', '#115e59'], sleep: ['#1e1b4b', '#0f172a'], family: ['#065f46', '#064e3b'], fest: ['#9a3412', '#7c2d12'], streak: ['#b45309', '#78350f'], ann: ['#7c2d12', '#431407'] };
+    function mpCardList() {
+      var cl = currentClient, k = dateKeyOf(new Date()), sc = dayScorePct(k), stk = mpStreakCalc(), nm = mpNums(), comp = (cl.compliance || {})[k] || {}, ls = comp.lifestyle || {}, out = [], fe = mpFest();
+      var done = Object.keys(comp.checks || {}).filter(function (s) { return comp.checks[s] === 'done'; });
+      var plan = {}; try { plan = getDayPlan(k, cl); } catch (e) { }
+      if (stk.n >= 1) out.push({ id: 'streak', kind: 'streak', icon: flN(stk.n), t: L('મારો સ્ટ્રેક', 'मेरी स्ट्रीक', 'My streak'), m: stk.n + ' ' + tr('દિવસ') });
+      if (fe) out.push({ id: 'fest', kind: 'fest', icon: '🪔', badge: 'FESTIVAL', t: L(fe.g, fe.g, fe.g), m: L('સ્વસ્થ રહો, મસ્ત રહો', 'स्वस्थ रहें, मस्त रहें', 'Stay healthy, stay happy'), s: L('સંયમ સાથે તહેવારની મજા', 'संयम के साथ त्योहार की खुशी', 'Enjoy the festival mindfully'), b: L('તહેવારમાં પણ સ્માર્ટ ચોઈસ — નિયમ અને સંયમ સાથે!', 'त्योहार में भी स्मार्ट चुनाव — नियम और संयम के साथ!', 'Smart choices even at festivals!'), chips: ['🪔', '💚'], bgFest: fe.k });
+      if (sc !== null && sc >= 60) out.push({ id: 'fullday', kind: 'fullday', icon: 'thali_gold', badge: 'FULL DAY', t: L('આજની સંપૂર્ણ થાળી', 'आज की पूरी थाली', "Today's full thali"), m: nm.cal + ' kcal', s: L('ન્યુટ્રિશન સ્કોર ', 'पोषण स्कोर ', 'Nutrition score ') + sc + '%', b: done.map(function (s) { return plan[s] && plan[s].name; }).filter(Boolean).slice(0, 4).join(' • '), chips: ['🕒 ' + done.length + ' ' + L('ભોજન', 'भोजन', 'meals'), '💧 ' + (nm.wat || 0) + ' L'], pct: sc });
+      if (nm.proGoal && nm.pro >= nm.proGoal * 0.95) out.push({ id: 'protein', kind: 'protein', icon: 'muscle', badge: 'PROTEIN GOAL', t: L('પ્રોટીન ચેમ્પિયન', 'प्रोटीन चैंपियन', 'Protein champion'), m: nm.pro + 'g / ' + nm.proGoal + 'g', s: Math.round(nm.pro / nm.proGoal * 100) + '% ' + L('ટાર્ગેટ પૂર્ણ', 'लक्ष्य पूरा', 'of target'), b: L('ઘરના ભોજનમાંથી આજનો પ્રોટીન ગોલ પૂરો!', 'घर के खाने से आज का प्रोटीन लक्ष्य पूरा!', "Today's protein goal done with home food!"), chips: ['🥗', '💪'], pct: 100 });
+      if (nm.watGoal && nm.wat >= nm.watGoal) out.push({ id: 'water', kind: 'water', icon: 'water', badge: 'HYDRATION', t: L('પાણીનો ગોલ પૂરો', 'पानी का लक्ष्य पूरा', 'Water goal done'), m: nm.wat + ' L', s: L('આખા દિવસનું હાઇડ્રેશન', 'पूरे दिन की हाइड्रेशन', "Full day's hydration"), b: L('પૂરતું પાણી = પાચન, ઊર્જા અને ક્રેવિંગ કંટ્રોલ.', 'पर्याप्त पानी = पाचन, ऊर्जा और क्रेविंग कंट्रोल।', 'Enough water helps digestion, energy and cravings.'), chips: ['💧', '✨'], pct: 100 });
+      var sc7 = [], d7 = 0; for (var j = 0; j < 7; j++) { var s2 = dayScorePct(dateKeyOf(new Date(Date.now() - j * 864e5))); if (s2 !== null) { sc7.push(s2); if (s2 >= 60) d7++; } }
+      if (sc7.length >= 3) { var av = Math.round(sc7.reduce(function (a, b) { return a + b; }, 0) / sc7.length); out.push({ id: 'weekly', kind: 'weekly', icon: 'trophy', badge: 'WEEKLY', t: L('આ અઠવાડિયાનો રિપોર્ટ', 'इस हफ़्ते की रिपोर्ट', 'This week report'), m: av + '%', s: d7 + '/' + sc7.length + ' ' + L('દિવસ 60%+ સ્કોર', 'दिन 60%+ स्कोर', 'days at 60%+'), b: L('સતત નિયમિત રહેવું એ જ સૌથી મોટી જીત!', 'लगातार नियमित रहना ही सबसे बड़ी जीत है!', 'Staying consistent is the real win!'), chips: ['📊', '🔥 ' + stk.n], pct: av }); }
+      var sh = Object.keys(cl.shieldUsed || {}).filter(function (x) { return x >= dateKeyOf(new Date(Date.now() - 3 * 864e5)); });
+      if (sh.length) out.push({ id: 'shield', kind: 'shield', icon: 'shield', badge: 'STREAK SAVED', t: L('શિલ્ડે સ્ટ્રેક બચાવી લીધો!', 'शील्ड ने स्ट्रीक बचा ली!', 'Shield saved my streak!'), m: stk.n + ' ' + tr('દિવસ'), s: L('સ્ટ્રેક અખંડ', 'स्ट्रीक अखंड', 'Streak intact'), b: L('એક દિવસ ચૂક્યા છતાં મહેનત બચી ગઈ.', 'एक दिन चूकने पर भी मेहनत बच गई।', 'Missed a day, but the effort was saved.'), chips: ['🛡', '🔥'], pct: 80 });
+      var jn = jnState(); if (jn.cur > 0) { var st = JN[jn.cur - 1]; out.push({ id: 'journey', kind: 'journey', icon: st[1], badge: 'MILESTONE', t: 'ગુજરાત દર્શન — ' + st[2], m: jn.cur + ' / 9', s: jn.d + ' / 30 ' + tr('દિવસ'), b: st[5], chips: ['🗺️', '🙏'], bgJn: st[0], pct: Math.round(jn.d / 30 * 100) }); }
+      var ysc = dayScorePct(dateKeyOf(new Date(Date.now() - 864e5)));
+      if (sc !== null && sc >= 60 && (ysc === null || ysc < 60)) out.push({ id: 'comeback', kind: 'comeback', icon: 'rocket', badge: 'BOUNCE BACK', t: L('કમબેક ડે!', 'कमबैक डे!', 'Comeback day!'), m: sc + '%', s: L('ગિલ્ટ વગર ફરી ટ્રેક પર', 'बिना गिल्ट फिर ट्रैक पर', 'Back on track, no guilt'), b: L('ગઈકાલ ગઈ, આજે ફરી શરૂઆત!', 'कल गया, आज फिर शुरुआत!', 'Yesterday is gone, a fresh start today!'), chips: ['🚀', '💪'], pct: sc });
+      if (Number(ls.steps) >= 6000 || Number(ls.workoutMins) >= 15) out.push({ id: 'active', kind: 'active', icon: 'walk', badge: 'ACTIVE DAY', t: L('એક્ટિવ ડે!', 'एक्टिव डे!', 'Active day!'), m: Number(ls.steps) >= 6000 ? ls.steps + ' ' + L('પગલાં', 'कदम', 'steps') : ls.workoutMins + ' ' + L('મિનિટ', 'मिनट', 'min'), s: L('ચાલવું/કસરત પૂર્ણ', 'चलना/कसरत पूरी', 'Movement done'), b: L('નાની આદત, મોટો ફરક!', 'छोटी आदत, बड़ा फ़र्क़!', 'Small habit, big difference!'), chips: ['🚶', '⚡'], pct: 90 });
+      if (Number(ls.sleepHours) >= 7) out.push({ id: 'sleep', kind: 'sleep', icon: 'lotus', badge: 'SLEEP', t: L('ઊંડી ઊંઘ', 'गहरी नींद', 'Good sleep'), m: ls.sleepHours + ' ' + L('કલાક', 'घंटे', 'hrs'), s: L('ફ્રેશ સવાર', 'ताज़ा सुबह', 'Fresh morning'), b: L('પૂરતી ઊંઘ = ઓછી ક્રેવિંગ.', 'पूरी नींद = कम क्रेविंग।', 'Enough sleep means fewer cravings.'), chips: ['🌙', '✨'], pct: 95 });
+      if ((Number(cl.familySize) || 0) > 1 && sc !== null && sc >= 60) out.push({ id: 'family', kind: 'family', icon: '👨‍👩‍👧‍👦', badge: 'FAMILY WIN', t: L('ફૂલ ફેમિલી હેલ્ધી થાળી!', 'पूरे परिवार की हेल्दी थाली!', 'Healthy thali for the whole family!'), m: L('આખો પરિવાર', 'पूरा परिवार', 'Whole family'), s: L('સાથે હેલ્ધી ભોજન', 'साथ में हेल्दी भोजन', 'Eating healthy together'), b: L('ઘરના બધાએ સાથે મળીને હેલ્ધી થાળી માણી.', 'घर में सबने साथ मिलकर हेल्दी थाली खाई।', 'The whole family enjoyed a healthy thali.'), chips: ['🏡', '❤️'], pct: 100 });
+      (window.__mpAnn || []).forEach(function (a) { if (a && a.title && (!a.expires || a.expires >= k)) out.push({ id: 'ann_' + (a.id || a.title), kind: 'ann', ann: true, icon: a.icon || '📣', badge: a.badge || L('કોચ તરફથી', 'कोच की ओर से', 'From coach'), t: a.title, m: a.metric || '', s: a.sub || '', b: a.body || '', chips: a.chips || [], grad: a.grad, pct: a.pct }); });
+      return out;
+    }
+    function mpAnnLoad() { if (window.__mpAnnLd) return; window.__mpAnnLd = 1; try { db.collection('settings').doc('announcements').get().then(function (d) { window.__mpAnn = (d.exists && d.data().cards) || []; try { mpAnnBar(); } catch (e) { } }).catch(function () { }); } catch (e) { } }
+    function mpAnnBar() {
+      var old = document.getElementById('mpAnnBar'); if (old) old.remove();
+      var a = (window.__mpAnn || []).filter(function (x) { return x && x.title && (!x.expires || x.expires >= dateKeyOf(new Date())); })[0], root = document.getElementById('tabContentToday'); if (!a || !root || !currentClient) return;
+      var b = document.createElement('div'); b.id = 'mpAnnBar'; b.style.cssText = 'display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,#fff7ed,#ffedd5);border:1px solid #fed7aa;border-radius:18px;padding:9px 12px';
+      b.innerHTML = '<div style="font-size:22px" data-notr>' + (/^[a-z_0-9]+$/.test(a.icon || '') ? ic(a.icon, 26) : esc(a.icon || '📣')) + '</div><div style="flex:1;min-width:0"><div style="font-size:9px;font-weight:900;color:#c2410c" data-notr>📣 ' + esc(a.badge || 'કોચ તરફથી') + '</div><div data-notr style="font-size:12.5px;font-weight:900;color:#431407;line-height:1.3">' + esc(a.title) + '</div></div><button type="button" onclick="mpCardsOpen(\'ann_' + String(a.id || a.title).replace(/[\\\']/g, '') + '\')" style="padding:8px 12px;border-radius:12px;background:#ea580c;color:#fff;font-weight:900;font-size:11px;border:0">જુઓ</button>';
+      var jn = document.getElementById('mpJourney'), sa = document.getElementById('mpSathi'), ref = jn || sa; if (ref && ref.parentNode === root) root.insertBefore(b, ref.nextSibling); else root.insertBefore(b, root.firstChild);
+    }
+    function mpCardCanvas(card, opt) {
+      if (card.kind === 'streak') return mpStreakCanvas('story');
+      opt = opt || {}; var a = saAvatar(), usePrem = a.prem && !PREM_BAD[a.g + '_' + a.prem], iconSrc = null;
+      if (card.icon && /^[a-z_0-9]+$/.test(card.icon)) iconSrc = (window.MPSVG && window.MPSVG[card.icon]) || (window.MPIC && window.MPIC['ic_' + card.icon]) || null;
+      var bgSrc = card.bgJn ? (window.MPJN && window.MPJN[card.bgJn]) : card.bgFest ? (window.MPFEST && window.MPFEST[card.bgFest]) : null;
+      return Promise.all([mpImg(usePrem ? premSrc(a, 'cheer') : null), mpImg(iconSrc), mpImg(bgSrc)]).then(function (im) {
+        var W = 1080, H = 1920, c = document.createElement('canvas'); c.width = W; c.height = H; var x = c.getContext('2d'), g = card.grad || CGR[card.kind] || CGR.fullday;
+        var gg = x.createLinearGradient(0, 0, W * .3, H); gg.addColorStop(0, g[0]); gg.addColorStop(1, g[1]); x.fillStyle = gg; x.fillRect(0, 0, W, H);
+        if (im[2]) { var r = Math.max(W / im[2].width, H / im[2].height); x.globalAlpha = .5; x.drawImage(im[2], (W - im[2].width * r) / 2, 0, im[2].width * r, im[2].height * r); x.globalAlpha = 1; var ov = x.createLinearGradient(0, 0, 0, H); ov.addColorStop(0, 'rgba(0,0,0,.3)'); ov.addColorStop(1, 'rgba(0,0,0,.65)'); x.fillStyle = ov; x.fillRect(0, 0, W, H); }
+        x.textAlign = 'center'; x.fillStyle = 'rgba(255,255,255,.18)'; var bw = 460; x.beginPath(); x.roundRect ? x.roundRect(W / 2 - bw / 2, 110, bw, 70, 35) : x.rect(W / 2 - bw / 2, 110, bw, 70); x.fill();
+        x.fillStyle = '#fff'; x.font = '800 34px ' + CFONT; x.fillText(card.badge || 'નિયમ સંયમ', W / 2, 157);
+        if (im[1]) { var iw = 300, ih = iw * im[1].height / im[1].width; x.drawImage(im[1], W / 2 - iw / 2, 230, iw, ih); } else { x.font = '230px ' + CFONT; x.fillText(card.icon || '🌟', W / 2, 460); }
+        x.fillStyle = '#fff'; x.font = '900 64px ' + CFONT; var tl = mpWrap(x, card.t, 900, 2), y = 640; tl.forEach(function (l) { x.fillText(l, W / 2, y); y += 78; });
+        if (card.m) { var fs = 150; do { x.font = '900 ' + fs + 'px ' + CFONT; fs -= 6; } while (x.measureText(card.m).width > 940 && fs > 50); x.fillStyle = '#fde047'; x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 20; y += 70; x.fillText(card.m, W / 2, y); x.shadowBlur = 0; }
+        if (card.s) { x.fillStyle = 'rgba(255,255,255,.92)'; x.font = '700 44px ' + CFONT; y += 78; mpWrap(x, card.s, 900, 2).forEach(function (l) { x.fillText(l, W / 2, y); y += 54; }); y -= 54; }
+        if (card.b) { x.fillStyle = 'rgba(255,255,255,.9)'; x.font = '600 38px ' + CFONT; y += 70; mpWrap(x, card.b, 860, 4).forEach(function (l) { x.fillText(l, W / 2, y); y += 52; }); y -= 52; }
+        if (card.chips && card.chips.length) { y += 70; x.font = '800 34px ' + CFONT; var cw = card.chips.map(function (t) { return x.measureText(t).width + 56; }), tot = cw.reduce(function (a, b) { return a + b + 16; }, -16), cx = W / 2 - tot / 2; card.chips.forEach(function (t, i) { x.fillStyle = 'rgba(255,255,255,.2)'; x.beginPath(); x.roundRect ? x.roundRect(cx, y - 44, cw[i], 64, 32) : x.rect(cx, y - 44, cw[i], 64); x.fill(); x.fillStyle = '#fff'; x.textAlign = 'left'; x.fillText(t, cx + 28, y); x.textAlign = 'center'; cx += cw[i] + 16; }); }
+        if (im[0]) { var ah = Math.min(560, 1790 - (y + 40)), aw = ah * im[0].width / im[0].height; if (ah > 260) x.drawImage(im[0], W / 2 - aw / 2, 1800 - ah, aw, ah); }
+        x.fillStyle = '#fff'; x.font = '800 40px ' + CFONT; x.globalAlpha = .95; x.fillText('નિયમ સંયમ', W / 2, 1855); x.font = '600 28px ' + CFONT; x.globalAlpha = .75; x.fillText((currentClient.name || '').split(' ')[0] + ' • ' + L('રોજ નિયમ, રોજ સંયમ 🙏', 'रोज़ नियम, रोज़ संयम 🙏', 'Daily discipline, daily balance 🙏'), W / 2, 1895); x.globalAlpha = 1;
+        return c;
+      });
+    }
+    var CST = { list: [], cur: 0, canvas: null, photo: null, slot: null };
+    function mpPhotoCanvas(img, slot) {
+      var W = 1080, H = 1920, c = document.createElement('canvas'); c.width = W; c.height = H; var x = c.getContext('2d'), k = dateKeyOf(new Date()), plan = {}; try { plan = getDayPlan(k, currentClient); } catch (e) { } var d = plan[slot] || {}, SL = SLOT_LABELS[slot] || { label: '', time: '' };
+      var r = Math.max(W / img.width, H / img.height); x.drawImage(img, (W - img.width * r) / 2, (H - img.height * r) / 2, img.width * r, img.height * r);
+      var ov = x.createLinearGradient(0, 0, 0, H); ov.addColorStop(0, 'rgba(0,0,0,.45)'); ov.addColorStop(.35, 'rgba(0,0,0,0)'); ov.addColorStop(.55, 'rgba(0,0,0,.05)'); ov.addColorStop(1, 'rgba(0,0,0,.85)'); x.fillStyle = ov; x.fillRect(0, 0, W, H);
+      x.textAlign = 'center'; x.fillStyle = '#fff'; x.font = '800 46px ' + CFONT; x.fillText('🍽️ ' + L('મારી થાળી', 'मेरी थाली', 'My thali'), W / 2, 130);
+      x.font = '600 32px ' + CFONT; x.globalAlpha = .9; x.fillText(new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }), W / 2, 180); x.globalAlpha = 1;
+      var items = String(d.name || '').split(/\s\+\s|\s*[,/]\s*/).filter(Boolean).slice(0, 6), ph = 290 + items.length * 66, py = 1790 - ph;
+      x.fillStyle = 'rgba(8,15,35,.62)'; x.beginPath(); x.roundRect ? x.roundRect(50, py, 980, ph, 44) : x.rect(50, py, 980, ph); x.fill();
+      x.textAlign = 'left'; x.fillStyle = '#5eead4'; x.font = '800 36px ' + CFONT; x.fillText(SL.label.replace(/\s+$/, ''), 90, py + 70);
+      x.fillStyle = '#fff'; x.font = '800 46px ' + CFONT; var yy = py + 140; items.forEach(function (t) { x.fillText('• ' + t, 90, yy); yy += 66; });
+      if (d.portion) { x.fillStyle = '#fde68a'; x.font = '700 38px ' + CFONT; x.fillText('📏 ' + d.portion, 90, yy + 10); yy += 70; }
+      x.fillStyle = '#fde047'; x.font = '900 52px ' + CFONT; x.fillText('🔥 ' + (d.cal || '-') + ' kcal    💪 ' + (d.p != null ? d.p : '-') + ' g ' + L('પ્રોટીન', 'प्रोटीन', 'protein'), 90, yy + 20);
+      x.textAlign = 'center'; x.fillStyle = '#fff'; x.font = '800 36px ' + CFONT; x.globalAlpha = .9; x.fillText('નિયમ સંયમ • ' + (currentClient.name || '').split(' ')[0], W / 2, 1850); x.globalAlpha = 1;
+      return c;
+    }
+    function mpCardShow(i) {
+      CST.cur = i; CST.photoMode = false; var card = CST.list[i], pv = document.getElementById('mpCvPrev'); if (!card || !pv) return;
+      document.querySelectorAll('#mpCvList [data-i]').forEach(function (b) { b.style.outline = (+b.getAttribute('data-i') === i) ? '3px solid #14b8a6' : 'none'; });
+      pv.style.opacity = .4; mpCardCanvas(card).then(function (cv) { CST.canvas = cv; pv.src = cv.toDataURL('image/jpeg', .85); pv.style.opacity = 1; CST.name = 'card-' + card.id + '.png'; });
+      var sl = document.getElementById('mpCvSlots'); if (sl) sl.style.display = 'none';
+    }
+    function mpPhotoShow() {
+      var pv = document.getElementById('mpCvPrev'); if (!CST.photo || !pv) return; CST.photoMode = true;
+      var cv = mpPhotoCanvas(CST.photo, CST.slot); CST.canvas = cv; pv.src = cv.toDataURL('image/jpeg', .85); CST.name = 'thali-' + CST.slot + '.png';
+      document.querySelectorAll('#mpCvSlots [data-s]').forEach(function (b) { b.style.background = b.getAttribute('data-s') === CST.slot ? '#14b8a6' : '#e2e8f0'; b.style.color = b.getAttribute('data-s') === CST.slot ? '#fff' : '#334155'; });
+      document.querySelectorAll('#mpCvList [data-i]').forEach(function (b) { b.style.outline = 'none'; });
+    }
+    window.mpCardPhoto = function (inp) {
+      var f = inp.files && inp.files[0]; if (!f) return; var rd = new FileReader();
+      rd.onload = function (e) { mpImg(e.target.result).then(function (img) { if (!img) return; var m = 1400, s = Math.min(1, m / Math.max(img.width, img.height)), tc = document.createElement('canvas'); tc.width = Math.round(img.width * s); tc.height = Math.round(img.height * s); tc.getContext('2d').drawImage(img, 0, 0, tc.width, tc.height); CST.photo = tc;
+        var k = dateKeyOf(new Date()), comp = (currentClient.compliance || {})[k] || {}, plan = {}; try { plan = getDayPlan(k, currentClient); } catch (er) { }
+        var slots = SLOT_ORDER.filter(function (s) { return plan[s]; }), dn = slots.filter(function (s) { return (comp.checks || {})[s] === 'done'; }); CST.slot = dn.length ? dn[dn.length - 1] : slots[0];
+        var sl = document.getElementById('mpCvSlots'); sl.style.display = 'flex'; sl.innerHTML = slots.map(function (s) { var Lb = SLOT_LABELS[s] || { label: s }; return '<button type="button" data-s="' + s + '" onclick="CSTslot(\'' + s + '\')" style="flex:0 0 auto;padding:6px 10px;border-radius:99px;font-size:11px;font-weight:800;border:0">' + esc(Lb.label) + '</button>'; }).join(''); mpPhotoShow(); }); };
+      rd.readAsDataURL(f); inp.value = '';
+    };
+    window.CSTslot = function (s) { CST.slot = s; mpPhotoShow(); };
+    window.mpCardShare = function () { if (!CST.canvas) return; CST.canvas.toBlob(function (bl) { mpShareBlob(bl, CST.name || 'card.png', 'નિયમ સંયમ'); }, 'image/png'); };
+    window.mpCardSave = function () { if (!CST.canvas) return; CST.canvas.toBlob(function (bl) { mpSaveBlob(bl, CST.name || 'card.png'); }, 'image/png'); };
+    window.mpCardVideo = function () {
+      var c = CST.canvas, btn = document.getElementById('mpCvVid'); if (!c) return;
+      var types = ['video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'], mt = window.MediaRecorder && types.filter(function (t) { return MediaRecorder.isTypeSupported(t); })[0];
+      if (!mt) { alert(L('આ ફોનમાં વિડીયો બનાવવાની સુવિધા નથી. ઇમેજ શેર કરો.', 'इस फ़ोन में वीडियो बनाने की सुविधा नहीं है। इमेज शेयर करें।', 'Video is not supported on this phone. Share the image instead.')); return; }
+      var cv = document.createElement('canvas'); cv.width = 540; cv.height = 960; var x = cv.getContext('2d'), chunks = [], rec;
+      try { rec = new MediaRecorder(cv.captureStream(30), { mimeType: mt, videoBitsPerSecond: 2500000 }); } catch (e) { alert('Video error'); return; }
+      rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+      rec.onstop = function () { var ext = mt.indexOf('mp4') >= 0 ? 'mp4' : 'webm', bl = new Blob(chunks, { type: mt.split(';')[0] }); if (btn) btn.textContent = '🎬 ' + L('વિડીયો', 'वीडियो', 'Video'); if (ext === 'webm') alert(L('તમારા ફોનમાં WebM વિડીયો બન્યો. Instagram ન સ્વીકારે તો ઇમેજ શેર કરો.', 'आपके फ़ोन में WebM वीडियो बना। Instagram न ले तो इमेज शेयर करें।', 'A WebM video was made. If Instagram rejects it, share the image.')); mpShareBlob(bl, 'story.' + ext, 'નિયમ સંયમ'); };
+      var P = []; for (var i = 0; i < 34; i++) P.push({ x: Math.random() * 540, y: 960 + Math.random() * 400, v: 2 + Math.random() * 4, s: 18 + Math.random() * 22, e: ['✨', '⭐', '🌟', '🎉'][i % 4], p: Math.random() * 6 });
+      var t0 = performance.now(), D = 5500; if (btn) btn.textContent = '⏳ ' + L('બની રહ્યો છે…', 'बन रहा है…', 'Making…');
+      rec.start();
+      (function fr() {
+        var t = performance.now() - t0, e = Math.min(1, t / 1000), ease = 1 - Math.pow(1 - e, 3), s = 1.1 - .1 * ease, pulse = 1 + .012 * Math.sin(t / 260);
+        x.fillStyle = '#000'; x.fillRect(0, 0, 540, 960); x.save(); x.translate(270, 480); x.scale(s * pulse, s * pulse); x.globalAlpha = Math.min(1, t / 400); x.drawImage(c, -270, -480, 540, 960); x.restore(); x.globalAlpha = 1;
+        var sx = ((t - 800) / 1400) * 900 - 200; if (t > 800 && sx < 700) { var gr = x.createLinearGradient(sx, 0, sx + 140, 0); gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(.5, 'rgba(255,255,255,.28)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gr; x.fillRect(sx, 0, 140, 960); }
+        if (t > 500) P.forEach(function (q) { q.y -= q.v; var wy = q.y; if (wy < -40) q.y = 1000; x.font = q.s + 'px sans-serif'; x.fillText(q.e, q.x + Math.sin(t / 400 + q.p) * 14, q.y); });
+        if (t < D) requestAnimationFrame(fr); else rec.stop();
+      })();
+    };
+    window.mpCardsOpen = function (focusId) {
+      if (!currentClient) return; mpAnnLoad();
+      if (!window.MPJN && !window.__ldJN) { window.__ldJN = 1; var sc = document.createElement('script'); sc.src = 'journey.js'; sc.async = true; document.head.appendChild(sc); window.addEventListener('mpjn', function () { if (document.getElementById('mpCvPrev') && !CST.photoMode) mpCardShow(CST.cur); }); }
+      var fe = mpFest(); if (fe) mpLoad('fest-bg.js', 'MPFEST', 'mpfest'); mpLoad('streak-icons.js', 'MPSTK', 'mpstk'); mpLoad('streak-svg.js', 'MPSVG', 'mpsvg');
+      CST.list = mpCardList(); CST.photo = null; CST.photoMode = false;
+      var idx = Math.max(0, CST.list.map(function (x) { return x.id; }).indexOf(focusId));
+      var lst = CST.list.map(function (cd, i) { return '<button type="button" data-i="' + i + '" onclick="mpCardShow(' + i + ')" style="flex:0 0 auto;display:flex;align-items:center;gap:6px;padding:7px 11px;border-radius:14px;background:#fff;border:1px solid #e2e8f0;font-size:11.5px;font-weight:800;color:#0f172a" data-notr><span>' + (/^[a-z_0-9]+$/.test(cd.icon || '') ? ic(cd.icon, 20) : esc(cd.icon || '')) + '</span>' + esc(cd.t.length > 22 ? cd.t.slice(0, 21) + '…' : cd.t) + '</button>'; }).join('');
+      var b = 'flex:1;padding:11px 4px;border-radius:14px;font-weight:900;font-size:12px;border:0;color:#fff;font-family:inherit';
+      var h = '<div style="text-align:center"><img id="mpCvPrev" alt="" style="width:62%;max-width:250px;border-radius:18px;box-shadow:0 10px 26px rgba(15,23,42,.25);transition:opacity .25s;background:#e2e8f0;min-height:200px"></div>' +
+        '<div style="display:flex;gap:6px;margin-top:12px"><button type="button" onclick="mpCardShare()" style="' + b + ';flex:1.5;background:linear-gradient(90deg,#f97316,#db2777)">📲 ' + L('શેર કરો', 'शेयर करें', 'Share') + '</button><button type="button" onclick="mpCardSave()" style="' + b + ';background:#0f766e">💾 ' + L('સેવ', 'सेव', 'Save') + '</button><button type="button" id="mpCvVid" onclick="mpCardVideo()" style="' + b + ';background:#4338ca">🎬 ' + L('વિડીયો', 'वीडियो', 'Video') + '</button></div>' +
+        '<div style="font-size:10.5px;line-height:1.5;color:#475569;margin-top:8px;font-weight:700">' + L('Instagram સ્ટોરી: "શેર કરો" દબાવી યાદીમાંથી Instagram → Story પસંદ કરો, અથવા "સેવ" કરી Instagram માં ગેલેરીમાંથી મૂકો. WhatsApp સ્ટેટસ: યાદીમાં WhatsApp → My Status.', 'Instagram स्टोरी: "शेयर करें" दबाकर Instagram → Story चुनें, या "सेव" करके Instagram में गैलरी से लगाएँ। WhatsApp स्टेटस: WhatsApp → My Status।', 'Instagram story: tap Share, pick Instagram → Story, or Save and add it from the gallery. WhatsApp status: pick WhatsApp → My Status.') + '</div>' +
+        '<div style="font-size:12px;font-weight:900;margin:14px 0 6px">' + L('કાર્ડ પસંદ કરો', 'कार्ड चुनें', 'Pick a card') + '</div><div id="mpCvList" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:6px">' + lst + '</div>' +
+        '<label style="display:block;margin-top:10px;padding:11px;border-radius:14px;background:#fef3c7;color:#92400e;font-weight:900;font-size:12.5px;text-align:center">📷 ' + L('મારી થાળીનો ફોટો (ગ્રામ + કેલરી સાથે)', 'मेरी थाली की फोटो (ग्राम + कैलोरी के साथ)', 'My thali photo (with grams + calories)') + '<input type="file" accept="image/*" capture="environment" onchange="mpCardPhoto(this)" style="display:none"></label>' +
+        '<div id="mpCvSlots" style="display:none;gap:6px;overflow-x:auto;margin-top:8px"></div>' +
+        '<div style="font-size:10px;color:#64748b;margin-top:6px;font-weight:700">' + L('ફોટો તમારા ફોનમાં જ રહે છે, સર્વર પર જતો નથી.', 'फोटो आपके फ़ोन में ही रहती है, सर्वर पर नहीं जाती।', 'Your photo stays on your phone, it is never uploaded.') + '</div>' +
+        (CST.list.length <= 1 ? '<div style="margin-top:10px;font-size:11px;color:#475569;font-weight:700;background:#f1f5f9;border-radius:12px;padding:9px">' + L('વધુ કાર્ડ ખુલવા માટે આજના ભોજન માર્ક કરો, પાણી પીઓ અને પ્રોટીન ગોલ પૂરો કરો.', 'और कार्ड खुलने के लिए आज के भोजन मार्क करें, पानी पिएँ और प्रोटीन लक्ष्य पूरा करें।', 'Mark meals, drink water and hit your protein goal to unlock more cards.') + '</div>' : '');
+      sheetOpen('🎴 ' + L('શેર કાર્ડ્સ', 'शेयर कार्ड्स', 'Share cards'), h);
+      if (CST.list.length) mpCardShow(idx); else { var pv = document.getElementById('mpCvPrev'); if (pv) pv.style.display = 'none'; }
+    };
+    window.mpCardShow = mpCardShow;
     window.mpStreakOpen = function () {
       if (!currentClient) return; var t = mpStreakCalc(), cl = { ok: '#22c55e', sh: '#38bdf8', miss: '#cbd5e1', today: '#fde68a', none: '#f1f5f9' };
-      var dots = t.days.slice().reverse().map(function (x) { return '<span style="width:20px;height:20px;border-radius:50%;background:' + cl[x] + ';display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:900" data-notr>' + (x === 'ok' ? '✓' : x === 'sh' ? '🛡' : '') + '</span>'; }).join('');
+      var dots = t.days.slice().reverse().map(function (x) { return '<span style="width:20px;height:20px;border-radius:50%;background:' + cl[x] + ';display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:900" data-notr>' + (x === 'ok' ? '✓' : x === 'sh' ? ic('shield', 14) : '') + '</span>'; }).join('');
       var MS = [[3, 'medal1', 'કાંસ્ય'], [7, 'medal2', 'ચાંદી'], [14, 'medal3', 'સોનું'], [30, 'vip', 'તાજ']];
       var med = MS.map(function (m) { var on = t.best >= m[0]; return '<div style="text-align:center;opacity:' + (on ? 1 : .35) + ';filter:' + (on ? 'none' : 'grayscale(1)') + '">' + ic(m[1], 40) + '<div style="font-size:10px;font-weight:900;margin-top:2px">' + m[0] + ' <span data-notr>' + tr('દિવસ') + '</span></div></div>'; }).join('');
       var nextM = [3, 7, 14, 30, 60].filter(function (x) { return x > t.n; })[0];
       var st = stkStage(t.n), stage = '<div style="display:flex;justify-content:center;gap:18px;margin:8px 0" data-notr>' + ['diya', 'tulsi'].map(function (k) { return '<div style="text-align:center">' + (sk(k + '_' + st, 84) || '') + '<div style="font-size:10px;font-weight:800;color:#64748b">' + tr(k === 'diya' ? 'દીવો' : 'તુલસી') + '</div></div>'; }).join('') + '</div>';
-      var shr = '<div style="display:flex;gap:8px;margin-top:12px"><button type="button" onclick="mpStreakShare(\'story\')" style="flex:1.4;padding:11px 4px;border-radius:14px;background:linear-gradient(90deg,#f97316,#db2777);color:#fff;font-weight:900;font-size:12px;border:0">📲 Instagram સ્ટોરી</button><button type="button" onclick="mpStreakShare(\'sq\')" style="flex:1;padding:11px 4px;border-radius:14px;background:#16a34a;color:#fff;font-weight:900;font-size:12px;border:0">💬 WhatsApp</button></div>';
-      var h = '<div style="text-align:center;padding:6px 0 2px"><div style="font-size:50px;line-height:1" data-notr>' + ic('streak', 54) + '</div><div style="font-size:38px;font-weight:900;color:#ea580c;line-height:1.1" data-notr>' + t.n + '</div><div style="font-size:12px;font-weight:800;color:#64748b">લાગલગાટ દિવસ</div></div>' +
-        stage + '<div style="display:flex;gap:8px;margin:10px 0"><div style="flex:1;background:#fff7ed;border-radius:14px;padding:8px;text-align:center"><div style="font-size:10px;font-weight:800;color:#9a3412">શ્રેષ્ઠ</div><b data-notr>' + t.best + '</b></div><div style="flex:1;background:#eff6ff;border-radius:14px;padding:8px;text-align:center"><div style="font-size:10px;font-weight:800;color:#1d4ed8">🛡 શિલ્ડ</div><b data-notr>' + t.sh + '/2</b></div></div>' +
+      var shr = '<div style="display:flex;gap:8px;margin-top:12px"><button type="button" onclick="mpCardsOpen(\'streak\')" style="flex:1;padding:12px 4px;border-radius:14px;background:linear-gradient(90deg,#f97316,#db2777);color:#fff;font-weight:900;font-size:13px;border:0">📲 ' + tr('શેર કાર્ડ્સ') + '</button></div>';
+      var h = '<div style="text-align:center;padding:6px 0 2px"><div style="font-size:50px;line-height:1" data-notr>' + ic(flN(t.n), 72) + '</div><div style="font-size:38px;font-weight:900;color:#ea580c;line-height:1.1" data-notr>' + t.n + '</div><div style="font-size:12px;font-weight:800;color:#64748b">લાગલગાટ દિવસ</div></div>' +
+        stage + '<div style="display:flex;gap:8px;margin:10px 0"><div style="flex:1;background:#fff7ed;border-radius:14px;padding:8px;text-align:center"><div style="font-size:10px;font-weight:800;color:#9a3412">શ્રેષ્ઠ</div><b data-notr>' + t.best + '</b></div><div style="flex:1;background:#eff6ff;border-radius:14px;padding:8px;text-align:center"><div style="font-size:10px;font-weight:800;color:#1d4ed8">' + ic('shield', 13) + ' શિલ્ડ</div><b data-notr>' + t.sh + '/2</b></div></div>' +
         '<div style="font-size:12px;font-weight:900;margin:6px 0">છેલ્લા 14 દિવસ</div><div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center">' + dots + '</div>' +
         '<div style="font-size:12px;font-weight:900;margin:14px 0 6px">🏅 મેડલ</div><div style="display:flex;justify-content:space-around">' + med + '</div>' +
         '<div style="margin-top:12px;background:#f0fdfa;border-radius:14px;padding:9px;font-size:11px;font-weight:700;color:#0f766e;line-height:1.5">' + (nextM ? 'હજી ' + (nextM - t.n) + ' દિવસ પછી ' + nextM + ' દિવસનો મેડલ! ' : '') + 'એક દિવસ ચૂકી જાઓ તો 🛡 શિલ્ડ સ્ટ્રેક બચાવે. દર 7 દિવસે નવી શિલ્ડ મળે (વધુમાં વધુ 2). દિવસ ગણાવા માટે સ્કોર 60% કે વધુ જોઈએ.</div>' + shr;
@@ -3393,7 +3544,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var host = document.getElementById('tabContentToday'); if (!host || !currentClient || !window.S3) return;
       var old = document.getElementById('mpSathi'); if (old) old.remove();
       if (currentClient.avatarOff === true) return;
-      mpLoad('streak-icons.js', 'MPSTK', 'mpstk'); var fe0 = mpFest(); if (fe0) mpLoad('fest-bg.js', 'MPFEST', 'mpfest');
+      mpLoad('streak-icons.js', 'MPSTK', 'mpstk'); mpLoad('streak-svg.js', 'MPSVG', 'mpsvg'); var fe0 = mpFest(); if (fe0) mpLoad('fest-bg.js', 'MPFEST', 'mpfest');
       var a = saAvatar(), s = saStats(), stk = mpStreakCalc(); window.__mpStk = stk;
       var usePrem = a.prem && !PREM_BAD[a.g + '_' + a.prem], pose = s.today.done >= 3 ? 'cheer' : (new Date().getHours() < 7 ? 'sleepy' : 'talk');
       var bgc = usePrem && AVBG[a.g + '_' + a.prem] ? AVBG[a.g + '_' + a.prem] : ['#2b4270', '#16254a'];
@@ -3406,13 +3557,18 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var chip = function (l, id) { return '<div style="background:rgba(0,0,0,.24);border-radius:10px;padding:4px 2px;text-align:center"><small style="display:block;font-size:8px;opacity:.8;font-weight:700">' + l.replace('💪', ic('muscle', 12)) + '</small><b id="' + id + '" style="font-size:12px;font-weight:900" data-notr>-</b></div>'; };
       var chipW = function (l, id) { return '<div id="mpSGlBox" onclick="addWater(0.25)" style="background:rgba(0,0,0,.24);border-radius:10px;padding:4px 2px;text-align:center;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(125,211,252,.55)"><small style="display:block;font-size:8px;opacity:.9;font-weight:700">' + l.replace('💧', ic('water', 12)) + ' +</small><b id="' + id + '" style="font-size:12px;font-weight:900" data-notr>-</b></div>'; };
       var btn = 'flex:1;padding:7px 2px;border-radius:12px;font-size:10.5px;font-weight:800;border:0;color:#fff;font-family:inherit;white-space:nowrap';
-      box.innerHTML = '<div style="flex:0 0 142px;height:224px;margin-left:-6px">' + figure + '</div>' +
-        '<div style="flex:1;min-width:0"><div style="display:flex;gap:5px;align-items:center;margin-bottom:5px"><span style="background:#14b8a6;color:#052e2b;font-weight:900;font-size:10px;padding:2px 8px;border-radius:99px">લેવલ ' + (s.lvl + 1) + '</span><span style="font-size:11px;font-weight:800;flex:1">' + SA_TITLES[s.lvl] + '</span><span style="background:rgba(0,0,0,.28);color:#ffd98a;font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px;display:inline-flex;align-items:center;gap:3px" data-notr>' + ic('coin', 15) + ' ' + (currentClient.coins || 0) + '</span><span onclick="mpStreakOpen()" style="background:rgba(0,0,0,.28);color:#fdba74;font-size:11px;font-weight:900;padding:2px 8px;border-radius:99px;display:inline-flex;align-items:center;gap:2px;cursor:pointer" data-notr>' + ic('streak', 15) + ' ' + stk.n + (stk.sh && stk.n ? ' <span style="font-size:10px">🛡' + stk.sh + '</span>' : '') + '</span></div>' +
+      box.style.position = 'relative'; box.style.overflow = 'hidden';
+      var wv = '<div id="mpWater" style="position:absolute;left:0;right:0;bottom:0;height:4%;pointer-events:none;transition:height .9s ease;background:linear-gradient(rgba(56,189,248,.34),rgba(8,145,178,.46))"><svg viewBox="0 0 400 20" preserveAspectRatio="none" style="position:absolute;left:0;top:-13px;width:200%;height:14px;animation:mpWave 5s linear infinite"><path d="M0 10 Q25 0 50 10 T100 10 T150 10 T200 10 T250 10 T300 10 T350 10 T400 10 V20 H0Z" fill="rgba(56,189,248,.34)"/></svg></div>';
+      if (!document.getElementById('mpWaveCss')) { var wst = document.createElement('style'); wst.id = 'mpWaveCss'; wst.textContent = '@keyframes mpWave{to{transform:translateX(-50%)}}'; document.head.appendChild(wst); }
+      box.innerHTML = wv + '<div style="position:relative;z-index:1;flex:0 0 142px;height:224px;margin-left:-6px">' + figure + '</div>' +
+        '<div style="position:relative;z-index:1;flex:1;min-width:0"><div style="display:flex;gap:5px;align-items:center;margin-bottom:5px"><span style="background:#14b8a6;color:#052e2b;font-weight:900;font-size:10px;padding:2px 7px;white-space:nowrap;border-radius:99px">લેવલ ' + (s.lvl + 1) + '</span><span style="font-size:11px;font-weight:800;flex:1">' + SA_TITLES[s.lvl] + '</span></span></div>' +
+        '<div style="display:flex;gap:6px;align-items:center;margin-bottom:5px"><span style="background:rgba(0,0,0,.28);color:#ffd98a;font-size:11px;font-weight:800;padding:4px 10px;border-radius:99px;display:inline-flex;align-items:center;gap:3px" data-notr>' + ic('coin', 15) + ' ' + (currentClient.coins || 0) + '</span><span onclick="mpStreakOpen()" style="background:rgba(0,0,0,.28);color:#fdba74;font-size:15px;font-weight:900;padding:4px 12px;border-radius:99px;display:inline-flex;align-items:center;justify-content:center;gap:4px;flex:1;box-shadow:inset 0 0 0 1.5px rgba(253,186,116,.6);white-space:nowrap;cursor:pointer" data-notr>' + ic(flN(stk.n), 24) + ' ' + stk.n + (stk.sh && stk.n ? ' <span style="font-size:12px;white-space:nowrap">' + ic('shield', 15) + stk.sh + '</span>' : '') + '</span></div>' +
         '<div style="background:rgba(0,0,0,.22);border-radius:14px 14px 14px 4px;padding:6px 9px;font-size:11px;font-weight:700;line-height:1.45">' + esc(saMsg(s)) + '</div>' +
         '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:7px">' + chip('કેલરી', 'mpSCal') + chip('💪 પ્રોટીન', 'mpSPro') + chipW('💧 પાણી', 'mpSGl') + chip('સ્કોર', 'mpSSc') + '</div>' +
         '<div style="height:6px;border-radius:9px;background:rgba(0,0,0,.3);margin-top:7px;overflow:hidden"><i style="display:block;height:100%;width:' + pct + '%;background:linear-gradient(90deg,#5eead4,#fde68a)"></i></div><div style="font-size:9px;opacity:.8;margin-top:2px" data-notr>' + (s.lvl < 3 ? s.pts + ' / ' + s.nxt + ' ' : '') + tr('અઠવાડિયાના પોઇન્ટ') + '</div>' +
-        '<div style="display:flex;gap:5px;margin-top:6px"><button type="button" onclick="mpSathiEdit()" style="' + btn + ';background:rgba(255,255,255,.2)">✏️ બદલો</button><button type="button" onclick="mpThaliNew()" style="' + btn + ';background:#14b8a6;color:#052e2b">🍽️ થાળી</button><button type="button" onclick="mpLiveOpen()" style="' + btn + ';background:#dc2626;box-shadow:0 0 0 2px rgba(255,255,255,.25)">🔴 લાઈવ</button></div></div>';
+        '<div style="display:flex;gap:5px;margin-top:6px"><button type="button" onclick="mpSathiEdit()" style="' + btn + ';background:rgba(255,255,255,.2)">✏️ બદલો</button><button type="button" onclick="mpThaliNew()" style="' + btn + ';background:#14b8a6;color:#052e2b">🍽️ થાળી</button><button type="button" onclick="mpLiveOpen()" style="' + btn + ';flex:.62;font-size:9px;padding:7px 0;background:#dc2626">🔴 લાઈવ</button></div></div>';
       host.insertBefore(box, host.firstChild);
+      mpAnnLoad(); setTimeout(function () { try { mpAnnBar(); } catch (e) { } }, 0);
       sathiSync();
       try { if (sathiObs) sathiObs.disconnect(); sathiObs = new MutationObserver(sathiSync);
         ['cpConsumedCal', 'cpProteinStats', 'cpWaterCount', 'cpScoreBadge'].forEach(function (id) { var el = document.getElementById(id); if (el) sathiObs.observe(el, { childList: true, characterData: true, subtree: true }); }); } catch (e) { }
@@ -3509,7 +3665,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         pc.innerHTML = '<div class="font-extrabold text-slate-800 text-xs">ℹ️ આ પ્લાન કેમ?</div>'; pc.appendChild(why); prof.appendChild(pc);
       }
       var accs = [accWrap(get('cpExtrasBox'), 'extras', '➕ વધારાનું ખાધું / ફેમિલી')];
-      var order = [get('mpSathi'), get('mpJourney'), get('offlineBanner'), get('cpInboxBox'), get('cpNextMealBox'), get('cpLiveBox'), macro, get('cpMedicationReviewBox'), get('cpWorkoutSugarGuardBox'), cal, get('cpTodayMealCards'), get('mpThaliCard'), get('cpTopUpBox'), get('cpDailyTip')].concat(accs, [get('cpGreetBox'), rep]);
+      var order = [get('mpSathi'), get('mpJourney'), get('mpAnnBar'), get('offlineBanner'), get('cpInboxBox'), get('cpNextMealBox'), get('cpLiveBox'), macro, get('cpMedicationReviewBox'), get('cpWorkoutSugarGuardBox'), cal, get('cpTodayMealCards'), get('mpThaliCard'), get('cpTopUpBox'), get('cpDailyTip')].concat(accs, [get('cpGreetBox'), rep]);
       var fam = get('mpFamilyBox'), ex = get('cpExtrasBox');
       if (fam && ex && fam.parentNode !== ex.parentNode) ex.parentNode.insertBefore(fam, ex.nextSibling);
       order.forEach(function (el) { if (el && el.parentNode === root) root.appendChild(el); });
@@ -3598,6 +3754,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         '<button type="button" onclick="mpJnOpen()" style="padding:9px 14px;border-radius:14px;background:#fff;color:#4c1d95;font-weight:900;font-size:12px;box-shadow:0 3px 0 rgba(0,0,0,.25)">જુઓ</button>';
       var sa = document.getElementById('mpSathi');
       if (sa && sa.parentNode === root) root.insertBefore(box, sa.nextSibling); else root.insertBefore(box, root.firstChild);
+      try { mpAnnBar(); } catch (e) { }
     }
     function jnOvRender() {
       var ov = document.getElementById('mpJnOv');
@@ -3607,7 +3764,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var cards = JN.map(function (s, i) {
         var open = j.d >= s[3], got = j.claimed.indexOf(s[0]) >= 0;
         var img = '<div style="height:120px;border-radius:16px;overflow:hidden;background:' + (open ? 'linear-gradient(135deg,#f59e0b,#7c3aed)' : '#2b2f4a') + ';display:flex;align-items:center;justify-content:center;font-size:44px;position:relative">' + (open ? s[1] : '🔒') +
-          '<img alt="" src="journey/' + s[0] + '.webp" onerror="this.remove()" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;' + (open ? '' : 'filter:grayscale(1) brightness(.4)') + '"></div>';
+          (window.MPJN && window.MPJN[s[0]] ? '<img alt="" src="' + window.MPJN[s[0]] + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;' + (open ? '' : 'filter:grayscale(1) brightness(.4)') + '">' : '') + '</div>';
         var btn = open ? (got ? '<div style="margin-top:8px;font-size:12px;font-weight:800;color:#86efac">✓ ભેટ મળી</div>' : '<button type="button" onclick="mpJnClaim(\'' + s[0] + '\')" style="margin-top:8px;width:100%;padding:10px;border-radius:14px;background:linear-gradient(180deg,#ffe28a,#f5a623);color:#3b2a00;font-weight:900;font-size:13px;box-shadow:0 3px 0 #a96a05">' + ic('gift', 18) + ' ભેટ લો (+' + s[4] + ' ' + ic('coin', 14) + (s[0] === 'st_rann' ? ' + ફ્રી ક્લાસ ઝલક' : s[0] === 'st_unity' ? ' + VIP ભેટ' : '') + ')</button>') : '<div style="margin-top:8px;font-size:11px;opacity:.7" data-notr>' + s[3] + ' ' + tr('દિવસ પૂરા કરો') + ' (' + Math.max(0, s[3] - j.d) + ' ' + tr('બાકી') + ')</div>';
         return '<div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:22px;padding:10px;opacity:' + (open ? 1 : .85) + '">' + img + '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><b style="font-size:14px">' + (i + 1) + '. ' + s[2] + '</b><span style="font-size:10px;opacity:.7" data-notr>' + tr('દિવસ') + ' ' + s[3] + '</span></div><div style="font-size:12px;opacity:.85;line-height:1.55;margin-top:3px">' + s[5] + '</div>' + btn + '</div>';
       }).join('<div style="text-align:center;opacity:.4;font-size:18px;line-height:1">⋮</div>');
@@ -3618,7 +3775,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       ov.scrollTop = keep;
     }
     var JN_OPEN = false;
-    window.mpJnOpen = function () { JN_OPEN = true; jnOvRender(); };
+    window.mpJnOpen = function () { JN_OPEN = true; if (!window.MPJN && !window.__ldJN) { window.__ldJN = 1; var sc = document.createElement('script'); sc.src = 'journey.js'; sc.async = true; document.head.appendChild(sc); window.addEventListener('mpjn', function () { if (JN_OPEN) jnOvRender(); }); } jnOvRender(); };
     window.mpJnClose = function () { JN_OPEN = false; jnOvRender(); try { renderJourney(); tidyToday(); } catch (e) { } };
     window.mpJnClaim = function (id) {
       var s = JN.filter(function (x) { return x[0] === id; })[0], j = jnState(); if (!s || j.d < s[3] || j.claimed.indexOf(id) >= 0) return;
@@ -4216,6 +4373,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     ['📲 Instagram / WhatsApp સ્ટોરી', '📲 Instagram / WhatsApp स्टोरी', '📲 Instagram / WhatsApp story'], ['પછી', 'बाद में', 'Later'],
     ['દિવસનો સ્ટ્રેક બચાવવા આજનું ભોજન માર્ક કરો!', 'दिन की स्ट्रीक बचाने के लिए आज का भोजन मार्क करें!', "-day streak: mark today's meals to save it!"],
     ['શુભ દિવાળી', 'शुभ दीपावली', 'Happy Diwali'], ['શુભ નવરાત્રિ', 'शुभ नवरात्रि', 'Happy Navratri'], ['હેપ્પી ઉત્તરાયણ', 'हैप्पी उत्तरायण', 'Happy Uttarayan'], ['હેપ્પી હોળી', 'हैप्पी होली', 'Happy Holi'], ['આજે પણ સંયમથી ખાઈએ', 'आज भी संयम से खाएँ', "let's eat mindfully today"],
+    ['શેર કાર્ડ્સ (Instagram/WhatsApp)', 'शेयर कार्ड्स (Instagram/WhatsApp)', 'Share cards (Instagram/WhatsApp)'], ['શેર કાર્ડ્સ', 'शेयर कार्ड्स', 'Share cards'],
     ['📤 કોચને', '📤 कोच को', '📤 Send to'], ['મોકલો', 'भेजें', 'coach'],
     ['💬 1 દિવસ', '💬 1 दिन', '💬 1 day'], ['💬 7 દિવસ', '💬 7 दिन', '💬 7 days'],
     ['🔥 તમારો સ્ટ્રેક', '🔥 आपकी स्ट्रीक', '🔥 Your streak'], ['લાગલગાટ દિવસ', 'लगातार दिन', 'days in a row'],
