@@ -3144,7 +3144,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       window.mpSheetClose();
       var ov = document.createElement('div'); ov.id = 'mpSheet'; ov.style.cssText = 'position:fixed;inset:0;z-index:96;background:rgba(15,23,42,.55);display:flex;align-items:flex-end;justify-content:center';
       ov.onclick = function (e) { if (e.target === ov) window.mpSheetClose(); };
-      ov.innerHTML = '<div style="width:100%;max-width:32rem;max-height:86vh;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#f8fafc;border-radius:24px 24px 0 0;padding:14px 12px calc(22px + env(safe-area-inset-bottom))"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b style="font-size:14px;font-weight:900">' + title + '</b><button type="button" onclick="mpSheetClose()" style="padding:5px 14px;border-radius:99px;background:#14b8a6;color:#fff;font-size:11px;font-weight:900">બંધ</button></div><div id="mpSheetBody">' + (html || '') + '</div></div>';
+      ov.innerHTML = '<div style="width:100%;max-width:32rem;min-width:0;box-sizing:border-box;max-height:86vh;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;background:#f8fafc;border-radius:24px 24px 0 0;padding:14px 12px calc(22px + env(safe-area-inset-bottom))"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b style="font-size:14px;font-weight:900">' + title + '</b><button type="button" onclick="mpSheetClose()" style="padding:5px 14px;border-radius:99px;background:#14b8a6;color:#fff;font-size:11px;font-weight:900">બંધ</button></div><div id="mpSheetBody">' + (html || '') + '</div></div>';
       document.body.appendChild(ov); document.body.style.overflow = 'hidden';
       SHEET = nodes || [];
       var body = ov.querySelector('#mpSheetBody'); SHEET.forEach(function (n) { body.appendChild(n); });
@@ -3344,12 +3344,12 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     function mpStreakCanvas(fmt) {
       var t = mpStreakCalc(), a = saAvatar(), W = 1080, H = fmt === 'sq' ? 1080 : 1920, fe = mpFest(), st = stkStage(t.n);
       var usePrem = a.prem && !PREM_BAD[a.g + '_' + a.prem], bgc = usePrem && AVBG[a.g + '_' + a.prem] ? AVBG[a.g + '_' + a.prem] : ['#2b4270', '#16254a'];
-      return Promise.all([mpImg(usePrem ? premSrc(a, 'cheer') : null), mpImg(window.MPSTK && window.MPSTK['diya_' + st]), mpImg(window.MPSTK && window.MPSTK['tulsi_' + st]), mpImg(fe && window.MPFEST && window.MPFEST[fe.k])]).then(function (im) {
-        var c = document.createElement('canvas'); c.width = W; c.height = H; var x = c.getContext('2d'), F = "'Noto Sans Gujarati','Shruti','Inter',sans-serif";
+      return Promise.all([mpImg(usePrem ? premSrc(a, 'cheer') : null), mpImg(window.MPSTK && window.MPSTK['diya_' + st]), mpImg(window.MPSTK && window.MPSTK['tulsi_' + st]), mpImg(fe && window.MPFEST && window.MPFEST[fe.k]), mpFonts()]).then(function (im) {
+        var c = document.createElement('canvas'); c.width = W; c.height = H; var x = mpCtx(c), F = "'Noto Sans Gujarati','Shruti','Inter',sans-serif";
         var g = x.createLinearGradient(0, 0, W * .4, H); g.addColorStop(0, bgc[0]); g.addColorStop(1, bgc[1]); x.fillStyle = g; x.fillRect(0, 0, W, H);
         if (im[3]) { var r = Math.max(W / im[3].width, H / im[3].height); x.globalAlpha = .55; x.drawImage(im[3], (W - im[3].width * r) / 2, 0, im[3].width * r, im[3].height * r); x.globalAlpha = 1; var ov = x.createLinearGradient(0, 0, 0, H); ov.addColorStop(0, 'rgba(0,0,0,.25)'); ov.addColorStop(1, 'rgba(0,0,0,.6)'); x.fillStyle = ov; x.fillRect(0, 0, W, H); }
         x.textAlign = 'center'; x.fillStyle = '#fff';
-        var top = fmt === 'sq' ? 40 : 150; x.font = '800 54px ' + F; x.fillText('નિયમ સંયમ', W / 2, top + 50);
+        var top = fmt === 'sq' ? 40 : 150; mpBrand(x, W, top + 50, 50);
         if (fe) { x.font = '700 40px ' + F; x.fillStyle = '#fde68a'; x.fillText(fe.g + ' 🪔', W / 2, top + 110); x.fillStyle = '#fff'; }
         var ny = fmt === 'sq' ? 330 : 520; x.font = '900 300px ' + F; x.fillStyle = '#fdba74'; x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 24; x.fillText(String(t.n), W / 2, ny); x.shadowBlur = 0;
         x.fillStyle = '#fff'; x.font = '800 64px ' + F; x.fillText('દિવસનો સ્ટ્રેક 🔥', W / 2, ny + 90);
@@ -3377,10 +3377,26 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     /* ---------- શેર કાર્ડ્સ (અસલી ડેટા), થાળી ફોટો, વિડીયો, કોચની જાહેરાત ---------- */
     function L(gu, hi, en) { return CUR_LANG === 'hi' ? hi : CUR_LANG === 'en' ? en : gu; }
     var CFONT = "'Noto Sans Gujarati','Shruti','Noto Sans Devanagari','Inter',sans-serif";
+    function mpCtx(c) {
+      var x = c.getContext('2d'), ft = Object.getPrototypeOf(x).fillText, al = 'left';
+      Object.defineProperty(x, 'textAlign', { get: function () { return al; }, set: function (v) { al = v; } });
+      x.fillText = function (t, px, py) { var w = al === 'center' ? x.measureText(t).width : al === 'right' ? x.measureText(t).width * 2 : 0; ft.call(x, t, px - w / 2, py); };
+      return x;
+    }
+    function mpFonts() {
+      try { if (!document.fonts || !document.fonts.load) return Promise.resolve(); return Promise.race([Promise.all([document.fonts.load("800 40px 'Noto Sans Gujarati'", 'નિયમ સંયમ આજની'), document.fonts.load("600 40px 'Noto Sans Gujarati'", 'નિયમ સંયમ'), document.fonts.load("400 40px 'Noto Sans Gujarati'", 'નિયમ')]), new Promise(function (r) { setTimeout(r, 1800); })]).catch(function () { }); } catch (e) { return Promise.resolve(); }
+    }
+    function mpBrand(x, W, y, sz) {
+      sz = sz || 40; var lg = sz * 1.25, tw; x.font = '800 ' + sz + 'px ' + CFONT; tw = x.measureText('નિયમ સંયમ').width; var tot = lg + 14 + tw, sx = W / 2 - tot / 2, cx = sx + lg / 2, cy = y - sz * .32;
+      var g = x.createLinearGradient(sx, cy - lg / 2, sx + lg, cy + lg / 2); g.addColorStop(0, '#5eead4'); g.addColorStop(1, '#0f766e'); x.fillStyle = g; x.beginPath(); x.arc(cx, cy, lg / 2, 0, 7); x.fill();
+      x.fillStyle = '#fff'; x.beginPath(); x.moveTo(cx, cy - lg * .3); x.bezierCurveTo(cx + lg * .3, cy - lg * .08, cx + lg * .24, cy + lg * .3, cx, cy + lg * .3); x.bezierCurveTo(cx - lg * .24, cy + lg * .3, cx - lg * .3, cy - lg * .08, cx, cy - lg * .3); x.fill();
+      x.fillStyle = '#0f766e'; x.beginPath(); x.moveTo(cx, cy - lg * .14); x.bezierCurveTo(cx + lg * .1, cy, cx + lg * .08, cy + lg * .18, cx, cy + lg * .2); x.bezierCurveTo(cx - lg * .08, cy + lg * .18, cx - lg * .1, cy, cx, cy - lg * .14); x.fill();
+      x.fillStyle = '#fff'; var al = x.textAlign; x.textAlign = 'left'; x.fillText('નિયમ સંયમ', sx + lg + 14, y); x.textAlign = al;
+    }
     function mpSaveBlob(bl, name) { var u = URL.createObjectURL(bl), l = document.createElement('a'); l.href = u; l.download = name; document.body.appendChild(l); l.click(); l.remove(); setTimeout(function () { URL.revokeObjectURL(u); }, 4000); }
     function mpShareBlob(bl, name, title, ask) {
       if (!bl) return; var f = null; try { f = new File([bl], name, { type: bl.type }); } catch (e) { }
-      if (f && navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], title: title }).catch(function () { }); }
+      if (f && navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f] }).catch(function () { }); }
       else { mpSaveBlob(bl, name); alert(L('ફાઇલ સેવ થઈ ગઈ. હવે Instagram/WhatsApp ખોલી ગેલેરીમાંથી પસંદ કરો.', 'फ़ाइल सेव हो गई। अब Instagram/WhatsApp खोलकर गैलरी से चुनें।', 'Saved. Now open Instagram/WhatsApp and pick it from your gallery.')); }
     }
     function mpShareCanvas(c, name, title) { c.toBlob(function (bl) { mpShareBlob(bl, name, title); }, 'image/png'); }
@@ -3430,8 +3446,8 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       opt = opt || {}; var a = saAvatar(), usePrem = a.prem && !PREM_BAD[a.g + '_' + a.prem], iconSrc = null;
       if (card.icon && /^[a-z_0-9]+$/.test(card.icon)) iconSrc = (window.MPSVG && window.MPSVG[card.icon]) || (window.MPIC && window.MPIC['ic_' + card.icon]) || null;
       var bgSrc = card.bgJn ? (window.MPJN && window.MPJN[card.bgJn]) : card.bgFest ? (window.MPFEST && window.MPFEST[card.bgFest]) : null;
-      return Promise.all([mpImg(usePrem ? premSrc(a, 'cheer') : null), mpImg(iconSrc), mpImg(bgSrc)]).then(function (im) {
-        var W = 1080, H = 1920, c = document.createElement('canvas'); c.width = W; c.height = H; var x = c.getContext('2d'), g = card.grad || CGR[card.kind] || CGR.fullday;
+      return Promise.all([mpImg(usePrem ? premSrc(a, 'cheer') : null), mpImg(iconSrc), mpImg(bgSrc), mpFonts()]).then(function (im) {
+        var W = 1080, H = 1920, c = document.createElement('canvas'); c.width = W; c.height = H; var x = mpCtx(c), g = card.grad || CGR[card.kind] || CGR.fullday;
         var gg = x.createLinearGradient(0, 0, W * .3, H); gg.addColorStop(0, g[0]); gg.addColorStop(1, g[1]); x.fillStyle = gg; x.fillRect(0, 0, W, H);
         if (im[2]) { var r = Math.max(W / im[2].width, H / im[2].height); x.globalAlpha = .5; x.drawImage(im[2], (W - im[2].width * r) / 2, 0, im[2].width * r, im[2].height * r); x.globalAlpha = 1; var ov = x.createLinearGradient(0, 0, 0, H); ov.addColorStop(0, 'rgba(0,0,0,.3)'); ov.addColorStop(1, 'rgba(0,0,0,.65)'); x.fillStyle = ov; x.fillRect(0, 0, W, H); }
         x.textAlign = 'center'; x.fillStyle = 'rgba(255,255,255,.18)'; var bw = 460; x.beginPath(); x.roundRect ? x.roundRect(W / 2 - bw / 2, 110, bw, 70, 35) : x.rect(W / 2 - bw / 2, 110, bw, 70); x.fill();
@@ -3443,13 +3459,13 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         if (card.b) { x.fillStyle = 'rgba(255,255,255,.9)'; x.font = '600 38px ' + CFONT; y += 70; mpWrap(x, card.b, 860, 4).forEach(function (l) { x.fillText(l, W / 2, y); y += 52; }); y -= 52; }
         if (card.chips && card.chips.length) { y += 70; x.font = '800 34px ' + CFONT; var cw = card.chips.map(function (t) { return x.measureText(t).width + 56; }), tot = cw.reduce(function (a, b) { return a + b + 16; }, -16), cx = W / 2 - tot / 2; card.chips.forEach(function (t, i) { x.fillStyle = 'rgba(255,255,255,.2)'; x.beginPath(); x.roundRect ? x.roundRect(cx, y - 44, cw[i], 64, 32) : x.rect(cx, y - 44, cw[i], 64); x.fill(); x.fillStyle = '#fff'; x.textAlign = 'left'; x.fillText(t, cx + 28, y); x.textAlign = 'center'; cx += cw[i] + 16; }); }
         if (im[0]) { var ah = Math.min(560, 1790 - (y + 40)), aw = ah * im[0].width / im[0].height; if (ah > 260) x.drawImage(im[0], W / 2 - aw / 2, 1800 - ah, aw, ah); }
-        x.fillStyle = '#fff'; x.font = '800 40px ' + CFONT; x.globalAlpha = .95; x.fillText('નિયમ સંયમ', W / 2, 1855); x.font = '600 28px ' + CFONT; x.globalAlpha = .75; x.fillText((currentClient.name || '').split(' ')[0] + ' • ' + L('રોજ નિયમ, રોજ સંયમ 🙏', 'रोज़ नियम, रोज़ संयम 🙏', 'Daily discipline, daily balance 🙏'), W / 2, 1895); x.globalAlpha = 1;
+        x.fillStyle = '#fff'; x.globalAlpha = .95; mpBrand(x, W, 1855, 40); x.font = '600 28px ' + CFONT; x.globalAlpha = .75; x.fillText((currentClient.name || '').split(' ')[0] + ' • ' + L('રોજ નિયમ, રોજ સંયમ 🙏', 'रोज़ नियम, रोज़ संयम 🙏', 'Daily discipline, daily balance 🙏'), W / 2, 1895); x.globalAlpha = 1;
         return c;
       });
     }
     var CST = { list: [], cur: 0, canvas: null, photo: null, slot: null };
     function mpPhotoCanvas(img, slot) {
-      var W = 1080, H = 1920, c = document.createElement('canvas'); c.width = W; c.height = H; var x = c.getContext('2d'), k = dateKeyOf(new Date()), plan = {}; try { plan = getDayPlan(k, currentClient); } catch (e) { } var d = plan[slot] || {}, SL = SLOT_LABELS[slot] || { label: '', time: '' };
+      var W = 1080, H = 1920, c = document.createElement('canvas'); c.width = W; c.height = H; var x = mpCtx(c), k = dateKeyOf(new Date()), plan = {}; try { plan = getDayPlan(k, currentClient); } catch (e) { } var d = plan[slot] || {}, SL = SLOT_LABELS[slot] || { label: '', time: '' };
       var r = Math.max(W / img.width, H / img.height); x.drawImage(img, (W - img.width * r) / 2, (H - img.height * r) / 2, img.width * r, img.height * r);
       var ov = x.createLinearGradient(0, 0, 0, H); ov.addColorStop(0, 'rgba(0,0,0,.45)'); ov.addColorStop(.35, 'rgba(0,0,0,0)'); ov.addColorStop(.55, 'rgba(0,0,0,.05)'); ov.addColorStop(1, 'rgba(0,0,0,.85)'); x.fillStyle = ov; x.fillRect(0, 0, W, H);
       x.textAlign = 'center'; x.fillStyle = '#fff'; x.font = '800 46px ' + CFONT; x.fillText('🍽️ ' + L('મારી થાળી', 'मेरी थाली', 'My thali'), W / 2, 130);
@@ -3460,7 +3476,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       x.fillStyle = '#fff'; x.font = '800 46px ' + CFONT; var yy = py + 140; items.forEach(function (t) { x.fillText('• ' + t, 90, yy); yy += 66; });
       if (d.portion) { x.fillStyle = '#fde68a'; x.font = '700 38px ' + CFONT; x.fillText('📏 ' + d.portion, 90, yy + 10); yy += 70; }
       x.fillStyle = '#fde047'; x.font = '900 52px ' + CFONT; x.fillText('🔥 ' + (d.cal || '-') + ' kcal    💪 ' + (d.p != null ? d.p : '-') + ' g ' + L('પ્રોટીન', 'प्रोटीन', 'protein'), 90, yy + 20);
-      x.textAlign = 'center'; x.fillStyle = '#fff'; x.font = '800 36px ' + CFONT; x.globalAlpha = .9; x.fillText('નિયમ સંયમ • ' + (currentClient.name || '').split(' ')[0], W / 2, 1850); x.globalAlpha = 1;
+      x.textAlign = 'center'; x.fillStyle = '#fff'; x.globalAlpha = .95; mpBrand(x, W, 1850, 38); x.font = '600 28px ' + CFONT; x.globalAlpha = .8; x.fillText((currentClient.name || '').split(' ')[0], W / 2, 1893); x.globalAlpha = 1;
       return c;
     }
     function mpCardShow(i) {
@@ -3509,14 +3525,14 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       if (!currentClient) return; mpAnnLoad();
       if (!window.MPJN && !window.__ldJN) { window.__ldJN = 1; var sc = document.createElement('script'); sc.src = 'journey.js'; sc.async = true; document.head.appendChild(sc); window.addEventListener('mpjn', function () { if (document.getElementById('mpCvPrev') && !CST.photoMode) mpCardShow(CST.cur); }); }
       var fe = mpFest(); if (fe) mpLoad('fest-bg.js', 'MPFEST', 'mpfest'); mpLoad('streak-icons.js', 'MPSTK', 'mpstk'); mpLoad('streak-svg.js', 'MPSVG', 'mpsvg');
-      CST.list = mpCardList(); CST.photo = null; CST.photoMode = false;
+      mpFonts(); CST.list = mpCardList(); CST.photo = null; CST.photoMode = false;
       var idx = Math.max(0, CST.list.map(function (x) { return x.id; }).indexOf(focusId));
       var lst = CST.list.map(function (cd, i) { return '<button type="button" data-i="' + i + '" onclick="mpCardShow(' + i + ')" style="flex:0 0 auto;display:flex;align-items:center;gap:6px;padding:7px 11px;border-radius:14px;background:#fff;border:1px solid #e2e8f0;font-size:11.5px;font-weight:800;color:#0f172a" data-notr><span>' + (/^[a-z_0-9]+$/.test(cd.icon || '') ? ic(cd.icon, 20) : esc(cd.icon || '')) + '</span>' + esc(cd.t.length > 22 ? cd.t.slice(0, 21) + '…' : cd.t) + '</button>'; }).join('');
-      var b = 'flex:1;padding:11px 4px;border-radius:14px;font-weight:900;font-size:12px;border:0;color:#fff;font-family:inherit';
-      var h = '<div style="text-align:center"><img id="mpCvPrev" alt="" style="width:62%;max-width:250px;border-radius:18px;box-shadow:0 10px 26px rgba(15,23,42,.25);transition:opacity .25s;background:#e2e8f0;min-height:200px"></div>' +
+      var b = 'flex:1;min-width:0;padding:11px 2px;border-radius:14px;font-weight:900;font-size:12px;border:0;color:#fff;font-family:inherit';
+      var h = '<div style="display:flex;justify-content:center;width:100%"><img id="mpCvPrev" alt="" style="display:block;width:215px;max-width:60vw;height:auto;aspect-ratio:9/16;border-radius:18px;box-shadow:0 10px 26px rgba(15,23,42,.25);transition:opacity .25s;background:#e2e8f0"></div>' +
         '<div style="display:flex;gap:6px;margin-top:12px"><button type="button" onclick="mpCardShare()" style="' + b + ';flex:1.5;background:linear-gradient(90deg,#f97316,#db2777)">📲 ' + L('શેર કરો', 'शेयर करें', 'Share') + '</button><button type="button" onclick="mpCardSave()" style="' + b + ';background:#0f766e">💾 ' + L('સેવ', 'सेव', 'Save') + '</button><button type="button" id="mpCvVid" onclick="mpCardVideo()" style="' + b + ';background:#4338ca">🎬 ' + L('વિડીયો', 'वीडियो', 'Video') + '</button></div>' +
         '<div style="font-size:10.5px;line-height:1.5;color:#475569;margin-top:8px;font-weight:700">' + L('Instagram સ્ટોરી: "શેર કરો" દબાવી યાદીમાંથી Instagram → Story પસંદ કરો, અથવા "સેવ" કરી Instagram માં ગેલેરીમાંથી મૂકો. WhatsApp સ્ટેટસ: યાદીમાં WhatsApp → My Status.', 'Instagram स्टोरी: "शेयर करें" दबाकर Instagram → Story चुनें, या "सेव" करके Instagram में गैलरी से लगाएँ। WhatsApp स्टेटस: WhatsApp → My Status।', 'Instagram story: tap Share, pick Instagram → Story, or Save and add it from the gallery. WhatsApp status: pick WhatsApp → My Status.') + '</div>' +
-        '<div style="font-size:12px;font-weight:900;margin:14px 0 6px">' + L('કાર્ડ પસંદ કરો', 'कार्ड चुनें', 'Pick a card') + '</div><div id="mpCvList" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:6px">' + lst + '</div>' +
+        '<div style="font-size:12px;font-weight:900;margin:14px 0 6px">' + L('કાર્ડ પસંદ કરો', 'कार्ड चुनें', 'Pick a card') + '</div><div id="mpCvList" style="display:flex;gap:6px;overflow-x:auto;max-width:100%;padding-bottom:6px">' + lst + '</div>' +
         '<label style="display:block;margin-top:10px;padding:11px;border-radius:14px;background:#fef3c7;color:#92400e;font-weight:900;font-size:12.5px;text-align:center">📷 ' + L('મારી થાળીનો ફોટો (ગ્રામ + કેલરી સાથે)', 'मेरी थाली की फोटो (ग्राम + कैलोरी के साथ)', 'My thali photo (with grams + calories)') + '<input type="file" accept="image/*" capture="environment" onchange="mpCardPhoto(this)" style="display:none"></label>' +
         '<div id="mpCvSlots" style="display:none;gap:6px;overflow-x:auto;margin-top:8px"></div>' +
         '<div style="font-size:10px;color:#64748b;margin-top:6px;font-weight:700">' + L('ફોટો તમારા ફોનમાં જ રહે છે, સર્વર પર જતો નથી.', 'फोटो आपके फ़ोन में ही रहती है, सर्वर पर नहीं जाती।', 'Your photo stays on your phone, it is never uploaded.') + '</div>' +
