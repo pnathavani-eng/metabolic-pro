@@ -3280,7 +3280,9 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       return { pts: pts, lvl: lvl, nxt: nxt, today: today };
     }
     function saMsg(s) {
-      var h = new Date().getHours(), n = (currentClient.name || '').split(' ')[0];
+      var h = new Date().getHours(), n = (currentClient.name || '').split(' ')[0], fz = mpFest(), sk0 = window.__mpStk;
+      if (fz && s.today.done < 3) return fz.g + ' ' + n + '! 🪔 આજે પણ સંયમથી ખાઈએ';
+      if (h >= 20 && sk0 && sk0.n >= 3 && sk0.days[0] === 'today') return '🔥 ' + sk0.n + ' દિવસનો સ્ટ્રેક બચાવવા આજનું ભોજન માર્ક કરો!';
       if (s.today.done >= 3) return 'વાહ ' + n + '! આજે બહુ સરસ ચાલી રહ્યું છે 🌟';
       if (s.today.done >= 1) return 'સરસ શરૂઆત ' + n + '! આગળનું ભોજન પણ સમયસર લઈએ 💪';
       if (h < 10) return 'સુપ્રભાત ' + n + '! સવારનું પહેલું ભોજન માર્ક કરીએ ☀️';
@@ -3324,29 +3326,82 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       if (Object.keys(upd).length) { c.shieldUsed = used; if (upd.shields !== undefined) c.shields = total; try { db.collection('clients').doc(docId()).update(upd).catch(function (e) { console.error(e); }); } catch (e) { } }
       return { n: n, best: best, sh: left, days: days };
     }
+
+    /* ---------- દીવો/તુલસી, તહેવાર, શેર કાર્ડ ---------- */
+    function mpLoad(src, flag, ev) { if (window[flag]) return; var k = '__ld' + flag; if (window[k]) return; window[k] = 1; var sc = document.createElement('script'); sc.src = src; sc.async = true; document.head.appendChild(sc); window.addEventListener(ev, function () { try { renderSathi(); } catch (e) { } }); }
+    function sk(n, px) { var u = window.MPSTK && window.MPSTK[n]; return u ? '<img alt="" src="' + u + '" style="width:' + px + 'px;height:' + px + 'px;object-fit:contain">' : ''; }
+    function stkStage(n) { return n < 3 ? 1 : n < 7 ? 2 : n < 14 ? 3 : 4; }
+    var FEST = [['2026-10-11', '2026-10-20', 'navratri', 'શુભ નવરાત્રિ'], ['2026-11-05', '2026-11-12', 'diwali', 'શુભ દિવાળી'], ['2027-01-12', '2027-01-15', 'uttarayan', 'હેપ્પી ઉત્તરાયણ'], ['2027-03-20', '2027-03-23', 'holi', 'હેપ્પી હોળી'], ['2027-10-01', '2027-10-10', 'navratri', 'શુભ નવરાત્રિ'], ['2027-10-27', '2027-11-03', 'diwali', 'શુભ દિવાળી']];
+    function mpFest() {
+      var q = (location.search.match(/[?&]fest=(\w+)/) || [])[1], t = dateKeyOf(new Date());
+      for (var i = 0; i < FEST.length; i++) { if ((q && FEST[i][2] === q) || (!q && t >= FEST[i][0] && t <= FEST[i][1])) return { k: FEST[i][2], g: FEST[i][3] }; }
+      return null;
+    }
+    function mpImg(src) { return new Promise(function (res) { if (!src) return res(null); var i = new Image(); i.onload = function () { res(i); }; i.onerror = function () { res(null); }; i.src = src; }); }
+    window.mpStreakShare = function (fmt) {
+      var t = mpStreakCalc(), a = saAvatar(), W = 1080, H = fmt === 'sq' ? 1080 : 1920, fe = mpFest(), st = stkStage(t.n);
+      var usePrem = a.prem && !PREM_BAD[a.g + '_' + a.prem], bgc = usePrem && AVBG[a.g + '_' + a.prem] ? AVBG[a.g + '_' + a.prem] : ['#2b4270', '#16254a'];
+      Promise.all([mpImg(usePrem ? premSrc(a, 'cheer') : null), mpImg(window.MPSTK && window.MPSTK['diya_' + st]), mpImg(window.MPSTK && window.MPSTK['tulsi_' + st]), mpImg(fe && window.MPFEST && window.MPFEST[fe.k])]).then(function (im) {
+        var c = document.createElement('canvas'); c.width = W; c.height = H; var x = c.getContext('2d'), F = "'Noto Sans Gujarati','Shruti','Inter',sans-serif";
+        var g = x.createLinearGradient(0, 0, W * .4, H); g.addColorStop(0, bgc[0]); g.addColorStop(1, bgc[1]); x.fillStyle = g; x.fillRect(0, 0, W, H);
+        if (im[3]) { var r = Math.max(W / im[3].width, H / im[3].height); x.globalAlpha = .55; x.drawImage(im[3], (W - im[3].width * r) / 2, 0, im[3].width * r, im[3].height * r); x.globalAlpha = 1; var ov = x.createLinearGradient(0, 0, 0, H); ov.addColorStop(0, 'rgba(0,0,0,.25)'); ov.addColorStop(1, 'rgba(0,0,0,.6)'); x.fillStyle = ov; x.fillRect(0, 0, W, H); }
+        x.textAlign = 'center'; x.fillStyle = '#fff';
+        var top = fmt === 'sq' ? 40 : 150; x.font = '800 54px ' + F; x.fillText('નિયમ સંયમ', W / 2, top + 50);
+        if (fe) { x.font = '700 40px ' + F; x.fillStyle = '#fde68a'; x.fillText(fe.g + ' 🪔', W / 2, top + 110); x.fillStyle = '#fff'; }
+        var ny = fmt === 'sq' ? 330 : 520; x.font = '900 300px ' + F; x.fillStyle = '#fdba74'; x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 24; x.fillText(String(t.n), W / 2, ny); x.shadowBlur = 0;
+        x.fillStyle = '#fff'; x.font = '800 64px ' + F; x.fillText('દિવસનો સ્ટ્રેક 🔥', W / 2, ny + 90);
+        var dots = t.days.slice(0, 7).reverse(), dy = ny + 160; dots.forEach(function (d, i) { var cx = W / 2 + (i - 3) * 90; x.beginPath(); x.arc(cx, dy, 28, 0, 7); x.fillStyle = d === 'ok' ? '#22c55e' : d === 'sh' ? '#38bdf8' : 'rgba(255,255,255,.25)'; x.fill(); if (d === 'ok' || d === 'sh') { x.fillStyle = '#fff'; x.font = '900 30px ' + F; x.fillText(d === 'ok' ? '✓' : '🛡', cx, dy + 11); } });
+        if (fmt !== 'sq') { var by = 880; if (im[1]) x.drawImage(im[1], 60, by + 420, 320, 320); if (im[2]) x.drawImage(im[2], W - 380, by + 420, 320, 320); if (im[0]) { var ar = im[0].width / im[0].height, ah = 800, aw = ah * ar; x.drawImage(im[0], (W - aw) / 2, by - 20, aw, ah); } }
+        else { if (im[1]) x.drawImage(im[1], 40, 560, 260, 260); if (im[0]) { var ar2 = im[0].width / im[0].height; x.drawImage(im[0], (W - 640 * ar2) / 2, 440, 640 * ar2, 640); } if (im[2]) x.drawImage(im[2], W - 300, 560, 260, 260); }
+        x.fillStyle = '#fff'; x.font = '800 46px ' + F; var nm = (currentClient.name || '').split(' ')[0]; x.fillText(nm + ' નો હેલ્ધી સ્ટ્રેક', W / 2, H - (fmt === 'sq' ? 70 : 170));
+        x.font = '600 34px ' + F; x.globalAlpha = .8; x.fillText('રોજ નિયમ, રોજ સંયમ 🙏', W / 2, H - (fmt === 'sq' ? 25 : 110)); x.globalAlpha = 1;
+        c.toBlob(function (bl) {
+          if (!bl) return; var f; try { f = new File([bl], 'streak-' + t.n + '.png', { type: 'image/png' }); } catch (e) { f = null; }
+          if (f && navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], title: 'મારો સ્ટ્રેક ' + t.n + ' દિવસ' }).catch(function () { }); }
+          else { var u = URL.createObjectURL(bl), l = document.createElement('a'); l.href = u; l.download = 'streak-' + t.n + '.png'; document.body.appendChild(l); l.click(); l.remove(); alert('ઇમેજ સેવ થઈ ગઈ. હવે Instagram/WhatsApp માં ગેલેરીમાંથી મૂકો.'); }
+        }, 'image/png');
+      });
+    };
+    function mpCelebrate(n) {
+      var key = 'mpCel_' + n + '_' + dateKeyOf(new Date()); try { if (localStorage.getItem(key)) return; localStorage.setItem(key, '1'); } catch (e) { }
+      if (document.getElementById('mpCel')) return;
+      var ov = document.createElement('div'); ov.id = 'mpCel'; ov.style.cssText = 'position:fixed;inset:0;z-index:120;background:rgba(15,23,42,.82);display:flex;align-items:center;justify-content:center;overflow:hidden';
+      var em = ['🎉', '✨', '🪔', '🌟', '🎊', '🔥'], cf = ''; for (var i = 0; i < 24; i++) cf += '<i style="position:absolute;top:-30px;left:' + (Math.random() * 100) + '%;font-size:' + (16 + Math.random() * 18) + 'px;font-style:normal;animation:mpFall ' + (2.5 + Math.random() * 2.5) + 's linear ' + (Math.random() * 1.5) + 's infinite">' + em[i % em.length] + '</i>';
+      var mm = n >= 30 ? 'vip' : n >= 14 ? 'medal3' : n >= 7 ? 'medal2' : 'medal1';
+      ov.innerHTML = '<style>@keyframes mpFall{to{transform:translateY(110vh) rotate(360deg)}}@keyframes mpPop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}</style>' + cf +
+        '<div style="position:relative;background:#fff;border-radius:28px;padding:22px 20px;width:84%;max-width:21rem;text-align:center;animation:mpPop .4s ease-out"><div data-notr>' + ic(mm, 80) + '</div><div style="font-size:22px;font-weight:900;color:#ea580c;margin-top:4px" data-notr>🔥 ' + n + ' <span>' + tr('દિવસ') + '</span></div><div style="font-size:12px;font-weight:700;color:#475569;margin:6px 0 14px">વાહ! તમારો સ્ટ્રેક નવા મુકામ પર પહોંચ્યો. આ સફળતા શેર કરો!</div>' +
+        '<button type="button" onclick="mpStreakShare(\'story\')" style="width:100%;padding:11px;border-radius:14px;background:linear-gradient(90deg,#f97316,#db2777);color:#fff;font-weight:900;font-size:13px;border:0">📲 Instagram / WhatsApp સ્ટોરી</button>' +
+        '<button type="button" onclick="document.getElementById(\'mpCel\').remove()" style="margin-top:8px;width:100%;padding:9px;border-radius:14px;background:#f1f5f9;color:#334155;font-weight:800;font-size:12px;border:0">પછી</button></div>';
+      document.body.appendChild(ov);
+    }
     window.mpStreakOpen = function () {
       if (!currentClient) return; var t = mpStreakCalc(), cl = { ok: '#22c55e', sh: '#38bdf8', miss: '#cbd5e1', today: '#fde68a', none: '#f1f5f9' };
       var dots = t.days.slice().reverse().map(function (x) { return '<span style="width:20px;height:20px;border-radius:50%;background:' + cl[x] + ';display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:900" data-notr>' + (x === 'ok' ? '✓' : x === 'sh' ? '🛡' : '') + '</span>'; }).join('');
       var MS = [[3, 'medal1', 'કાંસ્ય'], [7, 'medal2', 'ચાંદી'], [14, 'medal3', 'સોનું'], [30, 'vip', 'તાજ']];
       var med = MS.map(function (m) { var on = t.best >= m[0]; return '<div style="text-align:center;opacity:' + (on ? 1 : .35) + ';filter:' + (on ? 'none' : 'grayscale(1)') + '">' + ic(m[1], 40) + '<div style="font-size:10px;font-weight:900;margin-top:2px">' + m[0] + ' <span data-notr>' + tr('દિવસ') + '</span></div></div>'; }).join('');
       var nextM = [3, 7, 14, 30, 60].filter(function (x) { return x > t.n; })[0];
+      var st = stkStage(t.n), stage = '<div style="display:flex;justify-content:center;gap:18px;margin:8px 0" data-notr>' + ['diya', 'tulsi'].map(function (k) { return '<div style="text-align:center">' + (sk(k + '_' + st, 84) || '') + '<div style="font-size:10px;font-weight:800;color:#64748b">' + tr(k === 'diya' ? 'દીવો' : 'તુલસી') + '</div></div>'; }).join('') + '</div>';
+      var shr = '<div style="display:flex;gap:8px;margin-top:12px"><button type="button" onclick="mpStreakShare(\'story\')" style="flex:1.4;padding:11px 4px;border-radius:14px;background:linear-gradient(90deg,#f97316,#db2777);color:#fff;font-weight:900;font-size:12px;border:0">📲 Instagram સ્ટોરી</button><button type="button" onclick="mpStreakShare(\'sq\')" style="flex:1;padding:11px 4px;border-radius:14px;background:#16a34a;color:#fff;font-weight:900;font-size:12px;border:0">💬 WhatsApp</button></div>';
       var h = '<div style="text-align:center;padding:6px 0 2px"><div style="font-size:50px;line-height:1" data-notr>' + ic('streak', 54) + '</div><div style="font-size:38px;font-weight:900;color:#ea580c;line-height:1.1" data-notr>' + t.n + '</div><div style="font-size:12px;font-weight:800;color:#64748b">લાગલગાટ દિવસ</div></div>' +
-        '<div style="display:flex;gap:8px;margin:10px 0"><div style="flex:1;background:#fff7ed;border-radius:14px;padding:8px;text-align:center"><div style="font-size:10px;font-weight:800;color:#9a3412">શ્રેષ્ઠ</div><b data-notr>' + t.best + '</b></div><div style="flex:1;background:#eff6ff;border-radius:14px;padding:8px;text-align:center"><div style="font-size:10px;font-weight:800;color:#1d4ed8">🛡 શિલ્ડ</div><b data-notr>' + t.sh + '/2</b></div></div>' +
+        stage + '<div style="display:flex;gap:8px;margin:10px 0"><div style="flex:1;background:#fff7ed;border-radius:14px;padding:8px;text-align:center"><div style="font-size:10px;font-weight:800;color:#9a3412">શ્રેષ્ઠ</div><b data-notr>' + t.best + '</b></div><div style="flex:1;background:#eff6ff;border-radius:14px;padding:8px;text-align:center"><div style="font-size:10px;font-weight:800;color:#1d4ed8">🛡 શિલ્ડ</div><b data-notr>' + t.sh + '/2</b></div></div>' +
         '<div style="font-size:12px;font-weight:900;margin:6px 0">છેલ્લા 14 દિવસ</div><div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center">' + dots + '</div>' +
         '<div style="font-size:12px;font-weight:900;margin:14px 0 6px">🏅 મેડલ</div><div style="display:flex;justify-content:space-around">' + med + '</div>' +
-        '<div style="margin-top:12px;background:#f0fdfa;border-radius:14px;padding:9px;font-size:11px;font-weight:700;color:#0f766e;line-height:1.5">' + (nextM ? 'હજી ' + (nextM - t.n) + ' દિવસ પછી ' + nextM + ' દિવસનો મેડલ! ' : '') + 'એક દિવસ ચૂકી જાઓ તો 🛡 શિલ્ડ સ્ટ્રેક બચાવે. દર 7 દિવસે નવી શિલ્ડ મળે (વધુમાં વધુ 2). દિવસ ગણાવા માટે સ્કોર 60% કે વધુ જોઈએ.</div>';
+        '<div style="margin-top:12px;background:#f0fdfa;border-radius:14px;padding:9px;font-size:11px;font-weight:700;color:#0f766e;line-height:1.5">' + (nextM ? 'હજી ' + (nextM - t.n) + ' દિવસ પછી ' + nextM + ' દિવસનો મેડલ! ' : '') + 'એક દિવસ ચૂકી જાઓ તો 🛡 શિલ્ડ સ્ટ્રેક બચાવે. દર 7 દિવસે નવી શિલ્ડ મળે (વધુમાં વધુ 2). દિવસ ગણાવા માટે સ્કોર 60% કે વધુ જોઈએ.</div>' + shr;
       sheetOpen('🔥 તમારો સ્ટ્રેક', h);
     };
     function renderSathi() {
       var host = document.getElementById('tabContentToday'); if (!host || !currentClient || !window.S3) return;
       var old = document.getElementById('mpSathi'); if (old) old.remove();
       if (currentClient.avatarOff === true) return;
-      var a = saAvatar(), s = saStats(), stk = mpStreakCalc();
+      mpLoad('streak-icons.js', 'MPSTK', 'mpstk'); var fe0 = mpFest(); if (fe0) mpLoad('fest-bg.js', 'MPFEST', 'mpfest');
+      var a = saAvatar(), s = saStats(), stk = mpStreakCalc(); window.__mpStk = stk;
       var usePrem = a.prem && !PREM_BAD[a.g + '_' + a.prem], pose = s.today.done >= 3 ? 'cheer' : (new Date().getHours() < 7 ? 'sleepy' : 'talk');
       var bgc = usePrem && AVBG[a.g + '_' + a.prem] ? AVBG[a.g + '_' + a.prem] : ['#2b4270', '#16254a'];
       var box = document.createElement('div'); box.id = 'mpSathi';
       box.style.cssText = 'border-radius:26px;background:linear-gradient(165deg,' + bgc[0] + ',' + bgc[1] + ');box-shadow:0 12px 28px rgba(15,42,74,.25);padding:10px;display:flex;gap:6px;align-items:center;color:#fff;border:1px solid rgba(255,255,255,.25)';
+      if (fe0 && window.MPFEST && window.MPFEST[fe0.k]) { box.style.backgroundImage = 'linear-gradient(165deg,rgba(8,15,35,.45),rgba(8,15,35,.7)),url(' + window.MPFEST[fe0.k] + ')'; box.style.backgroundSize = 'cover'; box.style.backgroundPosition = 'center'; }
       var pct = Math.min(100, Math.round(s.pts / s.nxt * 100));
+      if ([3, 7, 14, 30, 60].indexOf(stk.n) >= 0) setTimeout(function () { mpCelebrate(stk.n); }, 700);
       var figure = usePrem ? '<img alt="" src="' + premSrc(a, pose) + '" onerror="mpPremErr(this,\'' + a.g + '\',\'' + a.prem + '\',\'' + pose + '\')" style="width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 8px 8px rgba(0,0,0,.3))" class="s3-float">' : S3.avatar({ g: a.g, hair: a.hair, outfit: a.outfit, col: a.col, hc: a.hc, beard: a.beard, acc: a.acc, lvl: s.lvl, mood: saMood(s) }).replace('<svg ', '<svg style="width:100%;height:100%" ');
       var chip = function (l, id) { return '<div style="background:rgba(0,0,0,.24);border-radius:10px;padding:4px 2px;text-align:center"><small style="display:block;font-size:8px;opacity:.8;font-weight:700">' + l.replace('💪', ic('muscle', 12)) + '</small><b id="' + id + '" style="font-size:12px;font-weight:900" data-notr>-</b></div>'; };
       var chipW = function (l, id) { return '<div id="mpSGlBox" onclick="addWater(0.25)" style="background:rgba(0,0,0,.24);border-radius:10px;padding:4px 2px;text-align:center;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(125,211,252,.55)"><small style="display:block;font-size:8px;opacity:.9;font-weight:700">' + l.replace('💧', ic('water', 12)) + ' +</small><b id="' + id + '" style="font-size:12px;font-weight:900" data-notr>-</b></div>'; };
@@ -4156,6 +4211,11 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     ['તમારા માટે ઉપર મુજબ માપ જ રાખો. બાકીના સભ્યો ઇચ્છે તો રોટલી/ભાત થોડા વધુ લઈ શકે.', 'आपके लिए ऊपर के अनुसार माप ही रखें। बाकी सदस्य चाहें तो रोटी/चावल थोड़े ज़्यादा ले सकते हैं।', 'Keep your own portions as above. Others may take a bit more roti/rice if they wish.'],
     ['ક્લાયન્ટે ઉમેરેલું (છેલ્લા ૩ દિવસ)', 'क्लाइंट ने जोड़ा (पिछले ३ दिन)', 'Added by client (last 3 days)'],
     ['⭐ તમારી રોજની પસંદ', '⭐ आपकी रोज़ की पसंद', '⭐ Your daily favourites'], ['તમારી રોજની પસંદ', 'आपकी रोज़ की पसंद', 'Your daily favourites'], ['🌙 કાલે', '🌙 कल', '🌙 Tomorrow'], ['બાકી', 'बाकी', 'left'], ['દિવસ', 'दिन', 'Day'], ['ટૂંકી ભોજન લાઈનો', 'छोटी भोजन पंक्तियाँ', 'Compact meal rows'], ['વસ્તુ બદલો', 'चीज़ बदलें', 'Swap item'], ['ઉમેરો', 'जोड़ें', 'Add']
+    ['દીવો', 'दीया', 'Diya'], ['તુલસી', 'तुलसी', 'Tulsi'], ['📲 Instagram સ્ટોરી', '📲 Instagram स्टोरी', '📲 Instagram story'],
+    ['વાહ! તમારો સ્ટ્રેક નવા મુકામ પર પહોંચ્યો. આ સફળતા શેર કરો!', 'वाह! आपकी स्ट्रीक नए मुकाम पर पहुँची। यह सफलता शेयर करें!', 'Wow! Your streak hit a new milestone. Share it!'],
+    ['📲 Instagram / WhatsApp સ્ટોરી', '📲 Instagram / WhatsApp स्टोरी', '📲 Instagram / WhatsApp story'], ['પછી', 'बाद में', 'Later'],
+    ['દિવસનો સ્ટ્રેક બચાવવા આજનું ભોજન માર્ક કરો!', 'दिन की स्ट्रीक बचाने के लिए आज का भोजन मार्क करें!', "-day streak: mark today's meals to save it!"],
+    ['શુભ દિવાળી', 'शुभ दीपावली', 'Happy Diwali'], ['શુભ નવરાત્રિ', 'शुभ नवरात्रि', 'Happy Navratri'], ['હેપ્પી ઉત્તરાયણ', 'हैप्पी उत्तरायण', 'Happy Uttarayan'], ['હેપ્પી હોળી', 'हैप्पी होली', 'Happy Holi'], ['આજે પણ સંયમથી ખાઈએ', 'आज भी संयम से खाएँ', "let's eat mindfully today"],
     ['📤 કોચને', '📤 कोच को', '📤 Send to'], ['મોકલો', 'भेजें', 'coach'],
     ['💬 1 દિવસ', '💬 1 दिन', '💬 1 day'], ['💬 7 દિવસ', '💬 7 दिन', '💬 7 days'],
     ['🔥 તમારો સ્ટ્રેક', '🔥 आपकी स्ट्रीक', '🔥 Your streak'], ['લાગલગાટ દિવસ', 'लगातार दिन', 'days in a row'],
