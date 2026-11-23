@@ -3515,9 +3515,66 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       words.forEach(function (w) { var t = cur ? cur + ' ' + w : w; if (x.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t; });
       if (cur) lines.push(cur); if (lines.length > maxLines) { lines = lines.slice(0, maxLines); lines[maxLines - 1] += '…'; } return lines;
     }
+    /* ---------- ડેશબોર્ડ ટાઇલ → નામોની યાદી + સંદેશા ---------- */
+    var DK = { days: 3 };
+    function dkToday() { return dateKeyOf(new Date()); }
+    function dkInact(c) { var i = insights(c); return i.daysSince !== null ? i.daysSince : daysBetween(c.joiningDate || dkToday(), dkToday()); }
+    function dkList(kind) {
+      var all = accessible(), t = dkToday();
+      if (kind === 'all') return all;
+      if (kind === 'today') return all.filter(function (c) { return hasLog((c.compliance || {})[t]); });
+      if (kind === 'attention') return all.filter(needsAttention);
+      if (kind === 'trial') return all.filter(function (c) { var l = trialLeft(c); return l !== null && l >= 0 && l <= 5; }).sort(function (a, b) { return trialLeft(a) - trialLeft(b); });
+      if (kind === 'expired') return all.filter(function (c) { var l = trialLeft(c); return l !== null && l < 0; });
+      if (kind === 'pending') return all.filter(function (c) { return !c.whatsappVerified; });
+      if (kind === 'vip') return all.filter(isClientVip);
+      if (kind === 'inactive') return all.filter(function (c) { return c.whatsappVerified && dkInact(c) >= DK.days; }).sort(function (a, b) { return dkInact(b) - dkInact(a); });
+      return [];
+    }
+    var DK_T = { all: 'બધા ક્લાયન્ટ', today: 'આજે લોગ કર્યો', attention: 'ધ્યાન જોઈએ', trial: 'ટ્રાયલ પૂરી થવા આવી', expired: 'ટ્રાયલ પૂરી થઈ ગઈ', pending: 'WA વેરિફાય બાકી', vip: 'VIP', inactive: 'નિષ્ક્રિય ક્લાયન્ટ' };
+    function dkMsg(kind, c) {
+      var n = firstName(c.name), lk = (typeof portalUrl !== 'undefined' && portalUrl) ? '\n📲 ' + portalUrl : '';
+      if (kind === 'trial') { var l = trialLeft(c); return 'નમસ્તે ' + n + '! 🙏 તમારી ટ્રાયલ ' + (l === 0 ? 'આજે' : l + ' દિવસમાં') + ' પૂરી થવા જઈ રહી છે. તમારી પ્રગતિ અટક્યા વગર ચાલુ રાખવા પ્લાન અપડેટ/રિન્યુ કરાવી લો. કોઈ પ્રશ્ન હોય તો અહીં જ પૂછો.' + lk; }
+      if (kind === 'expired') return 'નમસ્તે ' + n + '! 🙏 તમારી ટ્રાયલ પૂરી થઈ ગઈ છે. ફરી શરૂ કરવા અને તમારી પ્રગતિ ચાલુ રાખવા પ્લાન અપડેટ કરાવો. અમે મદદ માટે અહીં જ છીએ.' + lk;
+      if (kind === 'inactive') return 'નમસ્તે ' + n + '! 🙏 ' + dkInact(c) + ' દિવસથી તમે એપમાં દેખાયા નથી. બધું બરાબર છે ને? આજે ફક્ત ૧ ભોજન માર્ક કરી ફરી શરૂઆત કરીએ, હું સાથે છું 💪' + lk;
+      return '';
+    }
+    function dkRow(kind, c) {
+      var key = 'mpDk_' + kind + '_' + c.id + '_' + dkToday(), sent = false; try { sent = !!localStorage.getItem(key); } catch (e) { }
+      var sub = kind === 'trial' ? 'ટ્રાયલ બાકી: ' + trialLeft(c) + ' દિવસ' : kind === 'expired' ? 'ટ્રાયલ પૂરી: ' + Math.abs(trialLeft(c)) + ' દિવસ પહેલાં' : kind === 'inactive' ? dkInact(c) + ' દિવસથી નિષ્ક્રિય' : kind === 'attention' ? insights(c).flags.slice(0, 3).map(function (f) { return f.text; }).join(' • ') : '';
+      var canMsg = ['trial', 'expired', 'inactive', 'attention'].indexOf(kind) >= 0 && c.whatsappVerified !== false;
+      return '<div style="border:1px solid #e2e8f0;border-radius:14px;padding:9px 10px;margin-bottom:7px;background:#fff"><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;min-width:0"><div style="font-weight:900;font-size:13px">' + esc(c.name) + ' <span style="color:#94a3b8;font-weight:600;font-size:11px">' + esc(maskPhoneNumber(c.phone)) + '</span></div>' + (sub ? '<div style="font-size:11px;color:#b45309;font-weight:800;margin-top:2px">' + esc(sub) + '</div>' : '') + '</div>' +
+        (canMsg ? '<button type="button" id="dkb_' + c.id + '" onclick="dkSend(\'' + kind + '\',\'' + c.id + '\')" style="border:0;border-radius:10px;background:' + (sent ? '#d1fae5' : '#16a34a') + ';color:' + (sent ? '#065f46' : '#fff') + ';font-weight:900;font-size:11px;padding:8px 10px">' + (sent ? '✓ મોકલ્યું' : '💬 મોકલો') + '</button>' : '') +
+        '<button type="button" onclick="dkClose();openClientModal(\'' + c.id + '\')" style="border:0;border-radius:10px;background:#0f172a;color:#fff;font-weight:800;font-size:11px;padding:8px 10px">Details</button></div></div>';
+    }
+    window.dkSend = function (kind, id) {
+      var c = liveClients.filter(function (x) { return x.id === id; })[0]; if (!c) return;
+      if (kind === 'attention') sendCheckin(id); else sendToClient(c, dkMsg(kind, c));
+      try { localStorage.setItem('mpDk_' + kind + '_' + id + '_' + dkToday(), '1'); } catch (e) { }
+      var b = document.getElementById('dkb_' + id); if (b) { b.style.background = '#d1fae5'; b.style.color = '#065f46'; b.textContent = '✓ મોકલ્યું'; }
+    };
+    window.dkClose = function () { var e = document.getElementById('dkBox'); if (e) e.remove(); };
+    window.dkOpen = function (kind) {
+      dkClose(); var rows = dkList(kind), o = document.createElement('div'); o.id = 'dkBox'; o.setAttribute('data-notr', '1');
+      o.style.cssText = 'position:fixed;inset:0;z-index:99998;background:#f1f5f9;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 14px 60px;box-sizing:border-box';
+      var sel = kind === 'inactive' ? '<div style="display:flex;gap:6px;margin:6px 0 10px;flex-wrap:wrap">' + [2, 3, 5, 7, 14, 30].map(function (d) { return '<button type="button" onclick="dkDays(' + d + ')" style="border:0;border-radius:99px;padding:6px 12px;font-size:12px;font-weight:900;background:' + (DK.days === d ? '#0f766e' : '#e2e8f0') + ';color:' + (DK.days === d ? '#fff' : '#334155') + '">' + d + '+ દિવસ</button>'; }).join('') + '</div>' : '';
+      o.innerHTML = '<div style="max-width:560px;margin:0 auto"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="font-weight:900;font-size:16px">' + DK_T[kind] + ' <span style="color:#64748b">(' + rows.length + ')</span></div><button type="button" onclick="dkClose()" style="border:0;background:#cbd5e1;border-radius:99px;width:36px;height:36px;font-size:16px;font-weight:900">✕</button></div>' + sel +
+        (rows.length ? rows.map(function (c) { return dkRow(kind, c); }).join('') : '<div style="text-align:center;color:#94a3b8;padding:24px">કોઈ નથી 🎉</div>') + '</div>';
+      document.body.appendChild(o);
+    };
+    window.dkDays = function (d) { DK.days = d; dkOpen('inactive'); };
+    function dkWire() {
+      var k = document.getElementById('dashKpis'); if (!k) return;
+      var kinds = ['all', 'today', 'attention', 'trial', 'pending', 'vip'];
+      if (!k.getAttribute('data-dk')) {
+        k.insertAdjacentHTML('beforeend', '<div class="card-clean rounded-2xl p-2.5 text-center" data-dkx="inactive"><div class="text-lg font-black text-orange-700">' + dkList('inactive').length + '</div><div class="text-[9px] font-bold text-slate-500 leading-tight">💤 નિષ્ક્રિય (' + DK.days + '+ દિવસ)</div></div><div class="card-clean rounded-2xl p-2.5 text-center" data-dkx="expired"><div class="text-lg font-black text-rose-700">' + dkList('expired').length + '</div><div class="text-[9px] font-bold text-slate-500 leading-tight">⌛ ટ્રાયલ પૂરી થઈ</div></div>');
+      }
+      Array.prototype.forEach.call(k.children, function (el, i) { var kd = el.getAttribute('data-dkx') || kinds[i]; if (!kd) return; el.style.cursor = 'pointer'; el.onclick = function () { dkOpen(kd); }; });
+    }
+    (function () { var tries = 0, iv = setInterval(function () { if (++tries > 40) return clearInterval(iv); if (typeof window.renderDashboard === 'function' && !window.__dkWrapped) { window.__dkWrapped = true; var o = window.renderDashboard; window.renderDashboard = function () { var r = o.apply(this, arguments); try { var kk = document.getElementById('dashKpis'); if (kk) kk.removeAttribute('data-dk'); dkWire(); } catch (e) { console.error(e); } return r; }; clearInterval(iv); } }, 500); })();
     /* ---------- માર્કેટિંગ કાર્ડ સ્ટુડિયો (ઓનર) ---------- */
     var QUOTES = ['નાની ટેવ, મોટો ફેરફાર.', 'આજનો નિયમ, કાલનું સ્વાસ્થ્ય.', 'ધીરજ રાખો, પરિણામ આવશે.', 'પાણી પીઓ, ચાલો, હસો.', 'રોજ થોડું, પણ રોજ.', 'સ્વસ્થ શરીર, શાંત મન.', 'સંયમ એ જ સાચી શક્તિ.', 'પડી જાઓ તો ફરી ઊભા થાઓ, ફરી શરૂ કરો.'];
-    var MK = { cur: 0, f: {}, canvas: null, st: { id: null, pos: 0, img: null } }, MKT = [
+    var MK = { cur: 0, f: {}, canvas: null, stl: [], sel: -1, cache: {} }, MKT = [
       { n: '🚀 લોન્ચ', badge: 'LAUNCHING SOON', t: 'નિયમ સંયમ આવી રહ્યું છે', m: '🚀', s: 'ગુજરાતી ડાયટ અને ડાયાબિટીસ કોચિંગ એપ', b: 'ઘરના ભોજનથી, ગુજરાતીમાં, રોજ નિયમ — રોજ સંયમ.', chips: '🥗 ડાયટ, 🩺 ડાયાબિટીસ, 🥒 ફેટી લિવર', bg: 'fr:fr_invite', st: 'sticker_party_popper' },
       { n: '🎁 ફ્રી ટ્રાયલ', badge: 'SPECIAL OFFER', t: 'ખાસ ઑફર', m: '7 દિવસ ફ્રી', s: 'પહેલાં અનુભવો, પછી નક્કી કરો', b: 'તમારા માટેનું ગુજરાતી ડાયટ પ્લાન — હમણાં જ જોડાઓ.', chips: '✅ ગુજરાતી, ✅ ઘરનું ભોજન', bg: 'fr:fr_challenge', st: 'sticker_gold_medal' },
       { n: '💬 ક્લાયન્ટ અનુભવ', badge: 'MY STORY', t: 'ક્લાયન્ટનો અનુભવ', m: '', s: '', b: 'અહીં ક્લાયન્ટનો અસલી અનુભવ લખો (પરવાનગી સાથે).', chips: '⭐⭐⭐⭐⭐', bg: 'fr:fr_review', dark: 1, st: 'sticker_namaste_hands' },
@@ -3539,14 +3596,15 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       { n: '🌅 સુવિચાર', badge: 'સુવિચાર', t: 'આજનો સુવિચાર', m: QUOTES[Math.floor(Date.now() / 864e5) % QUOTES.length], s: '', b: '', chips: '', bg: 'bg:bg_calm', st: 'sticker_sparkle_burst' },
       { n: '✍️ ખાલી (મારું)', badge: 'નિયમ સંયમ', t: '', m: '', s: '', b: '', chips: '', bg: 'bg:bg_gold', st: '' }
     ];
-    function mpMkLoad() { ['frames.js:MPFR:mpfr', 'card-bg.js:MPCBG:mpcbg', 'stickers.js:MPSTKR:mpstkr', 'fest-bg.js:MPFEST:mpfest'].forEach(function (z) { z = z.split(':'); if (window[z[1]] || window['__ldm' + z[1]]) return; window['__ldm' + z[1]] = 1; var sc = document.createElement('script'); sc.src = z[0]; sc.async = true; sc.onload = function () { if (z[1] === 'MPSTKR') mkStickers(); mkRender(); }; document.head.appendChild(sc); }); }
+    function mpMkLoad() { ['frames.js:MPFR:mpfr', 'card-bg.js:MPCBG:mpcbg', 'stickers.js:MPSTKR:mpstkr', 'fest-bg.js:MPFEST:mpfest'].forEach(function (z) { z = z.split(':'); if (window[z[1]] || window['__ldm' + z[1]]) return; window['__ldm' + z[1]] = 1; var sc = document.createElement('script'); sc.src = z[0]; sc.async = true; sc.onload = function () { if (z[1] === 'MPSTKR') { mkStickers(); mkFill(); } mkRender(); }; document.head.appendChild(sc); }); }
     function mkG(id) { var e = document.getElementById(id); return e ? e.value : ''; }
     function mkRead() { var nm = (mkG('mkNm') || '').trim() || 'તમે', sb = function (v) { return String(v || '').replace(/\{name\}/g, nm); }; return { badge: mkG('mkBadge'), t: sb(mkG('mkT')), m: sb(mkG('mkM')), s: sb(mkG('mkS')), b: sb(mkG('mkB')), chips: sb(mkG('mkC')).split(',').map(function (z) { return z.trim(); }).filter(Boolean).slice(0, 3), foot: mkG('mkF'), bg: mkG('mkBg'), dark: !!(document.getElementById('mkD') || {}).checked }; }
     function mkCanvas(f) {
       var src = null, kind = (f.bg || '').split(':'), pk = null;
       if (kind[0] === 'fr') src = window.MPFR && window.MPFR[kind[1]]; else if (kind[0] === 'bg') pk = window.MPCBG && window.MPCBG[kind[1]]; else if (kind[0] === 'fest') src = window.MPFEST && window.MPFEST[kind[1]];
       var iconSrc = null;
-      return Promise.all([mpImg(src), mpImg(pk), mpFonts()]).then(function (im) {
+      var mi = function (u) { if (!u) return Promise.resolve(null); var k = u.length + u.slice(-40); return MK.cache[k] || (MK.cache[k] = mpImg(u)); };
+      return Promise.all([mi(src), mi(pk), mpFonts()]).then(function (im) {
         var W = 1080, H = 1920, c = document.createElement('canvas'); c.width = W; c.height = H; var x = mpCtx(c), fr = kind[0] === 'fr';
         var gg = x.createLinearGradient(0, 0, W * .3, H); gg.addColorStop(0, '#0f766e'); gg.addColorStop(1, '#134e4a'); x.fillStyle = gg; x.fillRect(0, 0, W, H);
         if (im[1]) { var r4 = Math.max(W / im[1].width, H / im[1].height); x.drawImage(im[1], (W - im[1].width * r4) / 2, (H - im[1].height * r4) / 2, im[1].width * r4, im[1].height * r4); x.fillStyle = 'rgba(0,0,0,.2)'; x.fillRect(0, 0, W, H); }
@@ -3562,22 +3620,37 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         if (f.chips && f.chips.length) { y += 80; x.font = '800 36px ' + CFONT; var cw = f.chips.map(function (t) { return x.measureText(t).width + 56; }), tot = cw.reduce(function (a, b) { return a + b + 16; }, -16), cx = W / 2 - tot / 2; f.chips.forEach(function (t, i) { x.fillStyle = CHB; x.beginPath(); x.roundRect ? x.roundRect(cx, y - 46, cw[i], 68, 34) : x.rect(cx, y - 46, cw[i], 68); x.fill(); x.fillStyle = TC; x.textAlign = 'left'; x.fillText(t, cx + 28, y); x.textAlign = 'center'; cx += cw[i] + 16; }); }
         if (fr) { x.fillStyle = f.dark ? 'rgba(255,255,255,.88)' : 'rgba(0,0,0,.45)'; x.beginPath(); x.roundRect ? x.roundRect(W / 2 - 360, 1788, 720, 124, 40) : x.rect(W / 2 - 360, 1788, 720, 124); x.fill(); }
         x.fillStyle = TC; x.globalAlpha = .95; mpBrand(x, W, 1855, 40, TC); x.font = '600 28px ' + CFONT; x.globalAlpha = .8; x.fillText(f.foot || 'રોજ નિયમ, રોજ સંયમ 🙏', W / 2, 1895); x.globalAlpha = 1;
-        var S = MK.st; if (S.img && S.pos <= 3) { var sz = 300, pts = [[W - sz - 50, 215], [50, 215], [W - sz - 50, H - 640], [50, H - 640]], p = pts[S.pos]; x.save(); x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 24; x.shadowOffsetY = 8; x.translate(p[0] + sz / 2, p[1] + sz / 2); x.rotate(S.pos % 2 ? -.1 : .1); x.drawImage(S.img, -sz / 2, -sz / 2, sz, sz); x.restore(); }
+        MK.stl.forEach(function (q) { var cx = q.x * W, cy = q.y * H; x.save(); x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 24; x.shadowOffsetY = 8; x.translate(cx, cy); x.rotate(q.r * Math.PI / 180); if (q.img) x.drawImage(q.img, -q.z / 2, -q.z / 2, q.z, q.z); else if (q.e) { x.font = Math.round(q.z * .85) + 'px sans-serif'; x.textAlign = 'center'; x.fillStyle = '#000'; x.fillText(q.e, 0, q.z * .3); } x.restore(); });
         return c;
       });
     }
     var mkTm = null;
-    function mkRender() { clearTimeout(mkTm); mkTm = setTimeout(function () { var pv = document.getElementById('mkPrev'); if (!pv) return; mkCanvas(mkRead()).then(function (cv) { MK.canvas = cv; pv.src = cv.toDataURL('image/jpeg', .85); }); }, 120); }
-    function mkStickers() { var el = document.getElementById('mkSt'); if (!el || !window.MPSTKR) return; el.innerHTML = Object.keys(window.MPSTKR).map(function (k) { return '<button type="button" data-st="' + k + '" onclick="mkSticker(\'' + k + '\')" style="flex:0 0 auto;width:46px;height:46px;border-radius:12px;background:#fff;border:1px solid #e2e8f0;padding:3px;' + (k === MK.st.id ? 'outline:3px solid #14b8a6' : '') + '"><img src="' + window.MPSTKR[k] + '" style="width:100%;height:100%;object-fit:contain"></button>'; }).join(''); }
-    window.mkSticker = function (id) {
-      var S = MK.st; if (S.id === id) { S.pos++; if (S.pos > 3) { S.pos = 0; S.id = null; S.img = null; mkStickers(); mkRender(); return; } mkRender(); return; }
-      S.id = id; S.pos = 0; mpImg(window.MPSTKR && window.MPSTKR[id]).then(function (im) { S.img = im; mkStickers(); mkRender(); });
+    function mkRender() { clearTimeout(mkTm); mkTm = setTimeout(function () { var pv = document.getElementById('mkPrev'); if (!pv) return; mkRenderNow(); }, 120); }
+    var mkBusy = false;
+    function mkRenderNow() { var pv = document.getElementById('mkPrev'); if (!pv || mkBusy) return; mkBusy = true; mkCanvas(mkRead()).then(function (cv) { MK.canvas = cv; var t = document.createElement('canvas'); t.width = 540; t.height = 960; var x = t.getContext('2d'); x.drawImage(cv, 0, 0, 540, 960); var q = MK.stl[MK.sel]; if (q) { x.save(); x.translate(q.x * 540, q.y * 960); x.rotate(q.r * Math.PI / 180); x.setLineDash([8, 6]); x.lineWidth = 3; x.strokeStyle = '#fff'; x.shadowColor = '#000'; x.shadowBlur = 4; x.strokeRect(-q.z / 4, -q.z / 4, q.z / 2, q.z / 2); x.restore(); } pv.src = t.toDataURL('image/jpeg', .85); mkBusy = false; }).catch(function () { mkBusy = false; }); }
+    function mkStickers() { var el = document.getElementById('mkSt'); if (!el || !window.MPSTKR) return; el.innerHTML = Object.keys(window.MPSTKR).map(function (k) { return '<button type="button" onclick="mkAdd(\'' + k + '\')" style="flex:0 0 auto;width:46px;height:46px;border-radius:12px;background:#fff;border:1px solid #e2e8f0;padding:3px"><img src="' + window.MPSTKR[k] + '" style="width:100%;height:100%;object-fit:contain"></button>'; }).join(''); }
+    window.mkAdd = function (k, x, y) { var q = { k: k, x: x == null ? .5 : x, y: y == null ? .5 : y, z: 300, r: 0 }; if (k.indexOf('e:') === 0) { q.e = k.slice(2); MK.stl.push(q); MK.sel = MK.stl.length - 1; mkRenderNow(); return; } MK.stl.push(q); MK.sel = MK.stl.length - 1; mkFill(); mkRenderNow(); };
+    function mkFill() { MK.stl.forEach(function (q) { if (!q.img && !q.e && !q.ld && window.MPSTKR && window.MPSTKR[q.k]) { q.ld = 1; mpImg(window.MPSTKR[q.k]).then(function (im) { q.img = im; mkRenderNow(); }); } }); }
+    window.mkEmoji = function () { var e = document.getElementById('mkEm'); var v = e && e.value.trim(); if (!v) return; var ch = Array.from(v)[0]; mkAdd('e:' + ch); e.value = ''; };
+    window.mkAct = function (a) {
+      var q = MK.stl[MK.sel]; if (!q) { alert('પહેલાં સ્ટિકર ઉમેરો અથવા કાર્ડ પર દબાવી પસંદ કરો'); return; }
+      if (a === 'l') q.x = Math.max(0, q.x - .04); if (a === 'r') q.x = Math.min(1, q.x + .04); if (a === 'u') q.y = Math.max(0, q.y - .02); if (a === 'd') q.y = Math.min(1, q.y + .02);
+      if (a === 'c') { q.x = .5; } if (a === 'm') { q.x = .5; q.y = .5; }
+      if (a === '+') q.z = Math.min(900, q.z * 1.15); if (a === '-') q.z = Math.max(80, q.z / 1.15); if (a === 'rot') q.r = (q.r + 15) % 360;
+      if (a === 'x') { MK.stl.splice(MK.sel, 1); MK.sel = MK.stl.length - 1; } mkRenderNow();
     };
+    function mkDrag() {
+      var pv = document.getElementById('mkPrev'); if (!pv) return; pv.style.touchAction = 'none'; var drag = false;
+      function pos(e) { var r = pv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; }
+      pv.addEventListener('pointerdown', function (e) { var p = pos(e), best = -1, bd = 1e9; MK.stl.forEach(function (q, i) { var d = Math.hypot(q.x - p[0], (q.y - p[1]) * 16 / 9); if (d < bd) { bd = d; best = i; } }); if (best >= 0 && bd < .3) { MK.sel = best; drag = true; try { pv.setPointerCapture(e.pointerId); } catch (er) { } mkRenderNow(); } e.preventDefault(); });
+      pv.addEventListener('pointermove', function (e) { if (!drag) return; var p = pos(e), q = MK.stl[MK.sel]; if (!q) return; q.x = Math.max(0, Math.min(1, p[0])); q.y = Math.max(0, Math.min(1, p[1])); mkRenderNow(); });
+      var up = function () { drag = false; }; pv.addEventListener('pointerup', up); pv.addEventListener('pointercancel', up);
+    }
     window.mkPick = function (i) {
       var p = MKT[i]; MK.cur = i; var set = function (id, v) { var e = document.getElementById(id); if (e) e.value = v || ''; };
       set('mkBadge', p.badge); set('mkT', p.t); set('mkM', p.m); set('mkS', p.s); set('mkB', p.b); set('mkC', p.chips); set('mkBg', p.bg); var d = document.getElementById('mkD'); if (d) d.checked = !!p.dark;
       document.querySelectorAll('#mkTpl [data-i]').forEach(function (b) { b.style.outline = (+b.getAttribute('data-i') === i) ? '3px solid #14b8a6' : 'none'; });
-      MK.st.pos = 0; if (p.st) { MK.st.id = null; mkSticker(p.st); } else { MK.st.id = null; MK.st.img = null; mkStickers(); mkRender(); }
+      MK.stl = []; MK.sel = -1; if (p.st) mkAdd(p.st, .8, .19); else mkRenderNow();
     };
     window.mkShare = function () { if (MK.canvas) MK.canvas.toBlob(function (bl) { mpShareBlob(bl, 'nm-card.png'); }, 'image/png'); };
     window.mkSave = function () { if (MK.canvas) MK.canvas.toBlob(function (bl) { mpSaveBlob(bl, 'nm-card.png'); }, 'image/png'); };
@@ -3614,7 +3687,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       mkClose(); mpMkLoad(); mpFonts();
       var inp = 'width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:9px 10px;font-size:13px;font-family:inherit;margin-bottom:6px;box-sizing:border-box', bt = 'flex:1;min-width:0;padding:12px 2px;border-radius:14px;font-weight:900;font-size:13px;border:0;color:#fff;font-family:inherit';
       var bgs = '<option value="fr:fr_invite">ફ્રેમ: ઇન્વાઇટ</option><option value="fr:fr_challenge">ફ્રેમ: ચેલેન્જ</option><option value="fr:fr_review">ફ્રેમ: અનુભવ</option><option value="fr:fr_thali">ફ્રેમ: થાળી</option><option value="fr:fr_diwali">ફ્રેમ: દિવાળી</option><option value="fr:fr_navratri">ફ્રેમ: નવરાત્રિ</option><option value="fr:fr_uttarayan">ફ્રેમ: ઉત્તરાયણ</option><option value="fest:diwali">તહેવાર: દિવાળી</option><option value="fest:navratri">તહેવાર: નવરાત્રિ</option><option value="fest:uttarayan">તહેવાર: ઉત્તરાયણ</option><option value="fest:holi">તહેવાર: હોળી</option>' + ['gold', 'streak', 'protein', 'water', 'weekly', 'shield', 'journey', 'comeback', 'calm', 'family'].map(function (k) { return '<option value="bg:bg_' + k + '">બેકગ્રાઉન્ડ: ' + k + '</option>'; }).join('');
-      var o = document.createElement('div'); o.id = 'mkBox'; o.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#f8fafc;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 14px 40px;box-sizing:border-box';
+      var o = document.createElement('div'); o.id = 'mkBox'; o.setAttribute('data-notr', '1'); o.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#f8fafc;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 14px 40px;box-sizing:border-box';
       o.innerHTML = '<div style="max-width:520px;margin:0 auto"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div style="font-weight:900;font-size:16px">🎴 માર્કેટિંગ કાર્ડ સ્ટુડિયો</div><button type="button" onclick="mkClose()" style="border:0;background:#e2e8f0;border-radius:99px;width:36px;height:36px;font-size:16px;font-weight:900">✕</button></div>' +
         '<div style="display:flex;justify-content:center"><img id="mkPrev" alt="" style="display:block;width:215px;max-width:60vw;aspect-ratio:9/16;border-radius:18px;box-shadow:0 10px 26px rgba(15,23,42,.25);background:#e2e8f0"></div>' +
         '<button type="button" id="mkWa" style="display:none;width:100%;margin-top:10px;padding:10px;border-radius:14px;border:0;background:#16a34a;color:#fff;font-weight:900;font-size:12px">💬 આ ક્લાયન્ટની WhatsApp ચેટ ખોલો</button>' + '<div style="display:flex;gap:6px;margin:12px 0"><button type="button" onclick="mkShare()" style="' + bt + ';flex:1.5;background:linear-gradient(90deg,#f97316,#db2777)">📲 શેર કરો</button><button type="button" onclick="mkSave()" style="' + bt + ';background:#0f766e">💾 સેવ</button><button type="button" id="mpMkVid" onclick="mkVideo()" style="' + bt + ';background:#4338ca">🎬 વિડીયો</button></div>' +
@@ -3623,17 +3696,17 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         '<div id="mkUp"></div><div style="font-weight:900;font-size:12px;margin:10px 0 6px">✏️ લખાણ બદલો</div>' + '<input id="mkNm" style="' + inp + '" placeholder="નામ ({name} ની જગ્યાએ આવશે)">' +
         '<input id="mkBadge" style="' + inp + '" placeholder="ઉપરનું નાનું લેબલ">' + '<input id="mkT" style="' + inp + '" placeholder="શીર્ષક">' + '<input id="mkM" style="' + inp + '" placeholder="મોટું લખાણ">' + '<input id="mkS" style="' + inp + '" placeholder="નાનું લખાણ">' + '<textarea id="mkB" rows="3" style="' + inp + '" placeholder="વિગત"></textarea>' + '<input id="mkC" style="' + inp + '" placeholder="ચિપ્સ (કોમાથી અલગ, વધુમાં વધુ 3)">' + '<input id="mkF" style="' + inp + '" placeholder="નીચેની લાઇન (લિંક/ફોન), ખાલી = રોજ નિયમ, રોજ સંયમ">' +
         '<div style="display:flex;gap:8px;align-items:center"><select id="mkBg" style="' + inp + ';margin:0;flex:1">' + bgs + '</select><label style="font-size:12px;font-weight:800;white-space:nowrap"><input id="mkD" type="checkbox"> ઘેરા અક્ષર</label></div>' +
-        '<div style="font-weight:900;font-size:12px;margin:12px 0 6px">✨ સ્ટિકર (ફરી દબાવો = જગ્યા બદલો)</div><div id="mkSt" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:6px"></div>' +
+        '<div style="font-weight:900;font-size:12px;margin:12px 0 6px">✨ સ્ટિકર ઉમેરો (જેટલા જોઈએ તેટલા)</div><div id="mkSt" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:6px"></div>' + '<div style="display:flex;gap:6px;margin-top:6px"><input id="mkEm" style="' + inp + ';margin:0;flex:1" placeholder="કોઈ પણ ઇમોજી લખો/પેસ્ટ કરો: 🎈 🌸 🥭"><button type="button" onclick="mkEmoji()" style="border:0;border-radius:12px;background:#0f766e;color:#fff;font-weight:900;padding:0 14px">➕ ઉમેરો</button></div>' + '<div style="font-size:11px;font-weight:800;color:#475569;margin:10px 0 4px">પસંદ કરેલું સ્ટિકર: કાર્ડ પર દબાવી ખેંચો, અથવા બટન વાપરો</div><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">' + [['l', '◀'], ['u', '▲'], ['d', '▼'], ['r', '▶'], ['c', '↔ વચ્ચે'], ['m', '⊙ મધ્યમાં'], ['-', '➖'], ['+', '➕'], ['rot', '↻'], ['x', '🗑']].map(function (z) { return '<button type="button" onclick="mkAct(\'' + z[0] + '\')" style="border:1px solid #cbd5e1;background:#fff;border-radius:10px;padding:9px 2px;font-size:12px;font-weight:900">' + z[1] + '</button>'; }).join('') + '</div>' +
         '<div style="font-size:10.5px;color:#64748b;margin-top:10px;font-weight:700">ક્લાયન્ટની અસલી વાત/ફોટો ફક્ત તેની પરવાનગી સાથે મૂકો. આરોગ્ય અંગેના દાવા કોચ/ન્યુટ્રિશનિસ્ટ તપાસીને જ મૂકો.</div></div>';
       document.body.appendChild(o);
       o.addEventListener('input', mkRender); o.addEventListener('change', mkRender);
-      mkStickers(); mkPick(0); try { mkUpcoming(); } catch (e) { console.error(e); }
+      mkStickers(); mkDrag(); mkPick(0); try { mkUpcoming(); } catch (e) { console.error(e); }
     };
     function injectMkFab() {
       if (document.getElementById('mkFab')) return;
       var mv = document.getElementById('adminMainView'); if (!mv || mv.classList.contains('hidden')) return; if (currentUserRole !== 'owner') return;
       var b = document.createElement('button'); b.id = 'mkFab'; b.type = 'button'; b.innerHTML = '🎴'; b.title = 'માર્કેટિંગ કાર્ડ'; b.onclick = window.mpMktOpen;
-      b.style.cssText = 'position:fixed;right:14px;bottom:84px;z-index:9000;width:52px;height:52px;border-radius:99px;border:0;background:linear-gradient(135deg,#f97316,#db2777);color:#fff;font-size:24px;box-shadow:0 8px 20px rgba(0,0,0,.3)';
+      b.style.cssText = 'position:fixed;left:12px;bottom:90px;z-index:9000;width:48px;height:48px;border-radius:99px;border:0;background:linear-gradient(135deg,#f97316,#db2777);color:#fff;font-size:24px;box-shadow:0 8px 20px rgba(0,0,0,.3)';
       document.body.appendChild(b);
     }
     setInterval(function () { try { injectMkFab(); } catch (e) { } }, 1500);
