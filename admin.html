@@ -1971,7 +1971,65 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
   /* ======================================================================
    *  PORTAL
    * ==================================================================== */
+  /* ---------- એડમિનથી ખોરાકનું ન્યુટ્રિશન/નિયમો બદલો (settings/menus.dishOverrides, rules) ---------- */
+  var FOOD0 = null, GL0 = null, CHIP0 = null;
+  function mpApplyOv(d) {
+    try {
+      if (typeof CLINICAL_FOOD_DB === 'undefined') return;
+      if (!FOOD0) { FOOD0 = CLINICAL_FOOD_DB.map(function (x) { return Object.assign({}, x); }); window.__mpFood0 = FOOD0; }
+      var ov = (d && d.dishOverrides) || {}, arr = [];
+      FOOD0.forEach(function (b) {
+        var o = ov[b.id]; if (o && o.hidden) return;
+        var x = Object.assign({}, b);
+        if (o) { if (o.baseCal > 0) x.baseCal = +o.baseCal; if (o.baseP >= 0 && o.baseP !== null && o.baseP !== '') x.baseP = +o.baseP; if (o.gl >= 0 && o.gl !== null && o.gl !== '') x.gl = +o.gl; if (o.basePortion) x.basePortion = o.basePortion; if (Array.isArray(o.tags)) x.tags = o.tags.slice(); x._ov = 1; }
+        arr.push(x);
+      });
+      CLINICAL_FOOD_DB.length = 0; Array.prototype.push.apply(CLINICAL_FOOD_DB, arr);
+      if (typeof PROTOCOL_RULES !== 'undefined' && PROTOCOL_RULES.diabetes) {
+        var R = PROTOCOL_RULES.diabetes; if (GL0 === null) { GL0 = R.maxMealGL; CHIP0 = R.reasonChip; }
+        var g = d && d.rules && +d.rules.diabetesMaxGL; if (g >= 1 && g <= 60) { R.maxMealGL = g; R.reasonChip = String(CHIP0).replace(/GL\s*≤\s*\d+/, 'GL ≤ ' + g); } else { R.maxMealGL = GL0; R.reasonChip = CHIP0; }
+      }
+    } catch (e) { console.error('ov', e); }
+  }
+  /* ---------- એડમિનથી નવી કેટેગરી (settings/menus.customCats) ---------- */
+  var CC = {}, CC_PREV = [], ORDER0 = null;
+  function mpCatBlocked(item, goals) {
+    try {
+      var tags = item.tags || [];
+      for (var i = 0; i < (goals || []).length; i++) { var R = CC[goals[i]]; if (!R) continue; if ((R.forbiddenTags || []).some(function (t) { return tags.indexOf(t) >= 0; })) return true; if (R.maxMealGL > 0 && item.gl > R.maxMealGL) return true; }
+    } catch (e) { }
+    return false;
+  }
+  function mpApplyCats(d) {
+    try {
+      if (typeof MENU_CAT_ORDER === 'undefined' || typeof GOAL_LABELS === 'undefined') return;
+      if (!ORDER0) ORDER0 = MENU_CAT_ORDER.slice();
+      CC_PREV.forEach(function (id) { delete GOAL_LABELS[id]; delete MENU_CAT_LABELS[id]; delete PROTOCOL_RULES[id]; });
+      var cc = (d && d.customCats) || {}, ids = Object.keys(cc).filter(function (k) { return cc[k] && cc[k].label && !cc[k].disabled; }).sort(function (a, b) { return (cc[a].at || 0) - (cc[b].at || 0); });
+      CC = {}; CC_PREV = ids.slice(); MENU_CAT_ORDER.length = 0; var gi = ORDER0.indexOf('general');
+      ORDER0.forEach(function (c, i) { if (i === gi) ids.forEach(function (k) { MENU_CAT_ORDER.push(k); }); MENU_CAT_ORDER.push(c); }); if (gi < 0) ids.forEach(function (k) { MENU_CAT_ORDER.push(k); });
+      ids.forEach(function (k) {
+        var c = cc[k], em = c.emoji || '🏷️'; GOAL_LABELS[k] = c.label; MENU_CAT_LABELS[k] = em + ' ' + c.label;
+        PROTOCOL_RULES[k] = { forbiddenTags: (c.forbiddenTags || []).slice(), reasonChip: c.reasonChip || ('✔ ' + c.label + ': કોચ દ્વારા નક્કી કરેલ નિયમો') }; if (c.maxMealGL > 0) PROTOCOL_RULES[k].maxMealGL = +c.maxMealGL; CC[k] = PROTOCOL_RULES[k];
+        try { i18nAdd(c.label, c.hi || c.en || c.label, c.en || c.hi || c.label); i18nAdd(PROTOCOL_RULES[k].reasonChip, c.hi || c.en || PROTOCOL_RULES[k].reasonChip, c.en || c.hi || PROTOCOL_RULES[k].reasonChip); } catch (e) { }
+      });
+      // પોર્ટલ નોંધણી ફોર્મ અને એડમિન યાદી
+      Array.prototype.forEach.call(document.querySelectorAll('.mpCatOpt'), function (n) { n.remove(); });
+      var first = document.querySelector('input[name="regCondition"]'), grid = first && first.closest('.grid');
+      if (grid) ids.forEach(function (k) { if (cc[k].showReg === false) return; var l = document.createElement('label'); l.className = 'mpCatOpt flex items-center gap-2 text-slate-700 font-medium'; l.innerHTML = '<input type="checkbox" name="regCondition" value="' + k + '" class="w-4 h-4"> ' + (cc[k].emoji || '🏷️') + ' ' + String(cc[k].label).replace(/</g, '&lt;'); grid.appendChild(l); });
+      var opt = document.querySelector('option[value="menopause"]'), sel = opt && opt.parentNode;
+      if (sel && sel.tagName === 'SELECT') ids.forEach(function (k) { var o = document.createElement('option'); o.className = 'mpCatOpt'; o.value = k; o.textContent = (cc[k].emoji || '🏷️') + ' ' + cc[k].label; sel.appendChild(o); });
+    } catch (e) { console.error('cats', e); }
+  }
+  function mpWrapMenu() {
+    if (window.__mpOvWrapped || typeof window.setMenuCfg !== 'function') return; window.__mpOvWrapped = 1;
+    var o = window.setMenuCfg;
+    window.setMenuCfg = function (d) { var r = o.apply(this, arguments); mpApplyOv(d); mpApplyCats(d); return r; };
+    if (typeof window.dishSafeForClient === 'function') { var o2 = window.dishSafeForClient; window.dishSafeForClient = function (item, goals, prefs) { if (!o2.apply(this, arguments)) return false; return !mpCatBlocked(item, goals); }; }
+  }
   function initPortal() {
+    try { mpWrapMenu(); } catch (e) { }
+    try { db.collection('settings').doc('menus').get().then(function (s) { var d = s.exists ? s.data() : null; mpApplyOv(d); mpApplyCats(d); }).catch(function () { }); } catch (e) { }
     // [id, gu, hi, en, kcal, protein, GL, tags, group, proteinItem]
     var RAW = [
       ['ad_curd', 'દહીં ૧ વાટકી', 'दही 1 कटोरी', 'Curd 1 bowl', 70, 4, 2, ['veg', 'low_gi'], 'pro', 'દહીં'],
@@ -2054,6 +2112,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       if (goals.indexOf('diabetes') >= 0 && (item.gl > PROTOCOL_RULES.diabetes.maxMealGL || inList(PROTOCOL_RULES.diabetes))) return false;
       if (goals.indexOf('fatty_liver') >= 0 && inList(PROTOCOL_RULES.fatty_liver)) return false;
       if (goals.indexOf('fat_loss') >= 0 && inList(PROTOCOL_RULES.fat_loss)) return false;
+      if (mpCatBlocked(item, goals)) return false;
       if (prefs.kidney && item.p >= 15) return false;
       return true;
     }
@@ -3397,6 +3456,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
    *  ADMIN
    * ==================================================================== */
   function initAdmin() {
+    try { mpWrapMenu(); } catch (e) { }
     // લોડ વોચડોગ: લૉગિન પછી ક્લાયન્ટ ડેટા ન આવે તો આપોઆપ ફરી પ્રયત્ન
     (function () {
       var tries = 0, shown = false;
@@ -3572,6 +3632,133 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       Array.prototype.forEach.call(k.children, function (el, i) { var kd = el.getAttribute('data-dkx') || kinds[i]; if (!kd) return; el.style.cursor = 'pointer'; el.onclick = function () { dkOpen(kd); }; });
     }
     (function () { var tries = 0, iv = setInterval(function () { if (++tries > 40) return clearInterval(iv); if (typeof window.renderDashboard === 'function' && !window.__dkWrapped) { window.__dkWrapped = true; var o = window.renderDashboard; window.renderDashboard = function () { var r = o.apply(this, arguments); try { var kk = document.getElementById('dashKpis'); if (kk) kk.removeAttribute('data-dk'); dkWire(); } catch (e) { console.error(e); } return r; }; clearInterval(iv); } }, 500); })();
+    /* ---------- ન્યુટ્રિશન એડિટર UI ---------- */
+    var NE = { sel: '' };
+    function neDoc() { return db.collection('settings').doc('menus').get().then(function (s) { return s.exists ? s.data() : {}; }); }
+    function neFill() {
+      var el = document.getElementById('neSel'); if (!el || !window.__mpFood0) return;
+      var slot = (document.getElementById('neSlot') || {}).value || '', ov = (window.__mpOvCache || {});
+      el.innerHTML = '<option value="">— વાનગી પસંદ કરો —</option>' + window.__mpFood0.filter(function (d) { return !slot || d.slot === slot; }).map(function (d) { var o = ov[d.id]; return '<option value="' + esc(d.id) + '">' + (o ? (o.hidden ? '🚫 ' : '✏️ ') : '') + esc(d.name) + ' · ' + d.baseCal + ' kcal</option>'; }).join('');
+      el.value = NE.sel || '';
+    }
+    window.neShow = function () {
+      var id = (document.getElementById('neSel') || {}).value; NE.sel = id; var box = document.getElementById('neForm'); if (!box) return;
+      var b = (window.__mpFood0 || []).filter(function (d) { return d.id === id; })[0]; if (!b) { box.innerHTML = ''; return; }
+      var o = (window.__mpOvCache || {})[id] || {}, v = function (k) { return o[k] != null && o[k] !== '' ? o[k] : b[k]; }, tg = o.tags || b.tags || [], inp = 'width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:8px;font-size:12px;box-sizing:border-box';
+      var ck = function (t, l) { return '<label style="font-size:11px;font-weight:800"><input type="checkbox" class="neTg" value="' + t + '" ' + (tg.indexOf(t) >= 0 ? 'checked' : '') + '> ' + l + '</label>'; };
+      box.innerHTML = '<div style="font-size:11px;color:#64748b;margin:6px 0">મૂળ: ' + b.baseCal + ' kcal • P' + b.baseP + ' • GL ' + b.gl + ' • ' + esc(b.basePortion || '') + '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px"><label style="font-size:10px;font-weight:800">kcal<input id="neCal" type="number" style="' + inp + '" value="' + v('baseCal') + '"></label><label style="font-size:10px;font-weight:800">પ્રોટીન (g)<input id="neP" type="number" step="0.1" style="' + inp + '" value="' + v('baseP') + '"></label><label style="font-size:10px;font-weight:800">GL<input id="neGl" type="number" step="0.5" style="' + inp + '" value="' + v('gl') + '"></label></div>' +
+        '<label style="font-size:10px;font-weight:800;display:block;margin-top:6px">પ્રમાણ / ગ્રામ<input id="nePor" style="' + inp + '" value="' + esc(v('basePortion') || '') + '"></label>' +
+        '<div style="display:flex;gap:12px;flex-wrap:wrap;margin:8px 0">' + ck('fried', 'તળેલું') + ck('high_sugar', 'ખાંડ વધારે') + ck('refined_carbs', 'રિફાઇન્ડ કાર્બ') + '</div>' +
+        '<label style="font-size:11px;font-weight:800;display:block;margin-bottom:6px"><input id="neHide" type="checkbox" ' + (o.hidden ? 'checked' : '') + '> 🚫 આ વાનગી છુપાવો (ક્લાયન્ટને ન બતાવો)</label>' +
+        '<input id="neNote" style="' + inp + ';margin-bottom:8px" placeholder="કોની સલાહથી (ન્યુટ્રિશનિસ્ટનું નામ/નોંધ)" value="' + esc(o.note || '') + '">' +
+        (o.at ? '<div style="font-size:10px;color:#94a3b8;margin-bottom:6px">છેલ્લો ફેરફાર: ' + esc(o.by || '') + ' • ' + new Date(o.at).toLocaleDateString('en-GB') + '</div>' : '') +
+        '<div style="display:flex;gap:8px"><button type="button" onclick="neSave()" style="flex:2;border:0;border-radius:12px;background:#0f766e;color:#fff;font-weight:900;font-size:12px;padding:11px">💾 સેવ</button><button type="button" onclick="neReset()" style="flex:1;border:1px solid #fecaca;border-radius:12px;background:#fff1f2;color:#be123c;font-weight:800;font-size:11px;padding:11px">મૂળ પર પાછા</button></div>';
+    };
+    function neMut(fn, okMsg) { return safe(function () { return menuDocUpdate(function (d) { d.dishOverrides = d.dishOverrides || {}; d.rules = d.rules || {}; fn(d); }); }, okMsg).then(function () { return neDoc(); }).then(function (d) { window.__mpOvCache = d.dishOverrides || {}; neFill(); neShow(); neRulesFill(d); }); }
+    window.neSave = function () {
+      var id = NE.sel; if (!id) return; var g = function (i) { return (document.getElementById(i) || {}).value; }, cal = Number(g('neCal')), p = Number(g('neP')), gl = Number(g('neGl'));
+      if (!(cal >= 20 && cal <= 1500)) return alert('કેલરી 20-1500 વચ્ચે લખો'); if (!(p >= 0 && p <= 120)) return alert('પ્રોટીન 0-120 વચ્ચે'); if (!(gl >= 0 && gl <= 60)) return alert('GL 0-60 વચ્ચે');
+      var b = window.__mpFood0.filter(function (d) { return d.id === id; })[0], tg = (b.tags || []).filter(function (t) { return ['fried', 'high_sugar', 'refined_carbs', 'high_protein'].indexOf(t) < 0; });
+      Array.prototype.forEach.call(document.querySelectorAll('.neTg'), function (c) { if (c.checked) tg.push(c.value); }); if (p >= 10) tg.push('high_protein');
+      var rec = { baseCal: cal, baseP: p, gl: gl, basePortion: (g('nePor') || '').trim() || b.basePortion, tags: tg, hidden: !!document.getElementById('neHide').checked, note: (g('neNote') || '').trim(), by: (typeof loggedInCoach !== 'undefined' && loggedInCoach && loggedInCoach.name) || 'Owner', at: Date.now() };
+      neMut(function (d) { d.dishOverrides[id] = rec; }, '✅ ન્યુટ્રિશન સેવ થયું');
+    };
+    window.neReset = function () { var id = NE.sel; if (!id || !confirm('આ વાનગી મૂળ કિંમત પર પાછી લાવવી?')) return; neMut(function (d) { delete d.dishOverrides[id]; }, '✅ મૂળ પર પાછી આવી'); };
+    function neRulesFill(d) { var e = document.getElementById('neGlMax'); if (e) e.value = (d && d.rules && d.rules.diabetesMaxGL) || ''; var c = document.getElementById('neCount'); if (c) c.textContent = Object.keys((d && d.dishOverrides) || {}).length; }
+    window.neRuleSave = function () { var v = Number((document.getElementById('neGlMax') || {}).value || 0); if (v && !(v >= 1 && v <= 60)) return alert('GL 1-60 વચ્ચે લખો, અથવા ખાલી = મૂળ (10)'); neMut(function (d) { if (v) d.rules.diabetesMaxGL = v; else delete d.rules.diabetesMaxGL; }, '✅ નિયમ સેવ થયો'); };
+    function injectNutriEd() {
+      var host = document.getElementById('menuCustomList'); if (!host || document.getElementById('mpFoodEd') || !window.__mpFood0) return;
+      var card = host.closest('.card-clean'); if (!card) return; var inp = 'width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:8px;font-size:12px;box-sizing:border-box';
+      var n = document.createElement('div'); n.id = 'mpFoodEd'; n.className = 'card-clean p-3.5 rounded-2xl space-y-2'; n.setAttribute('data-notr', '1');
+      n.innerHTML = '<h2 class="font-extrabold text-slate-900 text-sm">🧪 ન્યુટ્રિશન એડિટર</h2><div style="font-size:11px;color:#64748b">બિલ્ટ-ઇન વાનગીનાં kcal, પ્રોટીન, GL, પ્રમાણ અને ટેગ અહીંથી બદલો. કોડ બદલવાની જરૂર નથી. ક્લાયન્ટની એપમાં નવી સેશનથી દેખાશે. (<b id="neCount">0</b> ફેરફાર)</div>' +
+        '<div style="display:flex;gap:6px"><select id="neSlot" onchange="window.__neF()" style="' + inp + ';flex:1"><option value="">બધા સમય</option><option value="morning">સવારનું ડ્રિંક</option><option value="pre_workout">વર્કઆઉટ પહેલાં</option><option value="breakfast">નાસ્તો</option><option value="lunch">બપોર</option><option value="snack">સાંજનો નાસ્તો</option><option value="post_workout">વર્કઆઉટ પછી</option><option value="dinner">રાત્રિ</option></select></div>' +
+        '<select id="neSel" onchange="neShow()" style="' + inp + '"></select><div id="neForm"></div>' +
+        '<div style="border-top:1px solid #e2e8f0;padding-top:8px;margin-top:6px"><div style="font-size:12px;font-weight:900;margin-bottom:4px">⚙️ ડાયાબિટીસ GL મર્યાદા (એક ભોજન)</div><div style="display:flex;gap:6px"><input id="neGlMax" type="number" placeholder="ખાલી = મૂળ (10)" style="' + inp + ';flex:1"><button type="button" onclick="neRuleSave()" style="border:0;border-radius:10px;background:#0f766e;color:#fff;font-weight:900;font-size:12px;padding:0 14px">સેવ</button></div></div>';
+      card.parentNode.insertBefore(n, card.nextSibling); window.__neF = neFill;
+      neDoc().then(function (d) { window.__mpOvCache = d.dishOverrides || {}; neFill(); neRulesFill(d); }).catch(function (e) { console.error(e); neFill(); });
+    }
+    /* ---------- નવી કેટેગરી UI (એડમિન) ---------- */
+    var CAT_TAGS = [['fried', 'તળેલું'], ['high_sugar', 'ખાંડ વધારે'], ['refined_carbs', 'રિફાઇન્ડ કાર્બ']], catEdit = null, catDoc = {};
+    function catRows() {
+      var el = document.getElementById('mpCatList'); if (!el) return; var ids = Object.keys(catDoc);
+      el.innerHTML = ids.length ? ids.map(function (k) { var c = catDoc[k]; return '<div style="display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:7px 9px;margin-bottom:6px"><div style="flex:1;min-width:0;font-size:12px;font-weight:800">' + esc(c.emoji || '🏷️') + ' ' + esc(c.label) + (c.disabled ? ' <span style="color:#be123c">(બંધ)</span>' : '') + '<div style="font-size:10px;color:#64748b;font-weight:600">ટાળો: ' + esc((c.forbiddenTags || []).map(function (t) { return (CAT_TAGS.filter(function (z) { return z[0] === t; })[0] || [t, t])[1]; }).join(', ') || 'કોઈ નહીં') + (c.maxMealGL ? ' • GL ≤ ' + c.maxMealGL : '') + '</div></div><button type="button" onclick="catEd(\'' + k + '\')" style="border:0;border-radius:8px;background:#e2e8f0;font-weight:800;font-size:11px;padding:6px 9px">એડિટ</button><button type="button" onclick="catDel(\'' + k + '\')" style="border:0;border-radius:8px;background:#fee2e2;color:#be123c;font-weight:800;font-size:11px;padding:6px 9px">✕</button></div>'; }).join('') : '<div style="font-size:11px;color:#94a3b8">હજી કોઈ નવી કેટેગરી નથી.</div>';
+    }
+    function catLoad() { neDoc().then(function (d) { catDoc = d.customCats || {}; catRows(); }).catch(function () { }); }
+    function catMut(fn, msg) { return safe(function () { return menuDocUpdate(function (d) { d.customCats = d.customCats || {}; fn(d); }); }, msg).then(function () { return neDoc(); }).then(function (d) { catDoc = d.customCats || {}; catRows(); try { renderMenuTab(); } catch (e) { } }); }
+    window.catEd = function (k) { var c = catDoc[k]; if (!c) return; catEdit = k; var s = function (i, v) { var e = document.getElementById(i); if (e) e.value = v == null ? '' : v; }; s('catName', c.label); s('catEm', c.emoji); s('catEn', c.en); s('catGl', c.maxMealGL); s('catChip', c.reasonChip); document.getElementById('catReg').checked = c.showReg !== false; document.getElementById('catOff').checked = !!c.disabled; Array.prototype.forEach.call(document.querySelectorAll('.catTg'), function (x) { x.checked = (c.forbiddenTags || []).indexOf(x.value) >= 0; }); document.getElementById('catSave').textContent = '💾 ફેરફાર સેવ'; document.getElementById('catName').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+    window.catNew = function () { catEdit = null; ['catName', 'catEm', 'catEn', 'catGl', 'catChip'].forEach(function (i) { document.getElementById(i).value = ''; }); document.getElementById('catReg').checked = true; document.getElementById('catOff').checked = false; Array.prototype.forEach.call(document.querySelectorAll('.catTg'), function (x) { x.checked = false; }); document.getElementById('catSave').textContent = '➕ કેટેગરી ઉમેરો'; };
+    window.catSave = function () {
+      var g = function (i) { return (document.getElementById(i).value || '').trim(); }, label = g('catName'); if (!label) return alert('કેટેગરીનું નામ લખો');
+      var gl = Number(g('catGl') || 0); if (gl && !(gl >= 1 && gl <= 60)) return alert('GL 1-60 વચ્ચે લખો, અથવા ખાલી રાખો');
+      var tg = Array.prototype.filter.call(document.querySelectorAll('.catTg'), function (x) { return x.checked; }).map(function (x) { return x.value; });
+      var id = catEdit || ('c_' + Date.now().toString(36)), old = catDoc[id] || {};
+      var rec = { id: id, label: label, emoji: g('catEm') || '🏷️', en: g('catEn'), forbiddenTags: tg, maxMealGL: gl || 0, reasonChip: g('catChip'), showReg: !!document.getElementById('catReg').checked, disabled: !!document.getElementById('catOff').checked, at: old.at || Date.now(), by: (typeof loggedInCoach !== 'undefined' && loggedInCoach && loggedInCoach.name) || 'Owner' };
+      if (!tg.length && !gl && !confirm('કોઈ નિયમ નથી ભર્યો, એટલે આ કેટેગરીમાં સામાન્ય મેનુ જ ચાલશે. છતાં સેવ કરવું?')) return;
+      catMut(function (d) { d.customCats[id] = rec; }, '✅ કેટેગરી સેવ થઈ').then(catNew);
+    };
+    window.catDel = function (k) { if (!confirm('આ કેટેગરી કાઢી નાખવી? જે ક્લાયન્ટમાં આ કેટેગરી છે તેમને સામાન્ય મેનુ મળશે. (બંધ કરવું હોય તો "એડિટ" માં "બંધ" ટિક કરો.)')) return; catMut(function (d) { delete d.customCats[k]; if (d.cats) delete d.cats[k]; }, '🗑 કેટેગરી કાઢી'); };
+    function injectCatEd() {
+      var prev = document.getElementById('mpFoodEd'); if (!prev || document.getElementById('mpCatEd') || typeof neDoc !== 'function') return; var inp = 'width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:8px;font-size:12px;box-sizing:border-box';
+      var n = document.createElement('div'); n.id = 'mpCatEd'; n.className = 'card-clean p-3.5 rounded-2xl space-y-2'; n.setAttribute('data-notr', '1');
+      n.innerHTML = '<h2 class="font-extrabold text-slate-900 text-sm">🏷️ નવી કેટેગરી (થાઇરોઇડ, PCOD વગેરે)</h2><div style="font-size:11px;color:#64748b">કેટેગરી ઉમેરો, પછી ઉપરના "મેનુ" માં તેનું અઠવાડિયાનું મેનુ ગોઠવો. ક્લાયન્ટ નોંધણીમાં પસંદ કરી શકે, અને તમે ક્લાયન્ટના વ્યૂમાં "🏷️ કેટેગરી" થી બદલી શકો.</div><div id="mpCatList"></div>' +
+        '<div style="border-top:1px solid #e2e8f0;padding-top:8px"><input id="catName" placeholder="કેટેગરીનું નામ (ગુજરાતી), દા.ત. થાઇરોઇડ" style="' + inp + ';margin-bottom:6px"><div style="display:flex;gap:6px;margin-bottom:6px"><input id="catEm" placeholder="ઇમોજી 🦋" style="' + inp + ';flex:1"><input id="catEn" placeholder="English નામ (વૈકલ્પિક)" style="' + inp + ';flex:2"></div>' +
+        '<div style="font-size:11px;font-weight:800;margin:4px 0">આ કેટેગરીમાં ટાળવાનું (જે વાનગી ક્લાયન્ટને ન આવે):</div><div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:6px">' + CAT_TAGS.map(function (z) { return '<label style="font-size:11px;font-weight:800"><input type="checkbox" class="catTg" value="' + z[0] + '"> ' + z[1] + '</label>'; }).join('') + '</div>' +
+        '<input id="catGl" type="number" placeholder="એક ભોજનની GL મર્યાદા (વૈકલ્પિક)" style="' + inp + ';margin-bottom:6px"><input id="catChip" placeholder="ક્લાયન્ટને દેખાતી લીટી, દા.ત. ✔ થાઇરોઇડ: આયોડિન-સંતુલિત, ગોઇટ્રોજન ઓછા" style="' + inp + ';margin-bottom:6px">' +
+        '<label style="font-size:11px;font-weight:800;display:block;margin-bottom:4px"><input id="catReg" type="checkbox" checked> નોંધણી ફોર્મમાં બતાવો</label><label style="font-size:11px;font-weight:800;display:block;margin-bottom:8px"><input id="catOff" type="checkbox"> બંધ (છુપાવો)</label>' +
+        '<div style="display:flex;gap:8px"><button type="button" id="catSave" onclick="catSave()" style="flex:2;border:0;border-radius:12px;background:#0f766e;color:#fff;font-weight:900;font-size:12px;padding:11px">➕ કેટેગરી ઉમેરો</button><button type="button" onclick="catNew()" style="flex:1;border:1px solid #cbd5e1;border-radius:12px;background:#fff;font-weight:800;font-size:11px;padding:11px">નવું ફોર્મ</button></div></div>';
+      prev.parentNode.insertBefore(n, prev.nextSibling); catLoad();
+    }
+    function catsHtml(cl) {
+      var cur = (cl.conditions && cl.conditions.length) ? cl.conditions : ['general'];
+      return '<div id="mpCats" class="bg-sky-50 border border-sky-200 rounded-2xl p-2.5 text-[11px]"><div class="font-extrabold text-sky-900 mb-1.5">🏷️ કેટેગરી (આના પર મેનુ અને નિયમો નક્કી થાય)</div><div class="flex flex-wrap gap-x-3 gap-y-1.5">' + Object.keys(GOAL_LABELS).map(function (k) { return '<label class="font-semibold"><input type="checkbox" class="mpCatCk" value="' + esc(k) + '" ' + (cur.indexOf(k) >= 0 ? 'checked' : '') + '> ' + esc(GOAL_LABELS[k]) + '</label>'; }).join('') + '</div><button type="button" onclick="mpCatsSave(\'' + cl.id + '\')" class="mt-2 px-3 py-1.5 rounded-xl bg-sky-600 text-white font-bold">સેવ</button></div>';
+    }
+    window.mpCatsSave = function (id) {
+      var cl = liveClients.filter(function (c) { return c.id === id; })[0]; if (!cl) return; var v = Array.prototype.filter.call(document.querySelectorAll('.mpCatCk'), function (x) { return x.checked; }).map(function (x) { return x.value; }); if (!v.length) v = ['general'];
+      if (!confirm('કેટેગરી બદલવાથી આ ક્લાયન્ટનું મેનુ અને લક્ષ્યો બદલાશે. સેવ કરવું?')) return;
+      db.collection('clients').doc(id).update({ conditions: v }).then(function () { cl.conditions = v; toast('કેટેગરી સેવ થઈ ✅'); }).catch(function (e) { alert('સેવ ન થયું'); console.error(e); });
+    };
+    /* ---------- નવો લુક: લાઇટ/ડાર્ક થીમ + નીચેની નેવિગેશન બાર ---------- */
+    function mpTheme() {
+      var CSS = ":root{--mp-bg:#f3f6fb;--mp-card:#ffffff;--mp-card2:#f5f7fb;--mp-tx:#0f172a;--mp-mut:#64748b;--mp-bd:#e6ebf3;--mp-sh:0 4px 16px rgba(15,23,42,.06)}\nhtml[data-mp=dark]{--mp-bg:#0b1220;--mp-card:#131c2e;--mp-card2:#1a2438;--mp-tx:#e6edf7;--mp-mut:#94a3b8;--mp-bd:#25314a;--mp-sh:0 4px 16px rgba(0,0,0,.35);color-scheme:dark}\nbody{background:var(--mp-bg)!important;color:var(--mp-tx)!important;font-family:'Inter','Noto Sans Gujarati',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif!important}\n#adminMainView{padding-bottom:118px}\n#adminMainView>header{background:linear-gradient(160deg,#0f766e 0%,#115e59 60%,#134e4a 100%)!important;border-radius:0 0 28px 28px;padding:14px 14px 20px!important;box-shadow:0 10px 28px rgba(15,118,110,.28)}\n#adminMainView>header #headerTitle{font-size:17px}\n#adminMainView>header button{background:rgba(255,255,255,.14)!important;border:1px solid rgba(255,255,255,.22)!important;color:#fff!important;border-radius:13px!important;padding:8px 11px!important;font-size:12px!important}\n#adminMainView>header .w-8.h-8{width:42px!important;height:42px!important;border-radius:15px!important;background:rgba(255,255,255,.18)!important;color:#fff!important;border:1px solid rgba(255,255,255,.25)}\n#adminMainView>header .text-teal-300{color:#99f6e4!important}\n.mpOldTabs{display:none!important}\n#adminMainView main{padding-top:16px}\n.card-clean{background:var(--mp-card)!important;border:1px solid var(--mp-bd)!important;border-radius:22px!important;box-shadow:var(--mp-sh)!important;color:var(--mp-tx)}\n#dashKpis{grid-template-columns:1fr 1fr!important;gap:10px!important}\n#dashKpis>div{display:grid!important;grid-template-columns:42px 1fr;grid-template-rows:auto auto;column-gap:11px;align-items:center;text-align:left!important;padding:12px 13px!important;cursor:pointer}\n#dashKpis>div::before{grid-row:1/3;width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:19px;content:'📊';background:#e0f2fe}\n#dashKpis>div>div:first-child{font-size:22px!important;line-height:1.1;font-weight:900}\n#dashKpis>div>div:last-child{font-size:10.5px!important;font-weight:700;color:var(--mp-mut)!important;line-height:1.25}\n#dashKpis>div:nth-child(1)::before{content:'👥';background:#dbeafe}\n#dashKpis>div:nth-child(2)::before{content:'✅';background:#dcfce7}\n#dashKpis>div:nth-child(3)::before{content:'⚠️';background:#fee2e2}\n#dashKpis>div:nth-child(4)::before{content:'⏳';background:#fef3c7}\n#dashKpis>div:nth-child(5)::before{content:'📲';background:#e0f2fe}\n#dashKpis>div:nth-child(6)::before{content:'👑';background:#fef9c3}\n#dashKpis>div:nth-child(7)::before{content:'💤';background:#ffedd5}\n#dashKpis>div:nth-child(8)::before{content:'⌛';background:#ffe4e6}\nhtml[data-mp=dark] #dashKpis>div::before{filter:saturate(.9);background:rgba(148,163,184,.16)!important}\n.mpAv{display:inline-flex;width:30px;height:30px;border-radius:11px;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:12px;margin-right:8px;vertical-align:middle;flex:none}\n#mpNav{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));max-width:540px;margin:0 auto;height:66px;background:color-mix(in srgb,var(--mp-card) 92%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--mp-bd);border-radius:26px;box-shadow:0 12px 34px rgba(15,23,42,.2);display:flex;justify-content:space-around;align-items:center;padding:0 6px;z-index:45}\n#mpNav button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:800;color:var(--mp-mut);width:64px;padding:8px 0;border-radius:18px;border:0;background:transparent;position:relative;font-family:inherit}\n#mpNav button i{font-size:17px}\n#mpNav button.on{background:#ccfbf1;color:#0f766e}\nhtml[data-mp=dark] #mpNav button.on{background:rgba(45,212,191,.16);color:#5eead4}\n#mpNav .dot{position:absolute;top:5px;right:14px;min-width:16px;height:16px;border-radius:99px;background:#ef4444;color:#fff;font-size:9px;display:grid;place-items:center;padding:0 4px}\n#mpMore{position:fixed;inset:0;z-index:60;background:rgba(15,23,42,.55);display:flex;align-items:flex-end;justify-content:center}\n#mpMore>div{background:var(--mp-card);width:100%;max-width:540px;border-radius:28px 28px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.3)}\n#mpMore button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;background:var(--mp-card2);color:var(--mp-tx);border-radius:16px;padding:13px 14px;margin-top:8px;font-weight:800;font-size:13px;font-family:inherit}\n#mpMore button span.ic{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:var(--mp-bd);font-size:16px}\nhtml[data-mp=dark] .bg-white,html[data-mp=dark] .bg-white\\/95{background-color:var(--mp-card)!important}\nhtml[data-mp=dark] .bg-slate-50,html[data-mp=dark] [class*=\"bg-slate-50\"]{background-color:var(--mp-card2)!important}\nhtml[data-mp=dark] .bg-slate-100{background-color:#222e47!important}\nhtml[data-mp=dark] .bg-slate-200{background-color:#2c3a58!important}\nhtml[data-mp=dark] .bg-slate-900:not(header){background-color:#334562!important}\nhtml[data-mp=dark] [class*=\"bg-teal-50\"],html[data-mp=dark] [class*=\"bg-emerald-50\"],html[data-mp=dark] .bg-emerald-100,html[data-mp=dark] .bg-green-100{background-color:rgba(16,185,129,.13)!important}\nhtml[data-mp=dark] [class*=\"bg-amber-50\"],html[data-mp=dark] .bg-amber-100,html[data-mp=dark] [class*=\"bg-orange-50\"],html[data-mp=dark] .bg-orange-100{background-color:rgba(245,158,11,.14)!important}\nhtml[data-mp=dark] [class*=\"bg-rose-50\"],html[data-mp=dark] .bg-rose-100{background-color:rgba(244,63,94,.14)!important}\nhtml[data-mp=dark] [class*=\"bg-sky-50\"],html[data-mp=dark] .bg-sky-100,html[data-mp=dark] [class*=\"bg-indigo-50\"]{background-color:rgba(56,189,248,.13)!important}\nhtml[data-mp=dark] [class*=\"bg-purple-100\"],html[data-mp=dark] [class*=\"bg-violet-50\"],html[data-mp=dark] [class*=\"bg-pink-50\"]{background-color:rgba(167,139,250,.15)!important}\nhtml[data-mp=dark] .text-slate-900,html[data-mp=dark] .text-slate-800{color:var(--mp-tx)!important}\nhtml[data-mp=dark] .text-slate-700,html[data-mp=dark] .text-slate-600{color:#cbd5e1!important}\nhtml[data-mp=dark] .text-slate-500,html[data-mp=dark] .text-slate-400{color:var(--mp-mut)!important}\nhtml[data-mp=dark] .text-teal-900,html[data-mp=dark] .text-teal-800,html[data-mp=dark] .text-teal-700,html[data-mp=dark] .text-teal-950,html[data-mp=dark] .text-emerald-900,html[data-mp=dark] .text-emerald-800,html[data-mp=dark] .text-emerald-700,html[data-mp=dark] .text-green-800{color:#6ee7b7!important}\nhtml[data-mp=dark] .text-amber-900,html[data-mp=dark] .text-amber-800,html[data-mp=dark] .text-amber-700,html[data-mp=dark] .text-orange-900,html[data-mp=dark] .text-orange-700{color:#fcd34d!important}\nhtml[data-mp=dark] .text-rose-900,html[data-mp=dark] .text-rose-800,html[data-mp=dark] .text-rose-700,html[data-mp=dark] .text-red-600{color:#fda4af!important}\nhtml[data-mp=dark] .text-sky-900,html[data-mp=dark] .text-sky-800,html[data-mp=dark] .text-sky-700,html[data-mp=dark] .text-indigo-900{color:#7dd3fc!important}\nhtml[data-mp=dark] .text-purple-900,html[data-mp=dark] .text-purple-800,html[data-mp=dark] .text-violet-900,html[data-mp=dark] .text-violet-800,html[data-mp=dark] .text-pink-900{color:#c4b5fd!important}\nhtml[data-mp=dark] .border,html[data-mp=dark] .border-b,html[data-mp=dark] .border-t,html[data-mp=dark] [class*=\"border-slate\"],html[data-mp=dark] [class*=\"border-teal\"],html[data-mp=dark] [class*=\"border-emerald\"],html[data-mp=dark] [class*=\"border-amber\"],html[data-mp=dark] [class*=\"border-rose\"],html[data-mp=dark] [class*=\"border-sky\"],html[data-mp=dark] [class*=\"border-orange\"],html[data-mp=dark] [class*=\"border-pink\"],html[data-mp=dark] [class*=\"border-indigo\"],html[data-mp=dark] [class*=\"border-violet\"]{border-color:var(--mp-bd)!important}\nhtml[data-mp=dark] input,html[data-mp=dark] select,html[data-mp=dark] textarea{background-color:var(--mp-card2)!important;color:var(--mp-tx)!important;border-color:var(--mp-bd)!important}\nhtml[data-mp=dark] input::placeholder,html[data-mp=dark] textarea::placeholder{color:#6b7a93!important}\nhtml[data-mp=dark] #mkBox,html[data-mp=dark] #dkBox{background:var(--mp-bg)!important;color:var(--mp-tx)}\nhtml[data-mp=dark] #mkBox [style*=\"background:#fff\"],html[data-mp=dark] #dkBox [style*=\"background:#fff\"],html[data-mp=dark] #mpFoodEd [style*=\"background:#fff\"],html[data-mp=dark] #mpCatEd [style*=\"background:#fff\"]{background:var(--mp-card2)!important;color:var(--mp-tx)!important;border-color:var(--mp-bd)!important}\nhtml[data-mp=dark] #mkBox [style*=\"background:#e2e8f0\"],html[data-mp=dark] #dkBox [style*=\"background:#e2e8f0\"],html[data-mp=dark] #dkBox [style*=\"background:#cbd5e1\"],html[data-mp=dark] #mkBox [style*=\"background:#cbd5e1\"]{background:#2c3a58!important;color:var(--mp-tx)!important}\nhtml[data-mp=dark] #mkBox [style*=\"background:#fff7ed\"],html[data-mp=dark] #mkBox [style*=\"background:#f1f5f9\"]{background:var(--mp-card2)!important}\nhtml[data-mp=dark] #mkBox [style*=\"color:#475569\"],html[data-mp=dark] #mkBox [style*=\"color:#64748b\"],html[data-mp=dark] #mpFoodEd [style*=\"color:#64748b\"],html[data-mp=dark] #mpCatEd [style*=\"color:#64748b\"]{color:var(--mp-mut)!important}\nhtml[data-mp=dark] #mpFoodEd [style*=\"color:#94a3b8\"]{color:var(--mp-mut)!important}\nhtml[data-mp=dark] #mpMore button{color:var(--mp-tx)}\nhtml[data-mp=dark] #adminAuthView .bg-slate-900{background:#14b8a6!important}\n#mpNav button .mpIc{font-size:18px;line-height:1}\n#headerTitle{white-space:nowrap}\n#adminMainView>header #btnOwnerSettings,#adminMainView>header button[onclick*=cycleLang],#adminMainView>header button[onclick*=logoutAdmin]{display:none!important}\n#adminMainView>header #headerCoachDisplay{max-width:60vw}\n";
+      if (!document.getElementById('mpTheme')) { var st = document.createElement('style'); st.id = 'mpTheme'; st.textContent = CSS; document.head.appendChild(st); }
+      var mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+      function mode() { try { return localStorage.getItem('mp_theme') || 'auto'; } catch (e) { return 'auto'; } }
+      function applyTheme() { var m = mode(), d = m === 'dark' || (m === 'auto' && mq && mq.matches); document.documentElement.setAttribute('data-mp', d ? 'dark' : 'light'); var mt = document.querySelector('meta[name="theme-color"]'); if (mt) mt.setAttribute('content', d ? '#0b1220' : '#0f766e'); var b = document.getElementById('mpThemeBtn'); if (b) b.textContent = m === 'dark' ? '🌙' : m === 'light' ? '☀️' : '🌓'; }
+      applyTheme(); if (mq && mq.addEventListener) mq.addEventListener('change', applyTheme);
+      window.mpThemeCycle = function () { var n = { auto: 'light', light: 'dark', dark: 'auto' }[mode()]; try { localStorage.setItem('mp_theme', n); } catch (e) { } applyTheme(); toast(n === 'dark' ? '🌙 ડાર્ક મોડ' : n === 'light' ? '☀️ લાઇટ મોડ' : '🌓 ફોન મુજબ (ઓટો)'); };
+      function build() {
+        var mv = document.getElementById('adminMainView'); if (!mv || document.getElementById('mpNav')) return;
+        var old = document.getElementById('atab-dash'); if (old && old.parentNode) old.parentNode.classList.add('mpOldTabs');
+        var hd = mv.querySelector('header .flex.items-center.gap-2.shrink-0'); if (hd && !document.getElementById('mpThemeBtn')) { var tb = document.createElement('button'); tb.id = 'mpThemeBtn'; tb.type = 'button'; tb.setAttribute('data-notr', '1'); tb.onclick = window.mpThemeCycle; hd.insertBefore(tb, hd.firstChild); applyTheme(); }
+        var nav = document.createElement('div'); nav.id = 'mpNav'; nav.setAttribute('data-notr', '1');
+        nav.innerHTML = [['dash', '', 'ડેશબોર્ડ', '🏠'], ['clients', '', 'દર્દીઓ', '👥'], ['menus', '', 'મેનુ', '🍽️'], ['broadcast', '', 'બ્રોડકાસ્ટ', '📣'], ['more', '', 'વધુ', '⋯']].map(function (z) { return '<button type="button" data-t="' + z[0] + '"><span class="mpIc">' + z[3] + '</span>' + z[2] + (z[0] === 'more' ? '<span class="dot" id="mpNavDot" style="display:none">0</span>' : '') + '</button>'; }).join('');
+        mv.appendChild(nav);
+        nav.addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; var t = b.getAttribute('data-t'); if (t === 'more') mpMoreOpen(); else { setAdminTab(t); window.scrollTo({ top: 0, behavior: 'smooth' }); } });
+        navSync('dash');
+      }
+      function navSync(t) { var nav = document.getElementById('mpNav'); if (!nav) return; Array.prototype.forEach.call(nav.querySelectorAll('button'), function (b) { var k = b.getAttribute('data-t'); b.classList.toggle('on', k === t || (k === 'more' && (t === 'nudge' || t === 'coaches'))); }); }
+      if (typeof window.setAdminTab === 'function' && !window.__mpTabWrapped) { window.__mpTabWrapped = 1; var ot = window.setAdminTab; window.setAdminTab = function (t) { var r = ot.apply(this, arguments); var cur = ['dash', 'nudge', 'clients', 'menus', 'broadcast', 'coaches'].filter(function (k) { var v = document.getElementById('aview-' + k); return v && !v.classList.contains('hidden'); })[0] || t; navSync(cur); return r; }; }
+      window.mpMoreOpen = function () {
+        mpMoreClose(); var own = (typeof currentUserRole !== 'undefined') && currentUserRole === 'owner', o = document.createElement('div'); o.id = 'mpMore'; o.setAttribute('data-notr', '1');
+        var it = function (ic, tx, fn) { return '<button type="button" onclick="mpMoreClose();' + fn + '"><span class="ic">' + ic + '</span>' + tx + '</button>'; };
+        o.innerHTML = '<div><div style="display:flex;justify-content:space-between;align-items:center"><div style="font-weight:900;font-size:16px">વધુ</div><button type="button" onclick="mpMoreClose()" style="width:36px;height:36px;margin:0;padding:0;justify-content:center;border-radius:99px;font-size:15px">✕</button></div>' +
+          it('📥', 'WhatsApp નજ ક્યૂ', "setAdminTab('nudge')") + (own ? it('👨‍⚕️', 'કોચ મેનેજમેન્ટ', "setAdminTab('coaches')") + it('🎴', 'માર્કેટિંગ કાર્ડ સ્ટુડિયો', 'mpMktOpen()') + it('⚙️', 'ઓનર સેટિંગ્સ (લાઈવ સ્લોટ, જાહેરાત)', 'openCoachSettingsModal()') : '') + it('🌐', 'ભાષા બદલો (GU / HI / EN)', 'cycleLang()') + it('🌓', 'થીમ: લાઇટ / ડાર્ક / ઓટો', 'mpThemeCycle()') + it('🚪', 'લૉગઆઉટ', 'logoutAdmin()') + '</div>';
+        o.addEventListener('click', function (e) { if (e.target === o) mpMoreClose(); }); document.body.appendChild(o);
+      };
+      window.mpMoreClose = function () { var e = document.getElementById('mpMore'); if (e) e.remove(); };
+      var pal = [['#f472b6', '#db2777'], ['#60a5fa', '#2563eb'], ['#34d399', '#059669'], ['#fb923c', '#ea580c'], ['#a78bfa', '#7c3aed'], ['#2dd4bf', '#0d9488'], ['#f87171', '#dc2626'], ['#fbbf24', '#d97706']];
+      function deco(root) {
+        if (!root) return; Array.prototype.forEach.call(root.children, function (row) {
+          if (row.querySelector('.mpAv')) return; var nm = row.querySelector('.font-extrabold,.font-bold'); if (!nm) return; var t = ((nm.firstChild && nm.firstChild.nodeType === 3) ? nm.firstChild.textContent : nm.textContent).trim(); if (!t) return;
+          var ch = Array.from(t)[0], h = 0; for (var i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) % 997; var c = pal[h % pal.length];
+          var s = document.createElement('span'); s.className = 'mpAv'; s.textContent = ch; s.style.background = 'linear-gradient(135deg,' + c[0] + ',' + c[1] + ')'; nm.insertBefore(s, nm.firstChild);
+        });
+      }
+      function watch() { ['admClientsList', 'dashAttention', 'queueClientsContainer'].forEach(function (id) { var el = document.getElementById(id); if (!el || el.__mpO) return; el.__mpO = 1; deco(el); new MutationObserver(function () { deco(el); }).observe(el, { childList: true }); }); }
+      setInterval(function () { try { build(); watch(); var dot = document.getElementById('mpNavDot'); if (dot) { var n = (typeof waQueueItems !== 'undefined' && waQueueItems.length) || 0; dot.style.display = n ? 'grid' : 'none'; dot.textContent = n; } } catch (e) { } }, 1200);
+    }
+    mpTheme();
     /* ---------- માર્કેટિંગ કાર્ડ સ્ટુડિયો (ઓનર) ---------- */
     var QUOTES = ['નાની ટેવ, મોટો ફેરફાર.', 'આજનો નિયમ, કાલનું સ્વાસ્થ્ય.', 'ધીરજ રાખો, પરિણામ આવશે.', 'પાણી પીઓ, ચાલો, હસો.', 'રોજ થોડું, પણ રોજ.', 'સ્વસ્થ શરીર, શાંત મન.', 'સંયમ એ જ સાચી શક્તિ.', 'પડી જાઓ તો ફરી ઊભા થાઓ, ફરી શરૂ કરો.'];
     var MK = { cur: 0, f: {}, canvas: null, stl: [], sel: -1, cache: {} }, MKT = [
@@ -3706,10 +3893,10 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       if (document.getElementById('mkFab')) return;
       var mv = document.getElementById('adminMainView'); if (!mv || mv.classList.contains('hidden')) return; if (currentUserRole !== 'owner') return;
       var b = document.createElement('button'); b.id = 'mkFab'; b.type = 'button'; b.innerHTML = '🎴'; b.title = 'માર્કેટિંગ કાર્ડ'; b.onclick = window.mpMktOpen;
-      b.style.cssText = 'position:fixed;left:12px;bottom:90px;z-index:9000;width:48px;height:48px;border-radius:99px;border:0;background:linear-gradient(135deg,#f97316,#db2777);color:#fff;font-size:24px;box-shadow:0 8px 20px rgba(0,0,0,.3)';
+      b.style.cssText = 'position:fixed;right:14px;bottom:92px;z-index:44;width:48px;height:48px;border-radius:18px;border:0;background:linear-gradient(135deg,#f97316,#db2777);color:#fff;font-size:24px;box-shadow:0 8px 20px rgba(0,0,0,.3)';
       document.body.appendChild(b);
     }
-    setInterval(function () { try { injectMkFab(); } catch (e) { } }, 1500);
+    setInterval(function () { try { injectMkFab(); injectNutriEd(); injectCatEd(); } catch (e) { } }, 1500);
     /* ---------- જાહેરાત કાર્ડ (ઓનર → ક્લાયન્ટ) ---------- */
     var ANN_ICONS = [['sticker_party_popper', '🎉', 'પાર્ટી'], ['sticker_diya_lit', '🪔', 'દીવો'], ['sticker_namaste_hands', '🙏', 'નમસ્તે'], ['sticker_heart_fire', '❤️‍🔥', 'હાર્ટ'], ['sticker_muscle_arm', '💪', 'તાકાત'], ['sticker_water_drop_smile', '💧', 'પાણી'], ['sticker_steaming_thali', '🍽️', 'થાળી'], ['sticker_kite', '🪁', 'પતંગ'], ['sticker_gold_medal', '🏅', 'મેડલ'], ['sticker_crown', '👑', 'તાજ'], ['sticker_sparkle_burst', '✨', 'ચમક'], ['sticker_rainbow_star', '🌟', 'તારો']];
     var ANN = [];
@@ -3801,7 +3988,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         var cl = liveClients.filter(function (c) { return c.id === id; })[0];
         var body = document.getElementById('mcBody');
         if (!cl || !body) return;
-        var html = (currentUserRole === 'owner' ? avSwitchHtml(cl) : '') + jnAdminHtml(cl) + habitHtml(cl) + datesHtml(cl) + addonHtml(cl);
+        var html = (currentUserRole === 'owner' ? avSwitchHtml(cl) : '') + jnAdminHtml(cl) + habitHtml(cl) + datesHtml(cl) + catsHtml(cl) + addonHtml(cl);
         if (!html) return;
         var tbl = body.querySelector('table');
         var host = tbl && tbl.closest('.overflow-x-auto');
