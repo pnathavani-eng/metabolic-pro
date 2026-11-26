@@ -3714,10 +3714,20 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var cur = (cl.conditions && cl.conditions.length) ? cl.conditions : ['general'];
       return '<div id="mpCats" class="bg-sky-50 border border-sky-200 rounded-2xl p-2.5 text-[11px]"><div class="font-extrabold text-sky-900 mb-1.5">🏷️ કેટેગરી (આના પર મેનુ અને નિયમો નક્કી થાય)</div><div class="flex flex-wrap gap-x-3 gap-y-1.5">' + Object.keys(GOAL_LABELS).map(function (k) { return '<label class="font-semibold"><input type="checkbox" class="mpCatCk" value="' + esc(k) + '" ' + (cur.indexOf(k) >= 0 ? 'checked' : '') + '> ' + esc(GOAL_LABELS[k]) + '</label>'; }).join('') + '</div><button type="button" onclick="mpCatsSave(\'' + cl.id + '\')" class="mt-2 px-3 py-1.5 rounded-xl bg-sky-600 text-white font-bold">સેવ</button></div>';
     }
+    function diabHtml(cl) {
+      if ((cl.conditions || []).indexOf('diabetes') < 0) return '';
+      var t = cl.diabType || '', ins = cl.insulin || '', sel = function (v, l) { return '<option value="' + v + '"' + (t === v ? ' selected' : '') + '>' + l + '</option>'; }, sl = function (v, l) { return '<option value="' + v + '"' + (ins === v ? ' selected' : '') + '>' + l + '</option>'; };
+      var warn = (ins === 'yes' || t === 'type1') ? '<div style="margin-top:6px;background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;border-radius:10px;padding:7px;font-weight:800">💉 ઇન્સ્યુલિન/ઇન્જેક્શન ચાલુ છે — ડૉક્ટરની સલાહ વગર દવા કે ઇન્જેક્શન ક્યારેય બંધ કે ફેરફાર ન કરવા. ભોજનનો સમય/માત્રા બદલતા પહેલાં ડૉક્ટર સાથે વાત કરવી.</div>' : '';
+      return '<div id="mpDiab" class="bg-rose-50 border border-rose-200 rounded-2xl p-2.5 text-[11px] mt-2"><div class="font-extrabold text-rose-900 mb-1.5">🩺 ડાયાબિટીસની વિગત</div><div style="display:flex;gap:6px;flex-wrap:wrap"><select id="mpDbT" style="flex:1;min-width:120px;border:1px solid #cbd5e1;border-radius:10px;padding:7px;font-size:12px"><option value="">પ્રકાર પસંદ કરો</option>' + sel('type1', 'Type 1') + sel('type2', 'Type 2') + sel('pre', 'Pre-diabetes') + sel('gest', 'Gestational (ગર્ભાવસ્થા)') + '</select><select id="mpDbI" style="flex:1;min-width:120px;border:1px solid #cbd5e1;border-radius:10px;padding:7px;font-size:12px"><option value="">ઇન્સ્યુલિન?</option>' + sl('yes', '💉 ઇન્સ્યુલિન/ઇન્જેક્શન લે છે') + sl('no', 'ઇન્સ્યુલિન નથી (ગોળી/ડાયેટ)') + '</select></div>' + warn + '<button type="button" onclick="mpDiabSave(\'' + cl.id + '\')" class="mt-2 px-3 py-1.5 rounded-xl bg-rose-600 text-white font-bold">💾 સેવ</button></div>';
+    }
+    window.mpDiabSave = function (id) {
+      var cl = liveClients.filter(function (c) { return c.id === id; })[0]; if (!cl) return; var t = document.getElementById('mpDbT').value, i = document.getElementById('mpDbI').value;
+      db.collection('clients').doc(id).update({ diabType: t, insulin: i }).then(function () { cl.diabType = t; cl.insulin = i; toast('ડાયાબિટીસ વિગત સેવ ✅'); var d = document.getElementById('mpDiab'); if (d) d.outerHTML = diabHtml(cl); }).catch(function (e) { alert('સેવ ન થયું'); console.error(e); });
+    };
     window.mpCatsSave = function (id) {
       var cl = liveClients.filter(function (c) { return c.id === id; })[0]; if (!cl) return; var v = Array.prototype.filter.call(document.querySelectorAll('.mpCatCk'), function (x) { return x.checked; }).map(function (x) { return x.value; }); if (!v.length) v = ['general'];
       if (!confirm('કેટેગરી બદલવાથી આ ક્લાયન્ટનું મેનુ અને લક્ષ્યો બદલાશે. સેવ કરવું?')) return;
-      db.collection('clients').doc(id).update({ conditions: v }).then(function () { cl.conditions = v; toast('કેટેગરી સેવ થઈ ✅'); }).catch(function (e) { alert('સેવ ન થયું'); console.error(e); });
+      db.collection('clients').doc(id).update({ conditions: v }).then(function () { cl.conditions = v; toast('કેટેગરી સેવ થઈ ✅'); var od = document.getElementById('mpDiab'); if (od) od.remove(); var mc = document.getElementById('mpCats'); if (mc) mc.insertAdjacentHTML('afterend', diabHtml(cl)); }).catch(function (e) { alert('સેવ ન થયું'); console.error(e); });
     };
     /* ---------- નવો લુક: લાઇટ/ડાર્ક થીમ + નીચેની નેવિગેશન બાર ---------- */
     function mpTheme() {
@@ -4004,7 +4014,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         var cl = liveClients.filter(function (c) { return c.id === id; })[0];
         var body = document.getElementById('mcBody');
         if (!cl || !body) return;
-        var html = (currentUserRole === 'owner' ? avSwitchHtml(cl) : '') + jnAdminHtml(cl) + habitHtml(cl) + datesHtml(cl) + catsHtml(cl) + addonHtml(cl);
+        var html = (currentUserRole === 'owner' ? avSwitchHtml(cl) : '') + jnAdminHtml(cl) + habitHtml(cl) + datesHtml(cl) + catsHtml(cl) + diabHtml(cl) + addonHtml(cl);
         if (!html) return;
         var tbl = body.querySelector('table');
         var host = tbl && tbl.closest('.overflow-x-auto');
