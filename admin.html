@@ -1993,7 +1993,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     } catch (e) { console.error('ov', e); }
   }
   /* ---------- એડમિનથી નવી કેટેગરી (settings/menus.customCats) ---------- */
-  var CC = {}, CC_PREV = [], ORDER0 = null;
+  var CCX = {}, CC = {}, CC_PREV = [], ORDER0 = null;
   function mpCatBlocked(item, goals) {
     try {
       var tags = item.tags || [];
@@ -2007,10 +2007,10 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       if (!ORDER0) ORDER0 = MENU_CAT_ORDER.slice();
       CC_PREV.forEach(function (id) { delete GOAL_LABELS[id]; delete MENU_CAT_LABELS[id]; delete PROTOCOL_RULES[id]; });
       var cc = (d && d.customCats) || {}, ids = Object.keys(cc).filter(function (k) { return cc[k] && cc[k].label && !cc[k].disabled; }).sort(function (a, b) { return (cc[a].at || 0) - (cc[b].at || 0); });
-      CC = {}; CC_PREV = ids.slice(); MENU_CAT_ORDER.length = 0; var gi = ORDER0.indexOf('general');
+      CC = {}; CCX = {}; CC_PREV = ids.slice(); MENU_CAT_ORDER.length = 0; var gi = ORDER0.indexOf('general');
       ORDER0.forEach(function (c, i) { if (i === gi) ids.forEach(function (k) { MENU_CAT_ORDER.push(k); }); MENU_CAT_ORDER.push(c); }); if (gi < 0) ids.forEach(function (k) { MENU_CAT_ORDER.push(k); });
       ids.forEach(function (k) {
-        var c = cc[k], em = c.emoji || '🏷️'; GOAL_LABELS[k] = c.label; MENU_CAT_LABELS[k] = em + ' ' + c.label;
+        var c = cc[k], em = c.emoji || '🏷️'; CCX[k] = c; GOAL_LABELS[k] = c.label; MENU_CAT_LABELS[k] = em + ' ' + c.label;
         PROTOCOL_RULES[k] = { forbiddenTags: (c.forbiddenTags || []).slice(), reasonChip: c.reasonChip || ('✔ ' + c.label + ': કોચ દ્વારા નક્કી કરેલ નિયમો') }; if (c.maxMealGL > 0) PROTOCOL_RULES[k].maxMealGL = +c.maxMealGL; CC[k] = PROTOCOL_RULES[k];
         try { i18nAdd(c.label, c.hi || c.en || c.label, c.en || c.hi || c.label); i18nAdd(PROTOCOL_RULES[k].reasonChip, c.hi || c.en || PROTOCOL_RULES[k].reasonChip, c.en || c.hi || PROTOCOL_RULES[k].reasonChip); } catch (e) { }
       });
@@ -2062,6 +2062,20 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       } catch (e) { console.error('act', e); }
     }
     ['loadTodayClientView', 'saveLifestyle'].forEach(function (fn) { var o = window[fn]; if (typeof o !== 'function') return; window[fn] = function () { var r = o.apply(this, arguments); try { Promise.resolve(r).then(function () { setTimeout(mpActCard, 50); }); } catch (e) { } return r; }; });
+    (function () {
+      var o = window.calculateClientTargets; if (typeof o !== 'function') return;
+      window.calculateClientTargets = function (profile) {
+        var r = o.apply(this, arguments);
+        try {
+          var gs = (profile && profile.conditions) || [], kc = 0, pp = 0; gs.forEach(function (g) { var c = CCX[g]; if (c) { kc += Number(c.kcalAdj) || 0; if (Number(c.ppk) > pp) pp = Number(c.ppk); } });
+          if (kc || pp) {
+            var w = Number(profile.weight) || 70, h = Number(profile.height) || 170, ref = Math.min(w, Math.max(50, (h - 100) * 1.15)), fl = (profile.gender || 'male') === 'male' ? 1450 : 1200;
+            if (kc) r.targetCal = Math.max(fl, Math.round(r.targetCal + kc)); if (pp && !(profile.kidney || profile.kidneyIssue)) r.targetProtein = Math.round(ref * pp);
+          }
+        } catch (e) { console.error('tgt', e); }
+        return r;
+      };
+    })();
     /* PIN બદલો / ભૂલી ગયા / ઓટો રિફ્રેશ */
     var WEAKP = ['0000', '1111', '2222', '3333', '4444', '5555', '6666', '7777', '8888', '9999', '1234', '4321', '1212', '2580', '0123', '1004', '123456', '111111', '000000', '654321', '123123', '121212', '112233'];
     window.changePin = async function (forced) {
@@ -3766,14 +3780,15 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     }
     function catLoad() { neDoc().then(function (d) { catDoc = d.customCats || {}; catRows(); }).catch(function () { }); }
     function catMut(fn, msg) { return safe(function () { return menuDocUpdate(function (d) { d.customCats = d.customCats || {}; fn(d); }); }, msg).then(function () { return neDoc(); }).then(function (d) { catDoc = d.customCats || {}; catRows(); try { renderMenuTab(); } catch (e) { } }); }
-    window.catEd = function (k) { var c = catDoc[k]; if (!c) return; catEdit = k; var s = function (i, v) { var e = document.getElementById(i); if (e) e.value = v == null ? '' : v; }; s('catName', c.label); s('catEm', c.emoji); s('catEn', c.en); s('catGl', c.maxMealGL); s('catChip', c.reasonChip); document.getElementById('catReg').checked = c.showReg !== false; document.getElementById('catOff').checked = !!c.disabled; Array.prototype.forEach.call(document.querySelectorAll('.catTg'), function (x) { x.checked = (c.forbiddenTags || []).indexOf(x.value) >= 0; }); document.getElementById('catSave').textContent = '💾 ફેરફાર સેવ'; document.getElementById('catName').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
-    window.catNew = function () { catEdit = null; ['catName', 'catEm', 'catEn', 'catGl', 'catChip'].forEach(function (i) { document.getElementById(i).value = ''; }); document.getElementById('catReg').checked = true; document.getElementById('catOff').checked = false; Array.prototype.forEach.call(document.querySelectorAll('.catTg'), function (x) { x.checked = false; }); document.getElementById('catSave').textContent = '➕ કેટેગરી ઉમેરો'; };
+    window.catEd = function (k) { var c = catDoc[k]; if (!c) return; catEdit = k; var s = function (i, v) { var e = document.getElementById(i); if (e) e.value = v == null ? '' : v; }; s('catName', c.label); s('catEm', c.emoji); s('catEn', c.en); s('catGl', c.maxMealGL); s('catKc', c.kcalAdj); s('catPp', c.ppk); s('catChip', c.reasonChip); document.getElementById('catReg').checked = c.showReg !== false; document.getElementById('catOff').checked = !!c.disabled; Array.prototype.forEach.call(document.querySelectorAll('.catTg'), function (x) { x.checked = (c.forbiddenTags || []).indexOf(x.value) >= 0; }); document.getElementById('catSave').textContent = '💾 ફેરફાર સેવ'; document.getElementById('catName').scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+    window.catNew = function () { catEdit = null; ['catName', 'catEm', 'catEn', 'catGl', 'catKc', 'catPp', 'catChip'].forEach(function (i) { document.getElementById(i).value = ''; }); document.getElementById('catReg').checked = true; document.getElementById('catOff').checked = false; Array.prototype.forEach.call(document.querySelectorAll('.catTg'), function (x) { x.checked = false; }); document.getElementById('catSave').textContent = '➕ કેટેગરી ઉમેરો'; };
     window.catSave = function () {
       var g = function (i) { return (document.getElementById(i).value || '').trim(); }, label = g('catName'); if (!label) return alert('કેટેગરીનું નામ લખો');
       var gl = Number(g('catGl') || 0); if (gl && !(gl >= 1 && gl <= 60)) return alert('GL 1-60 વચ્ચે લખો, અથવા ખાલી રાખો');
+      var kc = Number(g('catKc') || 0), pp = Number(g('catPp') || 0); if (kc && !(kc >= -600 && kc <= 600)) return alert('કેલરી ફેરફાર -600 થી +600 વચ્ચે લખો'); if (pp && !(pp >= 0.6 && pp <= 2.5)) return alert('પ્રોટીન 0.6 થી 2.5 ગ્રામ/કિલો વચ્ચે લખો');
       var tg = Array.prototype.filter.call(document.querySelectorAll('.catTg'), function (x) { return x.checked; }).map(function (x) { return x.value; });
       var id = catEdit || ('c_' + Date.now().toString(36)), old = catDoc[id] || {};
-      var rec = { id: id, label: label, emoji: g('catEm') || '🏷️', en: g('catEn'), forbiddenTags: tg, maxMealGL: gl || 0, reasonChip: g('catChip'), showReg: !!document.getElementById('catReg').checked, disabled: !!document.getElementById('catOff').checked, at: old.at || Date.now(), by: (typeof loggedInCoach !== 'undefined' && loggedInCoach && loggedInCoach.name) || 'Owner' };
+      var rec = { id: id, label: label, emoji: g('catEm') || '🏷️', en: g('catEn'), forbiddenTags: tg, maxMealGL: gl || 0, kcalAdj: kc || 0, ppk: pp || 0, reasonChip: g('catChip'), showReg: !!document.getElementById('catReg').checked, disabled: !!document.getElementById('catOff').checked, at: old.at || Date.now(), by: (typeof loggedInCoach !== 'undefined' && loggedInCoach && loggedInCoach.name) || 'Owner' };
       if (!tg.length && !gl && !confirm('કોઈ નિયમ નથી ભર્યો, એટલે આ કેટેગરીમાં સામાન્ય મેનુ જ ચાલશે. છતાં સેવ કરવું?')) return;
       catMut(function (d) { d.customCats[id] = rec; }, '✅ કેટેગરી સેવ થઈ').then(catNew);
     };
@@ -3784,7 +3799,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       n.innerHTML = '<h2 class="font-extrabold text-slate-900 text-sm">🏷️ નવી કેટેગરી (થાઇરોઇડ, PCOD વગેરે)</h2><div style="font-size:11px;color:#64748b">કેટેગરી ઉમેરો, પછી ઉપરના "મેનુ" માં તેનું અઠવાડિયાનું મેનુ ગોઠવો. ક્લાયન્ટ નોંધણીમાં પસંદ કરી શકે, અને તમે ક્લાયન્ટના વ્યૂમાં "🏷️ કેટેગરી" થી બદલી શકો.</div><div id="mpCatList"></div>' +
         '<div style="border-top:1px solid #e2e8f0;padding-top:8px"><input id="catName" placeholder="કેટેગરીનું નામ (ગુજરાતી), દા.ત. થાઇરોઇડ" style="' + inp + ';margin-bottom:6px"><div style="display:flex;gap:6px;margin-bottom:6px"><input id="catEm" placeholder="ઇમોજી 🦋" style="' + inp + ';flex:1"><input id="catEn" placeholder="English નામ (વૈકલ્પિક)" style="' + inp + ';flex:2"></div>' +
         '<div style="font-size:11px;font-weight:800;margin:4px 0">આ કેટેગરીમાં ટાળવાનું (જે વાનગી ક્લાયન્ટને ન આવે):</div><div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:6px">' + CAT_TAGS.map(function (z) { return '<label style="font-size:11px;font-weight:800"><input type="checkbox" class="catTg" value="' + z[0] + '"> ' + z[1] + '</label>'; }).join('') + '</div>' +
-        '<input id="catGl" type="number" placeholder="એક ભોજનની GL મર્યાદા (વૈકલ્પિક)" style="' + inp + ';margin-bottom:6px"><input id="catChip" placeholder="ક્લાયન્ટને દેખાતી લીટી, દા.ત. ✔ થાઇરોઇડ: આયોડિન-સંતુલિત, ગોઇટ્રોજન ઓછા" style="' + inp + ';margin-bottom:6px">' +
+        '<input id="catGl" type="number" placeholder="એક ભોજનની GL મર્યાદા (વૈકલ્પિક)" style="' + inp + ';margin-bottom:6px"><div style="display:flex;gap:6px;margin-bottom:6px"><input id="catKc" type="number" placeholder="કેલરી ફેરફાર (+/- , દા.ત. -200)" style="' + inp + ';flex:1"><input id="catPp" type="number" step="0.1" placeholder="પ્રોટીન ગ્રામ/કિલો (દા.ત. 1.2)" style="' + inp + ';flex:1"></div><input id="catChip" placeholder="ક્લાયન્ટને દેખાતી લીટી, દા.ત. ✔ થાઇરોઇડ: આયોડિન-સંતુલિત, ગોઇટ્રોજન ઓછા" style="' + inp + ';margin-bottom:6px">' +
         '<label style="font-size:11px;font-weight:800;display:block;margin-bottom:4px"><input id="catReg" type="checkbox" checked> નોંધણી ફોર્મમાં બતાવો</label><label style="font-size:11px;font-weight:800;display:block;margin-bottom:8px"><input id="catOff" type="checkbox"> બંધ (છુપાવો)</label>' +
         '<div style="display:flex;gap:8px"><button type="button" id="catSave" onclick="catSave()" style="flex:2;border:0;border-radius:12px;background:#0f766e;color:#fff;font-weight:900;font-size:12px;padding:11px">➕ કેટેગરી ઉમેરો</button><button type="button" onclick="catNew()" style="flex:1;border:1px solid #cbd5e1;border-radius:12px;background:#fff;font-weight:800;font-size:11px;padding:11px">નવું ફોર્મ</button></div></div>';
       prev.parentNode.insertBefore(n, prev.nextSibling); catLoad();
