@@ -854,7 +854,7 @@
       const input = $('inAdminPin').value.trim();
       if (!input) return;
 
-      if (input === '1234') {
+      if (input === '1234' && !(await window.mpHasAdminPw())) {
         try { localStorage.removeItem('mp_adm_lg'); } catch (e) {}
         currentUserRole = 'owner';
         loggedInCoach = { name: 'Master Admin', id: 'owner' };
@@ -2028,9 +2028,71 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
     window.setMenuCfg = function (d) { var r = o.apply(this, arguments); mpApplyOv(d); mpApplyCats(d); return r; };
     if (typeof window.dishSafeForClient === 'function') { var o2 = window.dishSafeForClient; window.dishSafeForClient = function (item, goals, prefs) { if (!o2.apply(this, arguments)) return false; return !mpCatBlocked(item, goals); }; }
   }
+  /* ---------- PIN સુરક્ષા (hash) ---------- */
+  window.mpHashPin = async function (id, pin) {
+    var salt = String(id).replace(/\D/g, '').slice(-10), s = 'mp-c1:' + salt + ':' + String(pin), buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+    return Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+  };
+  window.mpPinCheck = async function (id, data, pin) {
+    try {
+      if (data.pinHash) return (await window.mpHashPin(id, pin)) === data.pinHash;
+      if (data.pin != null && String(data.pin).trim() === pin) {
+        try { var h = await window.mpHashPin(id, pin); db.collection('clients').doc(id).update({ pinHash: h, pin: firebase.firestore.FieldValue.delete() }).catch(function () { }); data.pinHash = h; delete data.pin; } catch (e) { }
+        return true;
+      }
+    } catch (e) { console.error(e); }
+    return false;
+  };
+  window.mpHasAdminPw = async function () { try { var d = await db.collection('settings').doc('admin').get(); return !!(d.exists && d.data().hash); } catch (e) { return false; } };
   function initPortal() {
     try { mpWrapMenu(); } catch (e) { }
     try { db.collection('settings').doc('menus').get().then(function (s) { var d = s.exists ? s.data() : null; mpApplyOv(d); mpApplyCats(d); }).catch(function () { }); } catch (e) { }
+    /* આ અઠવાડિયાની એક્ટિવિટી (સ્ટેપ્સ / કસરત / ઊંઘ) */
+    function mpActCard() {
+      try {
+        if (typeof currentClient === 'undefined' || !currentClient) return; var anchor = document.getElementById('lsSteps'); if (!anchor) return;
+        var box = document.getElementById('mpAct');
+        if (!box) { box = document.createElement('div'); box.id = 'mpAct'; box.className = 'rounded-2xl p-3 border'; box.style.cssText = 'background:#f0fdf4;border-color:#bbf7d0;margin-top:8px'; box.setAttribute('data-notr', '1'); stash().appendChild(box); }
+        var GOAL = 6000, days = [], comp = currentClient.compliance || {}, DN2 = ['રવિ', 'સોમ', 'મંગળ', 'બુધ', 'ગુરુ', 'શુક્ર', 'શનિ'];
+        for (var i = 6; i >= 0; i--) { var d = new Date(); d.setDate(d.getDate() - i); var k = dateKeyOf(d), ls = (comp[k] && comp[k].lifestyle) || {}; days.push({ n: i === 0 ? 'આજે' : DN2[d.getDay()], st: Number(ls.steps) || 0, wk: Number(ls.workoutMins) || 0, sl: Number(ls.sleepHours) || 0 }); }
+        var mx = Math.max(GOAL, Math.max.apply(null, days.map(function (x) { return x.st; }))), logged = days.filter(function (x) { return x.st; }), avg = logged.length ? Math.round(logged.reduce(function (a, x) { return a + x.st; }, 0) / logged.length) : 0, wk = days.reduce(function (a, x) { return a + x.wk; }, 0), sls = days.filter(function (x) { return x.sl; }), sa = sls.length ? (sls.reduce(function (a, x) { return a + x.sl; }, 0) / sls.length).toFixed(1) : '-', hit = days.filter(function (x) { return x.st >= GOAL; }).length;
+        var bars = days.map(function (x) { var h = Math.max(3, Math.round(x.st / mx * 56)); return '<div style="flex:1;text-align:center"><div style="height:60px;display:flex;align-items:flex-end;justify-content:center"><div style="width:70%;height:' + h + 'px;border-radius:6px 6px 2px 2px;background:' + (x.st >= GOAL ? '#16a34a' : (x.st ? '#86efac' : '#e2e8f0')) + '"></div></div><div style="font-size:9px;font-weight:800;color:#475569;margin-top:2px">' + x.n + '</div></div>'; }).join('');
+        var pct = Math.min(100, Math.round(wk / 150 * 100));
+        box.innerHTML = '<div style="font-weight:900;font-size:12px;color:#166534;margin-bottom:6px">📊 છેલ્લા 7 દિવસની એક્ટિવિટી</div><div style="display:flex;gap:3px;align-items:flex-end">' + bars + '</div><div style="font-size:10px;color:#64748b;margin:3px 0 6px">લક્ષ્ય: દિવસના ' + GOAL + ' પગલાં (ઘેરો લીલો = લક્ષ્ય પૂરું)</div><div style="display:flex;gap:8px;flex-wrap:wrap;font-size:11px;font-weight:800;color:#14532d"><span>🚶 સરેરાશ ' + avg + '</span><span>🎯 ' + hit + '/7 દિવસ લક્ષ્ય</span><span>😴 ' + sa + ' કલાક</span></div><div style="margin-top:6px;font-size:11px;font-weight:800;color:#14532d">🏃 કસરત: ' + wk + ' / 150 મિનિટ (અઠવાડિયું)</div><div style="height:8px;border-radius:99px;background:#dcfce7;margin-top:3px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:#16a34a"></div></div><div style="font-size:9.5px;color:#64748b;margin-top:6px">ડાયાબિટીસ કે હૃદયની તકલીફ હોય તો કસરત ડૉક્ટરની સલાહ પ્રમાણે કરો.</div>';
+      } catch (e) { console.error('act', e); }
+    }
+    ['loadTodayClientView', 'saveLifestyle'].forEach(function (fn) { var o = window[fn]; if (typeof o !== 'function') return; window[fn] = function () { var r = o.apply(this, arguments); try { Promise.resolve(r).then(function () { setTimeout(mpActCard, 50); }); } catch (e) { } return r; }; });
+    /* PIN બદલો / ભૂલી ગયા / ઓટો રિફ્રેશ */
+    var WEAKP = ['0000', '1111', '2222', '3333', '4444', '5555', '6666', '7777', '8888', '9999', '1234', '4321', '1212', '2580', '0123', '1004', '123456', '111111', '000000', '654321', '123123', '121212', '112233'];
+    window.changePin = async function (forced) {
+      if (!currentClient) return; var id = docId();
+      if (forced !== true) { var old = (prompt('તમારો હાલનો PIN/પાસવર્ડ લખો:') || '').trim(); if (!old) return; if (!(await window.mpPinCheck(id, currentClient, old))) return alert('હાલનો PIN ખોટો છે.'); }
+      var np = (prompt((forced === true ? 'કોચે આપેલો PIN અસ્થાયી છે. હવે તમારો પોતાનો નવો PIN લખો.\n' : '') + 'નવો PIN/પાસવર્ડ લખો (4 થી 20 અક્ષર).\n6 અંક અથવા અક્ષર+આંકડા વધુ સુરક્ષિત છે.') || '').trim();
+      if (!np) return; if (np.length < 4 || np.length > 20 || /\s/.test(np)) return alert('PIN 4 થી 20 અક્ષરનો હોવો જોઈએ, જગ્યા વગર.');
+      if (WEAKP.indexOf(np.toLowerCase()) >= 0 || /^(\d)\1+$/.test(np)) return alert('આ PIN સહેલો છે. મજબૂત PIN પસંદ કરો.');
+      if ((prompt('નવો PIN ફરી લખો:') || '').trim() !== np) return alert('બંને PIN સરખા નથી.');
+      try { var h = await window.mpHashPin(id, np); await db.collection('clients').doc(id).update({ pinHash: h, pin: firebase.firestore.FieldValue.delete(), mustChangePin: false }); currentClient.pinHash = h; delete currentClient.pin; currentClient.mustChangePin = false; alert('✅ PIN બદલાયો.'); } catch (e) { console.error(e); alert('PIN બદલાયો નથી, ફરી પ્રયત્ન કરો.'); }
+    };
+    window.handleClientSelfResetPin = function () {
+      var ph = (document.getElementById('inClientForgotPhone').value || '').replace(/\D/g, '').slice(-10);
+      if (ph.length < 10) return alert('સાચો ૧૦-અંકનો મોબાઈલ નંબર લખો.');
+      var msg = 'નમસ્તે કોચ, હું ' + ph + ' નો ક્લાયન્ટ છું. મારો Metabolic Pro PIN ભૂલી ગયો છું, કૃપા કરી રીસેટ કરી આપો.';
+      window.open('https://wa.me/' + COACH_PHONE + '?text=' + encodeURIComponent(msg), '_blank');
+      alert('WhatsApp ખુલ્યું છે. મેસેજ મોકલો, કોચ તમને નવો PIN મોકલશે.'); try { closeClientForgotPinModal(); } catch (e) { }
+    };
+    try { var fb = document.querySelector('button[onclick*="handleClientSelfResetPin"]'); if (fb) { fb.textContent = '📲 કોચને WhatsApp પર વિનંતી મોકલો'; fb.setAttribute('data-notr', '1'); } } catch (e) { }
+    (function () { var o = window.openPortal; if (typeof o !== 'function') return; window.openPortal = function () { var r = o.apply(this, arguments); try { if (currentClient && currentClient.mustChangePin) setTimeout(function () { window.changePin(true); }, 600); } catch (e) { } return r; }; })();
+    (function () {
+      var last = Date.now();
+      function refresh() {
+        try {
+          if (typeof currentClient === 'undefined' || !currentClient) return; var id = docId(); loadMenuCfg();
+          db.collection('clients').doc(id).get().then(function (d) { if (!d.exists) return; var n = d.data(), c = currentClient, ch = JSON.stringify(n.conditions || []) !== JSON.stringify(c.conditions || []) || n.isVip !== c.isVip; currentClient = Object.assign({}, c, n, { id: c.id }); if (ch && !document.getElementById('clientPortalView').classList.contains('hidden')) openPortal(); }).catch(function () { });
+        } catch (e) { }
+      }
+      document.addEventListener('visibilitychange', function () { if (document.visibilityState !== 'visible') return; if (Date.now() - last < 5 * 60000) return; last = Date.now(); refresh(); });
+      window.addEventListener('pageshow', function (e) { if (e.persisted && Date.now() - last > 5 * 60000) { last = Date.now(); refresh(); } });
+    })();
     // [id, gu, hi, en, kcal, protein, GL, tags, group, proteinItem]
     var RAW = [
       ['ad_curd', 'દહીં ૧ વાટકી', 'दही 1 कटोरी', 'Curd 1 bowl', 70, 4, 2, ['veg', 'low_gi'], 'pro', 'દહીં'],
@@ -2379,7 +2441,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         sheetOpen('🛒 આ અઠવાડિયાનું કરિયાણું', '<div style="font-size:12px;font-weight:900;margin:4px 0">🥦 શાકભાજી <span style="color:#64748b" data-notr>(' + v.n + ')</span></div>' + v.html + '<div style="font-size:12px;font-weight:900;margin:12px 0 4px">🫘 કઠોળ / પ્રોટીન <span style="color:#64748b" data-notr>(' + p.n + ')</span></div>' + p.html +
           '<div style="margin-top:14px"><button type="button" onclick="shareGroceryWhatsApp()" style="width:100%;padding:11px;border-radius:14px;background:#16a34a;color:#fff;font-weight:900;font-size:13px">💬 WhatsApp પર મોકલો</button></div>');
       }
-      else if (k === 'diary' || k === 'vit') { var dn = document.getElementById('mpStash') && Array.prototype.filter.call(document.getElementById('mpStash').children, function (x) { return x.getAttribute('data-mpkey') === k; })[0]; if (!dn) { alert('ડાયરી હમણાં ઉપલબ્ધ નથી.'); return; } sheetOpen(k === 'vit' ? '🩸 વાઇટલ્સ અને સુગર' : '🧘 આજની ડાયરી', '', [dn]); }
+      else if (k === 'diary' || k === 'vit') { var dn = document.getElementById('mpStash') && Array.prototype.filter.call(document.getElementById('mpStash').children, function (x) { return x.getAttribute('data-mpkey') === k; })[0]; if (!dn) { alert('ડાયરી હમણાં ઉપલબ્ધ નથી.'); return; } sheetOpen(k === 'vit' ? '🩸 વાઇટલ્સ અને સુગર' : '🧘 આજની ડાયરી', '', k === 'diary' ? [dn, (mpActCard(), document.getElementById('mpAct'))].filter(Boolean) : [dn]); }
       else if (k === 'cards') { mpCardsOpen(); }
       else if (k === 'crave') { mpCraveOpen(); }
       else if (k === 'rep') { var a = document.getElementById('cpWeeklySummary'), tb = document.getElementById('cpTrendBox'), t2 = tb && tb.closest('.card-clean'); sheetOpen('📊 7 દિવસનો રિપોર્ટ', '', [a, t2].filter(Boolean)); }
@@ -3458,6 +3520,23 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
    * ==================================================================== */
   function initAdmin() {
     try { mpWrapMenu(); } catch (e) { }
+    /* એડમિન: ક્લાયન્ટ PIN રીસેટ (hash + અસ્થાયી) અને નવો ઓનર પાસવર્ડ */
+    window.resetClientPin = async function (id) {
+      var cl = liveClients.find(function (c) { return c.id === id; }); if (!cl) return;
+      var np = String(Math.floor(100000 + Math.random() * 900000)); if (/^(\d)\1+$/.test(np) || np === '123456') return window.resetClientPin(id);
+      if (!confirm(cl.name + ' નો અસ્થાયી PIN ' + np + ' સેટ કરવો છે?\n(ક્લાયન્ટ લોગિન કર્યા પછી પોતાનો નવો PIN રાખશે)')) return;
+      var h = await window.mpHashPin(id, np);
+      var ok = await safe(function () { return db.collection('clients').doc(id).update({ pinHash: h, pin: firebase.firestore.FieldValue.delete(), mustChangePin: true }); }, '✅ અસ્થાયી PIN સેટ');
+      if (ok !== null && confirm('WhatsApp પર અસ્થાયી PIN મોકલવો છે?')) window.open(waLink(cl.phone, 'નમસ્તે ' + firstName(cl.name) + '! તમારો અસ્થાયી Metabolic Pro PIN: *' + np + '*\nલોગિન કરશો એટલે એપ તમને પોતાનો નવો PIN રાખવાનું કહેશે. 🙏'), '_blank');
+    };
+    (function () {
+      var o = window.verifyAdminPin, asked = false; if (typeof o !== 'function') return;
+      window.verifyAdminPin = async function () {
+        var r = await o.apply(this, arguments);
+        try { if (!asked && currentUserRole === 'owner' && !document.getElementById('adminMainView').classList.contains('hidden')) { asked = true; if (!(await window.mpHasAdminPw())) setTimeout(function () { if (confirm('🔐 હાલમાં જૂનો/સહેલો પાસવર્ડ ચાલે છે.\nહવે નવો મજબૂત પાસવર્ડ બનાવશો?\n\nOK = બનાવો (પછી જૂનો બંધ, નવો જ ચાલશે)\nCancel = પછી')) openSetPw('નવો ઓનર પાસવર્ડ બનાવો', 'ઓછામાં ઓછા ૬ અક્ષર (અક્ષર+આંકડા વધુ સારા). સેવ કર્યા પછી જૂનો પાસવર્ડ બંધ થશે, નવો નોંધી રાખજો.'); }, 500); } } catch (e) { }
+        return r;
+      };
+    })();
     // લોડ વોચડોગ: લૉગિન પછી ક્લાયન્ટ ડેટા ન આવે તો આપોઆપ ફરી પ્રયત્ન
     (function () {
       var tries = 0, shown = false;
@@ -3714,6 +3793,12 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
       var cur = (cl.conditions && cl.conditions.length) ? cl.conditions : ['general'];
       return '<div id="mpCats" class="bg-sky-50 border border-sky-200 rounded-2xl p-2.5 text-[11px]"><div class="font-extrabold text-sky-900 mb-1.5">🏷️ કેટેગરી (આના પર મેનુ અને નિયમો નક્કી થાય)</div><div class="flex flex-wrap gap-x-3 gap-y-1.5">' + Object.keys(GOAL_LABELS).map(function (k) { return '<label class="font-semibold"><input type="checkbox" class="mpCatCk" value="' + esc(k) + '" ' + (cur.indexOf(k) >= 0 ? 'checked' : '') + '> ' + esc(GOAL_LABELS[k]) + '</label>'; }).join('') + '</div><button type="button" onclick="mpCatsSave(\'' + cl.id + '\')" class="mt-2 px-3 py-1.5 rounded-xl bg-sky-600 text-white font-bold">સેવ</button></div>';
     }
+    function actHtml(cl) {
+      var comp = cl.compliance || {}, rows = [], DN2 = ['રવિ', 'સોમ', 'મંગળ', 'બુધ', 'ગુરુ', 'શુક્ર', 'શનિ'], ts = 0, tn = 0, tw = 0;
+      for (var i = 0; i < 7; i++) { var d = new Date(); d.setDate(d.getDate() - i); var k = dateKeyOf(d), ls = (comp[k] && comp[k].lifestyle) || {}, st = Number(ls.steps) || 0, wk = Number(ls.workoutMins) || 0; if (st) { ts += st; tn++; } tw += wk; rows.push('<span style="display:inline-block;min-width:44%"><b>' + (i === 0 ? 'આજે' : DN2[d.getDay()]) + ':</b> ' + (st || '-') + ' • ' + (wk || '-') + 'મિ • ' + (ls.sleepHours || '-') + 'કલાક</span>'); }
+      if (!tn && !tw) return '';
+      return '<div class="bg-green-50 border border-green-200 rounded-2xl p-2.5 text-[11px] mt-2"><div class="font-extrabold text-green-900 mb-1">🚶 7 દિવસ એક્ટિવિટી (પગલાં • કસરત • ઊંઘ)</div><div style="color:#166534;font-weight:800;margin-bottom:4px">સરેરાશ ' + (tn ? Math.round(ts / tn) : 0) + ' પગલાં • કસરત કુલ ' + tw + ' મિનિટ</div><div>' + rows.join('') + '</div></div>';
+    }
     function diabHtml(cl) {
       if ((cl.conditions || []).indexOf('diabetes') < 0) return '';
       var t = cl.diabType || '', ins = cl.insulin || '', sel = function (v, l) { return '<option value="' + v + '"' + (t === v ? ' selected' : '') + '>' + l + '</option>'; }, sl = function (v, l) { return '<option value="' + v + '"' + (ins === v ? ' selected' : '') + '>' + l + '</option>'; };
@@ -3754,7 +3839,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         mpMoreClose(); var own = (typeof currentUserRole !== 'undefined') && currentUserRole === 'owner', o = document.createElement('div'); o.id = 'mpMore'; o.setAttribute('data-notr', '1');
         var it = function (ic, tx, fn) { return '<button type="button" onclick="mpMoreClose();' + fn + '"><span class="ic">' + ic + '</span>' + tx + '</button>'; };
         o.innerHTML = '<div><div style="display:flex;justify-content:space-between;align-items:center"><div style="font-weight:900;font-size:16px">વધુ</div><button type="button" onclick="mpMoreClose()" style="width:36px;height:36px;margin:0;padding:0;justify-content:center;border-radius:99px;font-size:15px">✕</button></div>' +
-          it('📥', 'WhatsApp નજ ક્યૂ', "setAdminTab('nudge')") + (own ? it('👨‍⚕️', 'કોચ મેનેજમેન્ટ', "setAdminTab('coaches')") + it('🎴', 'માર્કેટિંગ કાર્ડ સ્ટુડિયો', 'mpMktOpen()') + it('⚙️', 'ઓનર સેટિંગ્સ (લાઈવ સ્લોટ, જાહેરાત)', 'openCoachSettingsModal()') : '') + it('🌐', 'ભાષા બદલો (GU / HI / EN)', 'cycleLang()') + it('🌓', 'થીમ: લાઇટ / ડાર્ક / ઓટો', 'mpThemeCycle()') + it('🚪', 'લૉગઆઉટ', 'logoutAdmin()') + '</div>';
+          it('📥', 'WhatsApp નજ ક્યૂ', "setAdminTab('nudge')") + (own ? it('👨‍⚕️', 'કોચ મેનેજમેન્ટ', "setAdminTab('coaches')") + it('🎴', 'માર્કેટિંગ કાર્ડ સ્ટુડિયો', 'mpMktOpen()') + it('⚙️', 'ઓનર સેટિંગ્સ (લાઈવ સ્લોટ, જાહેરાત)', 'openCoachSettingsModal()') + it('🔐', 'ઓનર પાસવર્ડ બદલો', 'openSetPw()') : '') + it('🌐', 'ભાષા બદલો (GU / HI / EN)', 'cycleLang()') + it('🌓', 'થીમ: લાઇટ / ડાર્ક / ઓટો', 'mpThemeCycle()') + it('🚪', 'લૉગઆઉટ', 'logoutAdmin()') + '</div>';
         o.addEventListener('click', function (e) { if (e.target === o) mpMoreClose(); }); document.body.appendChild(o);
       };
       window.mpMoreClose = function () { var e = document.getElementById('mpMore'); if (e) e.remove(); };
@@ -4022,7 +4107,7 @@ window.S3={avatar:avatar,tulsi:tulsi,diya:diya,COL:COL};
         var cl = liveClients.filter(function (c) { return c.id === id; })[0];
         var body = document.getElementById('mcBody');
         if (!cl || !body) return;
-        var html = (currentUserRole === 'owner' ? avSwitchHtml(cl) : '') + jnAdminHtml(cl) + habitHtml(cl) + datesHtml(cl) + catsHtml(cl) + diabHtml(cl) + addonHtml(cl);
+        var html = (currentUserRole === 'owner' ? avSwitchHtml(cl) : '') + jnAdminHtml(cl) + habitHtml(cl) + actHtml(cl) + datesHtml(cl) + catsHtml(cl) + diabHtml(cl) + addonHtml(cl);
         if (!html) return;
         var tbl = body.querySelector('table');
         var host = tbl && tbl.closest('.overflow-x-auto');
