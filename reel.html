@@ -1,1 +1,156 @@
+<!doctype html>
+<html lang="gu"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>રીલ સ્ટુડિયો</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Noto Sans Gujarati',system-ui,sans-serif;background:#f1f5f9;color:#0f172a;padding-bottom:40px}
+.top{background:linear-gradient(135deg,#0f3d3e,#14746f);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 14px 14px;font-weight:900;font-size:16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+.top a{color:#fff;font-size:11px;background:#fff2;border-radius:99px;padding:6px 12px;text-decoration:none}
+.steps{display:flex;gap:6px;padding:10px 12px 0}.steps span{cursor:pointer;flex:1;text-align:center;font-size:11px;font-weight:900;padding:8px 0;border-radius:11px;background:#e2e8f0;color:#64748b}.steps .on{background:#14b8a6;color:#fff}
+.pg{display:none;padding:6px 12px}.pg.on{display:block}
+h3{font-size:13px;font-weight:900;margin:14px 2px 6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:10px;margin-bottom:8px}
+textarea,input[type=text],input[type=number]{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:10px;font:inherit;font-size:14px;background:#fff}
+textarea{min-height:90px}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px;font:inherit;font-weight:900;font-size:15px;color:#fff;background:#14b8a6;margin-top:10px}
+.btn.s{background:#475569;padding:10px;font-size:13px;margin-top:6px}
+.btn.o{background:linear-gradient(90deg,#f97316,#db2777)}.btn.d{background:#0f766e}.btn.r{background:#dc2626}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.cl{aspect-ratio:9/13;border-radius:11px;background:linear-gradient(160deg,#334155,#0f766e);color:#fff;font-size:9px;font-weight:900;position:relative;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;padding:3px;border:0}
+.cl video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cl i{position:absolute;top:3px;left:3px;background:#000a;border-radius:6px;padding:1px 5px;font-style:normal;font-size:10px;z-index:1}
+.cl em{position:absolute;top:3px;right:3px;background:#fbbf24;color:#000;border-radius:50%;width:16px;height:16px;font-style:normal;font-size:10px;display:flex;align-items:center;justify-content:center;z-index:1}
+.cl.sel{outline:3px solid #fbbf24}.cl.no{opacity:.45}
+.tl{display:flex;gap:6px;flex-wrap:wrap}.tl div{background:#0f766e;color:#fff;border-radius:10px;padding:8px 10px;font-weight:900;font-size:12px;display:flex;gap:8px;align-items:center}
+.tl b{background:#fff3;border-radius:6px;padding:0 6px}
+.sub{font-size:13px;line-height:1.6}
+.chk{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;margin:6px 0}
+.note{font-size:11px;color:#64748b;margin-top:6px;line-height:1.5}
+canvas{width:100%;max-width:300px;display:block;margin:10px auto;border-radius:18px;box-shadow:0 8px 20px #0004;background:#0f172a}
+.lines div{display:flex;gap:6px;margin-bottom:6px;align-items:center}.lines span{font-size:11px;color:#64748b;width:38px}
+.prog{height:10px;background:#e2e8f0;border-radius:9px;overflow:hidden;margin:8px 0}.prog i{display:block;height:100%;width:0;background:#14b8a6}
+</style></head><body>
+<div class="top"><span>🎬 રીલ સ્ટુડિયો <small style="font-size:10px;opacity:.7">v5</small></span><a href="admin.html">← એડમિન</a></div>
+<div class="steps" id="st"><span class="on" onclick="go(1)">1 વિષય</span><span onclick="go(2)">2 ક્લિપ</span><span onclick="go(3)">3 અવાજ</span><span onclick="go(4)">4 બનાવો</span></div>
+
+<div class="pg on" id="p1">
+ <h3>📝 સ્ક્રિપ્ટ (દરેક લાઇન = એક સબટાઇટલ)</h3>
+ <textarea id="script" placeholder="સવારે ખાલી પેટે…&#10;આમળા-જીરા પાણી પીઓ&#10;પછી મગ ચાટ ખાઓ"></textarea>
+ <h3>📊 કેલરી મીટર (વૈકલ્પિક)</h3>
+ <div class="card"><label class="chk"><input type="checkbox" id="mOn"> કેલરી મીટર બતાવો</label>
+  <input type="text" id="mName" placeholder="વાનગી, દા.ત. મગ ચાટ" style="margin-bottom:6px">
+  <div class="row"><input type="number" id="mKcal" placeholder="kcal"><input type="number" id="mPro" placeholder="પ્રોટીન g"></div></div>
+ <h3>🔖 નીચેનું નામ</h3><input type="text" id="brand" value="નિયમ સંયમ">
+ <button class="btn" onclick="go(2)">આગળ ➜ ક્લિપ</button>
+</div>
+
+<div class="pg" id="p2">
+ <h3>🎞️ ક્લિપ પસંદ કરો (ટેપ = ઉમેરો, ફરી ટેપ = દૂર)</h3>
+ <div class="grid" id="cg"></div>
+ <p class="note" id="cnote"></p>
+ <button class="btn o" onclick="auto()">🎲 ક્લિપ આપમેળે ગોઠવો</button>
+ <label class="btn s" style="text-align:center">📂 ફોનમાંથી ક્લિપ ઉમેરો (હંગામી)<input type="file" accept="video/*" multiple id="cf" hidden></label>
+ <h3>ક્રમ</h3><div class="tl" id="tl"></div>
+ <p class="note">ક્રમમાં નામ પર ટેપ કરો તો દૂર થશે. ◀ ▶ થી ક્રમ બદલાય.</p>
+ <button class="btn" onclick="go(3)">આગળ ➜ અવાજ</button>
+ <button class="btn s" onclick="go(1)">⬅ પાછળ</button>
+</div>
+
+<div class="pg" id="p3">
+ <h3>🎙️ તમારો અસલી અવાજ</h3>
+ <div class="card"><button class="btn r" id="recB" onclick="rec()" style="margin-top:0">● રેકોર્ડ શરૂ કરો</button>
+ <label class="btn s" style="text-align:center">📂 ફોનમાંથી રેકોર્ડિંગ પસંદ કરો<input type="file" accept="audio/*,video/*" id="af" hidden></label>
+ <audio id="au" controls style="width:100%;margin-top:8px;display:none"></audio><p class="note" id="anote"></p></div>
+ <h3>💬 સબટાઇટલ (સમય અવાજ મુજબ આપમેળે)</h3>
+ <div class="card lines" id="lines"></div>
+ <h3>🎨 સ્ટાઇલ</h3>
+ <div class="card"><label class="chk"><input type="checkbox" id="yel" checked> પીળા અક્ષર</label><p class="note">ક્લિપોનો પોતાનો અવાજ હંમેશા બંધ જ રહે છે, ફક્ત તમારો રેકોર્ડિંગ વપરાય છે.</p></div>
+ <button class="btn" onclick="go(4)">આગળ ➜ બનાવો</button>
+ <button class="btn s" onclick="go(2)">⬅ પાછળ</button>
+</div>
+
+<div class="pg" id="p4">
+ <canvas id="cv" width="540" height="960"></canvas>
+ <div class="prog"><i id="pb"></i></div><p class="note" id="rnote" style="text-align:center"></p>
+ <button class="btn" id="mk" onclick="make()">▶ વિડીયો બનાવો</button>
+ <video id="pv" controls playsinline style="display:none;width:100%;max-width:300px;margin:10px auto;border-radius:14px;background:#000"></video>
+ <div id="out" style="display:none">
+  <button class="btn o" onclick="shareV()">📲 શેર કરો (Instagram / WhatsApp)</button>
+  <button class="btn d" onclick="saveV()">💾 ફોનમાં સેવ કરો</button>
+ </div>
+ <button class="btn s" onclick="go(3)">⬅ પાછળ (અવાજ / સબટાઇટલ સુધારો)</button>
+ <p class="note">વિડીયો બનતી વખતે આ પેજ ખુલ્લું અને સ્ક્રીન ચાલુ રાખો.</p>
+</div>
+
+<script>
+var $=function(i){return document.getElementById(i)};
+var CL=[],SEL=[],AUD=null,ADUR=0,LN=[],VID=null,VMIME='';
+/* ---------- steps ---------- */
+function go(n){[1,2,3,4].forEach(function(i){$('p'+i).classList.toggle('on',i===n);$('st').children[i-1].classList.toggle('on',i===n)});
+ if(n===3)buildLines(); if(n===4){draw(0);} window.scrollTo(0,0);}
+/* ---------- clips ---------- */
+var IDS='A1 A2 A3 A4 A5 B1 B2 B3 B4 B5 C1 C2 C3 D1 E1'.split(' ');
+function loadClips(){CL=IDS.map(function(id){var c={id:id,label:'',src:'clips/'+id+'.mp4',ok:0};var v=document.createElement('video');v.preload='metadata';v.muted=true;v.onloadedmetadata=function(){c.ok=1;showC()};v.onerror=function(){};v.src=c.src;return c});showC();
+ setTimeout(function(){if(!CL.some(function(c){return c.ok}))$('cnote').textContent='ક્લિપો હજી ઉમેરી નથી (clips ફોલ્ડરમાં A1.mp4, A2.mp4 … મૂકો). નીચેથી ફોનમાંથી ક્લિપ ઉમેરીને ટેસ્ટ કરી શકાય.'},1500)}
+function auto(){var ok=[];CL.forEach(function(c,i){if(c.ok)ok.push(i)});if(!ok.length)return alert('ક્લિપો ઉપલબ્ધ નથી');
+ var d=ADUR||20,n=Math.max(3,Math.min(ok.length,Math.round(d/4)));for(var i=ok.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=ok[i];ok[i]=ok[j];ok[j]=t}
+ SEL=ok.slice(0,n);showC()}
+function showC(){var g=$('cg');g.innerHTML='';CL.forEach(function(c,i){var b=document.createElement('button');b.className='cl'+(c.ok?'':' no')+(SEL.indexOf(i)>-1?' sel':'');
+ b.innerHTML=(c.ok?'<video muted playsinline preload="metadata" src="'+c.src+'#t=0.1"></video>':'')+'<i>'+c.id+'</i>'+(SEL.indexOf(i)>-1?'<em>'+(SEL.indexOf(i)+1)+'</em>':'')+c.label;
+ b.onclick=function(){if(!c.ok)return;var k=SEL.indexOf(i);if(k>-1)SEL.splice(k,1);else SEL.push(i);showC()};g.appendChild(b)});
+ var t=$('tl');t.innerHTML='';SEL.forEach(function(i,k){var d=document.createElement('div');d.innerHTML='<b onclick="mv('+k+',-1)">◀</b><span onclick="rm('+k+')">'+CL[i].id+'</span><b onclick="mv('+k+',1)">▶</b>';t.appendChild(d)});
+ if(!SEL.length)t.innerHTML='<span class="note">હજી કોઈ ક્લિપ નથી</span>';}
+function mv(k,d){var j=k+d;if(j<0||j>=SEL.length)return;var x=SEL[k];SEL[k]=SEL[j];SEL[j]=x;showC()}
+function rm(k){SEL.splice(k,1);showC()}
+$('cf').onchange=function(e){Array.prototype.forEach.call(e.target.files,function(f,n){CL.unshift({id:'મારી'+(n+1),label:'',src:URL.createObjectURL(f),ok:1});SEL=SEL.map(function(x){return x+1})});showC()};
+/* ---------- audio ---------- */
+var MR=null,chunks=[];
+function setAudio(blob){AUD=blob;var a=$('au');a.src=URL.createObjectURL(blob);a.style.display='block';a.onloadedmetadata=function(){
+ if(!isFinite(a.duration)){a.currentTime=1e7;a.ontimeupdate=function(){a.ontimeupdate=null;ADUR=a.duration;a.currentTime=0;fin()}}else{ADUR=a.duration;fin()}};
+ function fin(){if(!SEL.length&&CL.some(function(c){return c.ok}))auto();$('anote').textContent='લંબાઈ: '+ADUR.toFixed(1)+' સેકન્ડ';buildLines()}}
+function rec(){var b=$('recB');if(MR&&MR.state==='recording'){MR.stop();return}
+ navigator.mediaDevices.getUserMedia({audio:true}).then(function(s){chunks=[];var o={};try{if(MediaRecorder.isTypeSupported('audio/mp4'))o.mimeType='audio/mp4'}catch(e){}
+  MR=new MediaRecorder(s,o);MR.ondataavailable=function(e){chunks.push(e.data)};MR.onstop=function(){s.getTracks().forEach(function(t){t.stop()});b.textContent='● ફરી રેકોર્ડ કરો';setAudio(new Blob(chunks,{type:MR.mimeType||'audio/webm'}))};MR.start();b.textContent='■ બંધ કરો'}).catch(function(){alert('માઇક્રોફોનની પરવાનગી આપો')})}
+$('af').onchange=function(e){if(e.target.files[0])setAudio(e.target.files[0])};
+/* ---------- subtitles ---------- */
+function buildLines(){var ls=$('script').value.split('\n').map(function(x){return x.trim()}).filter(Boolean);var tot=ls.join('').length||1;var t=0;LN=ls.map(function(x){var d=ADUR?ADUR*x.length/tot:3;var o={t:x,a:t,b:t+d};t+=d;return o});
+ var h=$('lines');h.innerHTML='';LN.forEach(function(l,i){var d=document.createElement('div');d.innerHTML='<span>'+l.a.toFixed(1)+'s</span><input type="text" value="'+l.t.replace(/"/g,'&quot;')+'">';d.querySelector('input').oninput=function(){l.t=this.value};h.appendChild(d)});
+ if(!LN.length)h.innerHTML='<p class="note">પહેલા સ્ટેપમાં સ્ક્રિપ્ટ લખો</p>'}
+/* ---------- render ---------- */
+var W=540,H=960,cv=$('cv'),cx=cv.getContext('2d'),VS=[];
+function wrap(t,w){var out=[],ln='';t.split(' ').forEach(function(wd){var x=ln?ln+' '+wd:wd;if(cx.measureText(x).width>w&&ln){out.push(ln);ln=wd}else ln=x});if(ln)out.push(ln);return out}
+function rr(x,y,w,h,r){cx.beginPath();cx.moveTo(x+r,y);cx.arcTo(x+w,y,x+w,y+h,r);cx.arcTo(x+w,y+h,x,y+h,r);cx.arcTo(x,y+h,x,y,r);cx.arcTo(x,y,x+w,y,r);cx.closePath()}
+function draw(t,vi){var g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#334155');g.addColorStop(1,'#0f766e');cx.fillStyle=g;cx.fillRect(0,0,W,H);
+ var v=VS[vi||0];if(v&&v.videoWidth){var s=Math.max(W/v.videoWidth,H/v.videoHeight)*1.2,w=v.videoWidth*s,h=v.videoHeight*s;cx.drawImage(v,(W-w)/2,0,w,h)}
+ if($('mOn').checked&&$('mName').value){var k=Number($('mKcal').value)||0,p=Number($('mPro').value)||0;cx.fillStyle='rgba(255,255,255,.95)';rr(24,60,W-48,84,18);cx.fill();cx.fillStyle='#0f172a';cx.font='900 24px "Noto Sans Gujarati"';cx.textAlign='left';cx.fillText('🥗 '+$('mName').value,42,96);cx.font='700 20px "Noto Sans Gujarati"';cx.fillText(k+' kcal · '+p+' g પ્રોટીન',42,126);cx.fillStyle='#e2e8f0';rr(W-190,100,140,12,6);cx.fill();cx.fillStyle='#14b8a6';rr(W-190,100,Math.min(140,140*k/600),12,6);cx.fill()}
+ var cur=null;LN.forEach(function(l){if(t>=l.a&&t<l.b)cur=l});if(cur){var fs=38,ls,mw=W-110;cx.textAlign='center';for(;fs>=22;fs-=2){cx.font='900 '+fs+'px "Noto Sans Gujarati",sans-serif';ls=wrap(cur.t,mw);if(ls.every(function(x){return cx.measureText(x).width<=mw}))break}
+  var lh=fs*1.3,y=H-250-(ls.length-1)*lh/2;ls.forEach(function(x,i){cx.lineWidth=8;cx.strokeStyle='#000';cx.lineJoin='round';cx.strokeText(x,W/2,y+i*lh);cx.fillStyle=$('yel').checked?'#fde047':'#fff';cx.fillText(x,W/2,y+i*lh)})}
+ cx.font='900 22px "Noto Sans Gujarati"';cx.textAlign='center';cx.fillStyle='#fff';cx.shadowColor='#000';cx.shadowBlur=6;cx.fillText('🔖 '+($('brand').value||''),W/2,H-50);cx.shadowBlur=0}
+function pickMime(){var l=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];for(var i=0;i<l.length;i++){try{if(MediaRecorder.isTypeSupported(l[i]))return l[i]}catch(e){}}return''}
+function decodeAudio(ac,blob){return new Promise(function(res,rej){var fr=new FileReader();fr.onload=function(){var p=ac.decodeAudioData(fr.result,res,rej);if(p&&p.catch)p.catch(rej)};fr.onerror=rej;fr.readAsArrayBuffer(blob)})}
+function make(){
+ if(!SEL.length)auto();if(!SEL.length)return alert('ઓછામાં ઓછી એક ક્લિપ પસંદ કરો');if(!AUD||!ADUR)return alert('પહેલા અવાજ ઉમેરો');
+ $('mk').disabled=true;$('out').style.display='none';$('pv').style.display='none';$('rnote').textContent='તૈયાર થઈ રહ્યો છે… પેજ બંધ ન કરો';
+ var AC=window.AudioContext||window.webkitAudioContext,ac=new AC();try{ac.resume()}catch(e){}
+ VS=SEL.map(function(i){var v=document.createElement('video');v.muted=true;v.playsInline=true;v.setAttribute('playsinline','');v.loop=true;v.src=CL[i].src;v.preload='auto';v.load();return v});
+ var fontP=(document.fonts&&document.fonts.load)?document.fonts.load('900 38px "Noto Sans Gujarati"','નિયમ').catch(function(){}):Promise.resolve();
+ Promise.all([decodeAudio(ac,AUD),fontP]).then(function(r){var buf=r[0],dur=buf.duration,dest=ac.createMediaStreamDestination(),src=ac.createBufferSource();src.buffer=buf;src.connect(dest);try{var gn=ac.createGain();gn.gain.value=0.001;src.connect(gn);gn.connect(ac.destination)}catch(e){}
+  var st=cv.captureStream(30);dest.stream.getAudioTracks().forEach(function(t){st.addTrack(t)});window.__na=st.getAudioTracks().length;window.__acs=ac.state;
+  VMIME=pickMime();var mr=new MediaRecorder(st,VMIME?{mimeType:VMIME,videoBitsPerSecond:4e6}:{}),parts=[];mr.ondataavailable=function(e){if(e.data.size)parts.push(e.data)};
+  mr.onstop=function(){try{ac.close()}catch(e){}VS.forEach(function(v){v.pause()});VID=new Blob(parts,{type:(mr.mimeType||VMIME||'video/webm').split(';')[0]});$('mk').disabled=false;$('mk').textContent='🔁 ફરી બનાવો';$('out').style.display='block';$('rnote').textContent='તૈયાર! '+(VID.size/1048576).toFixed(1)+' MB · અવાજ ટ્રેક: '+(window.__na||0)+' · '+(window.__acs||'')+' · નીચે ચલાવીને જુઓ';$('pb').style.width='100%';var pv=$('pv');pv.src=URL.createObjectURL(VID);pv.style.display='block'};
+  var seg=dur/VS.length,cur=-1;
+  return Promise.all(VS.map(function(v){return v.play().then(function(){v.pause()}).catch(function(){})})).then(function(){
+   mr.start(200);var t0=ac.currentTime;src.start(t0);
+   (function loop(){var t=ac.currentTime-t0,idx=Math.min(VS.length-1,Math.floor(t/seg));if(idx!==cur){if(VS[cur])VS[cur].pause();cur=idx;VS[cur].currentTime=0;VS[cur].play().catch(function(){})}
+    draw(t,cur);$('pb').style.width=Math.min(100,t/dur*100)+'%';
+    if(t>=dur){setTimeout(function(){mr.stop()},400);return}requestAnimationFrame(loop)})()})}).catch(function(e){$('mk').disabled=false;$('rnote').textContent='ભૂલ: '+(e&&e.message||e)+' — ફરી પ્રયત્ન કરો'})}
+function fname(){var e=VID.type.indexOf('mp4')>-1?'mp4':'webm';return 'reel-'+Date.now()+'.'+e}
+function shareV(){var f=new File([VID],fname(),{type:VID.type});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f]}).catch(function(){});else saveV()}
+function saveV(){var a=document.createElement('a');a.href=URL.createObjectURL(VID);a.download=fname();document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},500)}
+['script','mName','mKcal','mPro','brand'].forEach(function(i){try{var v=localStorage.getItem('rs_'+i);if(v!==null)$(i).value=v}catch(e){}$(i).addEventListener('input',function(){try{localStorage.setItem('rs_'+i,this.value)}catch(e){}})});
+loadClips();
+</script></body></html>
 
