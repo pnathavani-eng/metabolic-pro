@@ -2668,7 +2668,7 @@ ${(comp.extras && comp.extras.length) ? 'Extra food: ' + comp.extras.map(e => e.
 (function () {
   try {
     var st = document.createElement('style'); st.id = 'mpSafeCss';
-    st.textContent = '#mpSathiOv,#mpJnOv,#mpThaliOv,#mkBox{padding-top:env(safe-area-inset-top)!important}#mpSheet>div,#mpSubOv>div,#mpLiveOv>div{max-height:calc(100vh - env(safe-area-inset-top) - 14px)!important;padding-bottom:calc(14px + env(safe-area-inset-bottom))}#mpCel{padding-top:env(safe-area-inset-top)}#mpSGreet .text-base{font-size:17px!important;line-height:1.2!important;color:#fff!important}#mpSGreet .text-slate-500,#mpSGreet .text-\\[11px\\]{font-size:12px!important;color:rgba(255,255,255,.85)!important}#mpSGreet{display:block}';
+    st.textContent = '#mpSathiOv,#mpJnOv,#mpThaliOv,#mkBox{padding-top:env(safe-area-inset-top)!important}#mpSheet>div,#mpSubOv>div,#mpLiveOv>div{max-height:calc(100vh - env(safe-area-inset-top) - 90px)!important;max-height:calc(100dvh - env(safe-area-inset-top) - 70px)!important;padding-bottom:calc(14px + env(safe-area-inset-bottom))}#mpSheet>div>div:first-child,#mpSubOv>div>div:first-child,#mpLiveOv>div>div:first-child{position:sticky;top:-14px;z-index:5;background:#f8fafc;margin:-14px -12px 10px!important;padding:14px 12px 8px;border-radius:24px 24px 0 0}#mpSheet>div>div:first-child button{padding:9px 18px!important;font-size:13px!important}#mpCel{padding-top:env(safe-area-inset-top)}#mpSGreet .text-base{font-size:17px!important;line-height:1.2!important;color:#fff!important}#mpSGreet .text-slate-500,#mpSGreet .text-\\[11px\\]{font-size:12px!important;color:rgba(255,255,255,.85)!important}#mpSGreet{display:block}';
     (document.head || document.documentElement).appendChild(st);
   } catch (e) { }
 })();
