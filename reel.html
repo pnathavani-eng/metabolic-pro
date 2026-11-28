@@ -33,7 +33,7 @@ canvas{width:100%;max-width:300px;display:block;margin:10px auto;border-radius:1
 .lines div{display:flex;gap:6px;margin-bottom:6px;align-items:center}.lines span{font-size:11px;color:#64748b;width:38px}
 .prog{height:10px;background:#e2e8f0;border-radius:9px;overflow:hidden;margin:8px 0}.prog i{display:block;height:100%;width:0;background:#14b8a6}
 </style></head><body>
-<div class="top"><span>🎬 રીલ સ્ટુડિયો <small style="font-size:10px;opacity:.7">v7</small></span><a href="admin.html">← એડમિન</a></div>
+<div class="top"><span>🎬 રીલ સ્ટુડિયો <small style="font-size:10px;opacity:.7">v8</small></span><a href="admin.html">← એડમિન</a></div>
 <div class="steps" id="st"><span class="on" onclick="go(1)">1 વિષય</span><span onclick="go(2)">2 ક્લિપ</span><span onclick="go(3)">3 અવાજ</span><span onclick="go(4)">4 બનાવો</span></div>
 
 <div class="pg on" id="p1">
@@ -95,7 +95,8 @@ function go(n){[1,2,3,4].forEach(function(i){$('p'+i).classList.toggle('on',i===
 var IDS='A1 A2 A3 A4 A5 B1 B2 B3 B4 B5 C1 C2 C3 D1 E1'.split(' ');
 function loadClips(){CL=IDS.map(function(id){var c={id:id,label:'',src:'clips/'+id+'.mp4',ok:0};var v=document.createElement('video');v.preload='metadata';v.muted=true;v.onloadedmetadata=function(){c.ok=1;showC()};v.onerror=function(){};v.src=c.src;return c});showC();
  setTimeout(function(){if(!CL.some(function(c){return c.ok}))$('cnote').textContent='ક્લિપો હજી ઉમેરી નથી (clips ફોલ્ડરમાં A1.mp4, A2.mp4 … મૂકો). નીચેથી ફોનમાંથી ક્લિપ ઉમેરીને ટેસ્ટ કરી શકાય.'},1500)}
-function auto(){var ok=[];CL.forEach(function(c,i){if(c.ok)ok.push(i)});if(!ok.length)return alert('ક્લિપો ઉપલબ્ધ નથી');
+var NOAUTO=['A5'];
+function auto(){var ok=[];CL.forEach(function(c,i){if(c.ok&&NOAUTO.indexOf(c.id)<0)ok.push(i)});if(!ok.length)return alert('ક્લિપો ઉપલબ્ધ નથી');
  var d=ADUR||20,n=Math.max(3,Math.min(ok.length,Math.round(d/4)));for(var i=ok.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=ok[i];ok[i]=ok[j];ok[j]=t}
  SEL=ok.slice(0,n);showC()}
 function showC(){var g=$('cg');g.innerHTML='';CL.forEach(function(c,i){var b=document.createElement('button');b.className='cl'+(c.ok?'':' no')+(SEL.indexOf(i)>-1?' sel':'');
@@ -149,15 +150,19 @@ function make(){
   window.__na=st.getAudioTracks().length;window.__acs=ac.state;
   var IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.vendor||'').indexOf('Apple')>-1&&!window.chrome;VMIME=IOS?'':pickMime();
   var mr=IOS?new MediaRecorder(st):new MediaRecorder(st,VMIME?{mimeType:VMIME,videoBitsPerSecond:4e6}:{}),parts=[];window.__rec=IOS?'ios':'std';
-  mr.ondataavailable=function(e){if(e.data&&e.data.size)parts.push(e.data)};
-  mr.onstop=function(){try{ac.close()}catch(e){}VS.forEach(function(v){v.pause()});VID=new Blob(parts,{type:(mr.mimeType||VMIME||'video/webm').split(';')[0]});$('mk').disabled=false;$('mk').textContent='🔁 ફરી બનાવો';$('out').style.display='block';$('rnote').textContent='તૈયાર! '+(VID.size/1048576).toFixed(1)+' MB · અવાજ ટ્રેક: '+window.__na+' · '+window.__acs+' · '+window.__rec+(why?' · '+why:'')+' · નીચે ચલાવીને જુઓ';$('pb').style.width='100%';var pv=$('pv');pv.src=URL.createObjectURL(VID);pv.style.display='block'};
+  var done=0;
+  function finish(){if(done)return;done=1;try{ac.close()}catch(e){}VS.forEach(function(v){v.pause()});VID=new Blob(parts,{type:(mr.mimeType||VMIME||'video/webm').split(';')[0]});$('mk').disabled=false;$('mk').textContent='🔁 ફરી બનાવો';
+   if(!VID.size){$('rnote').textContent='ભૂલ: વિડીયો ખાલી બન્યો — ફરી પ્રયત્ન કરો';return}
+   $('out').style.display='block';$('rnote').textContent='✅ તૈયાર! '+(VID.size/1048576).toFixed(1)+' MB · અવાજ ટ્રેક: '+window.__na+' · '+window.__acs+' · '+window.__rec+(why?' · '+why:'')+' · નીચે ▶ દબાવી જુઓ';$('pb').style.width='100%';var pv=$('pv');pv.src=URL.createObjectURL(VID);pv.style.display='block';setTimeout(function(){pv.scrollIntoView({behavior:'smooth',block:'center'})},200)}
+  mr.ondataavailable=function(e){if(e.data&&e.data.size)parts.push(e.data);if(mr.state==='inactive')setTimeout(finish,150)};
+  mr.onstop=function(){setTimeout(finish,600)};
   var seg=dur/VS.length,cur=-1;
   stage('4/4 વિડીયો બની રહ્યો છે… (અવાજ ટ્રેક: '+window.__na+', '+ac.state+')');
   if(IOS)mr.start();else mr.start(200);
   var tw=performance.now();if(buf)src.start(0);
   (function loop(){var t=(performance.now()-tw)/1000,idx=Math.min(VS.length-1,Math.floor(t/seg));if(idx!==cur){if(VS[cur])VS[cur].pause();cur=idx;VS[cur].currentTime=0;VS[cur].play().catch(function(){})}
    draw(t,cur);$('pb').style.width=Math.min(100,t/dur*100)+'%';
-   if(t>=dur){setTimeout(function(){try{mr.stop()}catch(e){}},400);return}requestAnimationFrame(loop)})()}).catch(function(e){$('mk').disabled=false;stage('ભૂલ: '+(e&&e.message||e)+' — ફરી પ્રયત્ન કરો')})}
+   if(t>=dur){stage('વિડીયો પૂરો કરી રહ્યો છે…');setTimeout(function(){try{mr.requestData()}catch(e){}try{mr.stop()}catch(e){}setTimeout(finish,3000)},400);return}requestAnimationFrame(loop)})()}).catch(function(e){$('mk').disabled=false;stage('ભૂલ: '+(e&&e.message||e)+' — ફરી પ્રયત્ન કરો')})}
 function fname(){var e=VID.type.indexOf('mp4')>-1?'mp4':'webm';return 'reel-'+Date.now()+'.'+e}
 function shareV(){var f=new File([VID],fname(),{type:VID.type});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f]}).catch(function(){});else saveV()}
 function saveV(){var a=document.createElement('a');a.href=URL.createObjectURL(VID);a.download=fname();document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},500)}
