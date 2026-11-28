@@ -33,7 +33,7 @@ canvas{width:100%;max-width:300px;display:block;margin:10px auto;border-radius:1
 .lines div{display:flex;gap:6px;margin-bottom:6px;align-items:center}.lines span{font-size:11px;color:#64748b;width:38px}
 .prog{height:10px;background:#e2e8f0;border-radius:9px;overflow:hidden;margin:8px 0}.prog i{display:block;height:100%;width:0;background:#14b8a6}
 </style></head><body>
-<div class="top"><span>🎬 રીલ સ્ટુડિયો <small style="font-size:10px;opacity:.7">v6</small></span><a href="admin.html">← એડમિન</a></div>
+<div class="top"><span>🎬 રીલ સ્ટુડિયો <small style="font-size:10px;opacity:.7">v7</small></span><a href="admin.html">← એડમિન</a></div>
 <div class="steps" id="st"><span class="on" onclick="go(1)">1 વિષય</span><span onclick="go(2)">2 ક્લિપ</span><span onclick="go(3)">3 અવાજ</span><span onclick="go(4)">4 બનાવો</span></div>
 
 <div class="pg on" id="p1">
@@ -130,23 +130,34 @@ function draw(t,vi){var g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#33
   var lh=fs*1.3,y=H-250-(ls.length-1)*lh/2;ls.forEach(function(x,i){cx.lineWidth=8;cx.strokeStyle='#000';cx.lineJoin='round';var xx=W/2-cx.measureText(x).width/2;cx.strokeText(x,xx,y+i*lh);cx.fillStyle=$('yel').checked?'#fde047':'#fff';cx.fillText(x,xx,y+i*lh)})}
  cx.font='900 22px "Noto Sans Gujarati"';cx.textAlign='left';cx.fillStyle='#fff';cx.shadowColor='#000';cx.shadowBlur=6;var bt='🔖 '+($('brand').value||'');cx.fillText(bt,W/2-cx.measureText(bt).width/2,H-50);cx.shadowBlur=0}
 function pickMime(){var l=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];for(var i=0;i<l.length;i++){try{if(MediaRecorder.isTypeSupported(l[i]))return l[i]}catch(e){}}return''}
-function decodeAudio(ac,blob){return new Promise(function(res,rej){var fr=new FileReader();fr.onload=function(){var p=ac.decodeAudioData(fr.result,res,rej);if(p&&p.catch)p.catch(rej)};fr.onerror=rej;fr.readAsArrayBuffer(blob)})}
+function decodeAudio(ac,blob){return new Promise(function(res,rej){var fr=new FileReader();fr.onload=function(){try{var p=ac.decodeAudioData(fr.result,res,rej);if(p&&p.catch)p.catch(rej)}catch(e){rej(e)}};fr.onerror=rej;fr.readAsArrayBuffer(blob)})}
+function TO(p,ms,def){return Promise.race([p,new Promise(function(r){setTimeout(function(){r(def)},ms)})])}
+function stage(m){$('rnote').textContent=m}
 function make(){
  if(!SEL.length)auto();if(!SEL.length)return alert('ઓછામાં ઓછી એક ક્લિપ પસંદ કરો');if(!AUD||!ADUR)return alert('પહેલા અવાજ ઉમેરો');
- $('mk').disabled=true;$('out').style.display='none';$('pv').style.display='none';$('rnote').textContent='તૈયાર થઈ રહ્યો છે… પેજ બંધ ન કરો';
+ $('mk').disabled=true;$('out').style.display='none';$('pv').style.display='none';stage('1/4 અવાજ તૈયાર થઈ રહ્યો છે…');
  var AC=window.AudioContext||window.webkitAudioContext,ac=new AC();try{ac.resume();var ub=ac.createBuffer(1,1,22050),us=ac.createBufferSource();us.buffer=ub;us.connect(ac.destination);us.start(0)}catch(e){}
  VS=SEL.map(function(i){var v=document.createElement('video');v.muted=true;v.playsInline=true;v.setAttribute('playsinline','');v.loop=true;v.src=CL[i].src;v.preload='auto';v.load();return v});
- var fontP=(document.fonts&&document.fonts.load)?document.fonts.load('900 38px "Noto Sans Gujarati"','નિયમ').catch(function(){}):Promise.resolve();
- Promise.all([decodeAudio(ac,AUD),fontP]).then(function(r){var buf=r[0],dur=buf.duration,dest=ac.createMediaStreamDestination(),src=ac.createBufferSource();src.buffer=buf;src.connect(dest);try{var gn=ac.createGain();gn.gain.value=0;src.connect(gn);gn.connect(ac.destination)}catch(e){}
-  var st=cv.captureStream(30);dest.stream.getAudioTracks().forEach(function(t){st.addTrack(t)});window.__na=st.getAudioTracks().length;window.__acs=ac.state;
-  var IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.vendor||'').indexOf('Apple')>-1&&!window.chrome;VMIME=IOS?'':pickMime();var mr=IOS?new MediaRecorder(st):new MediaRecorder(st,VMIME?{mimeType:VMIME,videoBitsPerSecond:4e6}:{}),parts=[];window.__rec=IOS?'ios':'std';mr.ondataavailable=function(e){if(e.data.size)parts.push(e.data)};
-  mr.onstop=function(){try{ac.close()}catch(e){}VS.forEach(function(v){v.pause()});VID=new Blob(parts,{type:(mr.mimeType||VMIME||'video/webm').split(';')[0]});$('mk').disabled=false;$('mk').textContent='🔁 ફરી બનાવો';$('out').style.display='block';$('rnote').textContent='તૈયાર! '+(VID.size/1048576).toFixed(1)+' MB · અવાજ ટ્રેક: '+(window.__na||0)+' · '+(window.__acs||'')+' · '+(window.__rec||'')+' · નીચે ચલાવીને જુઓ';$('pb').style.width='100%';var pv=$('pv');pv.src=URL.createObjectURL(VID);pv.style.display='block'};
+ var buf=null,why='';
+ TO(decodeAudio(ac,AUD).then(function(b){buf=b}).catch(function(e){why='ડીકોડ: '+(e&&e.message||e)}),10000).then(function(){
+  if(!buf)why=why||'ડીકોડ સમય પૂરો'; stage('2/4 ફોન્ટ…');
+  return TO((document.fonts&&document.fonts.load)?document.fonts.load('900 38px "Noto Sans Gujarati"','નિયમ').catch(function(){}):0,2500)}).then(function(){
+  stage('3/4 ક્લિપ તૈયાર…');return Promise.all(VS.map(function(v){return TO(v.play().then(function(){v.pause()}).catch(function(){}),4000)}))}).then(function(){
+  return TO(ac.resume().catch(function(){}),2000)}).then(function(){
+  var dur=buf?buf.duration:ADUR,dest=ac.createMediaStreamDestination(),st=cv.captureStream(30);
+  if(buf){var src=ac.createBufferSource();src.buffer=buf;src.connect(dest);try{var gn=ac.createGain();gn.gain.value=0;src.connect(gn);gn.connect(ac.destination)}catch(e){}dest.stream.getAudioTracks().forEach(function(t){st.addTrack(t)})}
+  window.__na=st.getAudioTracks().length;window.__acs=ac.state;
+  var IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.vendor||'').indexOf('Apple')>-1&&!window.chrome;VMIME=IOS?'':pickMime();
+  var mr=IOS?new MediaRecorder(st):new MediaRecorder(st,VMIME?{mimeType:VMIME,videoBitsPerSecond:4e6}:{}),parts=[];window.__rec=IOS?'ios':'std';
+  mr.ondataavailable=function(e){if(e.data&&e.data.size)parts.push(e.data)};
+  mr.onstop=function(){try{ac.close()}catch(e){}VS.forEach(function(v){v.pause()});VID=new Blob(parts,{type:(mr.mimeType||VMIME||'video/webm').split(';')[0]});$('mk').disabled=false;$('mk').textContent='🔁 ફરી બનાવો';$('out').style.display='block';$('rnote').textContent='તૈયાર! '+(VID.size/1048576).toFixed(1)+' MB · અવાજ ટ્રેક: '+window.__na+' · '+window.__acs+' · '+window.__rec+(why?' · '+why:'')+' · નીચે ચલાવીને જુઓ';$('pb').style.width='100%';var pv=$('pv');pv.src=URL.createObjectURL(VID);pv.style.display='block'};
   var seg=dur/VS.length,cur=-1;
-  return Promise.all(VS.map(function(v){return v.play().then(function(){v.pause()}).catch(function(){})})).then(function(){
-   if(IOS)mr.start();else mr.start(200);var t0=ac.currentTime;src.start(t0);
-   (function loop(){var t=ac.currentTime-t0,idx=Math.min(VS.length-1,Math.floor(t/seg));if(idx!==cur){if(VS[cur])VS[cur].pause();cur=idx;VS[cur].currentTime=0;VS[cur].play().catch(function(){})}
-    draw(t,cur);$('pb').style.width=Math.min(100,t/dur*100)+'%';
-    if(t>=dur){setTimeout(function(){mr.stop()},400);return}requestAnimationFrame(loop)})()})}).catch(function(e){$('mk').disabled=false;$('rnote').textContent='ભૂલ: '+(e&&e.message||e)+' — ફરી પ્રયત્ન કરો'})}
+  stage('4/4 વિડીયો બની રહ્યો છે… (અવાજ ટ્રેક: '+window.__na+', '+ac.state+')');
+  if(IOS)mr.start();else mr.start(200);
+  var tw=performance.now();if(buf)src.start(0);
+  (function loop(){var t=(performance.now()-tw)/1000,idx=Math.min(VS.length-1,Math.floor(t/seg));if(idx!==cur){if(VS[cur])VS[cur].pause();cur=idx;VS[cur].currentTime=0;VS[cur].play().catch(function(){})}
+   draw(t,cur);$('pb').style.width=Math.min(100,t/dur*100)+'%';
+   if(t>=dur){setTimeout(function(){try{mr.stop()}catch(e){}},400);return}requestAnimationFrame(loop)})()}).catch(function(e){$('mk').disabled=false;stage('ભૂલ: '+(e&&e.message||e)+' — ફરી પ્રયત્ન કરો')})}
 function fname(){var e=VID.type.indexOf('mp4')>-1?'mp4':'webm';return 'reel-'+Date.now()+'.'+e}
 function shareV(){var f=new File([VID],fname(),{type:VID.type});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f]}).catch(function(){});else saveV()}
 function saveV(){var a=document.createElement('a');a.href=URL.createObjectURL(VID);a.download=fname();document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},500)}
