@@ -8,7 +8,7 @@
 body{font-family:'Noto Sans Gujarati',system-ui,sans-serif;background:#f1f5f9;color:#0f172a;padding-bottom:40px}
 .top{background:linear-gradient(135deg,#0f3d3e,#14746f);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 14px 14px;font-weight:900;font-size:16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
 .top a{color:#fff;font-size:11px;background:#fff2;border-radius:99px;padding:6px 12px;text-decoration:none}
-.steps{display:flex;gap:6px;padding:10px 12px 0}.steps span{flex:1;text-align:center;font-size:11px;font-weight:900;padding:8px 0;border-radius:11px;background:#e2e8f0;color:#64748b}.steps .on{background:#14b8a6;color:#fff}
+.steps{display:flex;gap:6px;padding:10px 12px 0}.steps span{cursor:pointer;flex:1;text-align:center;font-size:11px;font-weight:900;padding:8px 0;border-radius:11px;background:#e2e8f0;color:#64748b}.steps .on{background:#14b8a6;color:#fff}
 .pg{display:none;padding:6px 12px}.pg.on{display:block}
 h3{font-size:13px;font-weight:900;margin:14px 2px 6px}
 .card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:10px;margin-bottom:8px}
@@ -34,7 +34,7 @@ canvas{width:100%;max-width:300px;display:block;margin:10px auto;border-radius:1
 .prog{height:10px;background:#e2e8f0;border-radius:9px;overflow:hidden;margin:8px 0}.prog i{display:block;height:100%;width:0;background:#14b8a6}
 </style></head><body>
 <div class="top"><span>🎬 રીલ સ્ટુડિયો</span><a href="admin.html">← એડમિન</a></div>
-<div class="steps" id="st"><span class="on">1 વિષય</span><span>2 ક્લિપ</span><span>3 અવાજ</span><span>4 બનાવો</span></div>
+<div class="steps" id="st"><span class="on" onclick="go(1)">1 વિષય</span><span onclick="go(2)">2 ક્લિપ</span><span onclick="go(3)">3 અવાજ</span><span onclick="go(4)">4 બનાવો</span></div>
 
 <div class="pg on" id="p1">
  <h3>📝 સ્ક્રિપ્ટ (દરેક લાઇન = એક સબટાઇટલ)</h3>
@@ -56,6 +56,7 @@ canvas{width:100%;max-width:300px;display:block;margin:10px auto;border-radius:1
  <h3>ક્રમ</h3><div class="tl" id="tl"></div>
  <p class="note">ક્રમમાં નામ પર ટેપ કરો તો દૂર થશે. ◀ ▶ થી ક્રમ બદલાય.</p>
  <button class="btn" onclick="go(3)">આગળ ➜ અવાજ</button>
+ <button class="btn s" onclick="go(1)">⬅ પાછળ</button>
 </div>
 
 <div class="pg" id="p3">
@@ -68,6 +69,7 @@ canvas{width:100%;max-width:300px;display:block;margin:10px auto;border-radius:1
  <h3>🎨 સ્ટાઇલ</h3>
  <div class="card"><label class="chk"><input type="checkbox" id="yel" checked> પીળા અક્ષર</label><label class="chk"><input type="checkbox" id="mute"> ક્લિપનો અવાજ બંધ (ભલામણ)</label></div>
  <button class="btn" onclick="go(4)">આગળ ➜ બનાવો</button>
+ <button class="btn s" onclick="go(2)">⬅ પાછળ</button>
 </div>
 
 <div class="pg" id="p4">
@@ -78,6 +80,7 @@ canvas{width:100%;max-width:300px;display:block;margin:10px auto;border-radius:1
   <button class="btn o" onclick="shareV()">📲 શેર કરો (Instagram / WhatsApp)</button>
   <button class="btn d" onclick="saveV()">💾 ફોનમાં સેવ કરો</button>
  </div>
+ <button class="btn s" onclick="go(3)">⬅ પાછળ (અવાજ / સબટાઇટલ સુધારો)</button>
  <p class="note">વિડીયો બનતી વખતે આ પેજ ખુલ્લું અને સ્ક્રીન ચાલુ રાખો.</p>
 </div>
 
@@ -120,7 +123,7 @@ var W=540,H=960,cv=$('cv'),cx=cv.getContext('2d'),VS=[];
 function wrap(t,w){var out=[],ln='';t.split(' ').forEach(function(wd){var x=ln?ln+' '+wd:wd;if(cx.measureText(x).width>w&&ln){out.push(ln);ln=wd}else ln=x});if(ln)out.push(ln);return out}
 function rr(x,y,w,h,r){cx.beginPath();cx.moveTo(x+r,y);cx.arcTo(x+w,y,x+w,y+h,r);cx.arcTo(x+w,y+h,x,y+h,r);cx.arcTo(x,y+h,x,y,r);cx.arcTo(x,y,x+w,y,r);cx.closePath()}
 function draw(t,vi){var g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#334155');g.addColorStop(1,'#0f766e');cx.fillStyle=g;cx.fillRect(0,0,W,H);
- var v=VS[vi||0];if(v&&v.videoWidth){var s=Math.max(W/v.videoWidth,H/v.videoHeight),w=v.videoWidth*s,h=v.videoHeight*s;cx.drawImage(v,(W-w)/2,(H-h)/2,w,h)}
+ var v=VS[vi||0];if(v&&v.videoWidth){var s=Math.max(W/v.videoWidth,H/v.videoHeight)*1.1,w=v.videoWidth*s,h=v.videoHeight*s;cx.drawImage(v,(W-w)/2,0,w,h)}
  if($('mOn').checked&&$('mName').value){var k=Number($('mKcal').value)||0,p=Number($('mPro').value)||0;cx.fillStyle='rgba(255,255,255,.95)';rr(24,60,W-48,84,18);cx.fill();cx.fillStyle='#0f172a';cx.font='900 24px "Noto Sans Gujarati"';cx.textAlign='left';cx.fillText('🥗 '+$('mName').value,42,96);cx.font='700 20px "Noto Sans Gujarati"';cx.fillText(k+' kcal · '+p+' g પ્રોટીન',42,126);cx.fillStyle='#e2e8f0';rr(W-190,100,140,12,6);cx.fill();cx.fillStyle='#14b8a6';rr(W-190,100,Math.min(140,140*k/600),12,6);cx.fill()}
  var cur=null;LN.forEach(function(l){if(t>=l.a&&t<l.b)cur=l});if(cur){cx.font='900 38px "Noto Sans Gujarati"';cx.textAlign='center';var ls=wrap(cur.t,W-70),y=H-250-(ls.length-1)*24;ls.forEach(function(x,i){cx.lineWidth=8;cx.strokeStyle='#000';cx.lineJoin='round';cx.strokeText(x,W/2,y+i*50);cx.fillStyle=$('yel').checked?'#fde047':'#fff';cx.fillText(x,W/2,y+i*50)})}
  cx.font='900 22px "Noto Sans Gujarati"';cx.textAlign='center';cx.fillStyle='#fff';cx.shadowColor='#000';cx.shadowBlur=6;cx.fillText('🔖 '+($('brand').value||''),W/2,H-50);cx.shadowBlur=0}
