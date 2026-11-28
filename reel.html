@@ -33,7 +33,7 @@ canvas{width:100%;max-width:300px;display:block;margin:10px auto;border-radius:1
 .lines div{display:flex;gap:6px;margin-bottom:6px;align-items:center}.lines span{font-size:11px;color:#64748b;width:38px}
 .prog{height:10px;background:#e2e8f0;border-radius:9px;overflow:hidden;margin:8px 0}.prog i{display:block;height:100%;width:0;background:#14b8a6}
 </style></head><body>
-<div class="top"><span>🎬 રીલ સ્ટુડિયો <small style="font-size:10px;opacity:.7">v8</small></span><a href="admin.html">← એડમિન</a></div>
+<div class="top"><span>🎬 રીલ સ્ટુડિયો <small style="font-size:10px;opacity:.7">v9</small></span><a href="admin.html">← એડમિન</a></div>
 <div class="steps" id="st"><span class="on" onclick="go(1)">1 વિષય</span><span onclick="go(2)">2 ક્લિપ</span><span onclick="go(3)">3 અવાજ</span><span onclick="go(4)">4 બનાવો</span></div>
 
 <div class="pg on" id="p1">
@@ -134,7 +134,8 @@ function pickMime(){var l=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4',
 function decodeAudio(ac,blob){return new Promise(function(res,rej){var fr=new FileReader();fr.onload=function(){try{var p=ac.decodeAudioData(fr.result,res,rej);if(p&&p.catch)p.catch(rej)}catch(e){rej(e)}};fr.onerror=rej;fr.readAsArrayBuffer(blob)})}
 function TO(p,ms,def){return Promise.race([p,new Promise(function(r){setTimeout(function(){r(def)},ms)})])}
 function stage(m){$('rnote').textContent=m}
-function make(){
+function make(noAudio){
+ if(noAudio!==true)noAudio=false;
  if(!SEL.length)auto();if(!SEL.length)return alert('ઓછામાં ઓછી એક ક્લિપ પસંદ કરો');if(!AUD||!ADUR)return alert('પહેલા અવાજ ઉમેરો');
  $('mk').disabled=true;$('out').style.display='none';$('pv').style.display='none';stage('1/4 અવાજ તૈયાર થઈ રહ્યો છે…');
  var AC=window.AudioContext||window.webkitAudioContext,ac=new AC();try{ac.resume();var ub=ac.createBuffer(1,1,22050),us=ac.createBufferSource();us.buffer=ub;us.connect(ac.destination);us.start(0)}catch(e){}
@@ -146,20 +147,20 @@ function make(){
   stage('3/4 ક્લિપ તૈયાર…');return Promise.all(VS.map(function(v){return TO(v.play().then(function(){v.pause()}).catch(function(){}),4000)}))}).then(function(){
   return TO(ac.resume().catch(function(){}),2000)}).then(function(){
   var dur=buf?buf.duration:ADUR,dest=ac.createMediaStreamDestination(),st=cv.captureStream(30);
-  if(buf){var src=ac.createBufferSource();src.buffer=buf;src.connect(dest);try{var gn=ac.createGain();gn.gain.value=0;src.connect(gn);gn.connect(ac.destination)}catch(e){}dest.stream.getAudioTracks().forEach(function(t){st.addTrack(t)})}
+  if(buf&&!noAudio){var src=ac.createBufferSource();src.buffer=buf;src.connect(dest);try{var gn=ac.createGain();gn.gain.value=0;src.connect(gn);gn.connect(ac.destination)}catch(e){}dest.stream.getAudioTracks().forEach(function(t){st.addTrack(t)})}
   window.__na=st.getAudioTracks().length;window.__acs=ac.state;
-  var IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.vendor||'').indexOf('Apple')>-1&&!window.chrome;VMIME=IOS?'':pickMime();
-  var mr=IOS?new MediaRecorder(st):new MediaRecorder(st,VMIME?{mimeType:VMIME,videoBitsPerSecond:4e6}:{}),parts=[];window.__rec=IOS?'ios':'std';
+  var IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.vendor||'').indexOf('Apple')>-1&&!window.chrome;VMIME=pickMime();
+  var mr=new MediaRecorder(st,VMIME?{mimeType:VMIME,videoBitsPerSecond:4e6}:{}),parts=[];window.__rec=(IOS?'ios':'std')+(noAudio?'-વિડીયો-માત્ર':'');
   var done=0;
   function finish(){if(done)return;done=1;try{ac.close()}catch(e){}VS.forEach(function(v){v.pause()});VID=new Blob(parts,{type:(mr.mimeType||VMIME||'video/webm').split(';')[0]});$('mk').disabled=false;$('mk').textContent='🔁 ફરી બનાવો';
-   if(!VID.size){$('rnote').textContent='ભૂલ: વિડીયો ખાલી બન્યો — ફરી પ્રયત્ન કરો';return}
+   if(!VID.size){if(!noAudio){stage('અવાજ સાથે રેકોર્ડિંગ ન થયું, અવાજ વગર ફરી બનાવું છું…');setTimeout(function(){make(true)},400);return}$('rnote').textContent='ભૂલ: વિડીયો ખાલી બન્યો — ફરી પ્રયત્ન કરો';return}
    $('out').style.display='block';$('rnote').textContent='✅ તૈયાર! '+(VID.size/1048576).toFixed(1)+' MB · અવાજ ટ્રેક: '+window.__na+' · '+window.__acs+' · '+window.__rec+(why?' · '+why:'')+' · નીચે ▶ દબાવી જુઓ';$('pb').style.width='100%';var pv=$('pv');pv.src=URL.createObjectURL(VID);pv.style.display='block';setTimeout(function(){pv.scrollIntoView({behavior:'smooth',block:'center'})},200)}
   mr.ondataavailable=function(e){if(e.data&&e.data.size)parts.push(e.data);if(mr.state==='inactive')setTimeout(finish,150)};
   mr.onstop=function(){setTimeout(finish,600)};
   var seg=dur/VS.length,cur=-1;
   stage('4/4 વિડીયો બની રહ્યો છે… (અવાજ ટ્રેક: '+window.__na+', '+ac.state+')');
-  if(IOS)mr.start();else mr.start(200);
-  var tw=performance.now();if(buf)src.start(0);
+  mr.start(200);
+  var tw=performance.now();if(buf&&!noAudio)src.start(0);
   (function loop(){var t=(performance.now()-tw)/1000,idx=Math.min(VS.length-1,Math.floor(t/seg));if(idx!==cur){if(VS[cur])VS[cur].pause();cur=idx;VS[cur].currentTime=0;VS[cur].play().catch(function(){})}
    draw(t,cur);$('pb').style.width=Math.min(100,t/dur*100)+'%';
    if(t>=dur){stage('વિડીયો પૂરો કરી રહ્યો છે…');setTimeout(function(){try{mr.requestData()}catch(e){}try{mr.stop()}catch(e){}setTimeout(finish,3000)},400);return}requestAnimationFrame(loop)})()}).catch(function(e){$('mk').disabled=false;stage('ભૂલ: '+(e&&e.message||e)+' — ફરી પ્રયત્ન કરો')})}
