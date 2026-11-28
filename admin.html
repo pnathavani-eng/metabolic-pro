@@ -160,7 +160,7 @@
               <input id="cdGl" type="number" placeholder="GL" class="p-2 bg-slate-50 border rounded-xl font-semibold">
             </div>
             <input id="cdPortion" placeholder="ભાગ (દા.ત. ૧ વાટકી)" class="w-full p-2 bg-slate-50 border rounded-xl font-semibold">
-            <div class="flex gap-3 flex-wrap font-semibold"><label class="flex items-center gap-1"><input type="checkbox" id="cdFried"> તળેલું</label><label class="flex items-center gap-1"><input type="checkbox" id="cdSugar"> ખાંડ વધારે</label></div>
+            <div class="flex gap-3 flex-wrap font-semibold"><label class="flex items-center gap-1"><input type="checkbox" id="cdFried"> તળેલું</label><label class="flex items-center gap-1"><input type="checkbox" id="cdSugar"> ખાંડ વધારે</label><label class="flex items-center gap-1"><input type="checkbox" id="cdRefined"> રિફાઇન્ડ કાર્બ (મેંદો/સફેદ ચોખા)</label></div>
             <div class="font-bold text-slate-600">એલર્જન (આ વાનગીમાં છે)</div>
             <div class="grid grid-cols-2 gap-1 font-semibold"><label class="flex items-center gap-1"><input type="checkbox" class="cdAlg" value="peanut"> મગફળી</label><label class="flex items-center gap-1"><input type="checkbox" class="cdAlg" value="soy"> સોયા</label><label class="flex items-center gap-1"><input type="checkbox" class="cdAlg" value="dairy"> ડેરી</label><label class="flex items-center gap-1"><input type="checkbox" class="cdAlg" value="gluten"> ગ્લુટેન</label><label class="flex items-center gap-1"><input type="checkbox" class="cdAlg" value="nuts"> બદામ-અખરોટ</label><label class="flex items-center gap-1"><input type="checkbox" class="cdAlg" value="egg"> ઈંડા</label><label class="flex items-center gap-1"><input type="checkbox" class="cdAlg" value="fish"> માછલી</label><label class="flex items-center gap-1"><input type="checkbox" class="cdAlg" value="mushroom"> મશરૂમ</label><label class="flex items-center gap-1"><input type="checkbox" class="cdAlg" value="jain"> કંદમૂળ/ડુંગળી-લસણ (જૈન નહીં)</label></div>
             <button id="cdSaveBtn" onclick="saveCustomDish()" class="w-full py-2.5 rounded-xl bg-slate-900 text-white font-extrabold text-xs">વાનગી સેવ કરો</button>
@@ -1145,7 +1145,7 @@
     function resetCustomForm() {
       cdEditId = null;
       ['cdNameGu', 'cdNameHi', 'cdNameEn', 'cdCal', 'cdProt', 'cdGl', 'cdPortion'].forEach(i => $(i).value = '');
-      $('cdDiet').value = 'veg'; $('cdFried').checked = false; $('cdSugar').checked = false;
+      $('cdDiet').value = 'veg'; $('cdFried').checked = false; $('cdSugar').checked = false; if ($('cdRefined')) $('cdRefined').checked = false;
       document.querySelectorAll('.cdAlg').forEach(c => c.checked = false);
       $('cdSaveBtn').textContent = 'વાનગી સેવ કરો';
     }
@@ -1156,7 +1156,7 @@
       $('cdSlot').value = raw.slot; $('cdCal').value = raw.baseCal; $('cdProt').value = raw.baseP; $('cdGl').value = raw.gl; $('cdPortion').value = raw.basePortion || '';
       const t = raw.tags || [];
       $('cdDiet').value = t.includes('nonveg') ? 'nonveg' : t.includes('egg') ? 'egg' : 'veg';
-      $('cdFried').checked = t.includes('fried'); $('cdSugar').checked = t.includes('high_sugar');
+      $('cdFried').checked = t.includes('fried'); $('cdSugar').checked = t.includes('high_sugar'); if ($('cdRefined')) $('cdRefined').checked = t.includes('refined_carbs');
       document.querySelectorAll('.cdAlg').forEach(c => c.checked = (raw.algs || []).includes(c.value));
       $('cdSaveBtn').textContent = 'ફેરફાર સેવ કરો';
       $('cdNameGu').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1169,7 +1169,7 @@
       const diet = $('cdDiet').value;
       const tags = [diet];
       if ($('cdFried').checked) tags.push('fried');
-      if ($('cdSugar').checked) tags.push('high_sugar');
+      if ($('cdSugar').checked) tags.push('high_sugar'); if ($('cdRefined') && $('cdRefined').checked) tags.push('refined_carbs');
       if (prot >= 10) tags.push('high_protein');
       const algs = Array.from(document.querySelectorAll('.cdAlg')).filter(c => c.checked).map(c => c.value);
       const id = cdEditId || ('cd_' + Date.now().toString(36));
@@ -1818,7 +1818,7 @@
 (function () {
   try {
     var st = document.createElement('style'); st.id = 'mpSafeCss';
-    st.textContent = '#mpSathiOv,#mpJnOv,#mpThaliOv,#mkBox{padding-top:env(safe-area-inset-top)!important}#mpSheet>div,#mpSubOv>div,#mpLiveOv>div{max-height:calc(100vh - env(safe-area-inset-top) - 14px)!important;padding-bottom:calc(14px + env(safe-area-inset-bottom))}#mpCel{padding-top:env(safe-area-inset-top)}#mpSGreet .text-base{font-size:17px!important;line-height:1.2!important;color:#fff!important}#mpSGreet .text-slate-500,#mpSGreet .text-\\[11px\\]{font-size:12px!important;color:rgba(255,255,255,.85)!important}#mpSGreet{display:block}';
+    st.textContent = '#mpSathiOv,#mpJnOv,#mpThaliOv,#mkBox{padding-top:env(safe-area-inset-top)!important}#mpSheet>div,#mpSubOv>div,#mpLiveOv>div{max-height:calc(100vh - env(safe-area-inset-top) - 90px)!important;max-height:calc(100dvh - env(safe-area-inset-top) - 70px)!important;padding-bottom:calc(14px + env(safe-area-inset-bottom))}#mpSheet>div>div:first-child,#mpSubOv>div>div:first-child,#mpLiveOv>div>div:first-child{position:sticky;top:-14px;z-index:5;background:#f8fafc;margin:-14px -12px 10px!important;padding:14px 12px 8px;border-radius:24px 24px 0 0}#mpSheet>div>div:first-child button{padding:9px 18px!important;font-size:13px!important}#mpCel{padding-top:env(safe-area-inset-top)}#mpSGreet .text-base{font-size:17px!important;line-height:1.2!important;color:#fff!important}#mpSGreet .text-slate-500,#mpSGreet .text-\\[11px\\]{font-size:12px!important;color:rgba(255,255,255,.85)!important}#mpSGreet{display:block}';
     (document.head || document.documentElement).appendChild(st);
   } catch (e) { }
 })();
