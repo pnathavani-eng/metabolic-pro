@@ -76,6 +76,7 @@ canvas{width:100%;max-width:300px;display:block;margin:10px auto;border-radius:1
  <canvas id="cv" width="540" height="960"></canvas>
  <div class="prog"><i id="pb"></i></div><p class="note" id="rnote" style="text-align:center"></p>
  <button class="btn" id="mk" onclick="make()">▶ વિડીયો બનાવો</button>
+ <video id="pv" controls playsinline style="display:none;width:100%;max-width:300px;margin:10px auto;border-radius:14px;background:#000"></video>
  <div id="out" style="display:none">
   <button class="btn o" onclick="shareV()">📲 શેર કરો (Instagram / WhatsApp)</button>
   <button class="btn d" onclick="saveV()">💾 ફોનમાં સેવ કરો</button>
@@ -123,25 +124,29 @@ var W=540,H=960,cv=$('cv'),cx=cv.getContext('2d'),VS=[];
 function wrap(t,w){var out=[],ln='';t.split(' ').forEach(function(wd){var x=ln?ln+' '+wd:wd;if(cx.measureText(x).width>w&&ln){out.push(ln);ln=wd}else ln=x});if(ln)out.push(ln);return out}
 function rr(x,y,w,h,r){cx.beginPath();cx.moveTo(x+r,y);cx.arcTo(x+w,y,x+w,y+h,r);cx.arcTo(x+w,y+h,x,y+h,r);cx.arcTo(x,y+h,x,y,r);cx.arcTo(x,y,x+w,y,r);cx.closePath()}
 function draw(t,vi){var g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#334155');g.addColorStop(1,'#0f766e');cx.fillStyle=g;cx.fillRect(0,0,W,H);
- var v=VS[vi||0];if(v&&v.videoWidth){var s=Math.max(W/v.videoWidth,H/v.videoHeight)*1.1,w=v.videoWidth*s,h=v.videoHeight*s;cx.drawImage(v,(W-w)/2,0,w,h)}
+ var v=VS[vi||0];if(v&&v.videoWidth){var s=Math.max(W/v.videoWidth,H/v.videoHeight)*1.2,w=v.videoWidth*s,h=v.videoHeight*s;cx.drawImage(v,(W-w)/2,0,w,h)}
  if($('mOn').checked&&$('mName').value){var k=Number($('mKcal').value)||0,p=Number($('mPro').value)||0;cx.fillStyle='rgba(255,255,255,.95)';rr(24,60,W-48,84,18);cx.fill();cx.fillStyle='#0f172a';cx.font='900 24px "Noto Sans Gujarati"';cx.textAlign='left';cx.fillText('🥗 '+$('mName').value,42,96);cx.font='700 20px "Noto Sans Gujarati"';cx.fillText(k+' kcal · '+p+' g પ્રોટીન',42,126);cx.fillStyle='#e2e8f0';rr(W-190,100,140,12,6);cx.fill();cx.fillStyle='#14b8a6';rr(W-190,100,Math.min(140,140*k/600),12,6);cx.fill()}
- var cur=null;LN.forEach(function(l){if(t>=l.a&&t<l.b)cur=l});if(cur){cx.font='900 38px "Noto Sans Gujarati"';cx.textAlign='center';var ls=wrap(cur.t,W-70),y=H-250-(ls.length-1)*24;ls.forEach(function(x,i){cx.lineWidth=8;cx.strokeStyle='#000';cx.lineJoin='round';cx.strokeText(x,W/2,y+i*50);cx.fillStyle=$('yel').checked?'#fde047':'#fff';cx.fillText(x,W/2,y+i*50)})}
+ var cur=null;LN.forEach(function(l){if(t>=l.a&&t<l.b)cur=l});if(cur){var fs=38,ls,mw=W-110;cx.textAlign='center';for(;fs>=22;fs-=2){cx.font='900 '+fs+'px "Noto Sans Gujarati",sans-serif';ls=wrap(cur.t,mw);if(ls.every(function(x){return cx.measureText(x).width<=mw}))break}
+  var lh=fs*1.3,y=H-250-(ls.length-1)*lh/2;ls.forEach(function(x,i){cx.lineWidth=8;cx.strokeStyle='#000';cx.lineJoin='round';cx.strokeText(x,W/2,y+i*lh);cx.fillStyle=$('yel').checked?'#fde047':'#fff';cx.fillText(x,W/2,y+i*lh)})}
  cx.font='900 22px "Noto Sans Gujarati"';cx.textAlign='center';cx.fillStyle='#fff';cx.shadowColor='#000';cx.shadowBlur=6;cx.fillText('🔖 '+($('brand').value||''),W/2,H-50);cx.shadowBlur=0}
 function pickMime(){var l=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'];for(var i=0;i<l.length;i++){try{if(MediaRecorder.isTypeSupported(l[i]))return l[i]}catch(e){}}return''}
+function decodeAudio(ac,blob){return new Promise(function(res,rej){var fr=new FileReader();fr.onload=function(){var p=ac.decodeAudioData(fr.result,res,rej);if(p&&p.catch)p.catch(rej)};fr.onerror=rej;fr.readAsArrayBuffer(blob)})}
 function make(){
  if(!SEL.length)auto();if(!SEL.length)return alert('ઓછામાં ઓછી એક ક્લિપ પસંદ કરો');if(!AUD||!ADUR)return alert('પહેલા અવાજ ઉમેરો');
- $('mk').disabled=true;$('out').style.display='none';$('rnote').textContent='બની રહ્યો છે… પેજ બંધ ન કરો';
+ $('mk').disabled=true;$('out').style.display='none';$('pv').style.display='none';$('rnote').textContent='તૈયાર થઈ રહ્યો છે… પેજ બંધ ન કરો';
+ var AC=window.AudioContext||window.webkitAudioContext,ac=new AC();try{ac.resume()}catch(e){}
  VS=SEL.map(function(i){var v=document.createElement('video');v.muted=true;v.playsInline=true;v.setAttribute('playsinline','');v.loop=true;v.src=CL[i].src;v.preload='auto';v.load();return v});
- var au=new Audio(URL.createObjectURL(AUD)),ac=new (window.AudioContext||window.webkitAudioContext)(),dest=ac.createMediaStreamDestination(),src=ac.createMediaElementSource(au);src.connect(dest);
- var st=cv.captureStream(30);dest.stream.getAudioTracks().forEach(function(t){st.addTrack(t)});
- VMIME=pickMime();var mr=new MediaRecorder(st,VMIME?{mimeType:VMIME,videoBitsPerSecond:4e6}:{}),parts=[];mr.ondataavailable=function(e){if(e.data.size)parts.push(e.data)};
- mr.onstop=function(){ac.close();VS.forEach(function(v){v.pause()});VID=new Blob(parts,{type:(mr.mimeType||VMIME||'video/webm').split(';')[0]});$('mk').disabled=false;$('mk').textContent='🔁 ફરી બનાવો';$('out').style.display='block';$('rnote').textContent='તૈયાર! '+(VID.size/1048576).toFixed(1)+' MB';$('pb').style.width='100%'};
- var seg=ADUR/VS.length,cur=-1,t0=0;
- ac.resume().then(function(){return Promise.all(VS.map(function(v){return v.play().then(function(){v.pause()}).catch(function(){})}))}).then(function(){
-  mr.start(200);au.play();t0=performance.now();
-  (function loop(){var t=au.currentTime||(performance.now()-t0)/1000,idx=Math.min(VS.length-1,Math.floor(t/seg));if(idx!==cur){if(VS[cur])VS[cur].pause();cur=idx;VS[cur].currentTime=0;VS[cur].play().catch(function(){})}
-   draw(t,cur);$('pb').style.width=Math.min(100,t/ADUR*100)+'%';
-   if(au.ended||t>=ADUR){setTimeout(function(){mr.stop()},300);return}requestAnimationFrame(loop)})()})}
+ var fontP=(document.fonts&&document.fonts.load)?document.fonts.load('900 38px "Noto Sans Gujarati"','નિયમ').catch(function(){}):Promise.resolve();
+ Promise.all([decodeAudio(ac,AUD),fontP]).then(function(r){var buf=r[0],dur=buf.duration,dest=ac.createMediaStreamDestination(),src=ac.createBufferSource();src.buffer=buf;src.connect(dest);
+  var st=cv.captureStream(30);dest.stream.getAudioTracks().forEach(function(t){st.addTrack(t)});
+  VMIME=pickMime();var mr=new MediaRecorder(st,VMIME?{mimeType:VMIME,videoBitsPerSecond:4e6}:{}),parts=[];mr.ondataavailable=function(e){if(e.data.size)parts.push(e.data)};
+  mr.onstop=function(){try{ac.close()}catch(e){}VS.forEach(function(v){v.pause()});VID=new Blob(parts,{type:(mr.mimeType||VMIME||'video/webm').split(';')[0]});$('mk').disabled=false;$('mk').textContent='🔁 ફરી બનાવો';$('out').style.display='block';$('rnote').textContent='તૈયાર! '+(VID.size/1048576).toFixed(1)+' MB · નીચે ચલાવીને અવાજ અને સબટાઇટલ જુઓ';$('pb').style.width='100%';var pv=$('pv');pv.src=URL.createObjectURL(VID);pv.style.display='block'};
+  var seg=dur/VS.length,cur=-1;
+  return Promise.all(VS.map(function(v){return v.play().then(function(){v.pause()}).catch(function(){})})).then(function(){
+   mr.start(200);var t0=ac.currentTime;src.start(t0);
+   (function loop(){var t=ac.currentTime-t0,idx=Math.min(VS.length-1,Math.floor(t/seg));if(idx!==cur){if(VS[cur])VS[cur].pause();cur=idx;VS[cur].currentTime=0;VS[cur].play().catch(function(){})}
+    draw(t,cur);$('pb').style.width=Math.min(100,t/dur*100)+'%';
+    if(t>=dur){setTimeout(function(){mr.stop()},400);return}requestAnimationFrame(loop)})()})}).catch(function(e){$('mk').disabled=false;$('rnote').textContent='ભૂલ: '+(e&&e.message||e)+' — ફરી પ્રયત્ન કરો'})}
 function fname(){var e=VID.type.indexOf('mp4')>-1?'mp4':'webm';return 'reel-'+Date.now()+'.'+e}
 function shareV(){var f=new File([VID],fname(),{type:VID.type});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f]}).catch(function(){});else saveV()}
 function saveV(){var a=document.createElement('a');a.href=URL.createObjectURL(VID);a.download=fname();document.body.appendChild(a);a.click();setTimeout(function(){a.remove()},500)}
